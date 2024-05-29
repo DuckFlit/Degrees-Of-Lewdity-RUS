@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 Weather.Renderer.Layers.add({
 	name: "bannerSky",
 	zIndex: 0,
@@ -148,7 +147,7 @@ Weather.Renderer.Layers.add({
 				alpha() {
 					const factor = this.renderInstance.orbitals.sun.factor;
 					const nightAlpha = Weather.bloodMoon ? this.opacity.bloodMoon : this.opacity.night;
-					return interpolate(nightAlpha, this.opacity.day, Math.max(0, factor));
+					return interpolate(nightAlpha, this.opacity.day, Math.clamp(factor + 0.4, 0, 1));
 				},
 				rotation() {
 					return Time.date.fractionOfDay * 360;

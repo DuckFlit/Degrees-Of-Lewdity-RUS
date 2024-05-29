@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 /**
  * Sky gradient effect, simulating transitions between different times of day
  */

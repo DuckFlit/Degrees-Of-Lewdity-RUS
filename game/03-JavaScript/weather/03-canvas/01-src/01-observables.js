@@ -45,7 +45,7 @@ Weather.Observables = (() => {
 	Object.keys(setup.WeatherBindings).forEach(key => (observables[key] = new ObservableValue(null)));
 
 	const setBindings = () => {
-		if (Weather.sky?.loaded.value) Weather.sky.updateTooltip();
+		if (Weather.sky?.loaded.value) Weather.Tooltips.skybox();
 		Object.entries(setup.WeatherBindings).forEach(([key, config]) => {
 			const value = config.variable();
 			observables[key].value = value;
@@ -58,7 +58,7 @@ Weather.Observables = (() => {
 				if (value === undefined) return;
 				if (config.layers.includes("all")) {
 					scheduler.scheduleUpdate("all", async () => {
-						Weather.sky.updateTooltip();
+						Weather.Tooltips.skybox();
 						Weather.sky.updateOrbits();
 						Weather.sky.drawLayers();
 					});
@@ -74,7 +74,7 @@ Weather.Observables = (() => {
 		});
 	};
 
-	$(document).on(":passageend", () => { // todo one
+	$(document).one(":passageend", () => {
 		setBindings();
 		Object.keys(observables).forEach(key => {
 			changedKeys.set(key, observables[key].value);

@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 Weather.Renderer.Layers.add({
 	name: "moon",
 	zIndex: 3, // zIndex value

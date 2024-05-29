@@ -1,14 +1,4 @@
-/* eslint-disable no-undef */
-/* eslint-disable no-unused-vars */
-/*
-
-- Add function:
-	- Only use winter-images after it has snowed once
-	- if it melts (at least 5 hours of warm temperature) back to normal images until it snow again
-*/
-
 const Weather = (() => {
-	const _activeRenderer = {};
 	/* Helper functions */
 
 	function generateKeyPoints({ date, minKeys, maxKeys, timeApart, rangeValue, totalSteps }) {
@@ -37,7 +27,7 @@ const Weather = (() => {
 	 * sunBlockModifier (based on used sun block)
 	 * dayFactor (based on sun position in the sky) - always 0 at night
 	 *
-	 * @param {bool} outside Forces outside check
+	 * @param {boolean} outside Forces outside check
 	 * @param {number} customSunIntensity If this is set - the calculations replaces the sun intensity with a specified one.
 	 */
 	function getTanningFactor(outside, customSunIntensity = 0) {

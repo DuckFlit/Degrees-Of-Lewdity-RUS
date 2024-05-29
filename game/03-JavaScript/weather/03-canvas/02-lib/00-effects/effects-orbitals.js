@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 /**
  * Renders an orbital object, such as the sun or moon, at a specified position.
  * Changes position on draw() based on the position binding.

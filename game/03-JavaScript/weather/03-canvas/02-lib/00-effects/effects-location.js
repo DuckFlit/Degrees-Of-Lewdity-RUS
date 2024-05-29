@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 Weather.Renderer.Effects.add({
 	name: "locationImage",
 	effects: [
@@ -231,10 +230,10 @@ Weather.Renderer.Effects.add({
 				const exponentialFactor = Math.pow(y / this.distortionCanvas.element.height, this.verticalFactor); // More pronounced exponential factor for amplitude
 				const adjustedFrequency = this.waveFrequency * (1 - exponentialFactor);
 				const amplitude = this.amplitude * exponentialFactor; // Amplitude increases exponentially
-		
+
 				// Introduce a vertical shift for the animation effect
 				const verticalShift = (frame * this.verticalSpeed * this.verticalDirection) % this.distortionCanvas.element.height;
-		
+
 				const basePhase = ((y + verticalShift) * adjustedFrequency) % (2 * Math.PI);
 				const totalSineValue = Math.sin(basePhase) * amplitude;
 				sines.push(totalSineValue);

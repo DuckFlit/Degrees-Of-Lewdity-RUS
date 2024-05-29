@@ -887,7 +887,6 @@ function settingsObjects(type) {
 					randomize: "characterTrait",
 				},
 				gamemode: { strings: ["normal", "soft", "hard"], displayName: "Game difficulty:" },
-				startingseason: { strings: ["autumn", "winter", "spring", "summer", "random"], displayName: "Starting season:", randomize: "gameplay" },
 				ironmanmode: { bool: false, displayName: "Ironman mode:" },
 				player: {
 					gender: {
