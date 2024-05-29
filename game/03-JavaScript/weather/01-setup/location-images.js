@@ -1656,6 +1656,14 @@ setup.LocationImages = {
 			},
 		},
 	},
+	sewers: {
+		folder: "sewers",
+		base: {
+			default: {
+				image: "base.png",
+			},
+		},
+	},
 	pirate_ship: {
 		folder: "pirate_ship",
 		base: {
@@ -2012,17 +2020,30 @@ setup.LocationImages = {
 			},
 		},
 	},
-	// wolf_cave: {
-	// 	folder: "wolf_cave",
-	// 	base: {
-	// 		default: {
-	// 			condition: () => !Weather.isSnow,
-	// 			image: "base.png",
-	// 		},
-	// 		snow: {
-	// 			condition: () => Weather.isSnow,
-	// 			image: "snow.png",
-	// 		},
-	// 	},
-	// },
+	underground: {
+		folder: "underground",
+		base: {
+			default: {
+				condition: () => !Weather.isSnow,
+				image: "base.png",
+			},
+			snow: {
+				condition: () => Weather.isSnow,
+				image: "snow.png",
+			},
+		},
+	},
+	wolf_cave: {
+		folder: "wolf_cave",
+		base: {
+			default: {
+				condition: () => !Weather.isSnow,
+				image: "base.png",
+			},
+			snow: {
+				condition: () => Weather.isSnow,
+				image: "snow.png",
+			},
+		},
+	},
 };
