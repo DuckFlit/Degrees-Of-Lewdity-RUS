@@ -1204,6 +1204,9 @@ function dailyNPCEffects() {
 	if (C.npc["Great Hawk"].init === 1) {
 		delete V.bird.satisfied;
 		if (V.bird.injured > 1) V.bird.injured--;
+		if (V.birdSilverHuntCooldown) {
+			V.birdSilverHuntCooldown--;
+		}
 	}
 
 	// Wraith
