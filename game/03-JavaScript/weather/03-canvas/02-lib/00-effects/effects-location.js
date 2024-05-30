@@ -127,8 +127,10 @@ Weather.Renderer.Effects.add({
 		defaultHorizon: 40,
 		defaultBlur: 0.7,
 		defaultAlpha: 0.7,
+		defaultOverlayAlpha: 0.7,
 		defaultContrast: 0.9,
 		defaultCompositeOperation: "source-over",
+		defaultOverlayCompositeOperation: "source-over",
 		defaultWaveFrequency: 2, // Frequency of the curve
 		defaultAmplitude: 40, // Amplitude of the curve
 		defaultWaveShiftFactor: 0.06, // Affects the amplitude
@@ -207,7 +209,8 @@ Weather.Renderer.Effects.add({
 		this.distortionCanvas = new BaseCanvas(this.canvas.element.width, this.canvas.element.height);
 
 		this.horizon = resolveValue(obj.horizon, this.defaultHorizon) * this.renderInstance.settings.scale;
-		this.overlayAlpha = resolveValue(obj.alpha, this.defaultAlpha);
+		this.overlayAlpha = resolveValue(obj.alpha, this.defaultOverlayAlpha);
+		this.overlayCompositeOperation = resolveValue(obj.compositeOperation, this.defaultOverlayCompositeOperation);
 		this.blur = resolveValue(obj.blur, this.defaultBlur);
 		this.contrast = resolveValue(obj.contrast, this.defaultContrast);
 		this.waveShiftFactor = resolveValue(obj.waveShiftFactor, this.defaultWaveShiftFactor);
@@ -263,26 +266,8 @@ Weather.Renderer.Effects.add({
 		this.locationCanvas.reset();
 		this.distortionMask.reset();
 		this.distortionCanvas.reset();
-
-		// Draw the background canvas, then flip it upside down, and only draw it on top of the reflection map
 		this.locationCanvas.drawImage(canvas.element);
 		this.locationCanvas.drawImage(locationLayer.element);
-		this.reflectionCanvas.ctx.save();
-		this.reflectionCanvas.ctx.filter = `blur(${this.blur}px) contrast(${this.contrast})`;
-		this.reflectionCanvas.ctx.globalCompositeOperation = "source-over";
-		this.reflectionCanvas.ctx.scale(1, -1);
-		this.reflectionCanvas.ctx.drawImage(
-			this.locationCanvas.element,
-			0,
-			canvas.element.height - this.horizon * 2,
-			this.reflectionCanvas.element.width,
-			this.horizon,
-			0,
-			-canvas.element.height,
-			this.reflectionCanvas.element.width,
-			this.horizon
-		);
-		this.reflectionCanvas.ctx.restore();
 
 		this.effects[2].draw();
 		this.effects[1].draw();
@@ -312,6 +297,25 @@ Weather.Renderer.Effects.add({
 				drawCanvas.ctx.restore();
 			},
 		});
+
+		// Draw the background canvas, then flip it upside down, and only draw it on top of the reflection map
+		this.reflectionCanvas.ctx.save();
+		this.reflectionCanvas.ctx.filter = `blur(${this.blur}px) contrast(${this.contrast})`;
+		this.reflectionCanvas.ctx.globalCompositeOperation = this.overlayCompositeOperation;
+		this.reflectionCanvas.ctx.globalAlpha = this.overlayAlpha;
+		this.reflectionCanvas.ctx.scale(1, -1);
+		this.reflectionCanvas.ctx.drawImage(
+			this.locationCanvas.element,
+			0,
+			canvas.element.height - this.horizon * 2,
+			this.reflectionCanvas.element.width,
+			this.horizon,
+			0,
+			-canvas.element.height,
+			this.reflectionCanvas.element.width,
+			this.horizon
+		);
+		this.reflectionCanvas.ctx.restore();
 
 		// Draw the reflection below the distortion first, in case of transparent pixels
 		this.distortionCanvas.drawImage(this.reflectionCanvas.element);

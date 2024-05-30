@@ -32,6 +32,7 @@ interface EmissiveSetting {
     animation?: string | AnimationSetting;
     color?: string;
     size?: number;
+    blur?: number;
     strength?: number;
     intensity?: number | (() => number);
 }
@@ -47,6 +48,11 @@ interface MaskSetting {
 	horizon?: number | (() => number);
 	waveShiftFactor?: number | (() => number);
 	animationCondition?: boolean | (() => boolean);
+	verticalDirection?: number | (() => number);
+	verticalFactor?: number | (() => number);
+	verticalSpeed?: number | (() => number);
+	amplitude?: number | (() => number);
+	frequency?: number | (() => number);
 }
 
 interface ReflectiveProperty {
@@ -54,6 +60,7 @@ interface ReflectiveProperty {
 	condition?: boolean | (() => boolean);
     alpha?: number | (() => number);
     gradientMask?: boolean | (() => boolean);
+    alwaysDisplay?: boolean | (() => boolean);
 	compositeOperation?: string | (() => string);
 	animation?: string | AnimationSetting;
 }

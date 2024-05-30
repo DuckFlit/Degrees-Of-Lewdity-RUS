@@ -138,6 +138,9 @@ const Weather = (() => {
 		get type() {
 			return Weather.WeatherGeneration.getWeather().defines;
 		},
+		get value() {
+			return Weather.WeatherGeneration.getWeather().defines.value;
+		},
 		get isOvercast() {
 			return V.weatherObj.overcast > 0.5;
 		},

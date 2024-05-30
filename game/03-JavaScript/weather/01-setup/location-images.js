@@ -165,6 +165,19 @@ setup.LocationImages = {
 				size: 5,
 			},
 		},
+		reflective: {
+			mask: {
+				image: "reflective.png",
+				verticalFactor: 3.5,
+				amplitude: 35,
+				verticalSpeed: 0.05,
+			},
+			overlay: {
+				image: "water.png",
+				compositeOperation: "overlay",
+				alpha: 0.4,
+			},
+		},
 	},
 	asylum: {
 		folder: "asylum",
@@ -271,13 +284,12 @@ setup.LocationImages = {
 			overlay: {
 				image: "water.png",
 				compositeOperation: () => (Weather.isSnow ? "screen" : "overlay"),
-				alpha: () => (V.weatherObj.snow > 400 ? 0.5 : 0.4),
+				alpha: () => (V.weatherObj.snow > 450 ? 0.5 : 0.4),
 			},
-			
 		},
 		layerTop: {
 			snow: {
-				condition: () => V.weatherObj.snow > 400,
+				condition: () => V.weatherObj.snow > 450,
 				image: "snow.png",
 			},
 		},
@@ -293,14 +305,31 @@ setup.LocationImages = {
 				condition: () => Weather.isSnow,
 				image: "snow.png",
 			},
+			foam: {
+				image: "waves.png",
+				animation: {
+					frameDelay: 200,
+					cycleDelay: () => 1000,
+				},
+			},
 		},
 		reflective: {
 			mask: {
 				image: "reflective.png",
-				alpha: 0.7,
+				verticalFactor: 3.5,
+				amplitude: 35,
+			},
+			waves: {
+				image: "waves.png",
+				alpha: 0.5,
+				alwaysDisplay: false,
+				compositeOperation: "overlay",
+				animation: "foam",
 			},
 			overlay: {
 				image: "water.png",
+				compositeOperation: "overlay",
+				alpha: 0.4,
 			},
 		},
 		layerTop: {
@@ -308,7 +337,7 @@ setup.LocationImages = {
 				image: "tree.png",
 				animation: {
 					frameDelay: 350,
-					cycleDelay: () => 2500,
+					cycleDelay: () => 3250,
 				},
 			},
 		},
@@ -407,9 +436,18 @@ setup.LocationImages = {
 			color: "#deae66",
 			strength: 2,
 		},
-		// reflective: {
-		// 	image: "reflective.png",
-		// },
+		reflective: {
+			mask: {
+				image: "reflective.png",
+				verticalFactor: 3.5,
+				amplitude: 35,
+			},
+			overlay: {
+				image: "water.png",
+				compositeOperation: "overlay",
+				alpha: 0.5,
+			},
+		},
 	},
 	cafe_construction: {
 		folder: "cafe_construction",
@@ -429,9 +467,18 @@ setup.LocationImages = {
 			color: "#deae66",
 			strength: 2,
 		},
-		// reflective: {
-		// 	image: "reflective.png",
-		// },
+		reflective: {
+			mask: {
+				image: "reflective.png",
+				verticalFactor: 3.5,
+				amplitude: 35,
+			},
+			overlay: {
+				image: "water.png",
+				compositeOperation: "overlay",
+				alpha: 0.5,
+			},
+		},
 	},
 	cafe_renovated: {
 		folder: "cafe_renovated",
@@ -445,9 +492,18 @@ setup.LocationImages = {
 				image: "snow.png",
 			},
 		},
-		// reflective: {
-		// 	image: "reflective.png",
-		// },
+		reflective: {
+			mask: {
+				image: "reflective.png",
+				verticalFactor: 3.5,
+				amplitude: 35,
+			},
+			overlay: {
+				image: "water.png",
+				compositeOperation: "overlay",
+				alpha: 0.5,
+			},
+		},
 	},
 	canal: {
 		folder: "canal",
@@ -455,18 +511,6 @@ setup.LocationImages = {
 			default: {
 				condition: () => !Weather.isSnow,
 				image: "base.png",
-			},
-			snow: {
-				condition: () => Weather.isSnow,
-				image: "snow.png",
-			},
-			water: {
-				condition: () => !Weather.isSnow,
-				image: "water.png",
-				animation: {
-					frameDelay: 1000,
-					cycleDelay: () => 0,
-				},
 			},
 			drip: {
 				condition: () => Weather.isSnow,
@@ -477,9 +521,25 @@ setup.LocationImages = {
 				},
 			},
 		},
-		// reflective: {
-		// 	image: "reflective.png",
-		// },
+		reflective: {
+			mask: {
+				image: "reflective.png",
+				verticalSpeed: 0.1,
+				verticalFactor: 3,
+				amplitude: 6,
+			},
+			overlay: {
+				image: "water.png",
+				condition: () => !Weather.isSnow,
+				compositeOperation: "overlay",
+				alpha: 0.5,
+			},
+			snow: {
+				condition: () => Weather.isSnow,
+				image: "snow.png",
+				alpha: 0.9,
+			},
+		},
 	},
 	churchyard: {
 		folder: "churchyard",
@@ -613,10 +673,37 @@ setup.LocationImages = {
 		reflective: {
 			mask: {
 				image: "reflective.png",
-				alpha: 0.2,
+				verticalFactor: 4,
+				amplitude: 20,
+				frequency: 15,
 			},
 			overlay: {
 				image: "water.png",
+				compositeOperation: "overlay",
+				alpha: 0.4,
+			},
+			waves: {
+				condition: () => Weather.value >= 3, // light precipitation or above
+				image: "waves.png",
+				alpha: 0.8,
+				alwaysDisplay: false,
+				compositeOperation: "overlay",
+				animation: {
+					frameDelay: 200,
+					cycleDelay: () => 1000,
+				},
+			},
+			waves2: {
+				image: "waves.png",
+				condition: () => Weather.value >= 4, // heavy precipitation or above
+				alpha: 0.8,
+				alwaysDisplay: false,
+				compositeOperation: "overlay",
+				animation: {
+					startDelay: 3000,
+					frameDelay: 200,
+					cycleDelay: () => 1000,
+				},
 			},
 		},
 	},
@@ -971,18 +1058,18 @@ setup.LocationImages = {
 				image: "base.png",
 			},
 		},
-		// reflective: {
-		// 	mask: {
-		// 		image: "reflective.png",
-		// 	},
-		// 	overlay: {
-		// 		image: "water.png",
-		// 		animation: {
-		// 			frameDelay: 500,
-		// 			cycleDelay: () => 500,
-		// 		},
-		// 	},
-		// },
+		reflective: {
+			mask: {
+				image: "reflective.png",
+				verticalDirection: 1,
+			},
+			overlay: {
+				image: "water.png",
+				animation: {
+					frameDelay: 500,
+				},
+			},
+		},
 	},
 	kylar_manor: {
 		folder: "kylar_manor",
@@ -1069,6 +1156,7 @@ setup.LocationImages = {
 				image: "reflective.png",
 				horizon: 18,
 				blur: 0.4,
+				verticalDirection: 1,
 			},
 			water: {
 				condition: () => !Weather.isFrozen("lake"),
@@ -1112,14 +1200,6 @@ setup.LocationImages = {
 					cycleDelay: () => 5000,
 				},
 			},
-			water: {
-				condition: () => !Weather.bloodMoon,
-				image: "water.png",
-				animation: {
-					frameDelay: 1000,
-					cycleDelay: () => 0,
-				},
-			},
 			bloodmoon: {
 				condition: () => Weather.bloodMoon && Weather.isSnow,
 				image: "bloodmoon.png",
@@ -1145,11 +1225,21 @@ setup.LocationImages = {
 				color: "#e63e3e",
 			},
 		},
-		// reflective: {
-		// 	default: {
-		// 		condition: () => !Weather.bloodMoon,
-		// 		image: "reflective.png",
-		// 	},
+		reflective: {
+			mask: {
+				condition: () => !Weather.bloodMoon,
+				image: "reflective.png",
+			},
+			water: {
+				condition: () => !Weather.bloodMoon,
+				image: "water.png",
+				alpha: 0.5,
+				animation: {
+					frameDelay: 1000,
+					cycleDelay: () => 0,
+				},
+			},
+		},
 		// 	bloodMoon: {
 		// 		condition: () => Weather.bloodMoon,
 		// 		image: "reflective_blood.png",
@@ -1631,10 +1721,11 @@ setup.LocationImages = {
 		reflective: {
 			mask: {
 				image: "reflective.png",
+				alpha: 1,
+				compositeOperation: "overlay"
 			},
 			overlay: {
 				image: "water.png",
-				compositeOperation: "overlay",
 				alpha: 0.4,
 				animation: {
 					slider: () => V.options.reflections,
@@ -1646,7 +1737,7 @@ setup.LocationImages = {
 				condition: () => V.options.reflections,
 				image: "glimmer.png",
 				compositeOperation: "soft-light",
-				alpha: 1,
+				alpha: 0.5,
 				gradientMask: true,
 				animation: {
 					slider: true,
@@ -1671,23 +1762,23 @@ setup.LocationImages = {
 				condition: () => !Weather.isSnow,
 				image: "base.png",
 				animation: {
-					frameDelay: 200,
-					cycleDelay: () => 5000,
+					frameDelay: 250,
+					//cycleDelay: () => 5000,
 				},
 			},
 			snow: {
 				condition: () => Weather.isSnow,
 				image: "snow.png",
 				animation: {
-					frameDelay: 200,
-					cycleDelay: () => 5000,
+					frameDelay: 250,
+					//cycleDelay: () => 5000,
 				},
 			},
 		},
 		emissive: {
 			image: "emissive.png",
 			condition: () => Weather.lightsOn,
-			animation: "base",
+			animation: "default",
 			color: "#deae66",
 		},
 	},
