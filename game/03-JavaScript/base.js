@@ -500,7 +500,7 @@ function weightedRandom(...options) {
 		return [value, totalWeight];
 	});
 
-	const random = Math.random() * totalWeight;
+	const random = State.random() * totalWeight;
 	for (const [value, cumulativeWeight] of processedOptions) {
 		if (cumulativeWeight >= random) {
 			return value;
@@ -510,6 +510,24 @@ function weightedRandom(...options) {
 	return options[0][0];
 }
 window.weightedRandom = weightedRandom;
+
+/**
+ * Resolves the provided value by checking if it is a function or a direct value.
+ * If the value is a function, the function is invoked and its result is returned.
+ * If it is not a function, the value itself is returned.
+ * If the value is undefined, a specified default value is returned instead.
+ * 
+ * @param {Function|any} value The value to resolve, which can be a function or any value
+ * @param {number} defaultValue The default value to use if the provided value is undefined
+ * @returns {number} The resolved value, either from the function call or directly
+ */
+function resolveValue(value, defaultValue = undefined) {
+	if (typeof value === "function") {
+		return value();
+	}
+	return value ?? defaultValue;
+}
+window.resolveValue = resolveValue;
 
 /**
  * This macro sets $rng. If the variable $rngOverride is set, $rng will always be set to that.

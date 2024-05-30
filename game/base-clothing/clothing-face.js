@@ -1,4 +1,17 @@
-/* For any item that has a colour_combat tag, set it to 0 if that item ever gets its own combat sprites. */
+/* For any item that has a colour_combat tag, set it to 0 if that item ever gets its own combat sprites.
+
+Warmth checklist:
+	Base: 0
+	Covers mouth: +1
+	Covers eyes: +1
+
+	Materials
+	Thin: -1
+	Normal: 0
+	Thick: +1
+
+	Max warmth: 3
+*/
 function initFace() {
 	setup.clothes.face = [
 		{
@@ -107,7 +120,7 @@ function initFace() {
 			colour_sidebar: 1,
 			type: ["mask", "covered"],
 			gender: "n",
-			warmth: 10,
+			warmth: 1,
 			cost: 2000,
 			description: "Hides your identity.",
 			shop: ["clothing", "adult"],
@@ -163,7 +176,7 @@ function initFace() {
 			colour_combat: 0,
 			type: ["fetish", "blindfold"],
 			gender: "n",
-			warmth: 0,
+			warmth: 1,
 			cost: 2000,
 			description: "Keeps you in the dark.",
 			shop: [""],
@@ -191,7 +204,7 @@ function initFace() {
 			colour_combat: 0,
 			type: ["fetish", "gag", "blindfold"],
 			gender: "n",
-			warmth: 0,
+			warmth: 1,
 			cost: 3000,
 			description: "Keeps your mouth shut and eyes covered.",
 			shop: [""],
@@ -219,7 +232,7 @@ function initFace() {
 			colour_combat: 0,
 			type: ["mask", "stealthy"],
 			gender: "n",
-			warmth: 0,
+			warmth: 1,
 			cost: 23000,
 			description: "For those up to no good.",
 			shop: ["clothing", "adult"],
@@ -555,7 +568,7 @@ function initFace() {
 			colour_combat: "white",
 			type: ["costume"],
 			gender: "n",
-			warmth: 10,
+			warmth: 1,
 			cost: 500,
 			description: "Feels like it's made from toilet paper.",
 			shop: ["forest"],
@@ -583,7 +596,7 @@ function initFace() {
 			colour_sidebar: 1,
 			type: ["swim", "diving"],
 			gender: "n",
-			warmth: 10,
+			warmth: 1,
 			cost: 1500,
 			description: "For keeping your vision clear down below.",
 			shop: ["clothing"],
@@ -615,7 +628,7 @@ function initFace() {
 			colour_combat: 0,
 			type: ["dance"],
 			gender: "n",
-			warmth: 10,
+			warmth: 0,
 			cost: 8000,
 			description: "Exotic and enticing.",
 			shop: ["forest"],
@@ -730,7 +743,7 @@ function initFace() {
 			colour_combat: 0,
 			type: ["fetish", "gag"],
 			gender: "n",
-			warmth: 0,
+			warmth: 1,
 			cost: 8000,
 			description: "Keeps your mouth shut.",
 			shop: [],
@@ -759,7 +772,7 @@ function initFace() {
 			colour_combat: 0,
 			type: ["fetish", "gag"],
 			gender: "n",
-			warmth: 0,
+			warmth: 1,
 			cost: 8000,
 			description: "Keeps your mouth shut.",
 			shop: [],
@@ -788,7 +801,7 @@ function initFace() {
 			colour_combat: 0,
 			type: ["fetish", "gag"],
 			gender: "n",
-			warmth: 0,
+			warmth: 1,
 			cost: 500,
 			description: "Keeps your mouth shut.",
 			shop: [],
@@ -901,7 +914,7 @@ function initFace() {
 			colour_combat: 0,
 			type: ["costume", "mask"],
 			gender: "n",
-			warmth: 0,
+			warmth: 1,
 			cost: 2500,
 			description: "For when you've a bone to pick.",
 			shop: ["forest"],
@@ -958,7 +971,7 @@ function initFace() {
 			colour_combat: 0,
 			type: ["mask", "covered", "costume"],
 			gender: "n",
-			warmth: 10,
+			warmth: 3,
 			cost: 20000,
 			description: "Hides your identity, but may earn you some strange looks.",
 			shop: ["clothing"],
@@ -1050,7 +1063,7 @@ function initFace() {
 			colour_combat: 0,
 			type: ["gag", "fetish", "covered"],
 			gender: "n",
-			warmth: 0,
+			warmth: 1,
 			cost: 16000,
 			description: "Keeps your dangerous mouth shut.",
 			shop: ["adult"],
@@ -1139,7 +1152,7 @@ function initFace() {
 			type: ["mask", "covered", "costume"],
 			colour_combat: 0,
 			gender: "n",
-			warmth: 25,
+			warmth: 2,
 			cost: 5000,
 			description: "Worn by the islanders.",
 			shop: ["forest"],
@@ -1199,7 +1212,7 @@ function initFace() {
 			colour_combat: 0,
 			type: ["mask", "covered"],
 			gender: "n",
-			warmth: 0,
+			warmth: 1,
 			cost: 500,
 			description: "Hides your identity.",
 			shop: ["clothing"],

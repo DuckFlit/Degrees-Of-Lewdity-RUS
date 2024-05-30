@@ -9,12 +9,15 @@
 
 <<widget "eventAmbient">>
 	<<cleareventpool>>
-	<<switch (Time.season + $weather)>>
-		<<case "wintersnow" "winterrain" "winterovercast" "winterclear" "autumnsnow" "summersnow" "springsnow">>
+	<<set $_weatherFlag to Weather.isSnow && Time.season === "winter" || Weather.precipitation is "snow" ? "snow" : Weather.precipitation === "rain" ? "rain" : Time.season>>
+	<<switch ($_weatherFlag)>>
+		<<case "snow">>
 			<<if Time.season is "winter">>
+				<<if Weather.isFreezing>>
 				<<addinlineevent "winter_anywhere_1">>
 					A brutally cold wind surges. You hug yourself for warmth until it dies down. <<stress 3>><<gstress>>
 				<</addinlineevent>>
+				<</if>>
 				<<addinlineevent "winter_anywhere_2" 0.5>>
 					<<dancedifficulty 1 1000 true>>
 					You step into some snow that was deeper than you first thought,
@@ -189,7 +192,7 @@
 					<<default>>
 				<</switch>>
 			<</if>>
-			<<if $weather is "snow">>
+			<<if Weather.precipitation is "snow">>
 				<<addinlineevent "snow_anywhere_1">>
 					A single snowflake lands softly on the tip of your nose. You stop to regard it with wonder for a few moments. <<stress -1>><<lstress>>
 				<</addinlineevent>>
@@ -328,7 +331,7 @@
 					<<default>>
 				<</switch>>
 			<</if>>
-		<<case "autumnrain" "summerrain" "springrain">>
+		<<case "rain">>
 			<<addinlineevent "rain_anywhere_1">>
 				Thunder rumbles in the distance. <<stress 1>><<gstress>>
 			<</addinlineevent>>
@@ -486,7 +489,7 @@
 					<</if>>
 				<<default>>
 			<</switch>>
-		<<case "autumnclear" "autumnovercast">>
+		<<case "autumn" "winter">>
 			<<addinlineevent "autumn_anywhere_1">>
 				A surge of wind sends leaves swirling in a circle around you. You feel a sense of calm as you stand in the eye of the storm, before the wind dies down again. <<stress -3>><<lstress>>
 			<</addinlineevent>>
@@ -550,9 +553,11 @@
 						<</addinlineevent>>
 					<</if>>
 				<<case "park">>
-					<<addinlineevent "autumn_park_1">>
-						You look out over the park and marvel at the various colours of autumn. <<stress -3>><<lstress>>
-					<</addinlineevent>>
+					<<if Time.season is "autumn">>
+						<<addinlineevent "autumn_park_1">>
+							You look out over the park and marvel at the various colours of autumn. <<stress -3>><<lstress>>
+						<</addinlineevent>>
+					<</if>>
 					<<if Time.hour gte 6 and Time.hour lt 21>>
 						<<addinlineevent "autumn_park_2">>
 							You watch as a couple takes turns leaping into a pile of leaves. <<stress -3>><<lstress>>
@@ -602,7 +607,7 @@
 					<</addinlineevent>>
 				<<default>>
 			<</switch>>
-		<<case "summerclear" "summerovercast">>
+		<<case "summer">>
 			<<addinlineevent "summer_anywhere_1">>
 				<<if Time.hour gte 6 and Time.hour lt 21>>
 					The brutal summer heat weighs down on you. <<stress 3>><<gstress>>
@@ -739,7 +744,7 @@
 					<</if>>
 				<<default>>
 			<</switch>>
-		<<case "springclear" "springovercast">>
+		<<case "spring">>
 			<<addinlineevent "spring_anywhere_1">>
 				A gentle spring breeze caresses your face. <<stress -3>><<lstress>>
 			<</addinlineevent>>

@@ -1069,7 +1069,7 @@ The packaging said to wait 3 minutes, but it feels like an eternity passes. <<gs
 <</if>>
 
 You strip and lie down.
-<<set _pregnancy to getPregnancyObject()>>
+<<set [_pregnancy, _pregnancyGenital] to getPregnancyObject("pc", true)>>
 <<if _pregnancy.timer lte _pregnancy.timerEnd * 0.3>>
 	<<set _pregnancy.awareOfMultiple to true>>
 	"I'm afraid you're not far enough along for an abdominal ultrasound," Doctor Harper remarks. "But we can use the doppler to listen for cardiac activity."
@@ -1140,8 +1140,12 @@ You strip and lie down.
 				<<set _gender to "hermaphrodite">>
 		<</switch>>
 	<</if>>
-	<<if _pregnancy.type isnot "human" and _pregnancy.fetus[0].monster>>
-		<<set _type to _pregnancy.fetus[0].type + "person">>
+	<<if _pregnancy.type isnot "human" and _pregnancy.fetus[0].features.monster>>
+		<<if _pregnancy.type is "hawk">>
+			<<set _type to "harpy">>
+		<<else>>
+			<<set _type to _pregnancy.fetus[0].type + "person">>
+		<</if>>
 	<<else>>
 		<<set _type to _pregnancy.fetus[0].type>>
 	<</if>>
@@ -1380,6 +1384,69 @@ You strip and lie down.
 			<<else>>
 			/* Shouldn't get here. */
 			<</if>>
+		<<case "hawk">>
+			<<if !_pregnancy.awareOfDetails>>
+				"I'd like to congratulate you," <<he>> starts as <<he>> turns to you. "You're lucky to carry a very unusual pregnancy. Instead of a human child, <span class="lewd">you're pregnant with
+				<<if _multiple>>
+					a... clutch of bird eggs.
+				<<else>>
+					a... bird egg.
+				<</if>>
+				</span>Remarkable."
+				<br><br>
+
+				<<if _pregnancyGenital is "vagina">>
+					<<He>> clears <<his>> throat. "It appears that, rather than releasing an egg cell, a runaway reaction within your ovaries has caused a cluster of cells to gel into a sort of membrane, becoming larger eggs. They've already passed through your oviduct, and sit within your uterus."
+					<br><br>
+				<</if>>
+				Harper smiles at you. "There's nothing to worry about, your <<if _multiple>>children are<<else>>child is<</if>> in perfectly good health. Would you like to see?"
+			<<else>>
+				<<He>> at last turns to you. "Would you like to see?"
+			<</if>>
+			<<He>> swings the monitor to face you.
+			<br><br>
+
+			You see <<if _multiple>><<number _pregnancy.fetus.length>> hard outlines, each containing a pair of eyes, legs,<<if _type is "harpy">> arms,<</if>> and tiny wings.<<else>>a hard outline, containing a pair of eyes, legs,<<if _type is "harpy">> arms,<</if>> and tiny wings.<</if>> It's a little hard to make out because of the egg shell, but you manage to see more as the doctor moves the wand across your full belly. <<stress -5>><<lstress>>
+			<br><br>
+
+			<<if !_pregnancy.genderKnown>>
+				"Unfortunately, the hardening shell is making it nearly impossible to tell the gender. I suspect you won't have to wait too long to find out for yourself, though." <<He>> continues moving the wand, trying to get a better angle, but the picture is too small and distorted.
+				<br><br>
+			<</if>>
+			<<if _pregnancy.timer gte _pregnancy.timerEnd * 0.8>>
+				<<if ! _multiple>>
+					"Good news," <<he>> continues. "Your <<if _pregnancyGenital is "vagina">>oviduct is expanding, in preparation for the egg<<if _multiple>>s<</if>> to pass through.<<else>>egg<<if _multiple>>s are<<else>> is<</if>> starting to move in preparation for laying.<</if>>"
+				<</if>>
+				It'll be time to deliver soon. The doctor hands you some literature about labour, and what to do when it begins. There's nothing in it about birds or eggs, though. "The laying process should be something you can do at home. However, don't hesitate to come see us if you have further questions."
+				<br><br>
+			<<elseif _pregnancy.timer gte _pregnancy.timerEnd * 0.6>>
+				You feel a low rumble from within yourself. "Based on these measurements," the technician says, "You'll be full term very soon. We think. It's very hard to tell with a... non-human pregnancy. Have you made birth plans yet? Make sure you're getting rest and nutrition."
+				<br><br>
+				You know you'll need rest. You think about where to keep them. A nest? <<if _pregnancy.fetus[0].father is "Great Hawk">>The castle's tower comes to mind.<</if>>
+				<br><br>
+			<<elseif _pregnancy.timer gte _pregnancy.timerEnd * 0.4>>
+			/* 16-24 weeks */
+				<<if _multiple>>
+					"Your ba... eggs, are doing fine," the doctor says. "They are responsive and moving well. There's ample fluid, so it should be a normal pregnancy. As normal as a pregnancy like this can be."
+					<<llstress>> <<stress -8>>
+					<br><br>
+				<<else>>
+					"Your egg is doing great. The baby inside is responsive and moving well," the doctor says. "There's ample fluid, so it should be a normal pregnancy. As normal as a pregnancy like this can be."
+					<<llstress>> <<stress -8>>
+					<br><br>
+				<</if>>
+			<<elseif _pregnancy.timer gte _pregnancy.timerEnd * 0.3>>
+				<<if _multiple>>
+					"Your eggs are healthy," the doctor says. "They are responsive, and moving well. There's ample fluid, so it should be a normal pregnancy. As normal as a pregnancy like this can be."<<llstress>><<stress -8>>
+					<br><br>
+				<<else>>
+					"Your egg is healthy," the doctor says. "It is responsive, and moving well. There's ample fluid, so it should be a normal pregnancy. As normal as a pregnancy like this can be."<<llstress>><<stress -8>>
+					<br><br>
+				<</if>>
+				<br><br>
+			<<else>>
+			/* Shouldn't get here. */
+			<</if>>		
 		<<default>>
 	<</switch>>
 	<<makeAwareOfDetails>>

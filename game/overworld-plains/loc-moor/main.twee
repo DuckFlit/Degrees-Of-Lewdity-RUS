@@ -44,42 +44,42 @@
 <<if $moor is 10>>
 	You're stood outside a farm, surrounded by tall fences. A sign beside the entrance reads: "Remy estate."
 <</if>>
-<<if Time.dayState is "night">>
-	<<if $weather is "rain">>
+<<if Weather.dayState is "night">>
+	<<if Weather.precipitation is "rain">>
 		Black rain pours from the heavens.
-	<<elseif $weather is "snow">>
+	<<elseif Weather.isSnow>>
 		Dark snow smothers the plains.
-	<<elseif $weather is "clear">>
+	<<elseif !Weather.isOvercast>>
 		The stars are clear, so far from artificial light.
 	<<else>>
 		Darkness blankets the plains.
 	<</if>>
-<<elseif Time.dayState is "dusk">>
-	<<if $weather is "rain">>
+<<elseif Weather.dayState is "dusk">>
+	<<if Weather.precipitationr is "rain">>
 		Evening sunlight glimmers off pools, agitated by the rain.
-	<<elseif $weather is "snow">>
+	<<elseif Weather.precipitation is "snow">>
 		Snow settles for the night.
-	<<elseif $weather is "clear">>
+	<<elseif !Weather.isOvercast>>
 		The sun dips beneath a hillock.
 	<<else>>
 		Oppressive clouds descend.
 	<</if>>
-<<elseif Time.dayState is "dawn">>
-	<<if $weather is "rain">>
+<<elseif Weather.dayState is "dawn">>
+	<<if Weather.precipitation is "rain">>
 		The dawn's sun glimmers off pools, agitated by the rain.
-	<<elseif $weather is "snow">>
+	<<elseif Weather.isSnow>>
 		A blanket of snow reflects the dawn's light.
-	<<elseif $weather is "clear">>
+	<<elseif !Weather.isOvercast>>
 		The sun rises over hillocks.
 	<<else>>
 		Fog hangs in the valleys.
 	<</if>>
 <<else>>
-	<<if $weather is "rain">>
+	<<if Weather.precipitation is "rain">>
 		There are few places to hide from the rain.
-	<<elseif $weather is "snow">>
+	<<elseif Weather.isSnow>>
 		A sheet of snow covers everything.
-	<<elseif $weather is "clear">>
+	<<elseif !Weather.isOvercast>>
 		The sun feels weaker, pale and cold.
 	<<else>>
 		The clouds hang low, bathing the hilltops in fog.
@@ -118,11 +118,11 @@
 		<<orgasmLocation "moor">>
 	<</if>>
 	<<if $moor gte 100>>
-		<<mooricon "tower">><<link [[Enter the castle (0:10)|Castle]]>><<pass 10>><</link>>
+		<<birdicon "tower">><<link [[Enter the castle (0:10)|Castle]]>><<pass 10>><</link>>
 		<br><br>
 	<</if>>
 	<<if $moor gte 80 and $moor lte 90 and $bogProgress gte 1>>
-		<<foresticon "bog">><<link [[Enter the bog (0:15)|Bog]]>><<pass 15>><<set $bogdepth to 1>><<set $bogwater to 0>><</link>>
+		<<foresticon "bog">><<link [[Enter the bog (0:15)|Bog]]>><<set $moor_hunt to 0>><<pass 15>><<set $bogdepth to 1>><<set $bogwater to 0>><</link>>
 		<br><br>
 	<</if>>
 	<<if $moor gte 51>>
@@ -219,9 +219,9 @@
 <<set $location to "castle">><<effects>>
 
 You are in the courtyard of a ruined castle. Even derelict and half-sunk, the ruin towers all around you.
-<<if $weather is "rain">>
+<<if Weather.precipitation is "rain">>
 	Water runs in rivulets down rainworn gutters.
-<<elseif $weather is "snow">>
+<<elseif Weather.isSnow>>
 	Snow dusts the battlements.
 <</if>>
 <br><br>
@@ -233,8 +233,40 @@ You are in the courtyard of a ruined castle. Even derelict and half-sunk, the ru
 	<<getouticon "dig">><<link [[Dig for treasure (2:00)|Castle Treasure]]>><<pass 120>><<unset $treasure_map>><<tiredness 6>><</link>><<gtiredness>>
 	<br>
 <</if>>
+<<if $bird and $bird.upgrades and $bird.upgrades.snare gte 1>>
+	Your snare is here.
+	<<if $bird.lurkerSnareState is "captured">>
+		<span class="green">A lurker struggles in the rope.</span>
+		<br>
+		<<birdicon "snare_lurker">><<link [[Take|Castle]]>><<set $bird.materials.lurkers++>><<set $bird.lurkerSnareState to "empty">><</link>>
+		<br>
+	<<elseif $bird.lurkerSnareState is "empty">>
+		<span class="purple">It's empty.</span> <<birdicon "snare">>
+		<br>
+		<<if $bird.materials.junk gte 1>>
+			<<birdicon "junk">><<link [[Use shiny junk as bait (0:02)|Castle]]>><<pass 2>><<set $bird.materials.junk-->><<set $bird.lurkerSnareState to "ready">><</link>>
+			<br>
+		<</if>>
+		<<for _valuable, _amount range $bird.materials.valuables>>
+			<<if _amount lt 1 or _valuable is "wallet">><<continue>><</if>>
+			<<set _shiny to true>>
+			<<capture _valuable>>
+				<<birdicon _valuable>><<link [["Use " + _valuable + " as bait (0:02)"|Castle]]>><<pass 2>><<set $bird.materials.valuables[_valuable]-->><<set $bird.lurkerSnareState to "ready">><</link>>
+				<br>
+			<</capture>>
+		<</for>>
+		<<if $bird.materials.junk is 0 and !_shiny>>
+			<span class="red">You don't have anything shiny to use as bait.</span>
+			<br>
+		<</if>>
+	<<else>>
+		<span class="blue">It's baited.</span> <<birdicon "snare_bait">>
+		<br>
+	<</if>>
+	<br>
+<</if>>
 <<if $harpy gte 6 and $syndromebird is 1 and $birdFly gte 1>>
-	<<glideicon>><<link [[Fly to the tallest tower (0:02)|Castle Fly]]>><</link>><<flight_text>>
+	<<glideicon>><<link [[Fly to the tallest tower (0:02)|Castle Fly]]>><<bird_pass 2>><</link>><<flight_text>>
 	<br>
 <<elseif $syndromebird is 1>>
 	<<npc "Great Hawk">>
@@ -262,8 +294,6 @@ You fly to the top of the tower, and land beside the nest.
 	The <<beasttype>> isn't home.
 <</if>>
 <br><br>
-
-
 
 <<link [[Next|Bird Tower]]>><<endevent>><</link>>
 <br>
@@ -297,7 +327,7 @@ You call up to the tower.
 		<<bHe>> gives you an affectionate peck, and returns to the nest.
 	<</if>>
 	<br><br>
-	<<set $bird.timer to 20>>
+	<<bird_hunt_timer>>
 	<<set $bird.state to "home">>
 	<<link [[Next|Bird Tower]]>><<endevent>><</link>>
 	<br>
@@ -321,7 +351,7 @@ You wait, watching the skies, until you see the <<beasttype>> soaring over the m
 	<<bHe>> gives you an affectionate peck, and returns to the nest.
 <</if>>
 <br><br>
-<<set $bird.timer to 20>>
+<<bird_hunt_timer>>
 <<set $bird.state to "home">>
 <<link [[Next|Bird Tower]]>><<endevent>><</link>>
 <br>

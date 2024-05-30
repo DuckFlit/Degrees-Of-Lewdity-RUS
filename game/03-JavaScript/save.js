@@ -887,7 +887,6 @@ function settingsObjects(type) {
 					randomize: "characterTrait",
 				},
 				gamemode: { strings: ["normal", "soft", "hard"], displayName: "Game difficulty:" },
-				startingseason: { strings: ["autumn", "winter", "spring", "summer", "random"], displayName: "Starting season:", randomize: "gameplay" },
 				ironmanmode: { bool: false, displayName: "Ironman mode:" },
 				player: {
 					gender: {
@@ -1158,6 +1157,7 @@ function settingsObjects(type) {
 				options: {
 					neverNudeMenus: { bool: true, displayName: "Hide player nudity in menus:" },
 					showCaptionText: { bool: true, displayName: "Show caption text in sidebar:" },
+					clothingCaption: { bool: true, displayName: "Show clothing description in sidebar:" },
 					sidebarStats: { strings: ["disabled", "limited", "all"], displayName: "Closed sidebar stats:" },
 					sidebarTime: { strings: ["disabled", "top", "bottom"], displayName: "Closed sidebar time:" },
 					combatControls: { strings: ["radio", "columnRadio", "lists", "limitedLists"], displayName: "Combat controls:" },

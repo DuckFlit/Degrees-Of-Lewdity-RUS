@@ -13,7 +13,7 @@ const UnknownLocation = { area: "unknown", state: "unknown" };
 const InactiveLocation = { area: "inactive", state: "inactive" };
 
 /** @returns {boolean} */
-const isRaining = () => ["rain", "snow"].includes(V.weather);
+const isRaining = () => Weather.precipitation !== "none"; // eslint-disable-line no-unused-vars
 
 const importantStates = ["rehearsal", "dual_rehearsal"];
 
@@ -63,7 +63,7 @@ function getKylarActiveLocation() {
 			return { area: "english", state: "dual_rehearsal" };
 		}
 		if (V.englishPlayRoles.KylarKnown) {
-			if (isRaining()) {
+			if (Weather.precipitation !== "none") {
 				return { area: "library", state: "library" };
 			}
 			return { area: "rear_courtyard", state: "stump" };
@@ -95,7 +95,7 @@ function getKylarLocationInLunchtime() {
 	if (!V.daily.school.lunchEaten) {
 		return { area: "canteen", state: "lunch" };
 	}
-	if (!["rain", "snow"].includes(V.weather)) {
+	if (Weather.precipitation !== "none") {
 		// Raining or snowing, Kylar goes to the stump in rear courtyard.
 		return { area: "rear_courtyard", state: "stump" };
 	}
@@ -116,7 +116,7 @@ function getKylarPersonalLocation() {
 	}
 	// 9:00 AM to 5:59 PM
 	if (Time.hour >= 9 && Time.hour < 18) {
-		if (isRaining()) {
+		if (Weather.precipitation !== "none") {
 			return { area: "arcade", state: "playing" };
 		}
 		const parkState = V.kylar.fountain === 1 ? "fountain" : "bench";

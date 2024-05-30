@@ -15,14 +15,14 @@
 			<li>You survived <span class="gold">$hardmodedays</span> days on hard mode.</li>
 			<br>
 		<</if>>
-		<li>The game started in $startingseason.</li>
+		<li>The game started in <<print Time.getSeason(new DateTime($startDate))>>.</li>
 		<li>It is <<print Time.season>>.</li>
 		<li><<schoolterm>></li>
 	<</if>>
 	</ul>
 
 	<<if $options.images is 1>>
-		<<if Time.season is "winter">>
+		<<if Weather.isSnow>>
 			<img id="world_map" src="img/misc/world_map_winter.png">
 		<<else>>
 			<img id="world_map" src="img/misc/world_map.png">
@@ -30,7 +30,7 @@
 		<br>
 	<</if>>
 
-	<<if $rentday isnot undefined || $rentmoney isnot undefined>>
+	<<if !$statFreeze && ($rentday isnot undefined || $rentmoney isnot undefined)>>
 		<hr>
 		<span class="gold bold">Time-Sensitive</span>
 		<ul style="margin-top:10px;margin-left:-5px;">
@@ -158,7 +158,7 @@
 		</ul>
 	<</if>>
 
-	<<if ($location is "asylum" and ($eden_asylum_window is 1 or ($daily.eden.distract gte 1 and Time.hour lt 21))) || $temple_spear_mission gte 1 || $dockwork gte 2 || ($brothelshowdata.intro and $brothelshowdata.type is "none") || $robindebtevent gte 1 and $robinmissing isnot 0 || $pubtask2 is 1 || $pubtask || $police_hack is 1 || $pub_hack_job gte 1 || $pubfame ||( $earSlime.event and !_tempEventHide) || $earSlime.forcedCommando isnot undefined || $earSlime.forcedDressing isnot undefined || $temple_rank is "prospective" || $chef_state gte 4 || $mason_pond gte 1 || ($brothel_machine_repair gte 1 and $brothel_machine_repair lte 3) || ($harpy gte 6 and $birdFly isnot 1) || ($studyBooks isnot undefined and $studyBooks.rented isnot "none") || $adultshopgrandopening || ($adultshopintro is 1 and $adultshopunlocked is undefined)>>
+	<<if !$statFreeze and (($location is "asylum" and ($eden_asylum_window is 1 or ($daily.eden.distract gte 1 and Time.hour lt 21))) || $temple_spear_mission gte 1 || $dockwork gte 2 || ($brothelshowdata.intro and $brothelshowdata.type is "none") || $robindebtevent gte 1 and $robinmissing isnot 0 || $pubtask2 is 1 || $pubtask || $police_hack is 1 || $pub_hack_job gte 1 || $pubfame ||( $earSlime.event and !_tempEventHide) || $earSlime.forcedCommando isnot undefined || $earSlime.forcedDressing isnot undefined || $temple_rank is "prospective" || $chef_state gte 4 || $mason_pond gte 1 || ($brothel_machine_repair gte 1 and $brothel_machine_repair lte 3) || ($harpy gte 6 and $birdFly isnot 1) || ($studyBooks isnot undefined and $studyBooks.rented isnot "none") || $adultshopgrandopening || ($adultshopintro is 1 and $adultshopunlocked is undefined))>>
 		/*TODO: streamline during eventual Journal UI Overhaul bc lol. lmao, even. */
 		<hr>
 		<span class="gold bold">Reminders</span>
@@ -708,7 +708,7 @@
 			You have taken the role of $englishPlayRoles.Player. You can rehearse alone at the orphanage.
 			<<if $englishPlayRoles.Kylar isnot "none" and $englishPlayRoles.KylarKnown>>
 				<br>
-				Kylar is playing as $englishPlayRoles.Kylar. You can rehearse with <<nnpc_him "Kylar">> in <<if $weather is "rain" or $weather is "snow">>the school library<<else>>the school's rear courtyard<</if>> after school.
+				Kylar is playing as $englishPlayRoles.Kylar. You can rehearse with <<nnpc_him "Kylar">> in <<if Weather.precipitation !== "none">>the school library<<else>>the school's rear courtyard<</if>> after school.
 			<<elseif $englishPlayKylarReplace>>
 				<br>
 				Kylar's part in the play will have to be taken over by another student.
@@ -852,9 +852,8 @@
 	<</if>>
 	<<if !_currentPage>><<set _currentPage to "default">><</if>>
 	<<set _listPageName to _currentPage>>
-	<details>
-		<summary style="display:list-item;">Controls</summary>
-		<br>
+	<<foldout false "_journalFoldout">>
+		<span>Extra</span>
 		Page:
 		<<listbox "_listPageName" autoselect>>
 			<<optionsfrom Object.keys($journalNotes)>>
@@ -892,7 +891,7 @@
 			Page names can only contain A-Z, numbers, underscore, dashes and spaces.
 		</span></mouse>
 		<div id="journalNotesMessage"></div>
-	</details>
+	<</foldout>>
 	<br>
 	<div id="journalNotesTextarea"><<journalNotesTextarea>></div>
 <</widget>>

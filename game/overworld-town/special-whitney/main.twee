@@ -4210,7 +4210,7 @@ You rear back. Whitney tries to cling on, but you throw <<him>> to the ground.
 <<rng>>
 <<npc Whitney>><<person1>>
 
-You approach Whitney, and take shelter from the $weather under the tree.
+You approach Whitney, and take shelter from the <<print Weather.precipitation>> under the tree.
 <<if $whitneyReunionScene isnot undefined>>
 	<<unset $whitneyReunionScene>>
 	<<He>> doesn't notice you at first. When <<he>> does, <<his>> eyes go wide and <<he>> almost drops <<his>> cigarette.
@@ -4232,7 +4232,7 @@ You approach Whitney, and take shelter from the $weather under the tree.
 	<<whitneyexit>>
 <<elseif C.npc.Whitney.love gte 20 and $whitneyromance isnot 1 and !["dungeon", "pillory"].includes(C.npc.Whitney.state)>>
 	<<set $whitneyromance to 1>>
-	<<He>> suddenly grabs you and bends you backwards over the fountain, letting the $weather fall on your face. <<He>> looks angrier than usual.
+	<<He>> suddenly grabs you and bends you backwards over the fountain, letting the <<print Weather.precipitation>> fall on your face. <<He>> looks angrier than usual.
 	<br><br>
 	"Stupid slut," <<he>> says. <<He>> nearly lets you drop into the fountain. "You've been asking for this, don't try to deny it." <<He>> pulls you up and kisses you with surprising tenderness. <<takeKissVirginity "Whitney" "loveInterest">>
 	<br><br>
@@ -4321,8 +4321,8 @@ You approach Whitney, and take shelter from the $weather under the tree.
 		<<else>>
 			"Mind if we share?" you ask, nodding at Whitney's cigarette.
 		<</if>>
+		<br><br>
 	<</if>>
-	<br><br>
 	<<if $whitney_smoke is undefined or $whitney_smoke is 0>>
 		<<print $whitney_smoke is undefined ? 'You take the offered cigarette.' : 'Whitney looks pleasantly surprised at your request. "Yeah? You finally grow a spine after wussing out last time?" <<He>> hands you <<his>> cigarette.'>> Whitney stares at your lips as you gingerly raise it to your mouth. You inhale and promptly choke on smoke. <<if $daily.hookah isnot undefined>>The burn of nicotine stands in sharp contrast to the sweet-smelling hookah juice you've smoked before.<</if>>
 		<br><br>
@@ -4674,8 +4674,18 @@ You pass the cigarette back to Whitney. As if on autopilot, <<he>> immediately t
 			<br><br>
 			<<whitneyoptions>>
 		<<else>>
-			You <span class="red">trip up, and <<he>> pushes you over the edge.</span> You fall right in, <<if Time.season is "winter">>breaking through the ice and<</if>> getting drenched.
-			<<water>>
+			You <span class="red">trip up, and <<he>> pushes you over the edge.</span> You fall right in,
+			<<if Weather.isFrozen("fountain")>>
+				<<if $weatherObj.ice["fountain"] gte 25>>
+					wincing as you hit a solid patch of ice. <<gpain>><<pain 1>> It creaks dangerously, but holds your weight.
+				<<else>>
+					breaking through the ice and getting drenched.
+					<<water>>
+				<</if>>
+			<<else>>
+				getting drenched.
+				<<water>>
+			<</if>>
 			<br><br>
 			"You only speak to me when I speak to you first." <<He>> leaves you in the fountain, laughing as <<he>> exits the park.
 			<br><br>
@@ -4897,7 +4907,7 @@ You press forward, putting your hands on <<his>> waist and pulling yourself clos
 		"Make sure I don't get wet," <<he>> says, handing you the umbrella.
 	<</if>>
 	It's only a few steps to the fountain.
-	<<if $weather is "snow">>
+	<<if Weather.isFrozen("fountain")>>
 		Snow slowly builds on the surface of the ice, and <<he>> reaches for an area that hasn't frozen over.
 	<<else>>
 		Rain drops shake the surface of the water.
@@ -4922,8 +4932,18 @@ You press forward, putting your hands on <<his>> waist and pulling yourself clos
 			<br><br>
 			<<whitneyoptions>>
 		<<else>>
-			You <span class="red">trip up, and <<he>> pushes you over the edge.</span> You fall right in, <<if Time.season is "winter">>breaking through the ice and<</if>> getting drenched.
-			<<water>>
+			You <span class="red">trip up, and <<he>> pushes you over the edge.</span> You fall right in,
+			<<if Weather.isFrozen("fountain")>>
+				<<if $weatherObj.ice["fountain"] gte 25>>
+					wincing as you hit a solid patch of ice. <<gpain>><<pain 1>> It creaks dangerously, but holds your weight.
+				<<else>>
+					breaking through the ice and getting drenched.
+					<<water>>
+				<</if>>
+			<<else>>
+				getting drenched.
+				<<water>>
+			<</if>>
 			<br><br>
 			"You know what? There's absolutely nothing wrong. I feel a lot better now. Thanks, <<bitch>>." <<He>> leaves you in the fountain, laughing as <<he>> exits the park.
 			<br><br>
@@ -4995,7 +5015,7 @@ The two of you walk back to the bench under the tree. <<He>> <<print playerBelly
 	"<<print either(
 		"This town's fucked,",
 		"Nice to be alone every now and then,",
-		"I really like the $weather,",
+		"I really like the " + Weather.precipitation + ",",
 		"I don't smoke indoors unless I know it'll piss someone off,",
 		"Needed a break from some noise pollution,"
 	)>>" <<he>> says. "To answer your question."
@@ -5037,7 +5057,7 @@ The two of you walk back to the bench under the tree. <<He>> <<print playerBelly
 :: Whitney Park Fight Finish
 <<if $enemyhealth lte 0>>
 
-	You push <<him>> into the fountain<<if Time.season is "winter">>, the ice giving way under <<him>><</if>>. "You fucking <<bitch>>!" <<He>> yells. You take the opportunity to escape. When you turn around, you see <<him>> fleeing the park.
+	You push <<him>> into the fountain<<if Weather.isFrozen("fountain")>>, and the ice gives way under <<him>><</if>>. "You fucking <<bitch>>!" <<He>> yells. You take the opportunity to escape. When you turn around, you see <<him>> fleeing the park.
 	<<npcincr Whitney love -1>><<npcincr Whitney dom -1>><<llove>><<ldom>>
 
 <<elseif $enemyarousal gte $enemyarousalmax>>
@@ -5048,7 +5068,7 @@ The two of you walk back to the bench under the tree. <<He>> <<print playerBelly
 
 <<else>>
 	Whitney brings you to your knees. "All I wanted was some fucking peace and quiet." <<He>> lifts you, and pushes you back <span class="red">directly into the fountain.</span>
-	<<if Time.season is "winter">>The ice gives way under you, dropping you into the freezing water. <<stress 20>><<ggstress>><</if>>
+	<<if Weather.isFrozen("fountain")>>The ice gives way under you, dropping you into the freezing water. <<stress 20>><<ggstress>><</if>>
 	<<water>>
 	<br><br>
 	"Stupid <<bitch>>."

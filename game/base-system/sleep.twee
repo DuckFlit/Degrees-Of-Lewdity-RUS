@@ -167,7 +167,7 @@
 					<<break>>
 				<</if>>
 			<<case "tower">>
-				<<if wraithSleepEventCheck() and $bird and $bird.mirror is 1>>
+				<<if wraithSleepEventCheck() and $bird and $bird.upgrades and $bird.upgrades.mirror is 1>>
 					<<wraithEvent>>
 				<<elseif $bird.state is "hunting" and $bird.timer lte 0>>
 					<<set _sleepinterrupt to 1>>
@@ -194,7 +194,7 @@
 					<<set _wakeEvent to "slimeWakeMasturbation">>
 					<<break>>
 				<</if>>
-			<<case "seapirates">>
+			<<case "pirate_ship">>
 				<<if wraithSleepEventCheck()>>
 					<<wraithEvent>>
 				<<elseif !$bedGuest and $exposed is 2 and $sleepHoursTotal gte 3 and !$weekly.slimeWakeMasturbation and $earSlime.growth gte (currentSkillValue('willpower') / 7) and random(0,100) lt 4 and $leftarm isnot "bound" and $rightarm isnot "bound">>
@@ -278,9 +278,18 @@
 			<<elseif $island[$island.home].curtains is "advanced">>
 				<<set $tiredness -= 45>>
 			<</if>>
+		<<elseif $location is "tower" and $bedGuest isnot "alone">>
+			<<switch $bird.upgrades.nest>>
+				<<case 0>>
+				<<case 1>><<set $tiredness -= 15>>
+				<<case 2>><<set $tiredness -= 30>>
+				<<case 3>><<set $tiredness -= 45>>
+			<</switch>>
 		<</if>>
 		<<set $tiredness -= $_bonusFatigueLoss>>
 
+		<<set Weather.BodyTemperature.addActivity("sleep")>>
+		
 		<<if $location is "tower">>
 			<<bird_pass 60>>
 		<<else>>
@@ -623,7 +632,7 @@
 <<widget "earSlimeFocusChoice">>
 	/* This event cannot run endevent or make changes to loaded npc's in anyway */
 	<<set _prevLocation to $location>>
-	<<set $location to "tentworld">>
+	<<set $location to "tentworld">><<set $outside to 0>>
 	<<set _pregnancyEnabled to $playerPregnancyHumanDisable is "f" or $playerPregnancyBeastDisable is "f">>
 	<<if $earSlime.dreamRejected>>
 		Oh, the dream in the tentacle plains again, you were correct that you wouldn't remember it outside the dream.

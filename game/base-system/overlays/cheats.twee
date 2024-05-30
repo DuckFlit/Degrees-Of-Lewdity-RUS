@@ -2266,12 +2266,41 @@
 
 	<span class="gold">Weather</span>
 	<br>
-	Current weather: $weather
+	Current weather: <<print Weather.name>>
 	<br>
 	Change to:
-	<<link [[Clear|$passage]]>><<set $weather to "clear">><</link>> |
-	<<link [[Overcast|$passage]]>><<set $weather to "overcast">><</link>> |
-	<<link [[Rain|$passage]]>><<set $weather to "rain">><</link>>
+	<<link [[Clear|$passage]]>><<set Weather.set("clear", true, 6 * 60)>><</link>> |
+	<<link [[Light clouds|$passage]]>><<set Weather.set("lightClouds", true, 6 * 60)>><</link>> |
+	<<link [[Heavy clouds|$passage]]>><<set Weather.set("heavyClouds", true, 6 * 60)>><</link>> |
+	<<link [[Light precipitation|$passage]]>><<set Weather.set("lightPrecipitation", true, 6 * 60)>><</link>> |
+	<<link [[Heavy precipitation|$passage]]>><<set Weather.set("heavyPrecipitation", true, 6 * 60)>><</link>>
+	<br>
+	<span class="description">Will change the current weather for at least 6 hours, then return to the weather simulation.</span>
+	<br><br>
+
+	<span class="gold">Temperature</span>
+	<<set $_symbol to $options.fahrenheit ? "°F" : "°C">>
+	<<set _temp to Weather.toSelected(Weather.temperature)>>
+	<br>
+	Current outside temperature: _temp
+	<br>
+	<span class="description">Will increase or decrease the base temperature until the next day - then go back to the proper temperature over time.<br>
+	The base temperature will still be modified by other factors such as time of day - and will not be constant throughout the day.</span>
+	<br>
+	<<link "<">>
+		<<set _temp to Math.round(_temp - 1)>>
+		<<set Weather.Temperature.set($options.fahrenheit ? Weather.Temperature.toCelsius(_temp) : _temp)>>
+		<<set Weather.Temperature.set($options.fahrenheit ? Weather.Temperature.toCelsius(_temp) : _temp, new DateTime(Time.date).addDays(1))>>
+		<<replace "#temperatureCheatDisplay">><<print _temp>><</replace>>
+	<</link>> |
+	New temperature: <span id="temperatureCheatDisplay"><<print _temp>></span>
+	| <<link ">">>
+		<<set _temp to Math.round(_temp + 1)>>
+		<<set Weather.Temperature.set($options.fahrenheit ? Weather.Temperature.toCelsius(_temp) : _temp)>>
+		<<set Weather.Temperature.set($options.fahrenheit ? Weather.Temperature.toCelsius(_temp) : _temp, new DateTime(Time.date).addDays(1))>>
+		<<replace "#temperatureCheatDisplay">><<print _temp>><</replace>>
+	<</link>>
+	<br><span class="description">Changes will be visible after passing at least 1 minutes of time</span>
 	<br><br>
 
 	<<if $maxDefaultActionSets isnot undefined>>
@@ -2397,7 +2426,7 @@
 
 <<widget "cheatsPregnancyOptions">>
 	<<set _womb to ($player.vaginaExist ? "vagina" : "anus")>>
-	<<set _elegible to ["Avery", "Eden", "Harper", "Kylar", "Morgan", "Robin", "Whitney", "Black Wolf", "Alex", "Wren", "Sydney"]>>
+	<<set _elegible to ["Avery", "Eden", "Harper", "Kylar", "Morgan", "Robin", "Whitney", "Black Wolf", "Alex", "Wren", "Sydney", "Great Hawk"]>>
 	<<set _impregnatableNPC to []>>
 	<<set _impregnatorNPC to []>>
 	<<set _pregnantNPC to {}>>
@@ -2518,7 +2547,11 @@
 					<<if !_elegible.includes(_actor.nam)>>
 						<<continue>>
 					<</if>>
-					<<set _spermType to (_actor.nam == "Black Wolf" ? "wolf" : "human")>>
+					<<switch _actor.nam>>
+						<<case "Black Wolf">><<set _spermType to "wolf">>
+						<<case "Great Hawk">><<set _spermType to "hawk">>
+						<<default>><<set _spermType to "human">>
+					<</switch>>
 					<<capture _actor, _spermType, _womb>>
 					| <<link [[_actor.nam|$passage]]>>
 						<<playerPregnancy _actor.nam _spermType true _womb undefined true>>
@@ -2572,7 +2605,11 @@
 						<<if !_elegible.includes(_actor.nam)>>
 							<<continue>>
 						<</if>>
-						<<set _spermType to (_actor.nam === "Black Wolf" ? "wolf" : "human")>>
+						<<switch _actor.nam>>
+							<<case "Black Wolf">><<set _spermType to "wolf">>
+							<<case "Great Hawk">><<set _spermType to "hawk">>
+							<<default>><<set _spermType to "human">>
+						<</switch>>
 						<<capture _actor, _spermType, _womb>>
 						| <<link _actor.nam>>
 							<<recordSperm `{target: "pc", spermOwner: _actor.nam, spermType: "human", genital: _womb}`>>

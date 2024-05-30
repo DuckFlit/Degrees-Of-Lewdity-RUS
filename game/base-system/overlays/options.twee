@@ -8,6 +8,7 @@ IMPORTANT:
 <<widget "setupOptions">>
 	<<set _optionsRefresh to false>>
 	<<script>>
+		initializeTooltips();
 		settingsDisableElement();
 		window.Theme.initControl();
 		onInputChanged(() => {
@@ -45,8 +46,8 @@ IMPORTANT:
 		<div class="settingsToggle">
 			<label data-disabledif="!StartConfig.enableLinkNumberify">
 				<<checkbox "$options.numberify_enabled" 0 1 autocheck>> Enable numbered link navigation
-				<mouse class="tooltip linkBlue">(?)<span>Allows navigation with keyboard</span></mouse>
 			</label>
+			<span class="tooltip-anchor linkBlue" tooltip="Allows navigation with keyboard">(?)</span>
 		</div>
 		<div style="clear:both;">/*Keep at end of toggles*/</div>
 	</div>
@@ -82,29 +83,12 @@ IMPORTANT:
 		<div class="settingsToggle">
 			<label><<checkbox "$options.showCaptionText" false true autocheck>> Show Caption Text in Sidebar</label>
 		</div>
-		<!-- Old renderer should stop being supported very soon.
-		Sidebar character renderer:
-		<label><<radiovar "$options.sidebarRenderer" "img">><<updatesidebarimg>><</radiovar>> Old</label> |
-		<label><<radiovar "$options.sidebarRenderer" "canvas">><<updatesidebarimg>><</radiovar>> New</label> |
-		<label><<radiovar "$options.sidebarRenderer" "both">><<updatesidebarimg>><</radiovar>> Both</label>
-		<br>
-		-->
 		<div class="settingsToggle">
 			Condoms display:
 			<label><<radiovar "$options.condomsDisplay" "standard">><<updatesidebarimg>><</radiovar>> Standard</label> |
 			<label><<radiovar "$options.condomsDisplay" "none">><<updatesidebarimg>><</radiovar>> Hidden</label>
 		</div>
 		<div class="settingsToggle">
-			Pepper sprays display:
-			<<listbox "$options.pepperSprayDisplay" autoselect>>
-				<<option "Sprays" "sprays">>
-				<<option "Compact (dots)" "compact">>
-				<<option "None" "none">>
-			<</listbox>>
-		</div>
-		<div class="settingsToggle">
-			Player image override: <mouse class="tooltip linkBlue">(?)<span>No in-game effect.</span></mouse>
-			<br>
 			<<if !$options.genderBody>><<set $options.genderBody to "default">><</if>>
 			<label><<radiobutton "$options.genderBody" "default" autocheck>> Default</label> |
 			<label><<radiobutton "$options.genderBody" "m" autocheck>> Masculine</label> |
@@ -116,6 +100,17 @@ IMPORTANT:
 		</div>
 		<div class="settingsToggle">
 			<label><<checkbox "$options.debugdisable" "t" "f" autocheck>> Enable additional error messages</label>
+		</div>
+		<div class="settingsToggle">
+			<label><<checkbox "$options.clothingCaption" false true autocheck>> Show clothing descriptions in sidebar <span class="tooltip-anchor linkBlue" tooltip="Still displays the description as a tooltip when hovering over the avatar when disabled.">(?)</span></label>
+		</div>
+		<div class="settingsToggle">
+			Pepper sprays display:
+			<<listbox "$options.pepperSprayDisplay" autoselect>>
+				<<option "Sprays" "sprays">>
+				<<option "Compact (dots)" "compact">>
+				<<option "None" "none">>
+			<</listbox>>
 		</div>
 		<div style="clear:both;">/*Keep at end of toggles*/</div>
 	</div>
@@ -254,9 +249,16 @@ IMPORTANT:
 
 	<span class="gold">Date Format</span><<optionsThemeDefault "dateFormat">>
 	<br>
-	<label><<radiobutton "$options.dateFormat" "en-GB" autocheck>> dd/mm/yyyy</label>
-	<label><<radiobutton "$options.dateFormat" "en-US" autocheck>> mm/dd/yyyy</label>
+	<label><<radiobutton "$options.dateFormat" "en-GB" autocheck>> dd/mm/yyyy</label> |
+	<label><<radiobutton "$options.dateFormat" "en-US" autocheck>> mm/dd/yyyy</label> |
 	<label><<radiobutton "$options.dateFormat" "zh-CN" autocheck>> yyyy/mm/dd</label>
+	<br><br>
+
+	<span class="gold">Temperature Format</span><<optionsThemeDefault "dateFormat">>
+	<br>
+	<div class="settingsToggle">
+		<<checkbox "$options.fahrenheit" false true autocheck>> Use fahrenheit for temperatures
+	</div>
 	<br><br>
 
 	<<if $debug is 1>>
@@ -401,9 +403,9 @@ IMPORTANT:
 
 <<widget "optionsperformance">>
 	<<setupOptions>>
-	<span class="gold">Images</span>
-	<br>
 	<<if StartConfig.enableImages is true>>
+		<span class="gold">Images</span>
+		<br>
 		<div>
 			<div class="settingsToggle">
 				<label><<checkbox "$options.images" 0 1 autocheck>> Enable images</label>
@@ -437,10 +439,26 @@ IMPORTANT:
 			<div style="clear:both;">/*Keep at end of toggles*/</div>
 		</div>
 		<br>
+		<span class="gold">Rendering</span>
+		<br>
+		<div class="description">Close the options menu for the change to apply.</div>
+		<div>
+			<div class="settingsToggle">
+				<label data-target="options.images" data-disabledif="V.options.images===0"><<checkbox "$options.weatherUpdate" false true autocheck>> Use new weather renderer for sidebar</label>
+			</div>
+		</div>
+		<div>
+			<div class="settingsToggle">
+				<label data-target='["options.images", "weatherupdate"]' data-disabledif="V.options.images===0||V.options.weatherUpdate===false"><<checkbox "$options.reflections" false true autocheck>> Render water reflections
+					<span class="linkBlue" tooltip="Could cause performance issues on old devices.">(?)</span>
+				</label>
+			</div>
+		</div>
+		<br><br><br>
 		<span class="gold">Animations</span>
 		<div>
 			<div class="settingsToggle">
-				<label data-target="options.images" data-disabledif="V.options.images===0"><<checkbox "$options.sidebarAnimations" false true autocheck>> Sidebar animations</label>
+				<label data-target="options.images" data-disabledif="V.options.images===0"><<checkbox "$options.sidebarAnimations" false true autocheck>> Sidebar character animations</label>
 			</div>
 			<div class="settingsToggle">
 				<label data-target='["options.images", "sidebaranimations"]' data-disabledif="V.options.images===0||V.options.sidebarAnimations===false"><<checkbox "$options.blinkingEnabled" false true autocheck>> Animate eyes blinking</label>

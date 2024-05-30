@@ -469,6 +469,13 @@ setup.feats = {
 		series: "",
 		filter: ["All", "Social"],
 	},
+	"Feather Trick": {
+		title: "Feather Trick",
+		desc: "Catch three lurkers in a single dive while hunting with the Great Hawk.",
+		difficulty: 2,
+		series: "",
+		filter: ["All", "Social"],
+	},
 	"Wren the Sly": {
 		title: "Wren the Sly",
 		desc: "You gave your virginity to them.",
@@ -872,6 +879,23 @@ setup.feats = {
 		series: "",
 		filter: ["All", "Discoveries"],
 		hint: "Hint: Lost in the mire.",
+	},
+	"Terror's Equal": {
+		title: "Terror's Equal",
+		desc: "Filled the tower with impressive hunting trophies.",
+		difficulty: 3,
+		series: "",
+		filter: ["All", "Discoveries"],
+		hint: "Hint: Vanity befitting a terror of the skies.",
+		softLockable: true,
+	},
+	"Birds of a Feather": {
+		title: "Birds of a Feather...",
+		desc: "...flock together.",
+		difficulty: 2,
+		series: "",
+		filter: ["All", "Discoveries"],
+		hint: "Hint: Rescue an orphan of another species.",
 	},
 	"Head of the Pack": {
 		title: "Head of the Pack",
@@ -2039,7 +2063,7 @@ function earnHourlyFeats() {
 	if (V.seductionskill >= 1000) earnFeat("Seductress");
 	if (V.tending >= 1000) earnFeat("Green Fingered");
 	if (V.housekeeping >= 1000) earnFeat("Majordomo");
-	if (V.baseAllure >= 7000 && V.outside === 1 && V.moonstate === 0) earnFeat("Alluring");
+	if (V.baseAllure >= 7000 && V.outside === 1 && !Time.isBloodMoon()) earnFeat("Alluring");
 	if (V.science >= 1000 && V.maths >= 1000 && V.english >= 1000 && V.history >= 1000) earnFeat("Perfect Record");
 	if (V.earSlime.corruption >= 100) earnFeat("Ear Slime Lover");
 	if (V.earSlime.corruption >= 100 && V.earSlime.growth >= 200) earnFeat("Ear Slime Amalgam");

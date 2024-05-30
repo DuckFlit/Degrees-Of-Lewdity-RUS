@@ -458,7 +458,7 @@ statDisplay.create("lllspurity", () => {
 	if (C.npc.Sydney.purity >= 1) {
 		result.append(statDisplay.statChange("Sydney's Purity", -3, "purple"));
 	} else {
-		result.append(statDisplay.statChange("Sydney's Purity", 3, "purple"));
+		result.append(statDisplay.statChange("Sydney's Corruption", 3, "purple"));
 	}
 	if (C.npc.Sydney.purity <= 50 && T.lustincrdisplay !== 1) {
 		result.append(statDisplay.statChange("Lust", 1, "lewd"));
@@ -592,17 +592,19 @@ statDisplay.create("ggghistory", () => {
 	return result;
 });
 
-statDisplay.create("ghousekeeping", amount => {
+statDisplay.create("ghousekeeping", (amount, silent = false) => {
 	if (V.statsdisable === "t") return "";
 	if (amount === undefined || V.housekeeping < amount) {
 		return statDisplay.statChange("Housekeeping", 1, "green");
+	} else if (silent === "silent") {
+		return "";
 	} else if (V.housekeeping >= amount) {
 		return " You're too skilled for this to improve your housekeeping.";
 	}
 	return "";
 });
-statDisplay.create("gghousekeeping", amount => statDisplay.statChange("Housekeeping", 2, "green", () => amount !== undefined || V.housekeeping < amount));
-statDisplay.create("ggghousekeeping", amount => statDisplay.statChange("Housekeeping", 3, "green", () => amount !== undefined || V.housekeeping < amount));
+statDisplay.create("gghousekeeping", amount => statDisplay.statChange("Housekeeping", 2, "green", () => amount === undefined || V.housekeeping < amount));
+statDisplay.create("ggghousekeeping", amount => statDisplay.statChange("Housekeeping", 3, "green", () => amount === undefined || V.housekeeping < amount));
 
 statDisplay.create("ldom", npc => {
 	let targetName = "";

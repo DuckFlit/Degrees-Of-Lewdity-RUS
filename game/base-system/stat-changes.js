@@ -107,7 +107,7 @@ const statChange = (() => {
 	DefineMacro("traumaclamp", traumaClamp);
 
 	function updateHallucinations() {
-		if (V.trauma >= (V.traumamax / 10) * 5 || V.awareness >= 400 || V.hallucinogen > 0 || isBloodmoon() || V.worn.face.type.includes("esoteric")) {
+		if (V.trauma >= (V.traumamax / 10) * 5 || V.awareness >= 400 || V.hallucinogen > 0 || Time.isBloodMoon() || V.worn.face.type.includes("esoteric")) {
 			V.hallucinations = 2;
 		} else if (V.trauma >= (V.traumamax / 10) * 3 || V.awareness >= 300) {
 			V.hallucinations = 1;
@@ -234,12 +234,6 @@ const statChange = (() => {
 					const drunkMod = Math.clamp(Math.floor(V.drunk / 120), 0, 4);
 					stressMod = 30 - drunkMod * 5;
 				}
-
-				if (V.body_temperature === "cold") {
-					stressMod *= 3;
-				} else if (V.body_temperature === "chilly") {
-					stressMod *= 1.5;
-				}
 				V.stress += amount * stressMod;
 			}
 		}
@@ -356,12 +350,12 @@ const statChange = (() => {
 				mod *= 1 - Math.clamp(playerHeatMinArousal() + playerRutMinArousal(), 0, 4000) / 5000;
 			}
 
-			V.arousal += amount * mod;
+			V.arousal += amount * mod * Weather.BodyTemperature.arousalModifier;
 			arousalClamp();
 
 			// Add to the tracker
 			if (amount > 0) {
-				V.trackedArousal[V.trackedArousal.length - 1] += amount * mod;
+				V.trackedArousal[V.trackedArousal.length - 1] += Math.round(amount * mod);
 				V.timeSinceArousal = 0;
 			}
 		}
@@ -390,17 +384,7 @@ const statChange = (() => {
 		if (isNaN(amount)) paramError("tiredness", "amount", amount, "Expected a number.");
 		amount = Number(amount);
 		if (amount) {
-			let mod = 1;
-			if (V.body_temperature === "hot") {
-				mod += 2;
-			} else if (V.body_temperature === "warm") {
-				mod += 0.5;
-			}
-			if (source === "pass") {
-				V.tiredness += amount * mod;
-				return;
-			}
-			V.tiredness += amount * mod * (amount > 0 ? 15 : 20);
+			V.tiredness += Math.round(amount * Weather.BodyTemperature.fatigueModifier * (amount > 0 ? 15 : 20));
 		}
 	}
 	DefineMacro("tiredness", tiredness);
