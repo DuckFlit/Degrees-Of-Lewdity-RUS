@@ -127,11 +127,11 @@ Weather.Renderer.Effects.add({
 		defaultHorizon: 40,
 		defaultBlur: 0.7,
 		defaultAlpha: 0.7,
-		defaultCompositeOperation: "source-over",
 		defaultContrast: 0.9,
-		defaultWaveShiftFactor: 0.06,
-		defaultWaveFrequency: 2,
-		defaultAmplitude: 40,
+		defaultCompositeOperation: "source-over",
+		defaultWaveFrequency: 2, // Frequency of the curve
+		defaultAmplitude: 40, // Amplitude of the curve
+		defaultWaveShiftFactor: 0.06, // Affects the amplitude
 		defaultVerticalSpeed: 0.08, // Speed of vertical movement
 		defaultVerticalDirection: -1, // Direction of vertical movement (1 for upwards, -1 for downwards)
 		defaultVerticalFactor: 5,
