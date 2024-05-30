@@ -20,7 +20,8 @@
 		unlocked: false,
 		lurkers: false,
 		materials: false,
-		valuables: false
+		valuables: false,
+		estate: false
 	}>>
 	<<set $bird.materials to {
 		wood: 0,
@@ -958,7 +959,7 @@
 		<<baskicon>><<link [[Continue to bask (0:30)|Bird Tower Bask]]>><<bird_pass 30>><<stress -12>><<endevent>><</link>><<llstress>><br>
 		<<birdicon "sing">><<link [[Sing (0:30)|Bird Tower Sing]]>><<transform bird 1>><<bird_pass 30>><<trauma -3>><<endevent>><</link>><<ltrauma>><br>
 		<<if npcIsPregnant("Great Hawk") and talkedAboutPregnancy("Great Hawk","pc")>>
-			<<ind>><<link "Rub <<bhis>> pregnant belly (0:30)" "Bird Tower Pregnant Belly Rub">><<transform bird 1>><<bird_pass 30>><<stress -6>><<trauma -6>><<endevent>><</link>><<llstress>><<lltrauma>><br>
+			<<pregnancyicon "Great Hawk">><<link "Rub <<bhis>> pregnant belly (0:30)" "Bird Tower Pregnant Belly Rub">><<transform bird 1>><<bird_pass 30>><<stress -6>><<trauma -6>><<endevent>><</link>><<llstress>><<lltrauma>><br>
 		<</if>>
 		<<if $birdFly is 1 and $bird.injured is 0 and $bird.upgrades.decor gte 1 and !$daily.birdCasualFlight>>
 			<<if Weather.precipitation is "rain">>
@@ -1870,6 +1871,10 @@
 <</widget>>
 
 <<widget "towerValuables">>
+	<<if $bird.upgrades.decor is 5>>
+		<<birdicon "silver">> The silver bar shines as brightly as ever.
+		<br>
+	<</if>>
 	<<for _valuable, _amount range $bird.materials.valuables>>
 		<<if _amount lt 1>><<continue>><</if>>
 		<<set $_valuablesMessage to true>>
@@ -2491,7 +2496,7 @@
 						}>>
 						<<set $_upgrade.housekeeping to 400>>
 					<<case 2>>
-						<span class="teal">Pleasing hunting trophies (2)</span>: Reduces stress after each successful hunt.
+						<span class="blue">Pleasing hunting trophies (2)</span>: Reduces stress after each successful hunt.
 						<<set $_upgrade.passage to "Bird Tower Build Decor 3">>
 						<<set $_upgrade.timeTaken to 240>>
 						<<set $_upgrade.materialsUsed to {
@@ -2512,7 +2517,7 @@
 						<<set $_upgrade.activityRequired to ["build","brood","rest","sleep"]>>
 						<<set $_upgrade.housekeeping to 600>>
 					<<case 3>>
-						<span class="green">Impressive hunting trophies (3)</span>: Large stress reduction after each successful hunt.
+						<span class="teal">Impressive hunting trophies (3)</span>: Large stress reduction after each successful hunt.
 						<<set $_upgrade.passage to "Bird Tower Build Decor 4">>
 						<<set $_upgrade.timeTaken to 240>>
 						<<set $_upgrade.materialsUsed to {
@@ -2534,7 +2539,19 @@
 						<<set $_upgrade.activityRequired to ["build","brood","rest","sleep"]>>
 						<<set $_upgrade.housekeeping to 800>>
 					<<case 4>>
-						<span class="gold">Legendary hunting trophies (4)</span>: Stress is entirely removed after a successful hunt, and some trauma is reduced. Terror has found its equal.
+						<span class="green">Extraordinary hunting trophies (4)</span>: Stress is massively reduced after a successful hunt, and some trauma is reduced. However, there's still something missing...
+						<<set $_upgrade.passage to "Bird Tower Build Decor Silver">>
+						<<set $_upgrade.timeTaken to 120>>
+						<<set $_upgrade.materialsUsed to {
+							wood: 6,
+							fabric: 5,
+							sticks: 2,
+							junk: 4,
+							leather: 4
+						}>>
+						<<set $_upgrade.activityRequired to ["build","brood","rest","sleep"]>>
+					<<case 5>>
+						<span class="gold">Legendary hunting trophies (5)</span>: Stress is entirely removed after a successful hunt, and some trauma is reduced. Terror has found its equal.
 				<</switch>>
 			<<case "wardrobe">>
 				<<switch $bird.upgrades.wardrobe>>
@@ -2657,6 +2674,15 @@
 					(<<print $bird.materials[$_material]>>/$_amtReq)
 				</span>
 			<</for>>
+			<<if _upgrade is "decor" and $bird.upgrades.decor is 4>>
+				<br>
+				<<if $bird.hunts.estate isnot "complete">>
+					<<set $_disableBuild to true>>
+					<span class="black">Something special...</span>
+				<<else>>
+					<<birdicon "silver">> <span class="green">Silver bar required</span>
+				<</if>>
+			<</if>>
 		<</if>>
 
 		<<if $_upgrade.clothingSlot>>
@@ -2788,44 +2814,101 @@
 <<widget "playerEggLayEvent">>
 	<<set [$_eggnant, $_eggnantGenital] to getPregnancyObject("pc", true)>>
 	<<set $_eggnantGenital to $_eggnantGenital is "vagina" ? "cervix" : "ass">>
-	<<if $passage is "Bird Tower Sleep" and ($bedGuest is "Great Hawk" or $bird.state is "home" or $bird.state is "hunting")>>
+	<<if $passage is "Bird Tower Sleep" and ($bedGuest is "Great Hawk" or $bird.state is "home" or (playerIsPregnant() and $_eggnant.type is "hawk" and $bird.state is "hunting"))>>
 		<<set _eggLayingWake to true>>
 	<<elseif ($passage is "Robin Sleep" or $passage is "Sleep") and $robinbed>>
 		<<set _eggLayingWake to true>>
 	<<else>>
 		<<if playerIsPregnant() and $_eggnant.type is "hawk">>
 			<<if $location is "tower">>
-				<<set _eggIcon to $eggLayNumber>>
+				<<set _eggIcon to $_eggnant.fetus.length>>
 				You awaken feeling disoriented, and feel a building pressure in your abdomen. A bestial instinct washes over you. You <<if V.transformationParts.bird.plumage isnot "hidden">>ruffle your feathers and <</if>>get on your hands and knees.
-				Something big is moving around inside of you, sending waves of both pain and pleasure as it rubs against your walls. <<arousal 4000>><<gggarousal>>
+				Something big is moving around inside of you, sending waves of both pain and pleasure as it rubs against your walls. <<arousal 4000>><<pain 12>><<gggarousal>><<ggpain>>
 				<br><br>
 
+				You gasp as you feel
+				<<if $_eggnantGenital is "cervix">>
+					<<if $_eggnant.fetus.length gte 2>>
+						the eggs pass through your cervix. They send shivers through your whole body as they glide down your vaginal canal. You grip the nest as the eggs begin to crown.
+						The first one is the hardest. Your passage repeatedly contracts, sending even more waves of pleasure through you. It escapes partially, before going back in. You push for a full minute, and it finally pops out. <<arousal 4000>><<garousal>>
+						<br>
+						<<if $arousal gte $arousalmax>>
+							<<orgasm>>
+						<<else>>
+							<br>
+						<</if>>
+						<<if $_eggnant.fetus.length is 2>>
+							The second egg passes much easier, joining its sibling in your nest.
+						<<elseif $_eggnant.fetus.length gte 3>>
+							The second egg passes easily, but the third one gets stuck, having nothing behind it to help push. You sit there pushing for more agonising minutes, but eventually you manage to push it out. Your <<pussy>> remains slightly opened. You pant in exertion, feeling dizzy.
+						<<else>>
+							The next eggs pass easily, but the last one gets stuck, having nothing behind it to help push. You sit there pushing for more agonising minutes, but eventually you manage to push it out. Your <<pussy>> remains slightly opened. You pant in exertion, feeling dizzy.
+						<</if>>
+					<<else>>
+						the egg passes through your cervix. It sends shivers through your whole body as it glides down your vaginal canal. You grip the nest as the egg begins to crown.
+						It's only one, but it might as well be a regular human baby with how large it feels. You spread your legs further. Your <<pussy>> stretches more, trying to make room for it to escape. After several minutes of tortured pushing, it finally escapes you. You pant in exertion, feeling dizzy.
+					<</if>>
+				<<else>>
+					<<if $_eggnant.fetus.length gte 2>>
+						<span class="lewd">$_eggnant.fetus.length fertilised bird eggs</span> pass through your $_eggnantGenital, each one slowly spreading your entrance before plopping out and landing in your nest.
+					<<else>>
+						<span class="lewd">a fertilised bird egg</span> passes through your $_eggnantGenital, slowly spreading your entrance before plopping out and landing in your nest.
+					<</if>>
+				<</if>>
 				<<if $arousal gte $arousalmax>>
 					<<orgasm>>
+				<<else>>
+					<br><br>
 				<</if>>
-				You gasp lightly as <<if $_eggnant.fetus.length gte 2>><span class="lewd">$_eggnant.fetus.length fertilised bird eggs</span> pass through your $_eggnantGenital, each one slowly spreading your entrance before plopping out and landing in your nest<<else>><span class="lewd">a fertilised bird egg</span> passes through your $_eggnantGenital, slowly spreading your entrance before plopping out and landing in your nest<</if>>.
-				<br><br>
 
-				You're filled with a sense of maternal bliss. Your spouse will be excited. <<Number $eggLayNumber>> <<birdicon "eggs">> fertilised bird egg<<if $eggLayNumber gte 2>>s have<<else>> has<</if>> been added to the nest.
-				<<if $eggLayNumber gte 2>>They're quite large, and you're left wondering how they all fit inside of you to begin with.<<else>>It's quite large, and you're left wondering why passing it didn't hurt more.<</if>>
-				<<set $bird.eggReact to $eggLayNumber>>
+				You're filled with a sense of maternal bliss. Your spouse will be excited. <<Number $_eggnant.fetus.length>> <<birdicon "eggs">> fertilised bird egg<<if $_eggnant.fetus.length gte 2>>s have<<else>> has<</if>> been added to the nest.
+				<<if $_eggnant.fetus.length gte 2>>They're quite large, and you're left wondering how they all fit inside of you to begin with.<<else>>It's quite large, and you're left wondering why passing it didn't hurt more.<</if>>
+				<<set $bird.eggReact to $_eggnant.fetus.length>>
 				<<pregnancyFeats "pc">>
 				<<endPlayerPregnancy "tower" "tower">>
 				<<set $harpyEggsPrevent to 28>>
 			<<else>>
-				<<set _eggIcon to $eggLayNumber>>
+				<<set _eggIcon to $_eggnant.fetus.length>>
 				You awaken feeling disoriented, and feel a building pressure in your abdomen. A bestial instinct washes over you. You <<if V.transformationParts.bird.plumage isnot "hidden">>ruffle your feathers and <</if>>get on your hands and knees.
 				Something big is moving around inside of you, sending waves of both pain and pleasure through you as it rubs against your walls. <<arousal 4000>><<garousal>>
 				<br><br>
 
+				<<if $_eggnantGenital is "cervix">>
+					<<if $_eggnant.fetus.length gte 2>>
+						the eggs pass through your cervix. They send shivers through your whole body as they glide down your vaginal canal. You grip your bedsheets as the eggs begin to crown.
+						The first one is the hardest. Your passage repeatedly contracts, sending even more waves of pleasure through you. It escapes partially, before going back in. You push for a full minute, and it finally pops out. <<arousal 4000>><<garousal>>
+						<br>
+						<<if $arousal gte $arousalmax>>
+							<<orgasm>>
+						<<else>>
+							<br>
+						<</if>>
+						<<if $_eggnant.fetus.length is 2>>
+							The second egg passes much easier, joining its sibling in your nest.
+						<<elseif $_eggnant.fetus.length gte 3>>
+							The second egg passes easily, but the third one gets stuck, having nothing behind it to help push. You sit there pushing for more agonising minutes, but eventually you manage to push it out. Your <<pussy>> remains slightly opened. You pant in exertion, feeling dizzy.
+						<<else>>
+							The next eggs pass easily, but the last one gets stuck, having nothing behind it to help push. You sit there pushing for more agonising minutes, but eventually you manage to push it out. Your <<pussy>> remains slightly opened. You pant in exertion, feeling dizzy.
+						<</if>>
+					<<else>>
+						the egg passes through your cervix. It sends shivers through your whole body as it glides down your vaginal canal. You grip your bedsheets as the egg begins to crown.
+						It's only one, but it might as well be a regular human baby with how large it feels. You spread your legs further. Your <<pussy>> stretches more, trying to make room for it to escape. After several minutes of tortured pushing, it finally escapes you. You pant in exertion, feeling dizzy.
+					<</if>>
+				<<else>>
+					<<if $_eggnant.fetus.length gte 2>>
+						<span class="lewd">$_eggnant.fetus.length fertilised bird eggs</span> pass through your $_eggnantGenital, each one slowly spreading your entrance before plopping out and landing in your nest.
+					<<else>>
+						<span class="lewd">a fertilised bird egg</span> passes through your $_eggnantGenital, slowly spreading your entrance before plopping out and landing in your nest.
+					<</if>>
+				<</if>>
 				<<if $arousal gte $arousalmax>>
 					<<orgasm>>
+				<<else>>
+					<br><br>
 				<</if>>
-				You gasp lightly as <<if $_eggnant.fetus.length gte 2>><span class="lewd">$_eggnant.fetus.length fertilised bird eggs</span> pass through your $_eggnantGenital, each one slowly spreading your entrance before plopping out and landing on your bed<<else>><span class="lewd">a fertilised bird egg</span> passes through your $_eggnantGenital, slowly spreading your entrance before plopping out and landing on your bed<</if>>.
-				<br><br>
 
-				You're filled with a sense of maternal bliss, as well as a nagging sense of urgency. <span class="blue">You need to bring <<if $_eggnant.fetus.length gte 2>>them<<else>>it<</if>> to your nest.</span> You pick up <<number $eggLayNumber>> <<birdicon "eggs">> fertilised bird egg<<if $eggLayNumber gte 2>>s<</if>>.
-				<<if $eggLayNumber gte 2>>They're quite large, and you're left wondering how they all fit inside of you to begin with.<<else>>It's quite large, and you're left wondering why passing it didn't hurt more.<</if>>
+				You're filled with a sense of maternal bliss, as well as a nagging sense of urgency. <span class="blue">You need to bring <<if $_eggnant.fetus.length gte 2>>them<<else>>it<</if>> to your nest.</span> You pick up <<number $_eggnant.fetus.length>> <<birdicon "eggs">> fertilised bird egg<<if $_eggnant.fetus.length gte 2>>s<</if>>.
+				<<if $_eggnant.fetus.length gte 2>>They're quite large, and you're left wondering how they all fit inside of you to begin with.<<else>>It's quite large, and you're left wondering why passing it didn't hurt more.<</if>>
 				/* Might be best changing the location variable here */
 				<<pregnancyFeats "pc">>
 				<<endPlayerPregnancy $location "inventory">>
@@ -2836,11 +2919,38 @@
 			Something is moving around inside of you, sending waves of pleasure through you as it rubs against your walls. <<arousal 2000>><<garousal>>
 			<br><br>
 
+			<<if $_eggnantGenital is "cervix">>
+				<<if $harpyEggs.count gte 2>>
+					the eggs pass through your cervix. They send shivers through your whole body as they glide down your vaginal canal. You grip your bedsheets as the eggs begin to crown.
+					The first one is the hardest. Your passage repeatedly contracts, sending even more waves of pleasure through you. It escapes partially, before going back in. You push for a full minute, and it finally pops out. <<arousal 4000>><<garousal>>
+					<br>
+					<<if $arousal gte $arousalmax>>
+						<<orgasm>>
+					<<else>>
+						<br>
+					<</if>>
+					<<if $harpyEggs.count is 2>>
+						The second egg passes much easier, joining its sibling in your nest.
+					<<elseif $harpyEggs.count gte 3>>
+						The second egg passes easily, but the third one gets stuck, having nothing behind it to help push. You sit there pushing for more agonising minutes, but eventually you manage to push it out. Your <<pussy>> remains slightly opened. You pant in exertion, feeling dizzy.
+					<<else>>
+						The next eggs pass easily, but the last one gets stuck, having nothing behind it to help push. You sit there pushing for more agonising minutes, but eventually you manage to push it out. Your <<pussy>> remains slightly opened. You pant in exertion, feeling dizzy.
+					<</if>>
+				<<else>>
+					Without other eggs to help push it along, it gets stuck. Your <<pussy>> remains half-open with the egg plugging you. It retracts back in after a moment. You try to catch your breath, but each one is heavy. You push again, this time managing to get it all the way out.
+				<</if>>
+			<<else>>
+				<<if $harpyEggs.count gte 2>>
+					<span class="lewd">$harpyEggs.count bird eggs</span> pass through your $_eggnantGenital, each one slowly spreading your entrance before plopping out and landing in your nest.
+				<<else>>
+					<span class="lewd">a bird egg</span> passes through your $_eggnantGenital, slowly spreading your entrance before plopping out and landing in your nest.
+				<</if>>
+			<</if>>
 			<<if $arousal gte $arousalmax>>
 				<<orgasm>>
+			<<else>>
+				<br><br>
 			<</if>>
-			You gasp lightly as <<if $harpyEggs.count gte 2>><span class="lewd">$harpyEggs.count bird eggs</span> pass through your cervix, each one slowly spreading your entrance before plopping out and landing on your bed<<else>><span class="lewd">a bird egg</span> passes through your cervix, slowly spreading your entrance before plopping out and landing on your bed<</if>>.
-			<br><br>
 
 			You're filled with a sense of maternal bliss, <span class="blue">but you know <<if $harpyEggs.count gte 2>>they're<<else>>it's<</if>> unfertilised.</span> <<tending_pick bird_egg $harpyEggs.count $harpyEggs.count>>
 			<<unset $harpyEggs>>
@@ -3127,3 +3237,83 @@
 	<</for>>
 <</widget>>
 
+<<widget "silver_hunt_lurker_caught">>
+	You fight to pull the lurker off of you. After a small struggle, it loses its grip on you and you toss it away. It doesn't try to attack again, already too distracted by the light. <<set $birdSilverHunt.suspicion++>>
+	<<switch $birdSilverHunt.suspicion>>
+		<<case 0 1>>Your struggle caused some noise, but not enough for anyone to come investigate. <<gsuspicion>>
+		<<case 2>>One of the guards looks over. Luckily, <<person1>><<he>> only spots the lurker and chases after it. <<gsuspicion>>
+		<<default>>
+			<<set _caught to true>>
+			"What the hell keeps making that noise?" you hear someone ask in frustration. One of the guards comes over to investigate. You quickly dive behind the opposite side of a nearby rock, but not fast enough. "What the- hey! There's someone else here!"
+			<br><br>
+
+			<span class="red">You've been caught.</span>
+	<</switch>>
+	<<set $birdSilverHunt.lurkerSpawn to "none">>
+<</widget>>
+
+<<widget "silver_hunt_move_guard">>
+	<<if _args[0]>>
+		<<set $_guardSelected to $birdSilverHuntGuards[_args[0]]>>
+		<<if $_guardSelected.action is "moving">>
+			<<set $_guardSelected.position to $_guardSelected.movingTo>>
+			<<set $_guardSelected.movingTo to "none">>
+			<<if $_guardSelected.position is $birdSilverHunt.player.position>>
+				<<set $_guardSelected.action to "move">>
+			<<else>>
+				<<set $_guardSelected.action to "idle">>
+			<</if>>
+		<<elseif ["move","moveQueue"].includes($_guardSelected.action)>>
+			<<if $_guardSelected.movingTo is "none">>
+				<<set $_guardSelected.movingTo to ($_guardSelected.position + random(-2, 2))>>
+				<<switch $_guardSelected.movingTo>>
+					<<case -1>><<set $_guardSelected.movingTo to 8>>
+					<<case -2>><<set $_guardSelected.movingTo to 7>>
+					<<case 9>><<set $_guardSelected.movingTo to 0>>
+					<<case 10>><<set $_guardSelected.movingTo to 1>>
+				<</switch>>
+			<</if>>
+			<<if $_guardSelected.movingTo is $_guardSelected.position>>
+				<<if _args[1]>>
+					<!-- forced move disregarding everything else, to prevent players getting hopelessly trapped by an idle guard-->
+					<<set $_guardSelected.movingTo to $_guardSelected.position += 2>>
+					<<set $_guardSelected.action to "moving">>
+					<<silver_hunt_move_guard _args[0]>>
+				<<else>>
+					<<set $_guardSelected.action to "idle">>
+				<</if>>
+			<<else>>
+				<<if Object.values($birdSilverHuntGuards).find(guard => (guard.index isnot $_guardSelected.index and (guard.position is $_guardSelected.movingTo or guard.movingTo is $_guardSelected.movingTo)))>>
+					<<set $_guardSelected.action to "moveQueue">>
+				<<else>>
+					<<set $_guardSelected.action to "moving">>
+				<</if>>
+			<</if>>
+		<</if>>
+	<</if>>
+<</widget>>
+
+<<widget "silver_hunt_action_guard">>
+	<<if _args[0]>>
+		<<set $_guardSelected to $birdSilverHuntGuards[_args[0]]>>
+		<<if $_guardSelected.action isnot "none">>
+			<<if ["move","moveQueue","moving"].includes($_guardSelected.action)>>
+				<<silver_hunt_move_guard _args[0]>>
+			<<else>>
+				<<set $_guardSelected.action to either("move","move","move","idle")>>
+				<<if $_guardSelected.action is "move" and $_guardSelected.movingTo is "none">>
+					<<set $_guardSelected.movingTo to ($_guardSelected.position + random(-2, 2))>>
+					<<switch $_guardSelected.movingTo>>
+						<<case -1>><<set $_guardSelected.movingTo to 8>>
+						<<case -2>><<set $_guardSelected.movingTo to 7>>
+						<<case 9>><<set $_guardSelected.movingTo to 0>>
+						<<case 10>><<set $_guardSelected.movingTo to 1>>
+					<</switch>>
+				<</if>>
+			<</if>>
+			<<if $_guardSelected.action is "idle">>
+				<<set $_guardSelected.movingTo to "none">>
+			<</if>>
+		<</if>>
+	<</if>>
+<</widget>>

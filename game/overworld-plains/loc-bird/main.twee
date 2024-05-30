@@ -940,7 +940,7 @@ You are inside <<if $syndromebird is 1>>your tower<<else>>a ruined tower<</if>>,
 	<<case 1>>The stone walls look a bit more vibrant with decorations set up.
 	<<case 2>>Thanks to the decorations you set up, it is starting to look more pleasant.
 	<<case 3>>The pretty decorations you have set up make the place feel like home.
-	<<case 4>>With your beautiful trophies and decorations set up, it looks better than ever.
+	<<case 4 5>>With your beautiful trophies and decorations set up, it looks better than ever.
 	<<default>>
 <</switch>>
 <<if $bird.upgrades.firepit gte 1 and getBirdBurnTime() gt 0>>
@@ -1205,7 +1205,7 @@ You are inside <<if $syndromebird is 1>>your tower<<else>>a ruined tower<</if>>,
 	<<if $monster is 1>>
 		<<bHe>> turns to look at you. "Did <<wife>> do something to the water? It's warm now," <<bhe>> says. You tell <<bhim>> you found a way to heat the water. <<bHe>> looks surprised. "<<Wife>> can do that? Incredible." <<bHe>> marvels at your feat of ingenuity.
 	<<else>>
-		<<bHe>> looks at you and tilts his head. You tell <<bhim>> you found a way to heat the water. The <<beasttype>> stares at you in awe, likely wondering how it's possible.
+		<<bHe>> looks at you and tilts <<bhis>> head. You tell <<bhim>> you found a way to heat the water. The <<beasttype>> stares at you in awe, likely wondering how it's possible.
 	<</if>>
 	<br><br>
 
@@ -1411,8 +1411,12 @@ You are inside <<if $syndromebird is 1>>your tower<<else>>a ruined tower<</if>>,
 		<<birdicon "lurkers_netted">><<link "Give <<bhim>> your captured lurker" "Bird Tower Give Captured Lurker">><</link>><<glove>>
 		<br>
 	<</if>>
-	<<if $estate_fence is "quest" and $syndromebird is 1 and $bird.state is "home" and $bird.activity isnot "sleep">>
-		<<askicon>><<link [[Ask for help breaking into the Remy Estate|Bird Tower Estate]]>><</link>>
+	<<if $estate_fence is "quest" and $syndromebird is 1 and $bird.state is "home" and !["sleep","rest"].includes($bird.activity) and $bird.injured is 0>>
+		<<askicon>><<link [[Ask for help getting into the Remy Estate|Bird Tower Estate]]>><</link>>
+		<br>
+	<</if>>
+	<<if $bird.hunts.estate is "unlocked" and $bird.state is "home" and !["sleep","rest"].includes($bird.activity) and $bird.injured is 0>>
+		<<askicon>><<link [[Ask for help stealing from the estate|Bird Hunt Estate Prepare]]>><<endevent>><</link>>
 		<br>
 	<</if>>
 	<br>
@@ -1824,7 +1828,12 @@ You're still unable to move, which allows the <<beasttype>> to keep comforting y
 
 <<npc "Great Hawk">>
 <<if $monster is 1>>
-	The <<beasttype>> stares north as <<bhe>> listens. "I avoid that place," <<bhe>> says. "Dangerous. The landbound leader nests there. But I will help." <<bHe>> leans closer, and kisses your forehead.
+	The <<beasttype>> stares north as <<bhe>> listens.
+	<<if $bird.hunts.estate is "complete">>
+		"Again?" <<bhe>> asks. You explain that you just need a way in this time. "Dangerous. But I will help." <<bHe>> leans closer, and kisses your forehead.
+	<<else>>
+		"I avoid that place," <<bhe>> says. "Dangerous. The landbound leader nests there. But I will help." <<bHe>> leans closer, and kisses your forehead.
+	<</if>>
 	<br><br>
 
 	<<bHis>> wings flare. "I will find you a gift on my way back." <<bHe>> launches from the perch.
@@ -1837,6 +1846,7 @@ You're still unable to move, which allows the <<beasttype>> to keep comforting y
 <<set $bird.timer to random(120, 150)>>
 <<set $bird.state to "hunting">>
 <<set $estate_fence to "bird">>
+<<set $bird.estateKnown to true>>
 
 <<link [[Next|Bird Tower]]>><<endevent>><</link>>
 <br>
@@ -3745,6 +3755,29 @@ You bring your attentive touch down towards <<bhis>> groin.
 
 <<else>>
 	You stand on the <<beasttypes>> perch. The moor stretches out before you.
+	<<if $bird.state is "home">>
+		<<switch $bird.activity>>
+			<<case "bathe">>
+				<<your_bird_text "cap">> is bathing in the rainwater pool.
+			<<case "rest">>
+				<<your_bird_text "cap">> rests back in the nest.
+			<<case "build">>
+				<<if $birdShelterRepair>>
+					<<unset $birdShelterRepair>>
+					<span class="teal"><<your_bird_text "cap">> is covering the holes in the roof with leaves and twigs.</span>
+				<<else>>
+					<<your_bird_text "cap">> is adding to the nest.
+				<</if>>
+			<<case "brood">>
+				<<set _eggCountNest to Object.values($children).filter(child => child.location is "tower" and child.eggTimer).length>>
+				<<your_bird_text "cap">> sits in the nest, brooding on the egg<<if _eggCountNest gte 2>>s<</if>>.
+			<<default>>
+				<<your_bird_text "cap">> rests back in <<bhis>> nest.
+				<<set $birdSleep to 1>>
+		<</switch>>
+	<<else>>
+		<<your_bird_text "cap">> is out hunting.
+	<</if>>
 	<br><br>
 	<<bird_perch_options>>
 <</if>>
@@ -4963,7 +4996,7 @@ You land on the perch. The <<beasttype>> gently sets you down in the nest, a sil
 <<if $monster is 1>>
 	"Rest now, <<wife>>," <<he>> whispers tenderly, <<his>> words a gentle lullaby, cradling you in the warmth of <<his>> embrace.
 <<else>>
-	With a tender nudge of his beak, <<bhe>> encourages you to rest, <<bhis>> presence a comforting embrace.
+	With a tender nudge of <<bhis>> beak, <<bhe>> encourages you to rest, <<bhis>> presence a comforting embrace.
 <</if>>
 
 The <<beasttype>> watches over you with a quiet reverence, <<bhis>> lonely existence momentarily forgotten in the light of your shared flight.
@@ -4992,7 +5025,7 @@ For a moment, a flicker of sadness crosses <<bhis>> eyes, <<bhis>> wings droopin
 	<<case 1>>You look around your tower. It's starting to look less dull with some trophies set up.
 	<<case 2>>You look around your tower. Having trophies around makes it look cosier.
 	<<case 3>>You approach the shelves that store your loot. Your neatly set up trophies take up a lot of space.
-	<<case 4>>You approach the shelves that store your loot. The spoils from your hunts spill over onto the walls.
+	<<case 4 5>>You approach the shelves that store your loot. The spoils from your hunts spill over onto the walls.
 <</switch>>
 <<if $bird.hunts.unlocked is true>>
 	<<if $bird.hunts.materials is false>>
@@ -5323,7 +5356,7 @@ You crouch down in front of the
 
 		You explain you'll be able to cook lurkers with the pot. "Cook? Heat makes meat unpleasant, but if <<wife>> wants to, then <<wife>> can."
 	<<else>>
-		<<bHe>> pokes the pot with his beak, trying to figure out what it does. You explain you'll be able to cook lurkers with the pot. <<bHe>> peeks inside the pot, then squawks dismissively. <<bHe>> does not seem to want <<bhis>> lurkers cooked.
+		<<bHe>> pokes the pot with <<bhis>> beak, trying to figure out what it does. You explain you'll be able to cook lurkers with the pot. <<bHe>> peeks inside the pot, then squawks dismissively. <<bHe>> does not seem to want <<bhis>> lurkers cooked.
 	<</if>>
 	Content with your explanation, <<bhe>> returns to <<bhis>> perch.
 	<br><br>
@@ -5359,7 +5392,7 @@ You crouch down in front of the
 		<<bHe>> marvels at the big fire you've managed to create. Thankfully, <<bhe>> does not seem worried anymore.
 	<</if>>
 	<br><br>
-	<<bHe>> gets even closer to the fire and spreads his wings, taking in the warmth.
+	<<bHe>> gets even closer to the fire and spreads <<bhis>> wings, taking in the warmth.
 	<br><br>
 
 	<<link "Join <<bhim>> (0:10)" "Bird Tower Firepit Cuddle">><<bird_pass 10>><<set $phase to 1>><<npcincr "Great Hawk" love 1>><</link>><<glove>>
@@ -5582,7 +5615,7 @@ You add some more shiny things to the shelter tarp above you, then move to your 
 <br>
 
 :: Bird Tower Build Decor 4
-<<setTowerTemp>><<effects>><<earnFeat "Terror's Equal">>
+<<setTowerTemp>><<effects>>
 <<npc "Great Hawk">><<person1>>
 You pile up your hunting trophies once more. There's a lot to go through.
 <br><br>
@@ -5599,6 +5632,47 @@ You take a hefty piece of firewood and bind lurkers all around it. You sharpen s
 <br><br>
 
 The walls of your tower tell the stories of countless hunts, and tease more to come. Your spouse looks around, seemingly stunned at all you've accomplished. <<stress -24>><<trauma -6>><<lllstress>><<ltrauma>>
+<br><br>
+
+<<link [[Next|Bird Tower Build Decor Ponder]]>><</link>>
+<br>
+
+:: Bird Tower Build Decor Ponder
+<<setTowerTemp>><<effects>>
+<<set $bird.hunts.estate to "unlocked">>
+
+Despite everything you've managed to get, you still feel like you're missing something. Something to definitively prove you're the best hunter in the moor. You step to the perch and look out, wondering what you could find to prove your hunting superiority.
+<br><br>
+
+You consider your options. The moor itself has nothing special, neither do the animals that inhabit it. That leaves one option; humans. Not only are humans the most dangerous, they're also the most greedy. They're sure to have something. Though not just anyone will have what you need. You continue staring off into the moor, trying to come up with something.
+<br><br>
+
+Eventually your mind settles on the
+<<if $remy_seen is "farm" or $remy_seen is "livestock" or $livestock_intro isnot undefined>>
+	Remy estate. Knowing the kind of business they do, you're sure they would have something special.
+	<<if $estate and $estate.chaos>>
+		You're no stranger to causing trouble for Remy, but the mere thought of stealing something from the estate with <<your_bird_text>> fills you with adrenaline.
+	<</if>>
+<<else>>
+	estate. While you don't know what goes on inside, it's your best bet for finding something special.
+<</if>>
+You know this is not something you can do alone. You'll have to ask your <<if $monster is 1>><<nnpc_wife "Great Hawk">><<else>>partner<</if>> to help you.
+<br><br>
+
+<<link [[Next|Bird Tower]]>><<endevent>><</link>>
+<br>
+
+:: Bird Tower Build Decor Silver
+<<setTowerTemp>><<effects>><<earnFeat "Terror's Equal">>
+<<npc "Great Hawk">><<person1>>
+
+With the silver bar as proof of your hunting prowess, it's only fitting to put it somewhere it can stand out as your crown jewel. 
+<br><br>
+
+You get to work constructing a wooden pedestal for it. It takes some work, but the end result is one beautiful pedestal to place your prize on. You lift the silver bar up with both hands and place it on its new mount, resting on a bit of lurker leather.
+<br><br>
+
+After you're done, your <<beasttype>> comes over to inspect it. <<bHe>> looks happy with your construct, though <<bhis>> attention is mostly taken by the silver bar itself. With how distracting the shine of it can be, you decide to sew together a nice piece of cloth to cover it. You place it on the silver bar for now.
 <br><br>
 
 <<link [[Next|Bird Tower]]>><<endevent>><</link>>
@@ -7200,7 +7274,8 @@ You take the unfertilised egg<<if $eggLayNumber gt 1>>s<</if>> from the nest. <<
 		<<case 1>>The tower feels cozy after such exertion.<<stress -6>><<lstress>>
 		<<case 2>>Your displayed hunting trophies make you feel like you're truly returning home. <<stress -12>><<llstress>>
 		<<case 3>>Your displayed hunting trophies make you feel like you're truly returning home. <<stress -24>><<lllstress>>
-		<<case 4>>Home at last. <<set $stress to 0>><<trauma -6>><<lllstress>><<ltrauma>>
+		<<case 4>>Home at last. <<stress -36>><<trauma -6>><<lllstress>><<ltrauma>>
+		<<case 5>>Home at last. The silver bar <<if Time.dayState is "night">>gently reflects the moon's placid light.<<else>>casts pacifying reflections around your tower.<</if>><<set $stress to 0>><<trauma -6>><<lllstress>><<ltrauma>>
 		<<default>>
 	<</switch>>
 	<br>
@@ -7222,13 +7297,48 @@ You take the unfertilised egg<<if $eggLayNumber gt 1>>s<</if>> from the nest. <<
 <<set _eggnantGenital to _eggnantGenital is "vagina" ? "cervix" : "ass">>
 
 <<if playerIsPregnant() and _eggnant.type is "hawk">>
-	The egg<<if $eggLayNumber gte 2>>s feel <<else>> feels<</if>> huge, sending waves of both pain and pleasure as you're stretched from within. <<arousal 3000>><<ggarousal>>
+	The egg<<if $eggLayNumber gte 2>>s feel <<else>> feels<</if>> huge, sending waves of both pain and pleasure as you're stretched from within. <<arousal 3000>><<ggarousal>><<pain 10>><<gpain>>
 	<br>
+<</if>>
+You let out a short gasp as you feel
+<<if _eggnantGenital is "cervix">>
+	<<if $eggLayNumber gte 2>>
+		the eggs pass through your cervix. They send shivers through your whole body as they glide down your vaginal canal. You grip <<if $phase is 0>><<your_bird_text>>'s <<if $monster is 1>>arms<<else>>wings<</if>><<else>>the nest<</if>> as the eggs begin to crown.
+		The first one is the hardest. Your passage repeatedly contracts, sending even more waves of pleasure through you. It escapes partially, before going back in. You push for a full minute, and it finally pops out. <<arousal 4000>><<garousal>>
+		<br>
+		<<if $arousal gte $arousalmax>>
+			<<orgasm>>
+		<<else>>
+			<br>
+		<</if>>
+		<<if $eggLayNumber is 2>>
+			The second egg passes much easier, joining its sibling in your nest.
+		<<elseif $eggLayNumber gte 3>>
+			The second egg passes easily, but the third one gets stuck, having nothing behind it to help push. <<if $phase is 0>>The Great Hawk presses down gently, helping the egg exit with a pop.<<else>>You sit there pushing for more agonising minutes, but eventually you manage to push it out.<</if>> Your <<pussy>> remains slightly opened. You pant in exertion, feeling dizzy.
+		<<else>>
+			The next eggs pass easily, but the last one gets stuck, having nothing behind it to help push. <<if $phase is 0>>The Great Hawk presses down gently, helping the egg exit with a pop.<<else>>You sit there pushing for more agonising minutes, but eventually you manage to push it out.<</if>> Your <<pussy>> remains slightly opened. You pant in exertion, feeling dizzy.
+		<</if>>
+		<span class="lewd">You have laid $eggLayNumber eggs.</span>
+	<<else>>
+		the egg passes through your cervix. It sends shivers through your whole body as it glides down your vaginal canal. You grip <<if $phase is 0>><<your_bird_text>>'s <<if $monster is 1>>arms<<else>>wings<</if>><<else>>the nest<</if>> as the egg begins to crown.
+		<<if playerIsPregnant() and _eggnant.type is "hawk">>
+			It's only one, but it might as well be a regular human baby with how large it feels. You spread your legs further. Your <<pussy>> stretches more, trying to make room for it to escape. After several minutes of tortured pushing, it finally escapes you. You pant in exertion, feeling dizzy.
+		<<else>>
+			Without other eggs to help push it along, it gets stuck. Your <<pussy>> remains half-open with the egg plugging you. It retracts back in after a moment. You try to catch your breath, but each one is heavy. You push again, this time managing to get it all the way out.
+		<</if>>
+		<span class="lewd">You have laid an egg.</span>
+	<</if>>
+<<else>>
+	<<if $eggLayNumber gte 2>>
+		<span class="lewd">$eggLayNumber eggs</span> pass through your _eggnantGenital and land in your nest.
+	<<else>>
+		<span class="lewd">an egg</span> passes through your _eggnantGenital and lands in your nest.
+	<</if>>
 <</if>>
 <<if $arousal gte $arousalmax>>
 	<<orgasm>>
 <</if>>
-You let out a short gasp as you feel <<if $eggLayNumber gte 2>><span class="lewd">$eggLayNumber eggs</span> pass through your _eggnantGenital and land in your nest<<else>><span class="lewd">an egg</span> pass through your _eggnantGenital and land in your nest<</if>>. You're filled with a sense of maternal bliss.
+You're filled with a sense of maternal bliss.
 <br><br>
 
 <<if $monster is 1>>

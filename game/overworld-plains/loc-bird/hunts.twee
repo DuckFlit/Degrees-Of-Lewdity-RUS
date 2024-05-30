@@ -193,7 +193,7 @@ It struggles in your hands. You manage to pick up wind and soar to the sky. As s
 With your successful hunts, you fly back to the castle. Looking at the prey in your hands, you feel a primal sense of satisfaction. <<stress -12>><<llstress>>
 <br><br>
 
-Soon, you both arrive at the castle and land in the nest. You set down your lurkers.
+Soon, you both arrive at the castle and land in the nest. You feel pins and needles in your wings, a reminder that you're still a guest in these skies. You set down your lurkers.
 
 <<if $monster is 1>>
 	"<<Wife>> did good. I knew you were a good mate," <<bhe>> says.
@@ -306,6 +306,32 @@ You stand on the edge of the perch, spreading your wings. You feel for the wind 
 			<<link [[Hunt together|Bird Hunt Start Ask]]>><<npcincr "Great Hawk" dom 1>><</link>><<gdom>>
 		<</if>>
 		<br>
+	<</if>>
+	<<if $bird.state is "home" and !["sleep","rest"].includes($bird.activity) and $bird.injured is 0 and $bird.hunts.estate isnot false>>
+		<<if $bird.hunts.estate is "unlocked">>
+			<<link [[Ask for help stealing from the estate|Bird Hunt Estate Prepare]]>><<endevent>><</link>>
+			<br>
+		<<elseif $bird.hunts.estate is "scouting">>
+			<<if Time.dayState is "night">>
+				<span class="red">It's too dark to scout the estate, you'll have to wait until the sun comes up.</span>
+			<<elseif Time.hour gte 18>>
+				<span class="red">It'll be too dark to scout the estate soon, you'll have to wait until the sun comes up again.</span>
+			<<elseif Weather.precipitation isnot "none" or Weather.isOvercast>>
+				<span class="red">The weather isn't clear enough to scout the estate.</span>
+			<<else>>
+				<<link [[Scout out the estate (2:00)|Bird Hunt Estate Scout]]>><<endevent>><</link>>
+			<</if>>
+			<br>
+		<<elseif $bird.hunts.estate is "ready">>
+			<<if $birdSilverHuntCooldown>>
+				<span class="red">You promised the GReat Hawk you wouldn't try stealing from the Remy estate again for a while.</span>
+			<<elseif Time.hour gte 8 and Time.hour lte 16 and Weather.precipitation is "none" and Weather.overcast lte 25>>
+				<<link [[Fly to the estate (1:00)|Bird Hunt Estate Steal Intro]]>><<endevent>><</link>>
+			<<else>>
+				<span class="red">You should wait until the middle of a clear day to attempt stealing from the Remy estate.</span>
+			<</if>>
+			<br>
+		<</if>>
 	<</if>>
 	<<link [[Step away|Bird Tower Perch]]>><<endevent>><</link>>
 	<br>
@@ -1279,7 +1305,7 @@ What will you hunt for?
 			<<else>>
 				<<bHe>> looks puzzled at your request, but is willing to oblige.
 			<</if>>
-			<<bHe>> flies up and grips the trunk with his talons. You then begin to shake the bottom while <<bhe>> shakes further up.
+			<<bHe>> flies up and grips the trunk with <<bhis>> talons. You then begin to shake the bottom while <<bhe>> shakes further up.
 		<<if $rng gte 30>>
 			It takes you many minutes, but eventually the branch snaps off loudly. The <<beasttype>> lets it fall down for you to inspect. The branch itself will be useful, as well as some of the smaller branches on it. <<flight_hunt_get "wood" 1>> <<flight_hunt_get "sticks" 2>>
 			<br><br>
@@ -2700,7 +2726,7 @@ Getting everything would be quite a challenge, though not impossible.
 			<<if $monster is 1>>
 				"Diving is hard, you won't always succeed," <<bhe>> says.
 			<<else>>
-				<<bHe>> nuzzles his beak against you, trying to make you feel better.
+				<<bHe>> nuzzles <<bhis>> beak against you, trying to make you feel better.
 			<</if>>
 			<<bHe>> lets go of you and takes off again. <<npcincr "Great Hawk" dom 1>><<gdom>>
 		<</if>>
@@ -2757,7 +2783,7 @@ Getting everything would be quite a challenge, though not impossible.
 			<<if $monster is 1>>
 				"Diving is hard, you won't always succeed," <<bhe>> says.
 			<<else>>
-				<<bHe>> nuzzles his beak against you, trying to make you feel better.
+				<<bHe>> nuzzles <<bhis>> beak against you, trying to make you feel better.
 			<</if>>
 			<<bHe>> lets go of you and takes off again. <<npcincr "Great Hawk" dom 1>><<gdom>>
 		<</if>>
@@ -3417,6 +3443,8 @@ You <<if $bird.hunts.duo is true>>and your <<beasttype>> <</if>>tail the pair fo
 	<br><br>
 
 	They turn back the way they came. There's no reason to keep following them now.
+	<br><br>
+
 	<<endevent>>
 	<<flight_hunt_options>>
 <</addinlineevent>>
@@ -4472,7 +4500,7 @@ You won't be able to do anything else to them today, now that they're alerted.
 	<<npc "Great Hawk">>
 	You and your <<beasttype>> land at the outskirts of the site. <<bHe>> takes in the surroundings.
 	<<if $monster is 1>>
-		"Why do the landbound leave their things like this? Do they have so much they don't need all of it?" <<bhe>> asks. You chuckle at his question.
+		"Why do the landbound leave their things like this? Do they have so much they don't need all of it?" <<bhe>> asks. You chuckle at <<bhis>> question.
 	<<else>>
 		<<bHe>> kicks over some trash and squawks, confused as to why there's so much of it.
 	<</if>> 
@@ -5441,9 +5469,9 @@ You sit atop the pillar, waiting for a potential victim<<if $bird.hunts.duo is t
 			<br><br>
 
 			<<if $monster is 1>>
-				<<your_bird_text "cap">> looks over your new items. "<<Wife>> is efficient," <<bhe 2>> says.
+				<<bHe 2>> looks over your new items. "<<Wife>> is efficient," <<bhe 2>> says.
 			<<else>>
-				<<your_bird_text "cap">> eyes your new items. <<bHe 2>> looks happy with what you got.
+				<<bHe>> eyes your new items. <<bHe 2>> looks happy with what you got.
 			<</if>>
 			<<crimeUp 40 "thievery">><<crime "thievery">>
 			<br><br>
@@ -6210,7 +6238,8 @@ The three of you land back on the perch<<if $bird.upgrades.decor gte 3>> and pus
 	<<case 1>>The tower feels cozy after such exertion.<<stress -6>><<lstress>>
 	<<case 2>>Your displayed hunting trophies make you feel like you're truly returning home. <<stress -12>><<llstress>>
 	<<case 3>>Your displayed hunting trophies make you feel like you're truly returning home. <<stress -24>><<lllstress>>
-	<<case 4>>Home at last. <<set $stress to 0>><<trauma -6>><<lllstress>><<ltrauma>>
+	<<case 4>>Home at last. <<stress -36>><<trauma -6>><<lllstress>><<ltrauma>>
+	<<case 5>>Home at last. The silver bar <<if Time.dayState is "night">>gently reflects the moon's placid light.<<else>>casts pacifying reflections around your tower.<</if>><<set $stress to 0>><<trauma -6>><<lllstress>><<ltrauma>>
 	<<default>>
 <</switch>>
 <br>
@@ -6293,6 +6322,8 @@ It makes you feel warm inside. You've changed a life today. <<stress -36>><<trau
 :: Bird Hunt Return Injured
 <<effects>>
 <<npc "Great Hawk">><<person1>>
+<<set $bird.override to "rest">>
+<<set $bird.overrideTimer to 300>>
 <<set $bird.timer to 300>>
 <<set $moor to 100>>
 You see the castle, it's not far anymore. Meanwhile, your <<beasttype>> has started to show a slight limp in <<bhis>> wing. You land on the perch. <<bHe>> slowly walks into the nest and lays down.
@@ -6418,7 +6449,8 @@ land back on the perch<<if $bird.upgrades.decor gte 3>> and push the curtain asi
 		<<case 1>>The tower feels cozy after such exertion.<<stress -6>><<lstress>>
 		<<case 2>>Your displayed hunting trophies make you feel like you're truly returning home. <<stress -12>><<llstress>>
 		<<case 3>>Your displayed hunting trophies make you feel like you're truly returning home. <<stress -24>><<lllstress>>
-		<<case 4>>Home at last. <<set $stress to 0>><<trauma -6>><<lllstress>><<ltrauma>>
+		<<case 4>>Home at last. <<stress -36>><<trauma -6>><<lllstress>><<ltrauma>>
+		<<case 5>>Home at last. The silver bar <<if Time.dayState is "night">>gently reflects the moon's placid light.<<else>>casts pacifying reflections around your tower.<</if>><<set $stress to 0>><<trauma -6>><<lllstress>><<ltrauma>>
 		<<default>>
 	<</switch>>
 	<br>
@@ -6483,7 +6515,8 @@ land back on the perch<<if $bird.upgrades.decor gte 3>> and push the curtain asi
 		<<case 1>>The tower feels cozy after such exertion.<<stress -6>><<lstress>>
 		<<case 2>>Your displayed hunting trophies make you feel like you're truly returning home. <<stress -12>><<llstress>>
 		<<case 3>>Your displayed hunting trophies make you feel like you're truly returning home. <<stress -24>><<lllstress>>
-		<<case 4>>Home at last. <<set $stress to 0>><<trauma -6>><<lllstress>><<ltrauma>>
+		<<case 4>>Home at last. <<stress -36>><<trauma -6>><<lllstress>><<ltrauma>>
+		<<case 5>>Home at last. The silver bar <<if Time.dayState is "night">>gently reflects the moon's placid light.<<else>>casts pacifying reflections around your tower.<</if>><<set $stress to 0>><<trauma -6>><<lllstress>><<ltrauma>>
 		<<default>>
 	<</switch>>
 	<br>
@@ -6537,7 +6570,7 @@ You sit and take a moment to re-orient yourself. You still feel dizzy. You seem 
 	<<else>>
 		<<bHe>> starts to squawk and fuss over you.
 	<</if>>
-	You assure him you're alright now.
+	You assure <<bhim>> you're alright now.
 	<<if $monster is 1>>"Are you sure?" <<bhe>> asks, still concerned.
 	<<else>><<bHe>> looks slightly relieved, yet still worried.
 	<</if>> 
@@ -6674,6 +6707,1220 @@ chirps and cries go quiet as
 	<<childSelect _childrenIds[0]>><<childhe>> happily eats.
 <<else>>
 	they happily eat.
+<</if>>
+<br><br>
+
+<<link [[Next|Bird Tower]]>><<endevent>><</link>>
+<br>
+
+
+:: Bird Hunt Estate Prepare
+<<effects>>
+<<npc "Great Hawk">>
+<<if $transformationParts.bird.wings is "hidden">>
+	<<set $transformationParts.bird.wings to "default">>
+<</if>>
+
+You tell your <<if $monster is 1>><<nnpc_wife "Great Hawk">><<else>>partner<</if>> about your plan to steal from the inhabitants of the Remy estate. <<bHe>> listens to your plan unusually keenly. After you're done talking, <<bhe>> turns <<bhis>> head north. <<bHis>> gaze is intense.
+<br><br>
+
+<<if C.npc["Great Hawk"].love gte 80>>
+	<<set $bird.hunts.estate to "scouting">>
+	After a while, <<bhe>> turns back to look at you. <<bHe>> seems hesitant. 
+	<<if $monster is 1>>
+		"Challenging the landbound and their leader would be dangerous. Is <<wife>> really sure about trying this?" <<bhe>> asks.
+		<br><br>
+
+		<<switch $speech_attitude>>
+			<<case "meek">>"Well, if I have my big, strong <<beasttype>> with me, I'm sure everything will be fine," you respond.
+			<<case "bratty">>"Of course I'm sure. With the two of us, we'll have no problem taking them on!" you respond.
+			<<default>>"I know we can do it, we're the best hunters in the moor," you respond.
+		<</switch>>
+		<br><br>
+
+		Emboldened by your words, <<bhe>> stands up. "I trust <<wife>> knows what <<wife>> is doing. I will help," <<bhe>> says, sounding more confident.
+	<<else>>
+		<<bHe>> keeps looking at you worriedly, unable to shake <<bhis>> doubts.
+		<br><br>
+
+		<<switch $speech_attitude>>
+			<<case "meek">>"T-there's no need for my big, strong <<beasttype>> to be afraid, I know we can do this," you say, trying to soothe <<bhim>>.
+			<<case "bratty">>"Don't worry so much. No one stands a chance against the two of us!" you say, trying to soothe <<bhim>>.
+			<<default>>"I know we can do this, you just have to trust me," you say, trying to soothe <<bhim>>.
+		<</switch>>
+		<br><br>
+
+		Your words seem to get through to <<bhim>>. <<bHe>> stands up, emboldened by your words, and screeches out into the moor triumphantly. <<bHe>> turns to look at you and squawks, ready to help. 
+	<</if>>
+	<br><br>
+
+	Having successfully convinced your <<if $monster is 1>><<nnpc_wife "Great Hawk">><<else>>partner<</if>> to help you, you're ready to move on to the next part of the plan. You'll have to scout out the estate to find something to steal.
+	<br><br>
+
+	<<if Time.dayState is "night">>
+		You look outside. It's too dark to go scouting right now, you'll have to wait until the sun comes up.
+		<br><br>
+
+		<<link [[Next|Bird Tower Perch]]>><<endevent>><</link>>
+		<br>
+	<<elseif Time.hour gte 18>>
+		You look outside. It'll be too dark by the time you get there. You'll have to wait.
+		<br><br>
+
+		<<link [[Next|Bird Tower Perch]]>><<endevent>><</link>>
+		<br>
+	<<elseif Weather.precipitation isnot "none" or Weather.isOvercast>>
+		You look outside. You should wait until the weather clears up.
+		<br><br>
+
+		<<link [[Next|Bird Tower Perch]]>><<endevent>><</link>>
+		<br>
+	<<else>>
+		You look outside. Now would be the perfect time to go scout out the estate.
+		<br><br>
+
+		<<link [[Scout out the estate (2:00)|Bird Hunt Estate Scout]]>><<endevent>><<set $phase to 1>><</link>>
+		<br>
+		<<link [[Not now|Bird Tower Perch]]>><<endevent>><</link>>
+		<br>
+	<</if>>
+<<else>>
+	After a while, <<bhe>> turns back to you and meekly shakes <<bhis>> head.
+	<<if $monster is 1>>
+		"Sorry <<wife>>, but that place is where the landbound leader is. Going there is dangerous, stealing from them even more," <<bhe>> says. <<if $bird.estateKnown>>"I've already helped <<wife>> get in there once. Was a mistake."<</if>>
+	<<else>>
+		You can tell <<bhe>> understands your plan, but the thought of challenging those in the estate seems to scare <<bhim>> too much.
+	<</if>>
+	You plead with <<bhim>> further, but <<bhe>> remains adamant in <<bhis>> choice.
+	<br><br>
+
+	<span class="blue"><i><<bHe>> may be willing to help you if <<bhe>> trusted you more.</i></span>
+	<br><br>
+
+	<<link [[Next|Bird Tower]]>><<endevent>><</link>>
+	<br>
+<</if>>
+
+:: Bird Hunt Estate Scout
+<<effects>><<set $outside to 1>><<set $location to "moor">>
+<<npc "Great Hawk">>
+<<if $phase is 1>>
+	You tell your <<your_bird_text>> that you want to go scout out the estate right now. <<bHe>> cocks <<bhis>> head.
+	<<if $monster is 1>>
+		"Right now? Well, if <<wife>> thinks that is best, then we go now," <<bhe>> says.
+	<<else>>
+		<<bHe>> looks surprised by your enthusiasm to go, but is ready to do so regardless.
+	<</if>>
+<<else>>
+	You ask <<your_bird_text>> to come scout out the estate with you. <<bHe>> stands up and stretches <<bhis>> wings in preparation.
+	<<if $monster is 1>>
+		"Wife is ready to go now? Then we will go," <<bhe>> says.
+	<<else>>
+		<<bHe>> squawks, indicating that <<bhes>> ready to go.
+	<</if>>
+<</if>>
+<br><br>
+
+Before you can get the chance to leap out, <<bhe>> steps in front of you.
+<<if $monster is 1>>
+	<<bHe>> hesitates to say anything, simply looking at you, eyes full of worry.
+<<else>>
+	<<bHe>> does not make a sound, choosing to simply stare at you with an uneasy expression.
+<</if>>
+You can tell <<bhes>> still somewhat nervous to go near the estate. You assure <<bhim>> you won't be doing anything dangerous. Your words seem to comfort <<bhim>>, as <<bhe>> steps out of your way. 
+<br><br>
+
+You leap from the tower and begin flying towards the Remy estate.
+<br><br>
+
+<<link [[Next|Bird Hunt Estate Scout 2]]>><<bird_pass 45>><</link>>
+<br>
+
+:: Bird Hunt Estate Scout 2
+<<effects>><<set $location to "estate">>
+
+The flight over to the estate is mostly uneventful, but the air is tense.
+<br><br>
+
+You arrive near the front of the estate, staying high enough to not be noticed. The view from up here should help you spot anything of interest. You waste no time and start circling.
+<br><br>
+
+You do many laps around the perimeter. Your <<beasttype>> follows you, unsure what else to do. After a while you return to the front and ponder your findings.
+<<if $estate>>
+	You know how well defended the stone building is, not to mention those in the cottage ready to rush over to help defend it.
+<<else>>
+	You saw many guards around the stone building. It most likely has something worth taking, but it's clear that even with the help of your <<if $monster is 1>><<nnpc_wife "Great Hawk">><<else>>partner<</if>> you couldn't get in there. The cottage nearby would be more accessible, but it's unlikely to have anything you'd want.
+<</if>>
+<<if $livestock_intro isnot undefined>>
+	You know what the barn holds, and know there's no point in trying to get in there.
+<<else>>
+	Despite the guards near the barn, you doubt it holds anything of value to you.
+<</if>>
+<br><br>
+
+The manor itself would likely have what you want, but trying to get in there would be even harder. Your task is starting to seem impossible. You look to your <<beasttype>> for any ideas, but <<bhe>> seems as clueless as you. Your wings have started getting tired from so much gliding. <<tiredness 16>><<ggtiredness>>
+<br><br>
+
+As you're about to give up hope, you spot a group of four people carrying a secure-looking box out of the manor. They load it up into one of the vans, and get in. The van then drives out of the estate and turns towards the moor. This could be your only chance to find that special something! You follow after it.
+<br><br>
+
+<<link [[Next|Bird Hunt Estate Scout 3]]>><<bird_pass 15>><</link>>
+<br>
+
+:: Bird Hunt Estate Scout 3
+<<effects>><<set $location to "moor">>
+
+You fly after the van. It can't go very fast in the rough terrain of the moor, allowing you to keep up easily. After many minutes, it finally stops near a large ridge in the ground.
+<br><br>
+
+The people get out and start unloading supplies. Three of them take out a bunch of nets and cages while one of them grabs the secure box. You notice the one carrying the box is armed. They walk towards the ridge and enter some shrubbery. You wait for them to emerge again, but they don't. Flying closer, you don't see where they could have gone.
+<br><br>
+
+You consider landing, but a look from your <<if $monster is 1>><<nnpc_wife "Great Hawk">><<else>>partner<</if>> reminds you what you promised to <<bhim>>. You observe the surrounding area. It looks unremarkable from the rest of the moor. Most importantly, there's nothing that would help you ambush the goons when they come back. A sheer drop from above would leave you open to the armed guard.
+<br><br>
+
+<<link [[Next|Bird Hunt Estate Scout 4]]>><<bird_pass 15>><</link>>
+<br>
+
+:: Bird Hunt Estate Scout 4
+<<effects>>
+
+After waiting around for a while, you see movement in the bushes. You watch them emerge from a hole in the ground, previously hidden by the foliage. The cages they brought now have lurkers in them. They walk back to the car and drive off.
+<br><br>
+
+You land once they're far away, immediately relishing in the chance to rest your wings. You decide against following them, instead choosing to investigate the hole. You tell <<your_bird_text>> as much.
+<br><br>
+
+<<if $monster is 1>>
+	"Cant follow <<wife>> there, the hole looks too small," <<bhe>> says. "Be safe, <<wife>>."
+<<else>>
+	It's immediately apparent that <<bhes>> too big to follow you. <<bHe>> nuzzles you in reassurance.
+<</if>>
+You walk past the shrubbery, into the hole. It's more like a small cave entrance, with the ground gently sloping downwards. Wooden supports keep the mouth stable.
+<br><br>
+
+<<link [[Next|Bird Hunt Estate Scout 5]]>><</link>>
+<br>
+
+:: Bird Hunt Estate Scout 5
+<<effects>><<set $outside to 0>><<set $location to "underground">>
+
+<<switch $bodysize>>
+	<<case 1 2>>You're easily able to walk down the hole. You're small enough to escape quickly if things go bad.
+	<<case 3>>You have to duck as you walk in, and keep your wings tucked to your body. It's a bit cramped. You wonder how the others managed to carry all that equipment in and out.
+	<<case 4>>You have to tuck your wings tight to your body, and even then they hit the edges of the entrance. You're practically crawling. You wonder how the others managed to carry all that equipment in and out.
+<</switch>>
+Once your through the mouth, it becomes surprisingly spacious. Walking in the dark is hard, but your keen eyesight helps a little. You soon emerge from the tunnel to a large chamber. 
+<br><br>
+
+The ceiling has a few small cracks, letting in the light. Notably, there's one big spot in the middle where a lot of light shines in, right on top of a carved stone pillar. You notice lots of small holes all around you, and one bigger one leading into pure darkness. You hear a loud chittering coming from it. You avoid getting too close to it. Upon closer inspection, you can hear similar chittering coming from some of the smaller holes too. You look around more, but find nothing else of interest.
+<br><br>
+
+One thing is clear. Whatever's in that box is used to help capture lurkers. Nets alone wouldn't get them out of a den this big. It'll make for a fine centrepiece for your hoard. Looking at the holes in the cave gives you an idea. Maybe you could use the lurkers as a distraction while you steal whatever they're using.
+<br><br>
+
+The chittering begins to grow louder, and you hear movement. You exit swiftly, not wanting to push your luck. With your scouting mission a success and a plan in mind, you exit the cave satisfied.
+<br><br>
+
+<<link [[Next|Bird Hunt Estate Scout 6]]>><<bird_pass 45>><</link>>
+<br>
+
+:: Bird Hunt Estate Scout 6
+<<effects>><<set $location to "moor">>
+
+You arrive outside the cave again, and <<your_bird_text>> looks relieved to see you. You try to take off, but your wings are too tired from the long flight. <<bHe>> picks you up and helps you ascend.
+<br><br>
+
+<<if $monster is 1>>
+	"What did <<wife>> find?" <<bhe>> asks,
+<<else>>
+	<<bHe>> looks curious to hear what you found,
+<</if>>
+as <<bhe>> lets you start gliding. You describe the inside of the cave to <<bhim>>. Those details don't seem to interest <<bhim>>, until you mention that you plan to steal the object from them while they're in there.
+<br><br>
+
+<<if $monster is 1>>
+	"But if <<wife>> attacks the landbound in there, I can't help <<wife>>!" <<bhe>> protests. "Too risky."<br>
+	You promise <<bhim>> that it's worth trying. <<bHe>> seems to understand that <<bhe>> can't convince you to back down now.
+	"I will help <<wife>> how I can," <<bhe>> says.
+	You fly closer to <<bhim>> and give <<bhim>> a peck on the cheek. <<bHe>> blushes faintly, surprised by your sudden affection.
+<<else>>
+	Upon hearing that you want to risk stealing from them in there alone, <<bhe>> screeches in protest.
+	<<bHe>> doesn't want you to take such a risk. You promise <<bhim>> that it's worth trying. The <<beasttype>> seems to understand that <<bhe>> can't convince you to back down now.
+	<<bHe>> squawks at you, resolving <<bhimself>> to help however <<bhe>> can.
+	You fly closer to <<bhim>> and give <<bhim>> a peck on the cheek. <<bHe>> squawks lightly, surprised by your sudden affection.
+<</if>>
+<br><br>
+
+The rest of the flight goes by in silence. Eventually you land, pushing the curtain aside and pacing as you think everything over again. Stealing from Remy's goons is not going to be easy, but whatever is in that box is sure to be worth it. You just have to follow them back to that cave again.
+<br><br>
+
+<span class="blue">Remy's goons will most likely be going when the sun is shining the brightest. You should plan on going in the middle of a mostly clear day.</span>
+<br><br>
+
+<<set $bird.hunts.estate to "ready">>
+<<link [[Next|Bird Tower]]>><<endevent>><</link>>
+<br>
+
+:: Bird Hunt Estate Steal Intro
+<<effects>>
+<<npc "Great Hawk">>
+<<if !$birdSilverHunt>>
+	<<set $birdSilverHunt to {
+		failed: 0,
+		suspicion: 0
+	}>>
+<</if>>
+
+You tell your <<beasttype>> you want to put your plan in motion. <<bHe>> stands up and turns towards you.
+<<if $birdSilverHunt.failed gte 2>>
+	<<bHe>> seems to have doubts about your plan working, but <<bhe>> does not voice them. You try to reassure <<bhim>> that you remember how to avoid them this time. <<bHe>> chooses to just nod.
+	<br><br>
+
+	<<bHe>> leaps off the perch. You follow after <<bhim>> and begin flying to the estate.
+	<br><br>
+
+	<<link [[Next|Bird Hunt Estate Steal 1]]>><<bird_pass 60>><</link>>
+	<br>
+<<elseif $birdSilverHunt.failed is 1>>
+	<<bHe>> looks hesitant.
+	<<if $monster is 1>>
+		"Is <<wife>> sure we should still challenge the landbound?" <<bhe>> asks.
+	<<else>>
+		<<bHe>> must have lost some confidence after your previous failure.
+	<</if>>
+	You tell <<bhim>> that you learned how the guards patrol, so sneaking past them should be much easier.
+	<br><br>
+
+	<<bHe>> does not say anything. <<bHe>> leaps off the perch. You follow after <<bhim>> and begin flying to the estate.
+	<br><br>
+
+	<<link [[Next|Bird Hunt Estate Steal 1]]>><<bird_pass 60>><</link>>
+	<br>
+<<else>>
+	<<bHe>> looks determined.
+	<<if $monster is 1>>
+		"The landbound are strong, but we are stronger," <<bhe>> says.
+	<<else>>
+		<<bHe>> looks out toward the estate and screeches.
+	<</if>>
+	Despite the brave face <<bhes>> putting on, it's clear <<bhes>> still slightly nervous.
+	<br><br>
+
+	You assure <<bhim>> everything will be fine. <<bHe>> nods and leaps off the perch. You follow after <<bhim>> and begin flying to the estate.
+	<br><br>
+
+	<<link [[Next|Bird Hunt Estate Steal 1]]>><<bird_pass 60>><</link>>
+	<br>
+<</if>>
+
+:: Bird Hunt Estate Steal 1
+<<effects>><<set $outside to 1>><<set $location to "estate">>
+
+After another uneventful flight, you reach the estate. The estate grounds are bustling with activity. You keep an eye out for anyone entering vehicles or carrying anything out. Your <<beasttype>> is doing <<bhis>> best to look as well.
+<br><br>
+
+There's a lot being moved in and out. It's hard to keep track of everything. <<your_bird_text "cap">> brushes against you, and nods to a group of five. <span class="green">You catch a glimpse of the box being loaded into a van.</span>
+<br><br>
+
+You pat <<your_bird_text>> on the head, and the two of you move to follow the van.
+<br><br>
+
+<<link [[Next|Bird Hunt Estate Steal 2]]>><<bird_pass 10>><</link>>
+<br>
+
+:: Bird Hunt Estate Steal 2
+<<effects>><<set $location to "moor">>
+
+It exits the estate and turns towards the moor. After a while, it stops near the large ridge. The group exits the van and starts moving supplies. You take the opportunity to get a better look at them.
+<<endevent>>
+<<if $birdSilverHunt.failed is 0>>
+	<<generateRole 0 0 "guardsman/guardswoman">>
+	<<generateRole 1 0 "guardsman/guardswoman">>
+	<<generateRole 2 0 "guardsman/guardswoman">>
+	<<generateRole 3 "guard" "captain">>
+	<<generateRole 4 0 "guardsman/guardswoman">>
+<<else>>
+	<<loadNPC 0 "estateHuntGuard0">>
+	<<loadNPC 1 "estateHuntGuard1">>
+	<<loadNPC 2 "estateHuntGuard2">>
+	<<loadNPC 3 "estateHuntGuardCaptain">>
+	<<generateRole 4 0 "guardsman/guardswoman">>
+<</if>>
+<<npc "Great Hawk" 6>>
+<br><br>
+
+A <<person1>><<person>> and <<person2>><<person>> are grabbing cages, while a <<person3>><<person>> takes out some nets. A fourth person emerges,
+<<if $birdSilverHunt.failed gte 1>>
+	carrying the box, as well as some crude, long bludgeons. You can guess why they might need them this time.
+<<else>>
+	carrying the box.
+<</if>>
+<<Hes>> armed, too. <<He>> must be the group leader.
+<br><br>
+
+Finally, a <<person5>><<person>> exits. Everyone except <<him>> walks into the shrubbery and enter the hidden cave. The <<person>> stands guard at the entrance.
+<br><br>
+
+You wait until you're sure everyone else is inside, then tell your <<beasttype 5>> to lead the guard away.
+<<bHe 5>> nods<<if $monster is 1>>. "Good luck, <<wife>>," <<bhe 5>> says.<<else>> and squawks, wishing you good luck.<</if>>
+<<bHe 5>> flies a good distance away from you and lets out a loud screech. The <<person5>><<person>> jumps and drops something, before reaching for something else on <<his>> vest. <<He>> yells something into it, and starts to follow the Great Hawk.
+<br><br>
+
+<<saveNPC 0 "estateHuntGuard0">>
+<<saveNPC 1 "estateHuntGuard1">>
+<<saveNPC 2 "estateHuntGuard2">>
+<<saveNPC 3 "estateHuntGuardCaptain">>
+<<saveNPC 4 "estateHuntGuard4">>
+<<endevent>>
+You land and enter the cave.
+<br><br>
+
+<<link [[Next|Bird Hunt Estate Steal 3]]>><</link>>
+<br>
+
+:: Bird Hunt Estate Steal 3
+<<effects>><<set $location to "underground">>
+<<set $birdSilverHunt.suspicion to 0>>
+You slip into the hole and slowly proceed forward. The tunnel is surprisingly bright this time.
+<br><br>
+
+You keep walking until you near the open chamber. The <<loadNPC 0 "estateHuntGuard0">><<person1>><<person>> is up ahead, standing with <<his>> back to you. You see a bright light coming from somewhere ahead of <<him>>.
+<br><br>
+
+You get as close as you can, hiding behind a rocky ridge in the wall. You wait, but <<he>> doesn't move. You start to hear familiar chittering from somewhere above you.
+<br><br>
+
+<<link [[Keep waiting|Bird Hunt Silver Steal Wait]]>><</link>><<willpowerdifficulty 500 714>>
+<br>
+<<set $skulduggerydifficulty to 700>>
+<<link [[Sneak around <<him>>|Bird Hunt Silver Steal Sneak]]>><</link>><<skulduggerydifficulty>>
+<br>
+
+:: Bird Hunt Silver Steal Wait
+<<effects>>
+You decide to wait, hoping <<he>> will move elsewhere. Sure enough, you soon hear someone call out to <<him>>. "Hey! Quit jacking off and come help catch these things."
+<br><br>
+
+"I ain't jacking off, just... covering our exit," the <<person>> responds. <<He>> sighs and walks ahead, giving you an opportunity to sneak in. As <<he>> leaves, you notice that <<hes>> wearing something on <<his>> face. Some kind of eye protection?
+<br><br>
+
+You carefully enter the clearing and take cover behind some rocks, away from the <<person>>. You hear some more chittering on your left. Right as you turn to face the noise, a lurker leaps past you!
+<<if $willpowerSuccess>>
+	<span class="green">You manage to stay calm and suppress your voice.</span> Surprisingly, the lurker is ignoring you. It skitters onwards, toward the bright light in the middle. 
+<<else>>
+	<span class="red">You let out a short yelp involuntarily.</span> Luckily for you, the lurker ignores you, opting to skitter onwards towards the light. Unluckily, the <<person>> starts walking towards your hiding spot, but is stopped by another shout. "Your blinders come loose, jackass? What're you trudging around for? Get over here!"
+	<br>
+	"Okay okay, just a moment," <<he>> responds, annoyed. <<He>> turns back around and walks towards the center. <<gsuspicion>><<set $birdSilverHunt.suspicion++>>
+	<br><br>
+<</if>>
+
+<<if $birdSilverHunt.failed gte 1>>
+	You peek up to investigate your surroundings.
+<<else>>
+	With a moment to think, you wonder why the lurker ignored you. You peek your head up over the rock, trying to focus on the light source.
+<</if>>
+<br><br>
+
+<<link [[Next|Bird Hunt Silver Steal 2]]>><<endevent>><</link>>
+<br>
+
+:: Bird Hunt Silver Steal Sneak
+<<effects>>
+
+There's no telling how long the <<person>> will stand there, and you can't afford to wait. You crouch down and sneak up behind <<him>>. <<He>> seems to be wearing something on <<his>> face, so sneaking past <<him>> should be doable, though <<he>> seems very attentive.
+<br><br>
+
+<<skulduggerycheck>>
+<<if $skulduggerysuccess>>
+	Right as you're about to start moving, you notice <<him>> twitch slightly. You take that as a sign and hug the wall. Sure enough, <<he>> turns to look in the direction you were about to go. "Thought I wouldn't notice, huh?" <<he>> says. For a moment you panic, thinking you were found, until you see <<him>> swing <<his>> net ahead. <<He>> nets a lurker.
+	<br><br>
+
+	Wasting no time, you sneak in while <<hes>> distracted, and take cover behind some rocks. You see another lurker run past you, towards the light.
+<<else>>
+	You sneak past <<him>> and move to take cover behind some rocks. Before you reach them, you hear a voice from behind you. "Thought I wouldn't notice, huh?" You panic and stumble, scrambling the rest of the distance.
+	<br><br>
+
+	You prepare for <<him>> to run up and grab you, but it never happens. You peek back and see the <<person>> holding a netted lurker. "Almost snuck past me, little bastard," <<he>> says. "Now, I could have sworn I heard another one..." <<he>> mutters to <<himself>>. <<His>> footsteps briefly get closer, but start to fade again. <<gsuspicion>><<set $birdSilverHunt.suspicion++>>
+<</if>>
+<br><br>
+
+You see another lurker run past you, towards the light.
+<<if $birdSilverHunt.failed gte 1>>
+	You peek up to investigate your surroundings.
+<<else>>
+	With a moment to think, you wonder why the lurker ignored you. You peek your head up over the rock, trying to focus on the light source.
+<</if>>
+<br><br>
+
+<<link [[Next|Bird Hunt Silver Steal 2]]>><<endevent>><</link>>
+<br>
+
+:: Bird Hunt Silver Steal 2
+<<effects>>
+<<loadNPC 0 "estateHuntGuard0">>
+<<loadNPC 1 "estateHuntGuard1">>
+<<loadNPC 2 "estateHuntGuard2">>
+<<loadNPC 3 "estateHuntGuardCaptain">>
+With the bright light ahead, you have an entirely different perspective of the cave. You can see everything. The light itself is shining so brightly that everywhere it touches almost looks reflective. You can see lurkers coming and going from various small holes, most of which walk towards the middle of the clearing. The <<person3>><<person>> is furthest away from the middle. <<He>> seems to be catching lurkers with nets as they exit the holes. You get a better look at <<his>> face. <<Hes>> wearing some kind of visor with heavily tinted glass.
+<br><br>
+
+A bit further ahead, you see the <<person1>><<person>> and <<person2>><<person>>. They too are wearing the same kind of visor, and have more cages and nets around them. They've caught a lot of lurkers already, though they still have room for more. They don't look too focused, so getting past them shouldn't be too hard.
+<br><br>
+
+In the middle of the clearing, you see the <<person4>><<person>>. <<His>> visor looks a lot different. It's darker and covers <<his>> whole face, and there's something etched into the glass. Whenever lurkers manage to reach the light in the middle, the <<person>> simply grabs them and shoves them into the cages.
+<br><br>
+
+As your eyes get used to the light, you realise it's coming from the now-open box. You try to focus your attention on the object inside, but can't tell what it is from this distance with it shining so brightly. You doubt it will be easy to grab without the <<person>> noticing, so you should be prepared to confront <<him>>.
+<br><br>
+
+<<link [[Try to focus on the object|Bird Hunt Silver Steal 3]]>><</link>>
+<br>
+
+:: Bird Hunt Silver Steal 3
+<<effects>>
+<<set $birdSilverHuntGuards to {}>>
+<<set $birdSilverHunt.player to {
+	position: 4,
+	action: "none"
+}>>
+<<set $birdSilverHuntGuards[1] to {
+	position: 7,
+	action: "move",
+	movingTo: "none",
+	name: $NPCList[0].fullDescription,
+	index: 1
+}>>
+<<set $birdSilverHuntGuards[2] to {
+	position: "none",
+	action: "none",
+	movingTo: "none",
+	name: $NPCList[1].fullDescription,
+	index: 2
+}>>
+<<set $birdSilverHuntGuards[3] to {
+	position: "none",
+	action: "none",
+	movingTo: "none",
+	name: $NPCList[2].fullDescription,
+	index: 3
+}>>
+<<set $birdSilverHunt.distance to 0>>
+<<set $birdSilverHunt.timer to 0>>
+<<set $birdSilverHunt.lurkerSpawn to "none">>
+<<set $birdSilverHunt.freebie to false>>
+
+<<if $awarelevel gte 2>>
+	The more you look at it, the more you realise how captivating the shine really is. You have a hard time looking away from it, but manage to shake it off after a moment.
+<<elseif $innocencestate is 1>>
+	For a moment, your vision focuses on it enough to see that it is something rectangular.
+<<else>>
+	You're having a hard time getting a proper look at what it is. No matter how much you try to focus your vision on it, all you can see is blurry light.
+<</if>>
+Whatever it is, you know you want it. But first, you have to get close enough to grab it. Looking around, the cave has a lot of rocks and other natural cover you could hide between. You spot the same big hole again. Despite all the light, it still looks pitch black.
+<br><br>
+
+You consider what to do next. You should be able to sneak up to the middle if you go carefully between the rocks. You should avoid any lurkers, and more importantly, being seen by the guards. With the visors hampering their vision, you should be able to hide if they get too close. Hiding won't help you against the lurkers, though. You steel your nerves and prepare to sneak forward.
+<br><br>
+
+<<link [[Next|Bird Hunt Silver Sneak]]>><</link>>
+<br>
+
+:: Bird Hunt Silver Sneak
+<<effects>>
+<!-- I know this is bad, I want to make it a proper encounter type later. -->
+<<switch $birdSilverHunt.player.action>>
+	<<case "forward">>
+		<<if $birdSilverHunt.lurkerSpawn is $birdSilverHunt.player.position>>
+			You slip out of your hiding place and try to move forward. Before you can get far, you're interrupted by a lurker leaping at your back!
+			<<silver_hunt_lurker_caught>>
+		<<elseif Object.values($birdSilverHuntGuards).find(guard => (guard.position is $birdSilverHunt.player.position or guard.movingTo is $birdSilverHunt.player.position))>>
+			<<set _guardCaught to Object.values($birdSilverHuntGuards).find(guard => (guard.position is $birdSilverHunt.player.position or guard.movingTo is $birdSilverHunt.player.position))>>
+			You slip out of your hiding place and start moving forward. Right after stepping out, the _guardCaught.name walks towards you.
+			<<if !$birdSilverHunt.freebie>>
+				<<set $birdSilverHunt.freebie to true>>
+				You rush back to your original hiding place. Through sheer luck, the _guardCaught.name didn't notice you. <span class="red">You doubt that will happen again.</span> <<stress 12>><<ggstress>>
+			<<else>>
+				<<set _caught to true>>
+				You rush back to your original hiding place, but it's too late. "What the- hey! There's someone else here!"
+			<</if>>
+		<<else>>
+			You dash from your hiding place and move forward, towards the centre. You make it without any trouble and slip into another spot where you can hide.
+			<<set $birdSilverHunt.distance++>>
+		<</if>>
+	<<case "moveLeft" "moveRight">>
+		<<set _direction to ($birdSilverHunt.player.action is "moveLeft" ? "left" : "right")>>
+		<<if _direction is "left">>
+			<<set $birdSilverHunt.player.position to ($birdSilverHunt.player.position is 0 ? 8 : $birdSilverHunt.player.position - 1)>>
+		<<else>>
+			<<set $birdSilverHunt.player.position to ($birdSilverHunt.player.position is 8 ? 0 : $birdSilverHunt.player.position + 1)>>
+		<</if>>
+		You move to a different hiding spot on your _direction.
+		<<if $birdSilverHunt.lurkerSpawn is $birdSilverHunt.player.position>>
+			Upon reaching the hiding spot, you think you were unseen, until a lurker suddenly leaps at your back!
+			<<silver_hunt_lurker_caught>>
+		<<elseif Object.values($birdSilverHuntGuards).find(guard => (guard.position is $birdSilverHunt.player.position or guard.movingTo is $birdSilverHunt.player.position))>>
+			<<set _guardCaught to Object.values($birdSilverHuntGuards).find(guard => (guard.position is $birdSilverHunt.player.position or guard.movingTo is $birdSilverHunt.player.position))>>
+			You reach the hiding spot, but are too late to notice the _guardCaught.name standing only a few feet from you! 
+			<<if !$birdSilverHunt.freebie>>
+				<<set $birdSilverHunt.freebie to true>>
+				You slide behind the opposite side of the cover. Through sheer luck, the _guardCaught.name didn't notice you. <span class="red">You doubt that will happen again.</span> <<stress 12>><<ggstress>>
+			<<else>>
+				<<set _caught to true>>
+				You dive behind the opposite side of the cover, but it's too late. "What the- hey! There's someone else here!"
+			<</if>>
+		<<else>>
+			You make it safely and get into cover.
+		<</if>>
+	<<case "crawlLeft" "crawlRight">>
+		<<set $birdSilverHunt.timer++>>
+		<<set _lurkerSpawn to true>>
+		<<set _direction to ($birdSilverHunt.player.action is "crawlLeft" ? "left" : "right")>>
+		<<if Object.values($birdSilverHuntGuards).find(guard => (guard.position is $birdSilverHunt.player.position))>>
+			<<set _guardOnTop to Object.values($birdSilverHuntGuards).find(guard => (guard.position is $birdSilverHunt.player.position))>>
+			You wait for the _guardOnTop.name to roam slightly away from you, then emerge from your hiding place and slowly crawl to the _direction, hoping to reach a different hiding spot without being seen.
+		<<else>>
+			You slowly crawl to the _direction, hoping to reach a different hiding spot without being seen.
+		<</if>>
+		<<if _direction is "left">>
+			<<set $birdSilverHunt.player.position to ($birdSilverHunt.player.position is 0 ? 8 : $birdSilverHunt.player.position - 1)>>
+		<<else>>
+			<<set $birdSilverHunt.player.position to ($birdSilverHunt.player.position is 8 ? 0 : $birdSilverHunt.player.position + 1)>>
+		<</if>>
+		<<if Object.values($birdSilverHuntGuards).find(guard => (guard.position is $birdSilverHunt.player.position or guard.movingTo is $birdSilverHunt.player.position))>>
+			<<set _guardNew to Object.values($birdSilverHuntGuards).find(guard => (guard.position is $birdSilverHunt.player.position or guard.movingTo is $birdSilverHunt.player.position))>>
+			Despite the _guardNew.name being close by, your movement was stealthy enough to not be spotted.
+		<</if>>
+		<<if $birdSilverHunt.lurkerSpawn is $birdSilverHunt.player.position>>
+			Upon reaching the hiding spot, you think you were unseen, until a lurker suddenly leaps at your back!
+			<<silver_hunt_lurker_caught>>
+		<<else>>
+			You make it without issue.
+		<</if>>
+	<<case "hide">>
+		You move into an especially sunken spot and do your best to hide.
+		<<if $birdSilverHunt.lurkerSpawn is $birdSilverHunt.player.position and Object.values($birdSilverHuntGuards).find(guard => (guard.position is $birdSilverHunt.player.position or guard.movingTo is $birdSilverHunt.player.position))>>
+			<<set _guardOnTop to Object.values($birdSilverHuntGuards).find(guard => (guard.position is $birdSilverHunt.player.position))>>
+			<<set $birdSilverHunt.lurkerSpawn to "none">>
+			You remain hidden. You can hear the chittering grow louder, as can the <<personselect `_guardOnTop.index - 1`>><<person>>. <<He>> notices the approaching lurker and intercepts its path with a net. 
+			"<<print either("Hah, won't get by me that easily,","Not fast enough,","Move too fast and you're easy to spot,")>>" <<he>> chuckles to <<himself>>.
+			<<set _guardOnTop.action to "move">>
+			<<silver_hunt_move_guard _guardOnTop.index true>>
+			<<He>> immediately walks away in search of more lurkers.
+		<<elseif Object.values($birdSilverHuntGuards).find(guard => (guard.movingTo is $birdSilverHunt.player.position))>>
+			<<set _guardOnTop to Object.values($birdSilverHuntGuards).find(guard => (guard.position is $birdSilverHunt.player.position))>>
+			You watch from your hiding place as the <<personselect `_guardOnTop.index - 1`>><<person>> walks over. Thankfully you're still and hidden enough that <<he>> can't see you through <<his>> visor.
+			<<set _guardOnTop.action to "move">>
+		<<elseif Object.values($birdSilverHuntGuards).find(guard => (guard.position is $birdSilverHunt.player.position))>>
+			<<set _guardOnTop to Object.values($birdSilverHuntGuards).find(guard => (guard.position is $birdSilverHunt.player.position))>>
+			You remain hidden, waiting for the <<personselect `_guardOnTop.index - 1`>><<person>> to move. It takes a bit, but soon enough he walks away. After <<hes>> far enough, you emerge from your hiding place.
+			<<set _guardOnTop.action to "move">>
+			<<silver_hunt_move_guard _guardOnTop.index true>>
+		<<elseif $birdSilverHunt.lurkerSpawn is $birdSilverHunt.player.position>>
+			Despite hiding yourself, a lurker notices you, and pounces!
+			<<silver_hunt_lurker_caught>>
+		<<else>>
+			You wait for a bit, but nothing happens. You peek your head out once again.
+		<</if>>
+	<<case "peek">>
+		You raise your head and peek out of your hiding place, scanning your surroundings.
+		<<if $birdSilverHunt.lurkerSpawn is $birdSilverHunt.player.position>>
+			However, you're interrupted by a lurker leaping at your back!
+			<<silver_hunt_lurker_caught>>
+		<<else>>
+			<<set _guard_keys to Object.keys($birdSilverHuntGuards)>>
+			<<for _gg to 0; _gg lt _guard_keys.length; _gg++>>
+				<br>
+				<<if $birdSilverHuntGuards[_guard_keys[_gg]].position is "none">>
+					The <<print $birdSilverHuntGuards[_guard_keys[_gg]].name>> is too far away to be of concern.
+				<<else>>
+					<<set _distanceRight to ($birdSilverHuntGuards[_guard_keys[_gg]].position - $birdSilverHunt.player.position + 9) % 9>>
+					<<set _distanceLeft to ($birdSilverHunt.player.position - $birdSilverHuntGuards[_guard_keys[_gg]].position + 9) % 9>>
+					<<set _distanceTotal to Math.min(_distanceRight,_distanceLeft)>>
+					<<set _distanceClose to (_distanceRight gt _distanceLeft ? "left" : "right")>>
+					<<switch _distanceTotal>>
+						<<case 1>>You're able to get a better look at the <<personselect _gg>><<person>> to your _distanceClose.
+						<<case 2>>You can see that the <<personselect _gg>><<person>>is on your _distanceClose, and is somewhat close to you.
+						<<case 3>>On your _distanceClose, you see the <<personselect _gg>><<person>>. <<He>> is still a good distance away from you.
+						<<default>>You see the <<personselect _gg>><<person>> far away on your _distanceClose.
+					<</switch>>
+					<<if $birdSilverHuntGuards[_guard_keys[_gg]].movingTo isnot "none">>
+						<<set _distanceRightMoving to ($birdSilverHuntGuards[_guard_keys[_gg]].movingTo - $birdSilverHunt.player.position + 9) % 9>>
+						<<set _distanceLeftMoving to ($birdSilverHunt.player.position - $birdSilverHuntGuards[_guard_keys[_gg]].movingTo + 9) % 9>>
+						<<set _distanceTotalMoving to Math.min(_distanceRightMoving,_distanceLeftMoving)>>
+						<<set _distanceCloseMoving to (_distanceRightMoving gt _distanceLeftMoving ? "left" : "right")>>
+					<</if>>
+					<<switch $birdSilverHuntGuards[_guard_keys[_gg]].action>>
+						<<case "move" "moveQueue">>
+							<<Hes>> caught a lurker, which <<he>> puts into a small cage.
+							<<if $birdSilverHuntGuards[_guard_keys[_gg]].movingTo is $birdSilverHunt.player.position>>
+								<<He>> turns to face your hiding place. <<Hes>> probably going to walk right over to where you are.
+							<<elseif _distanceTotalMoving gt _distanceTotal>>
+								<<He>> turns away from you. <<Hes>> going to move further away.
+							<<elseif _distanceTotalMoving is _distanceTotal>>
+								<<He>> looks at a spot on the other side of you. It looks like <<he>> will move right past you if you stay still.
+							<<else>>
+								<<He>> turns towards your general direction. <<Hes>> going to move closer to your position.
+							<</if>>
+						<<case "moving">>
+							<<if $birdSilverHuntGuards[_guard_keys[_gg]].movingTo is $birdSilverHunt.player.position>>
+								<<Hes>> about to be right on top of you.
+							<<elseif _distanceTotalMoving gt _distanceTotal>>
+								<<Hes>> walking away from you.
+							<<elseif _distanceTotalMoving is _distanceTotal>>
+								<<Hes>> walking right past you.
+							<<else>>
+								<<Hes>> walking towards you.
+							<</if>>
+						<<default>><<Hes>> watching for lurkers.
+					<</switch>>
+				<</if>>
+			<</for>>
+		<</if>>
+	<<default>>
+<</switch>>
+<br><br>
+
+<<if _caught>>
+	<<link [[Next|Bird Hunt Silver Fail]]>><<endevent>><</link>>
+	<br>
+<<else>>
+	<<if $birdSilverHuntGuards[2].position is "none" and $birdSilverHunt.distance gte 2>>
+		<<set $birdSilverHuntGuards[2].position to random(0,8)>>
+		<<set $birdSilverHuntGuards[2].action to "move">>
+		<<silver_hunt_action_guard 2>>
+		<span class="red">The <<person2>><<person>> is closer. You have another guard to deal with.</span>
+		<br>
+	<</if>>
+
+	<<if $birdSilverHuntGuards[3].position is "none" and $birdSilverHunt.distance gte 5>>
+		<<set $birdSilverHuntGuards[3].position to random(0,8)>>
+		<<set $birdSilverHuntGuards[3].action to "move">>
+		<<silver_hunt_action_guard 3>>
+		<span class="red">The <<person3>><<person>> is closer. You have another guard to deal with.</span>
+		<br>
+	<</if>>
+
+	<<if $birdSilverHuntGuards[1].position isnot "none">>
+		<<silver_hunt_action_guard 1>>
+	<</if>>
+	<<if $birdSilverHuntGuards[2].position isnot "none">>
+		<<silver_hunt_action_guard 2>>
+	<</if>>
+	<<if $birdSilverHuntGuards[3].position isnot "none">>
+		<<silver_hunt_action_guard 3>>
+	<</if>>
+	<<set _leftCheck to ($birdSilverHunt.player.position is 0 ? 8 : $birdSilverHunt.player.position - 1)>>
+	<<set _rightCheck to ($birdSilverHunt.player.position is 8 ? 0 : $birdSilverHunt.player.position + 1)>>
+	<<set _leftGuard to Object.values($birdSilverHuntGuards).find(guard => (guard.position is _leftCheck or guard.movingTo is _leftCheck))>>
+	<<set _rightGuard to Object.values($birdSilverHuntGuards).find(guard => (guard.position is _rightCheck or guard.movingTo is _rightCheck))>>
+	<<set _onGuard to Object.values($birdSilverHuntGuards).find(guard => (guard.position is $birdSilverHunt.player.position))>>
+	You're hiding behind some rocks.
+	<<if !_leftGuard and !_rightGuard and !_onGuard>>
+		You don't see or hear anyone nearby.
+	<<else>>
+		<<if _onGuard>>
+			<span class="red">The _onGuard.name is right on top of you!</span>
+		<</if>>
+		<<if _leftGuard>>
+			<span class="blue">You <<if _leftGuard.movingTo is _leftCheck>>hear footsteps heading towards your left<<else>>can see the _leftGuard.name on your left<</if>>.</span>
+		<<else>>
+			<span class="teal">The cover to your left is open.</span>
+		<</if>>
+		<<if _rightGuard>>
+			<span class="blue">You <<if _rightGuard.movingTo is _rightCheck>>hear footsteps heading towards your right<<else>>can see the _rightGuard.name on your right<</if>>.</span>
+		<<else>>
+			<span class="teal">The cover to your right is open.</span>
+		<</if>>
+		<<if _leftGuard?.position is _leftCheck and _rightGuard?.position is _rightCheck>>
+			<<set _noForward to true>>
+			<span class="purple">You don't think you can go forward with both of them being so near you.</span>
+		<</if>>
+	<</if>>
+	<br>
+
+	<<if $birdSilverHunt.lurkerSpawn isnot "none">>
+		<<set _lurkerLast to $birdSilverHunt.lurkerSpawn>>
+		<<set $birdSilverHunt.lurkerSpawn to "none">>
+	<</if>>
+	<<if _lurkerLast>>
+		<<if _lurkerLast is _leftCheck>>
+			<span class="teal">A lurker skitters past on your left.</span>
+			<br>
+		<</if>>
+		<<if _lurkerLast is _rightCheck>>
+			<span class="teal">A lurker skitters past on your right.</span>
+			<br>
+		<</if>>
+	<</if>>
+
+	<<if $birdSilverHunt.timer gte 16>>
+		<span class="red">The lurkers are swarming.</span>
+		<<set _lurkerSpawn to true>>
+	<<elseif $birdSilverHunt.timer gte 8 and ($birdSilverHunt.timer % 2 is 0)>>
+		<span class="pink">The chittering in the walls is growing louder.</span>
+		<<set _lurkerSpawn to true>>
+	<<elseif [1,4,7,10].includes($birdSilverHunt.timer)>>
+		<<set _lurkerSpawn to true>>
+	<</if>>
+
+	<<if _lurkerSpawn is true>>
+		<<set $birdSilverHunt.lurkerSpawn to either(_leftCheck,_rightCheck,$birdSilverHunt.player.position,$birdSilverHunt.player.position)>>
+	<</if>>
+	<<switch $birdSilverHunt.lurkerSpawn>>
+		<<case _leftCheck>><span class="purple">You hear faint chittering sounds from your left.</span><br>
+		<<case _rightCheck>><span class="purple">You hear faint chittering sounds from your right.</span><br>
+		<<case $birdSilverHunt.player.position>><span class="purple">You hear faint chittering sounds from behind you.</span><br>
+		<<default>>
+	<</switch>>
+	<br>
+
+	<<switch $birdSilverHunt.distance>>
+		<<case 0 1 2>><span class="pink">You're still quite far from the object.</span>
+		<<case 3 4 5>><span class="blue">You're about halfway to the middle.</span>
+		<<case 6 7 8>><span class="teal">You're getting close to the middle.</span>
+		<<case 9>><span class="green">You've almost reached the object.</span>
+		<<case 10>><span class="gold">You've made it to the object!</span>
+	<</switch>>
+	<br>
+	<<switch $birdSilverHunt.suspicion>>
+		<<case 0>><span class="green">The guards have no idea you're here.</span>
+		<<case 1>><span class="purple">The guards are alert for possible intruders.</span>
+		<<case 2 3>><span class="red">The guards think someone might be here.</span>
+	<</switch>>
+	<br><br>
+
+	<<if $birdSilverHunt.distance is 10>>
+		<<birdicon "silver">><<link[[Approach the object|Bird Hunt Silver Approach]]>><</link>>
+		<br>
+	<<else>>
+		<<if !_noForward>>
+			<<caveicon "north">><<link[[Move forwards|Bird Hunt Silver Sneak]]>><<set $birdSilverHunt.player.action to "forward">><</link>><<note "+ Progress" "green">>
+			<br>
+		<</if>>
+		<<if !_onGuard>>
+			<<caveicon "west">><<link[[Move left|Bird Hunt Silver Sneak]]>><<set $birdSilverHunt.player.action to "moveLeft">><</link>>
+			<br>
+		<</if>>
+		<<caveicon "left">><<link[[Crawl left|Bird Hunt Silver Sneak]]>><<set $birdSilverHunt.player.action to "crawlLeft">><</link>><<note "Sneaky, but slow" "teal">>
+		<br>
+		<<if !_onGuard>>
+			<<caveicon "east">><<link[[Move right|Bird Hunt Silver Sneak]]>><<set $birdSilverHunt.player.action to "moveRight">><</link>>
+			<br>
+		<</if>>
+		<<caveicon "right">><<link[[Crawl right|Bird Hunt Silver Sneak]]>><<set $birdSilverHunt.player.action to "crawlRight">><</link>><<note "Sneaky, but slow" "teal">>
+		<br><br>
+
+		<<icon "crime.png">><<link[[Hide|Bird Hunt Silver Sneak]]>><<set $birdSilverHunt.player.action to "hide">><</link>>
+		<br>
+		<<if !_onGuard>>
+			<<crimeicon "mark">><<link[[Peek|Bird Hunt Silver Sneak]]>><<set $birdSilverHunt.player.action to "peek">><</link>>
+			<br>
+		<<else>>
+			<span class="red">You can't peek out right now.</span>
+			<br>
+		<</if>>
+	<</if>>
+	<<set $birdSilverHunt.timer++>>
+<</if>>
+
+:: Bird Hunt Silver Approach
+<<effects>>
+You've finally made it. Being this close, you can finally make out what it is.
+<br><br>
+
+It's a silver bar of quite notable size. It's set up in such a way that the light coming from the opening in the ceiling is reflected and seemingly amplified by it. No wonder it's so well guarded.
+<br><br>
+
+Only one person remains to protect it, the <<person4>><<person>>. You look around, hoping to see something you can use to distract <<him>>. Your gaze falls on the cages containing the lurkers.
+<br><br>
+
+<<switch $birdSilverHunt.suspicion>>
+	<<case 0>>You doubt <<hes>> paying enough attention to notice you sneak up to the cages.
+	<<case 1>><<He>> looks around occasionally. You'll have to be careful.
+	<<case 2>><<He>> seems quite alert. Sneaking up to the cages without being spotted won't be easy, but there's nothing else you can do.
+<</switch>>
+<br><br>
+
+<<set $skulduggerydifficulty to 100 + ($birdSilverHunt.suspicion * 100) + ($birdSilverHunt.timer * 5)>>
+<<link [[Release the lurkers|Bird Hunt Silver Release]]>><</link>><<skulduggerydifficulty>>
+<br>
+
+:: Bird Hunt Silver Release
+<<effects>>
+
+You wait for an opportune moment and slip out of your hiding place.
+<<if $skulduggerysuccess>>
+	You wait for another lurker to walk close to the silver bar. While the <<person>> has <<his>> back turned, you swiftly approach the cages. They're only locked by a simple latch, making it very easy to open them.
+	<br><br>
+
+	<span class="green">You open up as many cages as you can and quickly hide again.</span> Some of the lurkers make no move to leave the cage, though most do. As they start to skitter, the noise gets <<his>> attention. "What...? How did you all get out?!" <<he>> exclaims. You rush to grab the silver bar from the pedestal.
+	<br><br>
+
+	<<if $awarelevel gte 2>>
+		As your hand brushes against the silver, you feel like you're at peace for a moment. It's a strange sensation, clashing with the adrenaline of your daring theft.
+	<<elseif $innocencestate is 1>>
+		The silver bar feels smooth to the touch.
+	<<else>>
+		As you touch the silver, you feel a strange tingle in your hand. It leaves as quickly as it came.
+	<</if>>	
+	You take it from the central pedestal, where light shines down. The cave immediately becomes much darker. "Goddamn it, what now?!" you hear the <<person>> scream. "Someone's here! And they've got the Lure!"
+	<br><br>
+
+	<<link [[Next|Bird Hunt Silver Escape]]>><</link>>
+	<br>
+<<else>>
+	You sneak over to the cages while the <<person4>> isn't looking. They're only locked by a simple latch, making it very easy to open them.
+	<br><br>
+
+	You open up as many cages as you can. Some of the lurkers don't move at all, simply laying there limply. The ones that do leave make enough noise for the <<person>> to turn around. "What the hell is-" <<he>> begins to speak, <span class="red">then stops as <<he>> notices you</span>. It's still possible for you to steal the silver bar if you act fast. With no time to spare, you rush the <<person>> before <<he>> can yell for help.
+	<br><br>
+
+	<<endevent>>
+	<<loadNPC 0 "estateHuntGuardCaptain">>
+
+	<<link [[Next|Bird Hunt Silver Fight]]>><<set $fightstart to 1>><</link>>
+	<br>	
+<</if>>
+
+:: Bird Hunt Silver Fight
+<<if $fightstart is 1>>
+	<<set $fightstart to 0>>
+	<<neutral 1>>
+	<<violence 1>>
+	<<maninit>>
+	<<set $enemytrust -= 100>>
+	<<set $enemyanger += 200>>
+	<<set $enemyhealth to 550>>
+	<<set $enemyhealthmax to 550>>
+	<<npcidlegenitals>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend or ($pain gte 100 and $willpowerpain is 0)>>
+	<span id="next"><<link [[Next|Bird Hunt Silver Fight Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Bird Hunt Silver Fight]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Bird Hunt Silver Fight Finish
+<<effects>>
+<<if $pain gte 100 and $willpowerpain is 0>>
+	The <<person>> is too much for you. You're left helpless on the ground. "There's an intruder here, and you all let <<phim>> get this far!" <<he>> yells.
+
+	There's nothing more you can do. You've been caught.
+	<<clotheson>>
+	<<endcombat>>
+
+	<<link [[Next|Bird Hunt Silver Fail]]>><</link>>
+	<br>
+<<elseif $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>>
+
+	As <<he>> cums, you take advantage of <<his>> slowed state and smear some grit and dirt from the cave floor into <<his>> visor. While <<hes>> blinded, you push <<him>> over. You manage to rip <<his>> holster away and toss it across the room to give yourself more time. You're able to run over to the silver bar before <<he>> can even get up.
+	<<clotheson>>
+	<<endcombat>>
+
+	<<link [[Next|Bird Hunt Silver Theft]]>><</link>>
+	<br>
+<<else>>
+	You bring <<him>> low with a kick, before knocking him to the cave floor. You manage to rip <<his>> holster away and toss it across the room to give yourself more time. You're able to run over to the silver bar before <<he>> can even get up.
+	<<clotheson>>
+	<<endcombat>>
+
+	<<link [[Next|Bird Hunt Silver Theft]]>><</link>>
+	<br>
+<</if>>
+
+:: Bird Hunt Silver Theft
+<<effects>>
+
+You grab the silver bar from the open box.
+<<if $awarelevel gte 2>>
+	As your hand makes contact with it, you feel like you're at peace for a moment. It's a strange sensation, clashing with the adrenaline of your daring theft.
+<<elseif $innocencestate is 1>>
+	It feels smooth to the touch.
+<<else>>
+	As you touch it, you feel a strange tingle in your hand. It leaves as quickly as it came.
+<</if>>
+You take it from the central pedestal, where light shines down. The cave immediately becomes much darker.
+<br><br>
+
+The <<person4>><<person>> stands up. "There's an intruder! And <<pshe>> has the Lure!" 
+<br><br>
+
+:: Bird Hunt Silver Escape
+<<effects>>
+The silver bar is extremely heavy. You try to run for the exit, but get cut off by the <<person3>><<person>>. "Give that back now and we won't have to hurt ya," <<he>> says. You double back and run the other way, but are intercepted by the <<person1>><<person>> and <<person2>><<person>>. "There's nowhere for you to run, just drop the Lure and I promise we'll go easy on you," <<he>> says.
+<br><br>
+
+You dodge their grabs and try to maintain distance, but they eventually corner you to the other side of the cave. The <<person4>><<person>> cracks <<his>> neck and marches towards you.
+<br><br>
+
+"I can't deny your skill, <<girl>>. No one's gotten past me before." <<His>> voice reverberates through the now darkened cave, <<his>> visor giving it an eerie undertone. <<He>> brings <<his>> face close to yours, letting you see your own reflection. You see the etchings on the visor clearly; A pair of antlers, each one over where <<his>> eyes would be. Over where your reflection's eyes are. <<stress 12>><<ggstress>>
+<br><br>
+
+You back away, holding the silver bar behind you. <<He>> chuckles. "The Lure called to you too, didn't it? It calls to all of the Elk's children. How's about we talk a while? We could use someone like-"
+<br><br>
+
+Suddenly, you hear a heavy thumping coming from behind you. It starts slow, but speeds up rapidly. You didn't realise it until now, but you've ended up right in front of the largest hole in the wall. The sound grows louder and louder, and the chittering in the cave becomes overwhelming. The <<person4>><<person>> takes a few steps back. You turn around, and a wiry pink shape in the darkness starts to grow larger. As it approaches, you see the shiny black detailing around it. It's a massive lurker. It lunges out of the hole!
+<br><br>
+
+<<link [[Move!|Bird Hunt Silver Escape 2]]>><<bird_pass 5>><</link>>
+<br>
+
+:: Bird Hunt Silver Escape 2
+<<effects>>
+
+You deftly step aside, leaving the <<person4>><<person>> in its trajectory. It grabs onto <<him>>. "The giant! It's angry that the Lure is-" <<he>> yells as it tries to pull <<him>> into the hole. <<He>> reaches for <<his>> gun, but a pink tendril snaps out from the creature's mouth and immobilises <<his>> arm. You take advantage of <<his>> situation and rush past <<him>>. The others move to give chase, but stop when their captain yells again. "H-hey! Get it off of me! I don't want to become this things next meal!"
+<br><br>
+
+They hesitate just long enough for you to run by them. The <<person2>><<person>> yells. "Fuck! If <<pshe>> gets away with the Lure, Remy's going to kill us! You help the captain, I'm going after <<phim>>!"
+<br><br>
+
+You keep running, not daring to look back. The jagged ground does little to help your escape, but you manage to get out of the main chamber. <<ggtiredness>><<tiredness 12>>
+<br><br>
+
+<<link [[Next|Bird Hunt Silver Escape 3]]>><<bird_pass 5>><</link>>
+<br>
+
+:: Bird Hunt Silver Escape 3
+<<effects>><<set $outside to 1>><<set $location to "moor">>
+<<npc "Great Hawk" 5>>
+You run as fast as your legs will carry you. You can hear the <<person3>><<person>> running after you now, hot on your trail. Your lungs burn, and it feels like an eternity passes before you finally reach the crack leading out. You rush outside and screech, trying to get the attention of your <<beasttype 4>> as fast as possible. The <<person>> emerges from the hole after you. "Get back here you fucking <<bitch>>!" <<he>> screams through <<his>> panting.
+<br><br>
+
+As you feel like you're about to collapse, your screech is returned. Your <<beasttype 4>> swoops down. You're suddenly grabbed by the shoulders and lifted off of the ground. You recognise the feeling; The firm grip of your <<beasttype 4>>'s talons.
+<<if $monster is 1>>
+	"Don't worry, I would never drop <<wife>>," <<bhe>> says in <<bhis>> usual gentle tone.
+<<else>>
+	<<bHe>> chirps, reassuring you that you're fine.
+<</if>>
+<br><br>
+
+You can hear your pursuer cursing his luck. "Shit, SHIT! FUCK! We're so fucking dead..." is the last thing you hear before flying out of sight.
+<br><br>
+
+Once you finally catch your breath, you tell your <<beasttype 4>> that you want to go home now. <<bHe>> is more than willing to oblige.
+<br><br>
+
+<<clearNPC "estateHuntGuard0">>
+<<clearNPC "estateHuntGuard1">>
+<<clearNPC "estateHuntGuard2">>
+<<clearNPC "estateHuntGuard4">>
+
+<<link [[Next|Bird Hunt Silver Escape Tower]]>><<endevent>><<bird_pass 60>><</link>>
+<br>
+
+:: Bird Hunt Silver Escape Tower
+<<effects>><<set $outside to 0>><<set $location to "tower">>
+<<npc "Great Hawk">><<person1>>
+After a few minutes, you arrive at the tower. Your <<beasttype>> drops you off in front of the nest.
+<<if $monster is 1>>
+	"Wife did it? Wife got the landbounds' treasure?" <<bhe>> asks, excited.
+<<else>>
+	<<bHe>> squawks and chirps excitedly, eager to get a better look at what you got.
+<</if>>
+You proudly present the silver bar to <<bhim>>. Even here, it still shines brightly.
+<br><br>
+
+<<if $awarelevel gte 2>>
+	You feel like you could keep staring at it for hours. Your <<beasttype>> seems interested too. 
+<<elseif $innocencestate is 1>>
+	Looking at it for too long starts to make your eyes drift elsewhere. Your <<beasttype>> seems all too happy to keep staring at it, though.
+<<else>>
+	It's quite a wonder how the silver can be so shiny. Someone must have put a lot of time into keeping it so clean. Your <<beasttype>> seems to like it a lot.
+<</if>>
+<<if $monster is 1>>
+	"This must be the landbounds' best shiny! And now it's ours!" <<bhe>> says, almost squealing.
+<<else>>
+	<<bHis>> eyes look to be shining too as <<bhe>> chirps in joy.
+<</if>>
+As you turn the heavy bar in your hands, you notice something on the flat bottom.
+<br><br>
+
+It's some kind of symbol. A seal, or maybe a manufacturer's mark. A large circle containing a series of twisting, tangled knots, wrapping in on each other in perfect symmetry. The patterns within have the texture of cut wood. As the branches move outwards, they split into smaller and smaller pieces, and no matter how hard you look, you don't see an end to them. It's gouged into the silver itself, yet the ridges within still seem perfect. It's incredibly intricate, far too precise to be done with human hands.
+The light catches the symbol as you look, creating a brilliant pattern that seems to persist when you close your eyes. For a moment, it looks just like it did back in the cave.
+<br><br>
+
+<<link [[Next|Bird Hunt Silver Escape Tower 2]]>><</link>>
+<br>
+
+:: Bird Hunt Silver Escape Tower 2
+<<effects>>
+You're interrupted by the <<beasttypes>> <<if $monster is 1>>hand<<else>>beak<</if>> brushing against your cheek. You turn to look at <<bhim>> and see admiration in <<bhis>> face.
+<<if $monster is 1>>
+	"<<Wife>>... you are the best. I'm proud to say we are Great Hawk and Great <<Wife>>," <<bhe>> says. You chuckle at <<bhis>> compliment.
+<<else>>
+	<<bHe>> keeps nuzzling your face with <<bhis>> beak while chirping softly.
+<</if>>
+<<bHes>> clearly very proud of you<<if $birdSilverHunt.failed gte 1>>, despite your previous failures<</if>>.
+<br><br>
+
+Exhausted from your mission, you sit down and lean against <<bhis>> fluffy chest.
+<<switch $speech_attitude>>
+	<<case "meek">>"I love you... a lot," you say.
+	<<case "bratty">>"You really are a great <<beasttype>>," you say.
+	<<default>>"I love you," you say.
+<</switch>>
+<<bHe>> looks quite happy to hear your words.
+<<if $remy_seen is "farm" or $remy_seen is "livestock" or $livestock_intro isnot undefined>>
+	As you rest against <<bhim>>, your thoughts drift to Remy. <<nnpc_He "Remy">> probably won't be very happy when <<nnpc_he "Remy">> hears what happened to <<nnpc_his "Remy">> silver bar. But worrying about that won't help, so you just close your eyes and think about your <<if $monster is 1>><<nnpc_wife "Great Hawk">><<else>>partner<</if>> instead.
+<</if>>
+<br><br>
+
+After a few minutes of rest, you stand up, feeling refreshed.
+<<if $monster is 1>>
+	"Hope <<wife>> is feeling well now," <<bhe>> says, standing up as well.
+<<else>>
+	<<bHe>> looks at you affectionately.
+<</if>>
+You tell <<bhim>> you're alright now that you've caught your breath. <<bHe>> nods and walks off to the perch. You realise that you're still holding the silver bar. You still need to decide where to put it. Such a valuable prize deserves its own spot somewhere, but for now you'll just put it in a shaded spot so that the shine won't be too distracting.
+<br><br>
+<<set $bird.hunts.estate to "complete">>
+<<world_corruption "hard" -1>>
+<<unset $birdSilverHunt>>
+<<unset $birdSilverHuntCooldown>>
+<<unset $birdSilverHuntGuards>>
+
+<<link[[Next|Bird Tower]]>><<endevent>><</link>>
+<br>
+
+:: Bird Hunt Silver Fail
+<<effects>>
+<<loadNPC 0 "estateHuntGuard0">>
+<<loadNPC 1 "estateHuntGuard1">>
+<<loadNPC 2 "estateHuntGuard2">>
+<<loadNPC 3 "estateHuntGuardCaptain">>
+<<clearNPC "estateHuntGuard4">>
+Before you know it, all the guards have rushed over to you. They have you surrounded, blocking any possible way of escaping. 
+<<if $birdSilverHunt.failed is 0>>
+	"What's a little birdie like you doing in a place like this?" the <<person4>><<person>> asks sternly. <<His>> voice reverberates throughout the chamber, the visor giving it an intimidating tone. <<He>> brings <<his>> face close to yours, letting you clearly see your own reflection. You see the etchings on the visor more clearly. A pair of antlers, each one over where <<his>> eyes would be. Over where your reflection's eyes are. <<stress 12>><<ggstress>>
+	<br><br>
+
+	<<switch $speech_attitude>>
+		<<case "meek">>"U-um... I... fell?" you respond, trying your best to sound innocent.
+		<<case "bratty">>"I came down to see what's behind that lovely mask of yours," you say sarcastically. 
+		<<default>>"I just got a bit lost, that's all," you respond, trying your best to sound innocent.
+	<</switch>>
+	<br>
+	"Very well. We have ways of making you talk back at home," <<he>> says. "Restrain <<phim>>." You consider resisting, but the gun on <<his>> hip makes you think twice about that.
+	<br><br>
+
+	The <<person1>><<person>> and <<person2>><<person>> grab you by the arms. The <<person3>><<person>> looks at you lustfully. "We'll have you talking real soon," <<he>> says. "Let's throw <<pher>> in the van first, have some fun." The others agree, but are silenced by the captain.<br>
+	"Control yourselves. We don't have time for... pleasure," <<he>> says with a drawl. "Move."
+<<else>>
+	The <<person1>><<person>> and <<person2>><<person>> quickly rush in to restrain you. The <<person4>><<person>> steps forward. "You again? Of course. Another fool drawn to the Lure."
+	<br>
+	
+	The <<person1>><<person>> gets right in your face. "Thought you could slip past us this time, huh? Well, this time you won't get away so easily. We're prepared for your little pet." <<He>> brandishes one of the bludgeons.<br>
+	"That stupid bird won't be able to help you once we clip its wings," the <<person3>><<person>> adds, holding another bludgeon.<br>
+	"Don't take this lightly. We can't afford to let <<phim>> get away again," the <<person4>><<person>> says. "Bring her outside, let's see if we can rid ourselves of the terror forever." <<stress 24>><<gggstress>>
+<</if>>
+<br><br>
+
+<<set $birdSilverHunt.failed++>>
+<<set $birdSilverHuntCooldown to 14>>
+<<unset $birdSilverHuntGuards>>
+<<run delete $birdSilverHunt.player>>
+<<unset $birdSilverHunt.distance to 0>>
+<<unset $birdSilverHunt.timer to 0>>
+<<unset $birdSilverHunt.lurkerSpawn to "none">>
+<<unset $birdSilverHunt.freebie to false>>
+On <<person4>><<his>> command, they begin leading you out.
+<br><br>
+
+<<link [[Next|Bird Hunt Silver Fail Return]]>><</link>>
+<br>
+
+:: Bird Hunt Silver Fail Return
+<<effects>>
+<<npc "Great Hawk" 5>>
+<<if $birdSilverHunt.failed is 1>>
+	They walk you out of the chamber. The <<person3>><<person>> is ordered to stay behind to look after their gear. "Soon enough you'll be telling us all you know," the captain says ominously. After a bit, you reach the crack leading outside.
+	<br><br>
+
+	The <<person1>><<person>> roughly shoves you out, causing you to stumble. "Don't even think about running off. Even if you get away, you can't outrun our van," <<he>> says.
+	<br><br>
+	
+	You look to the skies and see the Great Hawk. And <<bhe 4>> sees you. You scream and start thrashing around. The <<person1>><<person>> tries to restrain you. "Hey, quit squirming you little-"
+	<br><br>
+
+	<<Hes>> knocked down as a blur of brown feathers streaks by in an instant. "Why is that stupid fucking bird still here?!" the <<person2>><<person>> yells into the radio on <<his>> vest. <<He>> doesn't recieve an answer. You break free from <<his>> grasp and start running. The captain tries to chase after you, and is knocked down by another swoop. From the ground, <<he>> reaches for <<his>> gun, but suddenly freezes in place. You see your <<beasttype 4>>'s petrifying gaze reflected in <<his>> visor, and watch yourself get grabbed by the shoulders and lifted away.
+	<br><br>
+
+	<<if $monster is 1>>
+		"We need to leave fast, <<wife>>," <<bhe 4>> says. You agree.
+	<<else>>
+		<<bHe 4>> screeches triumphantly.
+	<</if>>
+	You can still hear the guards yelling out curses as you fly away.
+<<else>>
+	They lead you outside. "Alright, can anyone see where that damn bird is?" the <<person2>><<person>> asks.<br>
+	"No, I don't see it anywhe-" the <<person3>><<person>> is about to respond before being cut off by a divebomb.<br>
+	"Fuck, it's already here!" You try to get free, but with two people holding you, it's just not possible. You keep struggling as the <<beasttype 4>> prepares for another dive.<br><br>
+
+	<<bHe 4>> begins diving down towards the <<person2>><<person>>. "Not so fast!" the <<person4>><<person>> yells, preparing to strike <<bhim 4>> down. Before <<he>> swings, you manage to kick <<him>> just hard enough to cause <<him>> to lose <<his>> stance. However, <<his>> swing still lands, hurting your <<if $monster is 1>><<nnpc_wife "Great Hawk">><<else>>partner<</if>>. At least <<bhes 4>> still airborne, and <<bhe 4>> even managed to push the <<person2>> away from you. With one hand free, you're able to punch the <<person1>><<person>> in the face to free yourself.
+	<br><br>
+	
+	"You're going nowhere!" the <<person4>> yells, lifting <<his>> bludgeon and preparing to swing it right at you. With one last dive, the <<beasttype 4>> swoops in and grabs you, inadvertently taking the blow for you. This time the it's enough to cause <<bhim>> to elicit a loud screech of pain. Despite that, <<bhe>> manages to keep flying.
+	<br><br>
+	
+	<<if $monster is 1>>
+		<<bHe 4>> breathes heavily. "W-we go home, <<wife>>," <<bhe>> manages to say.
+	<<else>>
+		<<bHe>> tries to screech, but it comes out sounding squeaky.
+	<</if>>
+	In spite of <<bhis>> injury, the <<beasttype>> flies you all the way back to the tower.
+<</if>>
+<br><br>
+
+<<link [[Next|Bird Hunt Silver Fail Tower]]>><<endevent>><<bird_pass 30>><</link>>
+<br>
+
+:: Bird Hunt Silver Fail Tower
+<<effects>><<set $outside to 0>><<set $location to "tower">>
+<<npc "Great Hawk">><<person1>>
+<<set $bird.timer to 120>>
+<<if $birdSilverHunt.failed is 1>>
+	<<bHe>> lands you on the perch, and circles for a moment before landing. <<bHe>> stands over you.
+	<<if $monster is 1>>
+		"What happened, why did <<wife>> get caught? Did the landbound hurt you?" <<bhe>> barrages you with questions.
+	<<else>>
+		<<bHe>> begins fussing over you, looking you up and down to make sure you're alright.
+	<</if>>
+	You assure <<bhim>> that you're alright.
+	<<if $monster is 1>>
+		<<bHe>> looks a bit hesitant. "Maybe it would be better if we leave the landbound alone? I don't want <<wife>> to get in trouble again," <<bhe>> says.
+	<<else>>
+		After confirming you really are alright, <<bhe>> stops to look at you pleadingly. You can tell <<bhe>> doesn't want you to try that again.
+	<</if>>
+	<br><br>
+
+	You tell <<bhim>> you won't try that again for a while. Not like you could if you wanted to, since they'll certainly be more on guard for quite some time. <<bHe>> seems somewhat satisfied by your answer, though it's clear <<bhe>> would prefer to give up.
+<<else>>
+	<<set $bird.injured to 20>>
+	<<set $bird.override to "rest">>
+	<<set $bird.overrideTimer to 300>>
+	<<set $bird.timer to 300>>
+	<<bHe>> manages to get you both back into the tower before collapsing from <<bhis>> wounds. You immediately apologies to <<bhim>> for putting <<bhim>> in danger.
+	<br><br>
+	
+	<<if $monster is 1>>
+		<<bHe>> does not say anything, looking too tired to respond.
+	<<else>>
+		<<bHe>> looks too exhausted to respond.
+	<</if>>
+	You try your best to comfort <<bhim>> by petting <<bhis>> head. You look over <<bhis>> wings. <<bHis>> injury looks quite nasty, but it should still heal on its own.
+	<br><br>
+
+	You apologise to <<bhim>> again, telling <<bhim>> you won't fail next time. Sensing that your answer did not please <<bhim>>, you decide it would be best to leave <<bhim>> be for now.
 <</if>>
 <br><br>
 
