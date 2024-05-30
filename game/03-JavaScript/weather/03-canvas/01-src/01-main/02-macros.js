@@ -7,6 +7,8 @@ Macro.add("skybox", {
 Macro.add("banner", {
 	handler() {
 		Weather.banner.skybox.appendTo(this.output);
+
+		/* Remove the below to get rid of the chromium missing image error */
 		// Use fallback image if it exists (modded game) - otherwise just use the banner canvas
 		const bannerFallbackImage = new Image();
 		bannerFallbackImage.src = "img/misc/banner.png";

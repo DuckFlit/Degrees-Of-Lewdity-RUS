@@ -19,6 +19,7 @@ $(document).on(":passageend", () => {
 		const timeData = localStorage.getItem("time");
 		let startTime = new DateTime(2022, 8, 10, 23, 45);
 		if (weatherData) {
+			Weather.WeatherGeneration.generate(Time.date);
 			Packer.unpackWeatherData(weatherData);
 			startTime = new DateTime(parseInt(timeData, 36));
 		}
