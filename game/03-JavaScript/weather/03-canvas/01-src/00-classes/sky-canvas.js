@@ -77,11 +77,11 @@ Weather.Renderer.Sky = class {
 	 * Executes once - when page is loaded
 	 */
 	initialize() {
-		// async
-		this.initOrbits();
+		this.initSun();
+		this.initMoon();
 		this.initFadables();
 		this.setupLayers();
-		this.setupCanvas(); // await
+		this.setupCanvas();
 	}
 
 	setupLayers() {
@@ -111,11 +111,12 @@ Weather.Renderer.Sky = class {
 		this.loaded.value = true;
 	}
 
-	// todo initOrbits doesn't run every day - should run weekly or daily? (run at midday to update moon, run at midnight to update sun)
-	initOrbits() {
+	initSun() {
 		const sunOrbitSettings = this.settings.orbits.sun;
 		this.orbitals.sun = new Orbital(this.settings, interpolateObject(sunOrbitSettings.summer, sunOrbitSettings.winter, Time.date.seasonFactor), Time.date);
+	}
 
+	initMoon() {
 		const moonOrbitSettings = this.settings.orbits.moon;
 		this.orbitals.moon = new Orbital(
 			this.settings,

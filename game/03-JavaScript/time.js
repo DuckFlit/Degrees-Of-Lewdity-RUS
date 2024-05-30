@@ -518,6 +518,8 @@ function weekPassed() {
 function dayPassed() {
 	const fragment = document.createDocumentFragment();
 
+	Weather.sky.initSun();
+
 	if (V.statFreeze) return fragment;
 
 	fragment.append(wikifier("seenPassageChecks"));
@@ -994,6 +996,7 @@ function minutePassed(minutes) {
 function noonCheck() {
 	const fragment = document.createDocumentFragment();
 
+	Weather.sky.initMoon();
 	Weather.sky.setMoonPhase();
 
 	if (V.statFreeze) return fragment;
