@@ -11,9 +11,9 @@ window.StartConfig = {
 	debug: false,
 	enableImages: true,
 	enableLinkNumberify: true,
-	version: "0.4.7.5",
+	version: "0.5.0.0",
 	versionName: "",
-	sneaky: false,
+	sneaky: true,
 };
 
 State.prng.init();
