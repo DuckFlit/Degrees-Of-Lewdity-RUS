@@ -230,7 +230,7 @@
 		<br><br>
 		<<if $harpy gte 6 and $syndromebird is 1 and $bird.hunts.lurkers is true>>
 			<<flight_time_check 30 "silent">>
-			<<print '<<link [[Hunt for your spouse ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Hunt Start Injured]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<unset $birdPerch>><<bird_pass _flightTime>><<npcincr "Great Hawk" love 1>><<npcincr "Great Hawk" dom -3>><</link>>'>><<glove>><<lldom>><<print _fatigueText>>
+			<<link [[Hunt for your spouse (<<print getTimeString(_hoursPassed, _minutesPassed)>>)|Bird Hunt Start Injured]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<unset $birdPerch>><<bird_pass _flightTime>><<npcincr "Great Hawk" love 1>><<npcincr "Great Hawk" dom -3>><</link>><<glove>><<lldom>><<print _fatigueText>>
 			<br>
 		<</if>>
 		<<if $birdPerch is 1>>
@@ -260,7 +260,7 @@
 		<br><br>
 
 		<<flight_time_check 30 "silent">>
-		<<print '<<link [[Hunt for your spouse ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Hunt Start Injured]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<unset $birdPerch>><<bird_pass _flightTime>><<npcincr "Great Hawk" love 1>><<npcincr "Great Hawk" dom -3>><</link>>'>><<glove>><<lldom>><<print _fatigueText>>
+		<<link [[Hunt for your spouse ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Hunt Start Injured]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<unset $birdPerch>><<bird_pass _flightTime>><<npcincr "Great Hawk" love 1>><<npcincr "Great Hawk" dom -3>><</link>><<glove>><<lldom>><<print _fatigueText>>
 		<br>
 		<<if $birdPerch is 1>>
 			<<link [[Do not|Bird Tower Perch]]>><<npcincr "Great Hawk" love -1>><<npcincr "Great Hawk" dom 1>><<endevent>><</link>><<llove>><<gdom>>
@@ -292,7 +292,7 @@
 				<<if $tiredness gte (C.tiredness.max / 5) * 4>>
 					<span class="red">You're too exhausted to join the hunt.</span>
 				<<else>>
-					<<print '<<link [[Join the hunt ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Tower Hunt Ask]]>><</link>>'>><<print _fatigueText>>
+					<<link [[Join the hunt ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Tower Hunt Ask]]>><</link>><<print _fatigueText>>
 				<</if>>
 				<br>
 				<<link [[Stay|Bird Tower No Hunt]]>><</link>>
@@ -330,7 +330,7 @@
 			<<if $birdBask is 1 and $monster is 1>>
 				gingerly helps you stand, and steps to the edge of the perch.
 			<<else>>
-				<<bhis>> spot on the perch.
+				rises from <<bhis>> spot on the perch.
 			<</if>>
 			<<unset $birdBask>>
 		<</if>>
@@ -356,7 +356,7 @@
 				<<if $tiredness gte (C.tiredness.max / 5) * 4>>
 					<span class="red">You're too exhausted to join the hunt.</span>
 				<<else>>
-					<<print '<<link [[Join the hunt ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Tower Hunt Ask]]>><</link>>'>><<print _fatigueText>>
+					<<link [[Join the hunt ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Tower Hunt Ask]]>><</link>><<print _fatigueText>>
 				<</if>>
 				<br>
 				<<link [[Stay|Bird Tower No Hunt]]>><</link>>
@@ -753,7 +753,7 @@
 
 <<widget "bird_schedule">>
 	<<set $_eggCount to Object.values($children).filter(child => child.location is "tower" and child.eggTimer).length>>
-	<<if $syndromebird gte 1 and !$daily.birdNightFlightCheck and !$weekly.birdNightFlight and !Time.isBloodMoon()>>
+	<<if $syndromebird gte 1 and !$daily.birdNightFlightCheck and !$weekly.birdNightFlight and !Weather.bloodMoon>>
 		<<set $daily.birdNightFlightCheck to true>>
 		<<if $rng lte C.npc["Great Hawk"].love>>
 			<<set $daily.birdNightFlightTrigger to true>>
@@ -882,7 +882,7 @@
 		<<npc "Great Hawk">>
 		<<bird_hunt_start>>
 	<<elseif $bird.activity is "sleep" and $birdSleep is undefined and $bird.state is "home">>
-		<<if $daily.birdNightFlightTrigger and !$weekly.birdNightFlight and ["clear","lightClouds"].includes(Weather.name) and !Time.isBloodMoon()>>
+		<<if $daily.birdNightFlightTrigger and !$weekly.birdNightFlight and ["clear","lightClouds"].includes(Weather.name) and !Weather.bloodMoon>>
 			<<endevent>>
 			<<npc "Great Hawk">>
 			<<set $weekly.birdNightFlight to true>>
@@ -1004,7 +1004,7 @@
 		<<bird_hunt_start>>
 	<<else>>
 		<<if Time.dayState is "night">>
-			<<if $daily.telescopeBlood and Time.isBloodMoon()>>
+			<<if $daily.telescopeBlood and Weather.bloodMoon>>
 				<span class="red">You don't want to look at the sky right now.</span>
 			<<else>>
 				<<link [[Watch the sky (1:00)|Bird Tower Telescope Sky]]>><<bird_pass 60>><</link>>
@@ -1045,12 +1045,12 @@
 				<span class="red">You aren't lewd enough to fly exposed towards the town or farmlands.</span>
 				<br>
 			<<else>>
-				<<farmicon>><<print '<<link [[Farmlands ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Tower Farmlands]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<unset $birdPerch>><<endevent>><</link>>'>><<flight_text>><<print _fatigueText>><<if $exposed gte 2>><<exhibitionist4>><</if>>
+				<<farmicon>><<link [[Farmlands (<<print getTimeString(_hoursPassed, _minutesPassed)>>)|Bird Tower Farmlands]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><<unset $birdPerch>><<endevent>><</link>><<flight_text>><<print _fatigueText>><<if $exposed gte 2>><<exhibitionist4>><</if>>
 				<br>
-				<<entertownicon>><<print '<<link [[Town ('+_hoursPassedLong+':'+ (_minutesPassedLong lt 10 ? "0" : "") + _minutesPassedLong + ')|Bird Tower Town]]>><<set $fatigueMod to (_fatigueMod + 1)>><<set $flightTime to _flightTimeLong>><<unset $birdPerch>><<endevent>><</link>>'>><<flight_text>><<print _fatigueText>><<if $exposed gte 2>><<exhibitionist4>><</if>>
+				<<entertownicon>><<link [[Town (<<print getTimeString(_hoursPassedLong, _minutesPassedLong)>>)|Bird Tower Town]]>><<set $fatigueMod to (_fatigueMod + 1)>><<set $flightTime to _flightTimeLong>><<bird_pass _flightTimeLong>><<unset $birdPerch>><<endevent>><</link>><<flight_text>><<print _fatigueText>><<if $exposed gte 2>><<exhibitionist4>><</if>>
 				<br>
 			<</if>>
-			<<foresticon>><<print '<<link [[Forest ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Tower Forest]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<unset $birdPerch>><<endevent>><</link>>'>><<flight_text>><<print _fatigueText>>
+			<<foresticon>><<link [[Forest (<<print getTimeString(_hoursPassed, _minutesPassed)>>)|Bird Tower Forest]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><<unset $birdPerch>><<endevent>><</link>><<flight_text>><<print _fatigueText>>
 			<br>
 			<<birdicon "fly_down">><<link [[Base of the tower (0:01)|Bird Tower Glide 2]]>><<unset $birdPerch>><<bird_pass 1>><<endevent>><</link>><<flight_text>>
 			<br>
@@ -1166,24 +1166,26 @@
 <</widget>>
 
 <<widget "flight_effects">>
-	<<if Weather.precipitation is "rain">>
-		<<if !$worn.upper.type.includes("swim") and !$worn.upper.type.includes("naked")>>
-			<<set $upperwet += Math.floor($flightTime * 4)>>
+	<<if $flightTime>>
+		<<if Weather.precipitation is "rain">>
+			<<if !$worn.upper.type.includes("swim") and !$worn.upper.type.includes("naked")>>
+				<<set $upperwet += Math.floor($flightTime * 4)>>
+			<</if>>
+			<<if !$worn.lower.type.includes("swim") and !$worn.lower.type.includes("naked")>>
+				<<set $lowerwet += Math.floor($flightTime * 4)>>
+			<</if>>
+			<<if !$worn.under_lower.type.includes("swim") and !$worn.under_lower.type.includes("naked")>>
+				<<set $underlowerwet += Math.floor($flightTime * 4)>>
+			<</if>>
+			<<if !$worn.under_upper.type.includes("swim") and !$worn.under_upper.type.includes("naked")>>
+				<<set $underupperwet += Math.floor($flightTime * 4)>>
+			<</if>>
 		<</if>>
-		<<if !$worn.lower.type.includes("swim") and !$worn.lower.type.includes("naked")>>
-			<<set $lowerwet += Math.floor($flightTime * 4)>>
-		<</if>>
-		<<if !$worn.under_lower.type.includes("swim") and !$worn.under_lower.type.includes("naked")>>
-			<<set $underlowerwet += Math.floor($flightTime * 4)>>
-		<</if>>
-		<<if !$worn.under_upper.type.includes("swim") and !$worn.under_upper.type.includes("naked")>>
-			<<set $underupperwet += Math.floor($flightTime * 4)>>
-		<</if>>
+		<<set _tempTired to (Math.floor($flightTime / 4) + 1)>>
+		<<tiredness _tempTired>>
+		<<unset $flightTime>>
+		<<unset $fatigueMod>>
 	<</if>>
-	<<set _tempTired to (Math.floor($flightTime / 4) + 1)>>
-	<<tiredness _tempTired>>
-	<<unset $flightTime>>
-	<<unset $fatigueMod>>
 <</widget>>
 
 <<widget "flight_distance_check">>
@@ -1296,19 +1298,19 @@
 		<br>
 		<<capture _hoursPassed _minutesPassed _fatigueMod _flightTime _fatigueText>>
 			<<if $bird.hunts.distanceNorth lt 5>>
-				<<print '<<link [[North ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Hunt Event]]>><<set $bird.hunts.direction to "north">><<set $bird.hunts.distanceNorth++>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><</link>>'>><<print _fatigueText>>
+				<<link [[North (<<print getTimeString(_hoursPassed, _minutesPassed)>>)|Bird Hunt Event]]>><<set $bird.hunts.direction to "north">><<set $bird.hunts.distanceNorth++>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><</link>><<print _fatigueText>>
 				<br>
 			<</if>>
 			<<if $bird.hunts.distanceEast lt 5>>
-				<<print '<<link [[East ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Hunt Event]]>><<set $bird.hunts.direction to "east">><<set $bird.hunts.distanceEast++>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><</link>>'>><<print _fatigueText>>
+				<<link [[East (<<print getTimeString(_hoursPassed, _minutesPassed)>>)|Bird Hunt Event]]>><<set $bird.hunts.direction to "east">><<set $bird.hunts.distanceEast++>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><</link>><<print _fatigueText>>
 				<br>
 			<</if>>
 			<<if $bird.hunts.distanceNorth gt -5>>
-				<<print '<<link [[South ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Hunt Event]]>><<set $bird.hunts.direction to "south">><<set $bird.hunts.distanceNorth-->><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><</link>>'>><<print _fatigueText>>
+				<<link [[South (<<print getTimeString(_hoursPassed, _minutesPassed)>>)|Bird Hunt Event]]>><<set $bird.hunts.direction to "south">><<set $bird.hunts.distanceNorth-->><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><</link>><<print _fatigueText>>
 				<br>
 			<</if>>
 			<<if $bird.hunts.distanceEast gt -5>>
-				<<print '<<link [[West ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Hunt Event]]>><<set $bird.hunts.direction to "west">><<set $bird.hunts.distanceEast-->><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><</link>>'>><<print _fatigueText>>
+				<<link [[West (<<print getTimeString(_hoursPassed, _minutesPassed)>>)|Bird Hunt Event]]>><<set $bird.hunts.direction to "west">><<set $bird.hunts.distanceEast-->><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><</link>><<print _fatigueText>>
 				<br>
 			<</if>>
 		<</capture>>
@@ -2845,14 +2847,14 @@
 							The next eggs pass easily, but the last one gets stuck, having nothing behind it to help push. You sit there pushing for more agonising minutes, but eventually you manage to push it out. Your <<pussy>> remains slightly opened. You pant in exertion, feeling dizzy.
 						<</if>>
 					<<else>>
-						the egg passes through your cervix. It sends shivers through your whole body as it glides down your vaginal canal. You grip the nest as the egg begins to crown.
+						the egg pass through your cervix. It sends shivers through your whole body as it glides down your vaginal canal. You grip the nest as the egg begins to crown.
 						It's only one, but it might as well be a regular human baby with how large it feels. You spread your legs further. Your <<pussy>> stretches more, trying to make room for it to escape. After several minutes of tortured pushing, it finally escapes you. You pant in exertion, feeling dizzy.
 					<</if>>
 				<<else>>
 					<<if $_eggnant.fetus.length gte 2>>
 						<span class="lewd">$_eggnant.fetus.length fertilised bird eggs</span> pass through your $_eggnantGenital, each one slowly spreading your entrance before plopping out and landing in your nest.
 					<<else>>
-						<span class="lewd">a fertilised bird egg</span> passes through your $_eggnantGenital, slowly spreading your entrance before plopping out and landing in your nest.
+						<span class="lewd">a fertilised bird egg</span> pass through your $_eggnantGenital, slowly spreading your entrance before plopping out and landing in your nest.
 					<</if>>
 				<</if>>
 				<<if $arousal gte $arousalmax>>
@@ -2873,6 +2875,7 @@
 				Something big is moving around inside of you, sending waves of both pain and pleasure through you as it rubs against your walls. <<arousal 4000>><<garousal>>
 				<br><br>
 
+				You gasp as you feel
 				<<if $_eggnantGenital is "cervix">>
 					<<if $_eggnant.fetus.length gte 2>>
 						the eggs pass through your cervix. They send shivers through your whole body as they glide down your vaginal canal. You grip your bedsheets as the eggs begin to crown.
@@ -2891,14 +2894,14 @@
 							The next eggs pass easily, but the last one gets stuck, having nothing behind it to help push. You sit there pushing for more agonising minutes, but eventually you manage to push it out. Your <<pussy>> remains slightly opened. You pant in exertion, feeling dizzy.
 						<</if>>
 					<<else>>
-						the egg passes through your cervix. It sends shivers through your whole body as it glides down your vaginal canal. You grip your bedsheets as the egg begins to crown.
+						the egg pass through your cervix. It sends shivers through your whole body as it glides down your vaginal canal. You grip your bedsheets as the egg begins to crown.
 						It's only one, but it might as well be a regular human baby with how large it feels. You spread your legs further. Your <<pussy>> stretches more, trying to make room for it to escape. After several minutes of tortured pushing, it finally escapes you. You pant in exertion, feeling dizzy.
 					<</if>>
 				<<else>>
 					<<if $_eggnant.fetus.length gte 2>>
 						<span class="lewd">$_eggnant.fetus.length fertilised bird eggs</span> pass through your $_eggnantGenital, each one slowly spreading your entrance before plopping out and landing in your nest.
 					<<else>>
-						<span class="lewd">a fertilised bird egg</span> passes through your $_eggnantGenital, slowly spreading your entrance before plopping out and landing in your nest.
+						<span class="lewd">a fertilised bird egg</span> pass through your $_eggnantGenital, slowly spreading your entrance before plopping out and landing in your nest.
 					<</if>>
 				<</if>>
 				<<if $arousal gte $arousalmax>>
@@ -2919,6 +2922,7 @@
 			Something is moving around inside of you, sending waves of pleasure through you as it rubs against your walls. <<arousal 2000>><<garousal>>
 			<br><br>
 
+			You gasp as you feel
 			<<if $_eggnantGenital is "cervix">>
 				<<if $harpyEggs.count gte 2>>
 					the eggs pass through your cervix. They send shivers through your whole body as they glide down your vaginal canal. You grip your bedsheets as the eggs begin to crown.
@@ -2937,13 +2941,14 @@
 						The next eggs pass easily, but the last one gets stuck, having nothing behind it to help push. You sit there pushing for more agonising minutes, but eventually you manage to push it out. Your <<pussy>> remains slightly opened. You pant in exertion, feeling dizzy.
 					<</if>>
 				<<else>>
+					the egg pass through your cervix. It sends shivers through your whole body as it glides down your vaginal canal. You grip your bedsheets as the egg begins to crown.
 					Without other eggs to help push it along, it gets stuck. Your <<pussy>> remains half-open with the egg plugging you. It retracts back in after a moment. You try to catch your breath, but each one is heavy. You push again, this time managing to get it all the way out.
 				<</if>>
 			<<else>>
 				<<if $harpyEggs.count gte 2>>
 					<span class="lewd">$harpyEggs.count bird eggs</span> pass through your $_eggnantGenital, each one slowly spreading your entrance before plopping out and landing in your nest.
 				<<else>>
-					<span class="lewd">a bird egg</span> passes through your $_eggnantGenital, slowly spreading your entrance before plopping out and landing in your nest.
+					<span class="lewd">a bird egg</span> pass through your $_eggnantGenital, slowly spreading your entrance before plopping out and landing in your nest.
 				<</if>>
 			<</if>>
 			<<if $arousal gte $arousalmax>>
