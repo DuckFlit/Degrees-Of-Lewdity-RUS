@@ -3868,7 +3868,7 @@ Renderer.CanvasModels["main"] = {
 
 		"face": genlayer_clothing_main('face', {
 			zfn(options) {
-				let isAltPosition = options.worn_face_setup.altposition !== undefined && V.worn.face.altposition === "alt";
+				let isAltPosition = !options.alt_override && options.worn_face_setup.altposition !== undefined && V.worn.face.altposition === "alt";
 				if (isAltPosition && (options.worn_face_setup.type.includes("cool") || options.worn_face_setup.type.includes("glasses"))) {
 					return ZIndices.over_head;
 				} else if (options.facewear_layer === "front") {
@@ -3880,7 +3880,7 @@ Renderer.CanvasModels["main"] = {
 		}),
 		"face_acc": genlayer_clothing_accessory('face', {
 			zfn(options) {
-				let isAltPosition = options.worn_face_setup.altposition !== undefined && V.worn.face.altposition === "alt";
+				let isAltPosition = !options.alt_override && options.worn_face_setup.altposition !== undefined && V.worn.face.altposition === "alt";
 				if (isAltPosition && (options.worn_face_setup.type.includes("cool") || options.worn_face_setup.type.includes("glasses"))) {
 					return ZIndices.over_head;
 				} else if (options.facewear_layer === "front") {
@@ -3904,7 +3904,7 @@ Renderer.CanvasModels["main"] = {
 		 */
 		"neck": genlayer_clothing_main('neck', {
 			srcfn(options) {
-				let isAltPosition = options.worn_neck_setup.altposition !== undefined && V.worn.neck.altposition === "alt";
+				let isAltPosition = !options.alt_override && options.worn_neck_setup.altposition !== undefined && V.worn.neck.altposition === "alt";
 				let path = 'img/clothes/neck/' +
 					options.worn_neck_setup.variable + '/' +
 					options.worn_neck_integrity + (options.nocollar ? '_nocollar' : options.serafuku ? '_serafuku' :'') +  (isAltPosition ? '_alt' : '') + '.png';
@@ -3925,7 +3925,7 @@ Renderer.CanvasModels["main"] = {
 		}),
 		"neck_acc": genlayer_clothing_accessory('neck', {
 			srcfn(options) {
-				let isAltPosition = options.worn_neck_setup.altposition !== undefined && V.worn.neck.altposition === "alt";
+				let isAltPosition = !options.alt_override && options.worn_neck_setup.altposition !== undefined && V.worn.neck.altposition === "alt";
 				let path = 'img/clothes/neck/' +
 				options.worn_neck_setup.variable + '/' +
 				'acc' +
@@ -4083,7 +4083,7 @@ function genlayer_clothing_main(slot, overrideOptions) {
 			let isHoodDown = options.hood_down &&
 				options["worn_" + slot + "_setup"].hoodposition !== undefined &&
 				options["worn_" + slot + "_setup"].outfitPrimary.head !== undefined;
-			let isAltPosition = options["worn_" + slot + "_setup"].altposition !== undefined &&
+			let isAltPosition = !options.alt_override && options["worn_" + slot + "_setup"].altposition !== undefined &&
 				V.worn[slot]?.altposition === "alt" &&
 				!options["worn_" + slot + "_setup"]?.altdisabled.includes("full");
 			let path = 'img/clothes/' +
@@ -4112,7 +4112,7 @@ function genlayer_clothing_fitted_left(slot, overrideOptions) {
 			let isHoodDown = options.hood_down &&
 				options["worn_" + slot + "_setup"].hoodposition !== undefined &&
 				options["worn_" + slot + "_setup"].outfitPrimary.head !== undefined;
-			let isAltPosition = options["worn_" + slot + "_setup"].altposition !== undefined &&
+			let isAltPosition = !options.alt_override && options["worn_" + slot + "_setup"].altposition !== undefined &&
 				V.worn[slot]?.altposition === "alt" &&
 				!options["worn_" + slot + "_setup"]?.altdisabled.includes("full");
 			let path = 'img/clothes/' +
@@ -4143,7 +4143,7 @@ function genlayer_clothing_fitted_right(slot, overrideOptions) {
 			let isHoodDown = options.hood_down &&
 				options["worn_" + slot + "_setup"].hoodposition !== undefined &&
 				options["worn_" + slot + "_setup"].outfitPrimary.head !== undefined;
-			let isAltPosition = options["worn_" + slot + "_setup"].altposition !== undefined &&
+			let isAltPosition = !options.alt_override && options["worn_" + slot + "_setup"].altposition !== undefined &&
 				V.worn[slot]?.altposition === "alt" &&
 				!options["worn_" + slot + "_setup"]?.altdisabled.includes("full");
 			let path = 'img/clothes/' +
@@ -4175,7 +4175,7 @@ function genlayer_clothing_fitted_left_acc(slot, overrideOptions) {
 			let isHoodDown = options.hood_down &&
 				setup.hoodposition !== undefined &&
 				setup.outfitPrimary.head !== undefined;
-			let isAltPosition = options["worn_" + slot + "_setup"].altposition !== undefined &&
+			let isAltPosition = !options.alt_override && options["worn_" + slot + "_setup"].altposition !== undefined &&
 				V.worn[slot]?.altposition === "alt" &&
 				!options["worn_" + slot + "_setup"]?.altdisabled.includes("acc");
 			let path = 'img/clothes/' +
@@ -4209,7 +4209,7 @@ function genlayer_clothing_fitted_right_acc(slot, overrideOptions) {
 			let isHoodDown = options.hood_down &&
 				setup.hoodposition !== undefined &&
 				setup.outfitPrimary.head !== undefined;
-			let isAltPosition = options["worn_" + slot + "_setup"].altposition !== undefined &&
+			let isAltPosition = !options.alt_override && options["worn_" + slot + "_setup"].altposition !== undefined &&
 				V.worn[slot]?.altposition === "alt" &&
 				!options["worn_" + slot + "_setup"]?.altdisabled.includes("acc");
 			let path = 'img/clothes/' +
@@ -4243,7 +4243,7 @@ function genlayer_clothing_accessory(slot, overrideOptions) {
 			let isHoodDown = options.hood_down &&
 				setup.hoodposition !== undefined &&
 				setup.outfitPrimary.head !== undefined;
-			let isAltPosition = options["worn_" + slot + "_setup"].altposition !== undefined &&
+			let isAltPosition = !options.alt_override && options["worn_" + slot + "_setup"].altposition !== undefined &&
 				V.worn[slot]?.altposition === "alt" &&
 				!options["worn_" + slot + "_setup"]?.altdisabled.includes("acc");
 			let path = 'img/clothes/' +
@@ -4271,7 +4271,7 @@ function genlayer_clothing_accessory(slot, overrideOptions) {
 function genlayer_clothing_breasts(slot, overrideOptions) {
 	return Object.assign({
 		srcfn(options) {
-			let isAltPosition = options["worn_" + slot + "_setup"].altposition !== undefined &&
+			let isAltPosition = !options.alt_override && options["worn_" + slot + "_setup"].altposition !== undefined &&
 				V.worn[slot]?.altposition === "alt" &&
 				!options["worn_" + slot + "_setup"]?.altdisabled.includes("breasts");
 			let breastImg = options["worn_" + slot + "_setup"].breast_img;
@@ -4313,7 +4313,7 @@ function genlayer_clothing_breasts(slot, overrideOptions) {
 function genlayer_clothing_belly(slot, overrideOptions) {
 	return Object.assign({
 		srcfn(options) {
-			let isAltPosition = options["worn_" + slot + "_setup"].altposition !== undefined &&
+			let isAltPosition = !options.alt_override && options["worn_" + slot + "_setup"].altposition !== undefined &&
 				V.worn[slot]?.altposition === "alt" &&
 				!options["worn_" + slot + "_setup"]?.altdisabled.includes("full");
 			let path = 'img/clothes/' +
@@ -4369,7 +4369,7 @@ function genlayer_clothing_belly(slot, overrideOptions) {
 function genlayer_clothing_belly_2(slot, overrideOptions) {
 	return Object.assign({
 		srcfn(options) {
-			let isAltPosition = options["worn_" + slot + "_setup"].altposition !== undefined &&
+			let isAltPosition = !options.alt_override && options["worn_" + slot + "_setup"].altposition !== undefined &&
 				V.worn[slot]?.altposition === "alt" &&
 				!options["worn_" + slot + "_setup"]?.altdisabled.includes("full");
 			let path = 'img/clothes/' +
@@ -4425,7 +4425,7 @@ function genlayer_clothing_belly_2(slot, overrideOptions) {
 function genlayer_clothing_belly_split(slot, overrideOptions) {
 	return Object.assign({
 		srcfn(options) {
-			let isAltPosition = options["worn_" + slot + "_setup"].altposition !== undefined &&
+			let isAltPosition = !options.alt_override && options["worn_" + slot + "_setup"].altposition !== undefined &&
 				V.worn[slot]?.altposition === "alt" &&
 				!options["worn_" + slot + "_setup"]?.altdisabled.includes("full");
 			let path = 'img/clothes/' +
@@ -4461,7 +4461,7 @@ function genlayer_clothing_belly_split_acc(slot, overrideOptions) {
 			let isHoodDown = options.hood_down &&
 				setup.hoodposition !== undefined &&
 				setup.outfitPrimary.head !== undefined;
-			let isAltPosition = options["worn_" + slot + "_setup"].altposition !== undefined &&
+			let isAltPosition = !options.alt_override && options["worn_" + slot + "_setup"].altposition !== undefined &&
 				V.worn[slot]?.altposition === "alt" &&
 				!options["worn_" + slot + "_setup"]?.altdisabled.includes("acc");
 			let path = 'img/clothes/' +
@@ -4576,7 +4576,7 @@ function genlayer_clothing_belly_acc(slot, overrideOptions) {
 			let isHoodDown = options.hood_down &&
 				setup.hoodposition !== undefined &&
 				setup.outfitPrimary.head !== undefined;
-			let isAltPosition = options["worn_" + slot + "_setup"].altposition !== undefined &&
+			let isAltPosition = !options.alt_override && options["worn_" + slot + "_setup"].altposition !== undefined &&
 				V.worn[slot]?.altposition === "alt" &&
 				!options["worn_" + slot + "_setup"]?.altdisabled.includes("acc");
 			let path = 'img/clothes/' +
@@ -4666,7 +4666,7 @@ function genlayer_clothing_breasts_acc(slot, overrideOptions) {
 function genlayer_clothing_back_img(slot, overrideOptions) {
 	return Object.assign({
 		srcfn(options) {
-			let isAltPosition = options["worn_" + slot + "_setup"].altposition !== undefined &&
+			let isAltPosition = !options.alt_override && options["worn_" + slot + "_setup"].altposition !== undefined &&
 				V.worn[slot]?.altposition === "alt" &&
 				!options["worn_" + slot + "_setup"]?.altdisabled.includes("back");
 			let setup = options["worn_" + slot + "_setup"];
@@ -4706,7 +4706,7 @@ function genlayer_clothing_back_img(slot, overrideOptions) {
 function genlayer_clothing_back_img_acc(slot, overrideOptions) {
 	return Object.assign({
 		srcfn(options) {
-			let isAltPosition = options["worn_" + slot + "_setup"].altposition !== undefined &&
+			let isAltPosition = !options.alt_override && options["worn_" + slot + "_setup"].altposition !== undefined &&
 				V.worn[slot]?.altposition === "alt" &&
 				!options["worn_" + slot + "_setup"]?.altdisabled.includes("back");
 			let path = 'img/clothes/' +
@@ -4752,10 +4752,10 @@ function genlayer_clothing_back_img_acc(slot, overrideOptions) {
 function genlayer_clothing_arm(arm, slot, overrideOptions) {
 	return Object.assign({
 		srcfn(options) {
-			let isAltPosition = options["worn_" + slot + "_setup"].altposition !== undefined &&
+			let isAltPosition = !options.alt_override && options["worn_" + slot + "_setup"].altposition !== undefined &&
 				V.worn[slot]?.altposition === "alt" &&
 				!options["worn_" + slot + "_setup"]?.altdisabled.includes("sleeves");
-			let isAltSleeve = options.alt_sleeve_state &&
+			let isAltSleeve = !options.alt_override && options.alt_sleeve_state &&
 				V.worn[slot]?.altsleeve === "alt"
 			let path = 'img/clothes/' +
 				slot + '/' +
@@ -4800,7 +4800,7 @@ function genlayer_clothing_arm(arm, slot, overrideOptions) {
 function genlayer_clothing_arm_acc(arm, slot, overrideOptions) {
 	return Object.assign({
 		srcfn(options) {
-			let isAltPosition = options["worn_" + slot + "_setup"].altposition !== undefined &&
+			let isAltPosition = !options.alt_override && options["worn_" + slot + "_setup"].altposition !== undefined &&
 				V.worn[slot]?.altposition === "alt" &&
 				!options["worn_" + slot + "_setup"]?.altdisabled.includes("sleeves") &&
 				!options["worn_" + slot + "_setup"]?.altdisabled.includes("sleeve_acc");
@@ -4846,10 +4846,10 @@ function genlayer_clothing_arm_acc(arm, slot, overrideOptions) {
 function genlayer_clothing_arm_fitted(arm, slot, overrideOptions) {
 	return Object.assign({
 		srcfn(options) {
-			let isAltPosition = options["worn_" + slot + "_setup"].altposition !== undefined &&
+			let isAltPosition = !options.alt_override && options["worn_" + slot + "_setup"].altposition !== undefined &&
 				V.worn[slot]?.altposition === "alt" &&
 				!options["worn_" + slot + "_setup"]?.altdisabled.includes("sleeves");
-			let isAltSleeve = options.alt_sleeve_state &&
+			let isAltSleeve = !options.alt_override && options.alt_sleeve_state &&
 				V.worn[slot]?.altsleeve === "alt"
 			let path = 'img/clothes/' +
 				slot + '/' +
