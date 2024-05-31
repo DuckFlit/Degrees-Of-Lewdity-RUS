@@ -203,11 +203,23 @@ Weather.BodyTemperature = (() => {
 	}
 
 	return Object.create({
-		get wetness() {
-			return calculateWetness();
+		isDecreasing() {
+			return Weather.BodyTemperature.direction < 0;
+		},
+		isIncreasing() {
+			return Weather.BodyTemperature.direction > 0;
 		},
 		get direction() {
-			return Math.sign(getRestingPoint(1) - V.player.bodyTemperature);
+			return Math.sign(Weather.BodyTemperature.target - V.player.bodyTemperature);
+		},
+		get target() {
+			if (!T.temperatureRestingPoint) {
+				T.temperatureRestingPoint = getRestingPoint(8);
+			}
+			return T.temperatureRestingPoint;
+		},
+		get wetness() {
+			return calculateWetness();
 		},
 		// For compatibility with /base-combat/ - since I don't want to touch it
 		get state() {
