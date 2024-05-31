@@ -33,7 +33,8 @@ Weather.Tooltips = (() => {
 
 	function thermometer() {
 		const tempDescription = Weather.TooltipDescriptions.bodyTemperature();
-		const waterDescription = `<br>${Weather.TooltipDescriptions.waterTemperature()}`;
+		const waterDescription = Weather.TooltipDescriptions.waterTemperature();
+		const tempChangeDescription = Weather.TooltipDescriptions.bodyTemperatureChanges();
 		const fatigueModifier = categorise(Weather.BodyTemperature.fatigueModifier, 1, Weather.tempSettings.effects.maxFatigueGainMultiplier, 4);
 		const arousalModifier = categorise(Weather.BodyTemperature.arousalModifier, 1, Weather.tempSettings.effects.maxArousalGainMultiplier, 4);
 		const painModifier = categorise(Weather.BodyTemperature.painModifier, 1, Weather.tempSettings.effects.maxPainGainMultiplier, 4);
@@ -56,7 +57,7 @@ Weather.Tooltips = (() => {
 			<br><span class="blue">Target temperature (current clothing)</span> <span class="yellow">${Weather.toSelectedString(Weather.BodyTemperature.target)}</span>`
 			: "";
 		Weather.Thermometer.tooltipElement.tooltip({
-			message: tempDescription + waterDescription + modifiers + debug,
+			message: tempDescription + (waterDescription ? "<br>" + waterDescription : "") + "<br>" + tempChangeDescription + modifiers + debug,
 			delay: 200,
 			position: "cursor",
 		});

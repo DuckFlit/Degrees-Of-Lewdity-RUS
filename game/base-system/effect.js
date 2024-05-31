@@ -250,10 +250,10 @@ function effects() {
 	V.speechcycle++;
 	if (V.speechcycle >= 7) V.speechcycle = 0;
 
-	if (Weather.bodyTemperature < setup.WeatherTemperature.minTemperature + 1 && !Weather.bodyTemperature.isIncreasing()) {
+	if (Weather.bodyTemperature < setup.WeatherTemperature.minTemperature + 1 && !Weather.BodyTemperature.isIncreasing()) {
 		element("span", `You're very cold, and about to get hypothermia!`, "red");
 		br();
-	} else if (Weather.bodyTemperature > setup.WeatherTemperature.maxTemperature - 1 && !Weather.bodyTemperature.isDecreasing()) {
+	} else if (Weather.bodyTemperature > setup.WeatherTemperature.maxTemperature - 1 && !Weather.BodyTemperature.isDecreasing()) {
 		element("span", `You're extremely hot, and about to get heatstroke!`, "red");
 		br();
 	}
