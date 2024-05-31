@@ -105,6 +105,39 @@ setup.WeatherDescriptions = {
 			return "You're suffering from heatstroke.";
 		}
 	},
+	bodyTemperatureChanges: () => {
+		if (Weather.bodyTemperature < 35) {
+			if (Weather.BodyTemperature.target - Weather.bodyTemperature > 1) {
+				return "You let the warmth take the chill from your bones.";
+			} else if (Weather.BodyTemperature.target - Weather.bodyTemperature > 0) {
+				return "Your shivers are subsiding.";
+			} else if (Weather.BodyTemperature.target - Weather.bodyTemperature < 1) {
+				return "You're getting colder dangerously fast.";
+			} else if (Weather.BodyTemperature.target - Weather.bodyTemperature < 0) {
+				return "You're still getting colder.";
+			}
+		} else if (Weather.bodyTemperature < 39) {
+			if (Weather.BodyTemperature.target - Weather.bodyTemperature > 1) {
+				return "You're heating up fast.";
+			} else if (Weather.BodyTemperature.target - Weather.bodyTemperature > 0) {
+				return "You're warming up.";
+			} else if (Weather.BodyTemperature.target - Weather.bodyTemperature < 1) {
+				return "You're getting colder fast.";
+			} else if (Weather.BodyTemperature.target - Weather.bodyTemperature < 0) {
+				return "You're getting cooler.";
+			}
+		} else {
+			if (Weather.BodyTemperature.target - Weather.bodyTemperature > 1) {
+				return "You're heating up dangerously fast.";
+			} else if (Weather.BodyTemperature.target - Weather.bodyTemperature > 0) {
+				return "You're heating up further.";
+			} else if (Weather.BodyTemperature.target - Weather.bodyTemperature < 1) {
+				return "You let the chill take the heat away from your body.";
+			} else if (Weather.BodyTemperature.target - Weather.bodyTemperature < 0) {
+				return "You're cooling off.";
+			}
+		}
+	},
 	waterTemperature: () => {
 		if (!T.inWater) return "";
 		if (Weather.waterTemperature <= 5) {

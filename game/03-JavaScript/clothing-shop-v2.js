@@ -579,7 +579,7 @@ function getTargetWarmth(targetTemperature) {
 
 	while (low <= high) {
 		const mid = Math.floor((low + high) / 2);
-		const temp = Weather.BodyTemperature.getRestingPoint(6, mid, 37, true);
+		const temp = Weather.BodyTemperature.getRestingPoint(8, mid, 37, true);
 
 		if (temp > targetTemperature) {
 			bestWarmth = mid;
@@ -598,7 +598,7 @@ DefineMacro("updatewarmthscale", () => {
 		const indicator = $("#warmthIndicator");
 		const indicatorNew = $("#warmthIndicatorNew");
 		const currentWarmth = Weather.BodyTemperature.getTotalWarmth();
-		clothingWarmthScale(indicator, Weather.BodyTemperature.getRestingPoint(6, currentWarmth, 37, true));
+		clothingWarmthScale(indicator, Weather.BodyTemperature.getRestingPoint(8, currentWarmth, 37, true));
 		indicator.tooltip({
 			message: "Warmth: " + currentWarmth,
 			delay: 200,
@@ -608,7 +608,7 @@ DefineMacro("updatewarmthscale", () => {
 			const newWarmth = currentWarmth - V.worn[T.realSlot].warmth + setup.clothes[T.realSlot][T.realIndex].warmth;
 			if (newWarmth !== currentWarmth) {
 				indicatorNew.show();
-				clothingWarmthScale(indicatorNew, Weather.BodyTemperature.getRestingPoint(6, newWarmth, 37, true));
+				clothingWarmthScale(indicatorNew, Weather.BodyTemperature.getRestingPoint(8, newWarmth, 37, true));
 				indicator.tooltip({
 					message: "New warmth: " + newWarmth,
 					delay: 200,
