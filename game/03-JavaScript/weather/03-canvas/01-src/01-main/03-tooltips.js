@@ -53,9 +53,7 @@ Weather.Tooltips = (() => {
 			<br><span class="blue">Body temperature:</span> <span class="yellow">${Weather.toSelectedString(Weather.bodyTemperature)} ${direction}</span>
 			<br><span class="blue">Body wetness:</span> <span class="yellow">${Math.round(Weather.wetness * 100)}%</span>
 			<br><span class="blue">Clothing warmth:</span> <span class="yellow">${Weather.BodyTemperature.getTotalWarmth()}</span>
-			<br><span class="blue">Target temperature (current clothing)</span> <span class="yellow">${Weather.toSelectedString(
-				Weather.BodyTemperature.getRestingPoint(6)
-			)}</span>`
+			<br><span class="blue">Target temperature (current clothing)</span> <span class="yellow">${Weather.toSelectedString(Weather.BodyTemperature.target)}</span>`
 			: "";
 		Weather.Thermometer.tooltipElement.tooltip({
 			message: tempDescription + waterDescription + modifiers + debug,

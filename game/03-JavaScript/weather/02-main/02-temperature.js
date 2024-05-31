@@ -6,7 +6,6 @@ Weather.Temperature = (() => {
 	// After this is set it will still interpolate to the next temperature, which shifts midnight
 	// To keep a certain temperature for a longer duration without too much interpolation - set the temperature for the day after too by using the optional date parameter.
 	function set(temperature, date) {
-		console.log("SET TEMPERATURE");
 		date = new DateTime(date ?? Time.date);
 		if (V.weatherObj.monthlyTemperatures.length < 1) return;
 		const modifiers = calculateModifiers(date);
@@ -154,14 +153,14 @@ Weather.Temperature = (() => {
 		Calculates additional temperature modifiers based on sun, season, current weather conditions, and location.
 	*/
 	function calculateModifiers(date) {
-		const sunModifier = calculateSunModifier(date.fractionOfDay);
+		const dayModifier = calculateDayModifier(date.fractionOfDay);
 		const seasonModifier = calculateSeasonModifier(date);
 		const weatherModifier = getWeatherModifier(Weather.name);
 		const locationModifier = getLocationModifier();
-		return round(locationModifier + (1.5 * sunModifier + 2 * seasonModifier) * weatherModifier, 2);
+		return round(locationModifier + (1.5 * dayModifier + 2 * seasonModifier) * weatherModifier, 2);
 	}
 
-	function calculateSunModifier(fraction) {
+	function calculateDayModifier(fraction) {
 		return 2 * (1 - Math.abs(fraction - 0.5) * 2) - 1;
 	}
 
@@ -331,6 +330,28 @@ Weather.Temperature = (() => {
 		set,
 		add,
 		override: {
+			increase: {
+				inside(value) {
+					T.temperatureOverride = { inside: (T.temperatureOverride?.inside ?? Weather.insideTemperature) + value };
+				},
+				outside(value) {
+					T.temperatureOverride = { outside: (T.temperatureOverride?.outside ?? Weather.temperature) + value };
+				},
+				water(value) {
+					T.temperatureOverride = { water: (T.temperatureOverride?.water ?? Weather.waterTemperature) + value };
+				},
+			},
+			decrease: {
+				inside(value) {
+					T.temperatureOverride = { inside: (T.temperatureOverride?.inside ?? Weather.insideTemperature) - value };
+				},
+				outside(value) {
+					T.temperatureOverride = { outside: (T.temperatureOverride?.outside ?? Weather.temperature) - value };
+				},
+				water(value) {
+					T.temperatureOverride = { water: (T.temperatureOverride?.water ?? Weather.waterTemperature) - value };
+				},
+			},
 			get outside() {
 				return T.temperatureOverride?.outside;
 			},
