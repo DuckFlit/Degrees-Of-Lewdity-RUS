@@ -1333,7 +1333,7 @@ You are inside <<if $syndromebird is 1>>your tower<<else>>a ruined tower<</if>>,
 
 	<<link [[Next|Bird Tower]]>><<endevent>><</link>>
 	<br>
-<<elseif $bird.state is "home" and ["clear","lightClouds"].includes(Weather.name) and between(Time.hour, 21, 23) and !Time.isBloodMoon() and $daily.birdNightFlightTrigger and !$weekly.birdNightFlight>>
+<<elseif $bird.state is "home" and ["clear","lightClouds"].includes(Weather.name) and between(Time.hour, 21, 23) and !Weather.bloodMoon and $daily.birdNightFlightTrigger and !$weekly.birdNightFlight>>
 	<<npc "Great Hawk">><<person1>>
 	<<set $weekly.birdNightFlight to true>>
 	<<your_bird_text "cap">> perches on a weathered ledge. Moonlight bathes <<bhim>> in a silvery glow.
@@ -2217,7 +2217,6 @@ You leap from the tower. A strong current catches you, and you begin to glide. T
 <br><br>
 
 The wind does most of the work, but your wings still tire as you arrive at the farmlands. <<physique 1>><<athletics 2>>
-<<bird_pass $flightTime>>
 <br><br>
 <<unset $moor_hunt>>
 <<link [[Next|Farmland]]>><<set $moor to 0>><</link>>
@@ -2238,7 +2237,6 @@ You leap from the tower. A strong current catches you, and you begin to glide. T
 <br><br>
 
 The wind does most of the work, but your wings still tire as you soar over the rooftops. You land in the park. You don't think anyone saw you. <<physique 1>><<athletics 2>>
-<<bird_pass $flightTime>>
 <br><br>
 <<unset $moor_hunt>>
 <<link [[Next|Park]]>><<set $moor to 0>><</link>>
@@ -2260,7 +2258,6 @@ You leap from the tower. A strong current catches you, and you begin to glide. T
 <br><br>
 
 The wind does most of the work, but your wings still tire as you soar over the treetops. You land in a clearing. <<physique 1>><<athletics 2>>
-<<bird_pass $flightTime>>
 <br><br>
 <<unset $moor_hunt>>
 <<link [[Next|Forest]]>><<set $forest to 50>><<set $forestmove to 0>><<set $moor to 0>><</link>>
@@ -3802,6 +3799,7 @@ You bring your attentive touch down towards <<bhis>> groin.
 
 :: Bird Tower Bask
 <!-- This passage is only accessible to a player that already has stockholm syndrome. -->
+<<set $player.bodyTemperature to Math.clamp(($player.bodyTemperature + 1), 33, 38)>>
 <<setTowerTemp>><<effects>>
 <<npc "Great Hawk">>
 <<cleareventpool>>
@@ -4088,11 +4086,10 @@ You bring your attentive touch down towards <<bhis>> groin.
 				<<case 5>>
 					You see a glint in the distance, something very shiny. After a moment, you realise it's a reflective piece of rubbish.
 					<<if $monster is 1>>
-						"Want to go get it," <<bHe>> says, before ruffling <<bhis>> own feathers. "But I'm comfortable."
+						"Want to go get it," <<bHe>> says, before ruffling <<bhis>> own feathers. "But I'm comfortable." <<bHe>> resumes <<bhis>> song.
 					<<else>>
-						The <<beasttype>> shrieks,
+						The <<beasttype>> shrieks, but resumes <<bhis>> song anyways.
 					<</if>>
-					but resumes <<bhis>> song anyways.
 				<<case 6>>
 					You see a person in the distance, completely naked.
 					<<if $tentacledisable is "f" and $plantdisable is "f" and ($hallucinations gte 2 or $backgroundTraits.includes("plantlover"))>>
@@ -6016,15 +6013,17 @@ Where will you fly?
 	<</addinlineevent>>
 
 	<<addinlineevent "flight_casual_moor_animals" 1>>
+		<<endevent>>
 		<<set _beastGen to ($rng gte 50 ? "cat" : "fox")>><<if _beastGen is "cat">><<beastNEWinit 3 cat>><<else>><<beastNEWinit 3 fox>><</if>>
-		You notice some <<beastsplural 2>> resting in a secluded spot. <<your_bird_text "cap">> sees them too. <<bHe>> doesn't pay them much mind.
-		You ask what <<bhe>> thinks of the other inhabitants of the moor.
+		<<npc "Great Hawk" 4>>
+		You notice some <<beastsplural 2>> resting in a secluded spot. Your <<beasttype 3>> sees them too. <<bHe 3>> doesn't pay them much mind.
+		You ask what <<bhe 3>> thinks of the other inhabitants of the moor.
 		<br><br>
 
 		<<if $monster is 1>>
-			"They avoid me. We don't have much in common. They remain landbound." The <<beastsplural>> notice you in the sky and scamper to hide.
+			"They avoid me. We don't have much in common. They remain landbound." The <<beastsplural 2>> notice you in the sky and scamper to hide.
 		<<else>>
-			<<bHe 0>> looks at you, then turns towards the <<beastsplural>> and screeches. They notice you and scamper to hide. <<your_bird_text "cap">> bobs <<bhis 0>> head proudly.
+			<<bHe 3>> looks at you, then turns towards the <<beastsplural 2>> and screeches. They notice you and scamper to hide. Your <<beasttype 3>> bobs <<bhis 3>> head proudly.
 		<</if>>
 		You keep flying around the moor for a while.
 		<<endevent>><<npc "Great Hawk">>
@@ -6818,7 +6817,7 @@ You look through your telescope.
 <</if>>
 
 <<if Time.dayState is "night">>
-	<<if Time.isBloodMoon()>>
+	<<if Weather.bloodMoon>>
 		<<addinlineevent "telescope_blood_1" 3>>
 			The red fields before you seem to stretch on forever. <<awareness 1>><<trauma 12>><<gawareness>><<ggtrauma>>
 		<</addinlineevent>>
@@ -6909,7 +6908,7 @@ You look up to the sky.
 
 <<cleareventpool>>
 
-<<if Time.isBloodMoon()>>
+<<if Weather.bloodMoon>>
 	<<addinlineevent "telescope_sky_blood" 2>>
 		<<set $daily.telescopeBlood to true>>
 		A few translucent clouds pass the bottom crest of the moon.
@@ -7320,7 +7319,7 @@ You let out a short gasp as you feel
 		<</if>>
 		<span class="lewd">You have laid $eggLayNumber eggs.</span>
 	<<else>>
-		the egg passes through your cervix. It sends shivers through your whole body as it glides down your vaginal canal. You grip <<if $phase is 0>><<your_bird_text>>'s <<if $monster is 1>>arms<<else>>wings<</if>><<else>>the nest<</if>> as the egg begins to crown.
+		the egg pass through your cervix. It sends shivers through your whole body as it glides down your vaginal canal. You grip <<if $phase is 0>><<your_bird_text>>'s <<if $monster is 1>>arms<<else>>wings<</if>><<else>>the nest<</if>> as the egg begins to crown.
 		<<if playerIsPregnant() and _eggnant.type is "hawk">>
 			It's only one, but it might as well be a regular human baby with how large it feels. You spread your legs further. Your <<pussy>> stretches more, trying to make room for it to escape. After several minutes of tortured pushing, it finally escapes you. You pant in exertion, feeling dizzy.
 		<<else>>
@@ -7332,7 +7331,7 @@ You let out a short gasp as you feel
 	<<if $eggLayNumber gte 2>>
 		<span class="lewd">$eggLayNumber eggs</span> pass through your _eggnantGenital and land in your nest.
 	<<else>>
-		<span class="lewd">an egg</span> passes through your _eggnantGenital and lands in your nest.
+		<span class="lewd">an egg</span> pass through your _eggnantGenital and lands in your nest.
 	<</if>>
 <</if>>
 <<if $arousal gte $arousalmax>>
