@@ -871,7 +871,7 @@
 		<<case "chastity">><<icon "padlock.png">>
 		<<case "chastity release">><<icon "padlock_unlocked.png">>
 		<<case "confession">><<icon "confessional.png">>
-		<<case "garden">><<switch Time.dayState>><<case "night">><<icon "temple_garden_night.png">><<default>><<icon "temple_garden.png">><</switch>>
+		<<case "garden">><<switch Weather.dayState>><<case "night">><<icon "temple_garden_night.png">><<default>><<icon "temple_garden.png">><</switch>>
 		<<case "pew">><<icon "pew.png">>
 		<<case "pray">><<skinicon "pray">>
 		<<case "prayer room">><<icon "prayer_room.png">>
@@ -927,7 +927,7 @@
 <</widget>>
 
 <<widget "entertownicon">>
-	<<switch Time.dayState>>
+	<<switch Weather.dayState>>
 		<<case "night">>
 			<<icon "town_night.png">>
 		<<default>>
@@ -1028,9 +1028,9 @@
 			<<icon $_nestImg>>
 		<<case "perch">>
 			<<set $_perchImg to "birdTower/perch">>
-			<<switch Time.dayState>>
+			<<switch Weather.dayState>>
 				<<case "night">>
-					<<if Time.isBloodMoon()>>
+					<<if Weather.bloodMoon>>
 						<<set $_perchImg += "_blood">>
 					<<else>>
 						<<set $_perchImg += "_night">>
@@ -1039,7 +1039,7 @@
 					<<switch Weather.name>>
 						<<case "lightPrecipitation" "heavyPrecipitation" "thunderStorm">><<set $_perchImg += "_rain">>
 						<<case "snow">><<set $_perchImg += "_snow">>
-						<<default>><<set $_perchImg += ("_" + Time.dayState)>>
+						<<default>><<set $_perchImg += ("_" + Weather.dayState)>>
 					<</switch>>
 			<</switch>>
 			<<if $bird.upgrades?.decor gte 3>>
@@ -1064,7 +1064,7 @@
 				<span class="colour-hair"><<icon $_hairIcon>></span>
 			</span>
 		<<case "hunt">>
-			<<set $_huntImg to "birdTower/prepare_hunt_" + Time.dayState + ".gif">>
+			<<set $_huntImg to "birdTower/prepare_hunt_" + Weather.dayState + ".gif">>
 			<<icon $_huntImg>>
 		<<case "firepit">>
 			<<if $bird.upgrades>>
@@ -1162,31 +1162,45 @@
 				<<set $_child2 to _childrenIconSelect.pluck()>>
 				<<if $children[$_child1].features.monster is $children[$_child2].features.monster>>
 					<<if $children[$_child1].features.monster is "monster">>
-						<<set $_filter1 = setup.colours.getSkinCSSFilter($children[$_child1].features.skinColour)>>
-						<<set $_filter2 = setup.colours.getSkinCSSFilter($children[$_child2].features.skinColour)>>
+						<<set _childIconFilter1 = "filter: " + setup.colours.getSkinCSSFilter($children[$_child1].features.skinColour)>>
+						<<set _childIconFilter2 = "filter: " + setup.colours.getSkinCSSFilter($children[$_child2].features.skinColour)>>
 						<<set $_baseIcon to "birdTower/child_harpies.png">>
 						<<set $_skinIcon1 to "birdTower/child_harpies_skin1.png">>
 						<<set $_skinIcon2 to "birdTower/child_harpies_skin2.png">>
-						<<print '<span style="filter: ' + $_filter1 + '">' + `<<icon $_skinIcon2 infront>>` + '</span>' + '<span style="filter: ' + $_filter2 + '">' + `<<icon $_skinIcon1 infront>>` + '</span>'>><<icon $_baseIcon>>
+						<span class="icon-container">
+							<<icon $_baseIcon>>
+							<span @style="_childIconFilter1">
+								<<icon $_skinIcon2>>
+							</span>
+							<span @style="_childIconFilter2">
+								<<icon $_skinIcon1>>
+							</span>
+						</span>
 					<<else>>
 						<<icon "birdTower/child_hawks.png">>
 					<</if>>
 				<<else>>
-					<<if $children[$_child1].features.monster is "monster">>
-						<<set $_filter = setup.colours.getSkinCSSFilter($children[$_child1].features.skinColour)>>
-					<<else>>
-						<<set $_filter = setup.colours.getSkinCSSFilter($children[$_child2].features.skinColour)>>
-					<</if>>
+					<<set _childIconFilter = "filter: " + ($children[$_child1].features.monster is "monster" ? setup.colours.getSkinCSSFilter($children[$_child1].features.skinColour) : setup.colours.getSkinCSSFilter($children[$_child2].features.skinColour))>>
 					<<set $_baseIcon to "birdTower/child_birds.png">>
 					<<set $_skinIcon to "birdTower/child_birds_skin.png">>
-					<<print '<span style="filter: ' + $_filter + '">' + `<<icon $_skinIcon infront>>` + '</span>'>><<icon $_baseIcon>>
+					<span class="icon-container">
+						<<icon $_baseIcon>>
+						<span @style="_childIconFilter">
+							<<icon $_skinIcon>>
+						</span>
+					</span>
 				<</if>>
 			<<else>>
 				<<if $children[_childrenIconSelect[0]].features.monster is "monster">>
-					<<set $_filter = setup.colours.getSkinCSSFilter($children[_childrenIconSelect[0]].features.skinColour)>>
+					<<set _childIconFilter = "filter: " + setup.colours.getSkinCSSFilter($children[_childrenIconSelect[0]].features.skinColour)>>
 					<<set $_baseIcon to "birdTower/child_harpy.png">>
 					<<set $_skinIcon to "birdTower/child_harpy_skin.png">>
-					<<print '<span style="filter: ' + $_filter + '">' + `<<icon $_skinIcon infront>>` + '</span>'>><<icon $_baseIcon>>
+					<span class="icon-container">
+						<<icon $_baseIcon>>
+						<span @style="_childIconFilter">
+							<<icon $_skinIcon>>
+						</span>
+					</span>
 				<<else>>
 					<<icon "birdTower/child_hawk.png">>
 				<</if>>
@@ -1230,7 +1244,7 @@
 <</widget>>
 
 <<widget "alleyicon">>
-	<<switch Time.dayState>>
+	<<switch Weather.dayState>>
 		<<case "day">>
 			<<icon "alley.png">>
 		<<case "night">>
@@ -1281,10 +1295,10 @@
 <</widget>>
 
 <<widget "roadicon">>
-	<<if  (Time.isBloodMoon() or $forcedBloodmoon)>>
+	<<if (Weather.bloodMoon or $forcedBloodmoon)>>
 		<<icon "roadnight_blood.png">>
 	<<else>>
-		<<switch Time.dayState>>
+		<<switch Weather.dayState>>
 			<<case "day">>
 				<<icon "roadday.png">>
 			<<case "night">>
@@ -1508,15 +1522,17 @@
 
 <<widget "shavestyleicon">>
 	<<if $options.images is 1>>
-		<<set $_filter = setup.colours.getSkinCSSFilter($skinColor.natural, $skinColor.range)>>
+		<<set _shaveIconFilter = "filter: " + setup.colours.getSkinCSSFilter($skinColor.natural, $skinColor.range)>>
 		<<set $_fileName = 'shave_' + _args[0] + '_' + ($player.penisExist ? 'm' : 'f') + '.png'>>
-		<<print '<span style="filter: ' + $_filter + '">' + `<<icon $_fileName>>` + '</span>'>>
+		<span @style="_shaveIconFilter">
+			<<icon $_fileName>>
+		</span>
 	<</if>>
 <</widget>>
 
 <<widget "skinicon">>
 	<<if $options.images is 1>>
-		<<set $_filter = setup.colours.getSkinCSSFilter($skinColor.natural, $skinColor.range)>>
+		<<set _iconFilter = "filter: " + setup.colours.getSkinCSSFilter($skinColor.natural, $skinColor.range)>>
 		<<switch _args[0]>>
 			<<case "chef">>
 				<<set $_skinIcon = 'chef_hands.png'>>
@@ -1549,20 +1565,36 @@
 				<<set $_skinIcon = 'wash_skin.png'>>
 				<<set $_frontIcon = 'wash_bubbles.png'>>
 		<</switch>>
-		<<icon $_frontIcon "infront">><<print '<span style="filter: ' + $_filter + '">' + `<<icon $_skinIcon>>` + '</span>'>>
+		<span class="icon-container">
+			<span @style="_iconFilter">
+				<<icon $_skinIcon>>
+			</span>
+			<<icon $_frontIcon>>
+		</span>
 	<</if>>
 <</widget>>
 
 <<widget "pregnancyicon">>
 	<<if $options.images is 1>>
 		<<if _args[0] is "player">>
-			<<set $_filter = setup.colours.getSkinCSSFilter($skinColor.natural, $skinColor.range)>>
-			<<set $_skinIcon to "belly_human_breasts" + $player.breastsize + ".png">>
-			<<print '<span style="filter: ' + $_filter + '">' + `<<icon $_skinIcon>>` + '</span>'>>
+			<<set _pregnancyIconFilter = "filter: " + setup.colours.getSkinCSSFilter($skinColor.natural, $skinColor.range)>>
+			<<set $_skinIcon to "belly_human_breasts">>
+			<<switch $player.breastsize>>
+				<<case 0>><<set $_skinIcon += "0.png">>
+				<<case 1 2>><<set $_skinIcon += "1.png">>
+				<<case 3 4>><<set $_skinIcon += "2.png">>
+				<<case 5 6>><<set $_skinIcon += "3.png">>
+				<<case 7 8>><<set $_skinIcon += "4.png">>
+				<<case 9 10>><<set $_skinIcon += "5.png">>
+				<<case 11 12>><<set $_skinIcon += "6.png">>
+			<</switch>>
+			<span @style="_pregnancyIconFilter">
+				<<icon $_skinIcon>>
+			</span>
 		<<elseif C.npc[_args[0]]>>
 			<<if _args[0] is "Great Hawk">>
 				<<if $monster is 1 or ($monsterchance gte $rng and $hallucinations gte 1) or ($monsterchance gte $rng and $monsterhallucinations is "f") or ($greathawkmonster is 2) or ($bestialitydisable is "t")>>
-					<<set $_filter = setup.colours.getSkinCSSFilter(C.npc["Great Hawk"].skincolour)>>
+					<<set _pregnancyIconFilter = "filter: " + setup.colours.getSkinCSSFilter(C.npc["Great Hawk"].skincolour)>>
 					<<set $_frontIcon to "birdTower/belly_harpy.png">>
 					<<set $_skinIcon to "birdTower/belly_harpy_breasts">>
 					<<switch C.npc["Great Hawk"].breastsize>>
@@ -1574,12 +1606,17 @@
 						<<case 9 10>><<set $_skinIcon += "5.png">>
 						<<case 11 12>><<set $_skinIcon += "6.png">>
 					<</switch>>
-					<<icon $_frontIcon "infront">><<print '<span style="filter: ' + $_filter + '">' + `<<icon $_skinIcon>>` + '</span>'>>
+					<span class="icon-container">
+						<span @style="_pregnancyIconFilter">
+							<<icon $_skinIcon>>
+						</span>
+						<<icon $_frontIcon>>
+					</span>
 				<<else>>
 					<<icon "birdTower/belly_hawk.png">>
 				<</if>>
 			<<else>>
-				<<set $_filter = setup.colours.getSkinCSSFilter(C.npc[_args[0]].skincolour)>>
+				<<set _pregnancyIconFilter = "filter: " +  setup.colours.getSkinCSSFilter(C.npc[_args[0]].skincolour)>>
 				<<set $_skinIcon to "belly_human_breasts">>
 				<<switch C.npc[_args[0]].breastsize>>
 					<<case 0>><<set $_skinIcon += "0.png">>
@@ -1590,7 +1627,9 @@
 					<<case 9 10>><<set $_skinIcon += "5.png">>
 					<<case 11 12>><<set $_skinIcon += "6.png">>
 				<</switch>>
-				<<print '<span style="filter: ' + $_filter + '">' + `<<icon $_skinIcon>>` + '</span>'>>
+				<span @style="_pregnancyIconFilter">
+					<<icon $_skinIcon>>
+				</span>
 			<</if>>
 		<</if>>
 	<</if>>	
@@ -1800,7 +1839,7 @@
 <</widget>>
 
 <<widget "coastalpathicon">>
-	<<switch Time.dayState>>
+	<<switch Weather.dayState>>
 		<<case "day">>
 			<<icon "coastalpath_day.png">>
 		<<case "night">>

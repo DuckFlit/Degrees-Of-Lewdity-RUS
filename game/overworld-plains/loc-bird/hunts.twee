@@ -231,9 +231,9 @@ Soon, you both arrive at the castle and land in the nest. You feel pins and need
 <<effects>>
 You return your attention to your catch.
 <<if $bird.loot.lurker gte 50>>
-	You're filled with the desire to eat it. Your <<beasttype>> has already started eating <<bhis>>. You follow your instinct once again, and are filled with satisfaction, as well as a strange warmth. <<eatLurker>><<trauma -6>><<drugs 120>><<ltrauma>><<ggdrugged>>
+	You're filled with the desire to eat it. Your <<beasttype>> has already started eating <<bhers>>. You follow your instinct once again, and are filled with satisfaction, as well as a strange warmth. <<eatLurker>><<trauma -6>><<drugs 120>><<ltrauma>><<ggdrugged>>
 <<else>>
-	Eating it doesn't seem so repulsive anymore. Your <<beasttype>> has already started eating <<bhis>>. You take a deep breath, and take a bite. You're filled with primal satisfaction once again, as well as a strange warmth. <<eatLurker>><<trauma -6>><<drugs 120>><<ltrauma>><<ggdrugged>>
+	Eating it doesn't seem so repulsive anymore. Your <<beasttype>> has already started eating <<bhers>>. You take a deep breath, and take a bite. You're filled with primal satisfaction once again, as well as a strange warmth. <<eatLurker>><<trauma -6>><<drugs 120>><<ltrauma>><<ggdrugged>>
 <</if>>
 <br><br>
 
@@ -284,7 +284,7 @@ You place your lurker in front of the <<beasttype>>.
 You stand on the edge of the perch, spreading your wings. You feel for the wind while looking out to the moor. Your focus sharpens.
 <br><br>
 
-<<if ($bird.activity is "sing" or $bird.activity is "groom") and $bird.state is "home" and Time.isBloodMoon()>>
+<<if ($bird.activity is "sing" or $bird.activity is "groom") and $bird.state is "home" and Weather.bloodMoon>>
 	A large wing unfurls in front of you, blocking you.
 	<<if $monster is 1>>
 		"No, <<wife>>. The sky is hungry tonight. Hunting is too dangerous." <<bHe>> gestures to the red moon.
@@ -297,7 +297,7 @@ You stand on the edge of the perch, spreading your wings. You feel for the wind 
 	<br>
 <<else>>
 	<<flight_time_check 30 "silent">>
-	<<print '<<link [[Hunt alone ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Hunt Start Alone]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<unset $birdPerch>><<bird_pass _flightTime>><</link>>'>><<print _fatigueText>>
+	<<link [[Hunt alone (<<print getTimeString(_hoursPassed, _minutesPassed)>>)|Bird Hunt Start Alone]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<unset $birdPerch>><<bird_pass _flightTime>><</link>><<print _fatigueText>>
 	<br>
 	<<if ($bird.activity is "sing" or $bird.activity is "groom") and $bird.state is "home">>
 		<<if $bird.injured gt 1>>
@@ -420,10 +420,10 @@ You turn to the <<beasttype>>.
 	You both spread your wings and leap out of the tower, beginning your hunt.
 	<br><br>
 
-	<<print '<<link [[Hunt together ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Hunt Goal]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<unset $birdPerch>><<bird_pass _flightTime>><<endevent>><</link>>'>><<print _fatigueText>>
+	<<link [[Hunt together (<<print getTimeString(_hoursPassed, _minutesPassed)>>)|Bird Hunt Goal]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<unset $birdPerch>><<bird_pass _flightTime>><<endevent>><</link>><<print _fatigueText>>
 	<br>
 <<else>>
-	<<print '<<link [[Hunt alone ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Hunt Start Alone]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<unset $birdPerch>><<bird_pass _flightTime>><</link>>'>><<print _fatigueText>>
+	<<link [[Hunt alone (<<print getTimeString(_hoursPassed, _minutesPassed)>>)|Bird Hunt Start Alone]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<unset $birdPerch>><<bird_pass _flightTime>><</link>><<print _fatigueText>>
 	<br>
 	<<link [[Step away|Bird Tower Perch]]>><<endevent>><</link>>
 	<br>
@@ -464,7 +464,7 @@ You spread your wings and leap from the tower.
 <br>
 
 :: Bird Hunt Goal
-<<set $outside to 1>><<set $location to "moor">><<effects>>
+<<set $outside to 1>><<set $location to "moor">><<effects>><<flight_effects>>
 <<if !$bird.hunts.loot>>
 	<<set $bird.hunts.loot to {}>>
 	<<set $bird.hunts.lootAmount to 0>>
@@ -509,7 +509,7 @@ What will you hunt for?
 <<set $phase to 0>>
 
 :: Bird Hunt Direction
-<<effects>>
+<<effects>><<flight_effects>>
 <<if $bird.hunts.duo is true>>
 	<<npc "Great Hawk">><<person1>>
 	You tell the <<beasttype>> that you want to
@@ -554,7 +554,7 @@ What will you hunt for?
 	<<bird_loot_select>>
 	<br><br>
 
-	<<print '<<link [[Next ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Hunt Event]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><<endevent>><</link>>'>><<print _fatigueText>>
+	<<link [[Next (<<print getTimeString(_hoursPassed, _minutesPassed)>>)|Bird Hunt Event]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><<endevent>><</link>><<print _fatigueText>>
 	<br>
 <<else>>
 	<<if $bird.hunts.duo is true>>
@@ -570,25 +570,25 @@ What will you hunt for?
 	<br>
 
 	<<if $bird.hunts.distanceNorth lt 5>>
-		<<print '<<link [[North ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Hunt Event]]>><<set $bird.hunts.direction to "north">><<set $bird.hunts.distanceNorth++>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><<endevent>><</link>>'>><<print _fatigueText>>
+		<<link [[North (<<print getTimeString(_hoursPassed, _minutesPassed)>>)|Bird Hunt Event]]>><<set $bird.hunts.direction to "north">><<set $bird.hunts.distanceNorth++>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><<endevent>><</link>><<print _fatigueText>>
 		<br>
 	<</if>>
 	<<if $bird.hunts.distanceEast lt 5>>
-		<<print '<<link [[East ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Hunt Event]]>><<set $bird.hunts.direction to "east">><<set $bird.hunts.distanceEast++>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><<endevent>><</link>>'>><<print _fatigueText>>
+		<<link [[East (<<print getTimeString(_hoursPassed, _minutesPassed)>>)|Bird Hunt Event]]>><<set $bird.hunts.direction to "east">><<set $bird.hunts.distanceEast++>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><<endevent>><</link>><<print _fatigueText>>
 		<br>
 	<</if>>
 	<<if $bird.hunts.distanceNorth gt -5>>
-		<<print '<<link [[South ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Hunt Event]]>><<set $bird.hunts.direction to "south">><<set $bird.hunts.distanceNorth-->><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><<endevent>><</link>>'>><<print _fatigueText>>
+		<<link [[South (<<print getTimeString(_hoursPassed, _minutesPassed)>>)|Bird Hunt Event]]>><<set $bird.hunts.direction to "south">><<set $bird.hunts.distanceNorth-->><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><<endevent>><</link>><<print _fatigueText>>
 		<br>
 	<</if>>
 	<<if $bird.hunts.distanceEast gt -5>>
-		<<print '<<link [[West ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Hunt Event]]>><<set $bird.hunts.direction to "west">><<set $bird.hunts.distanceEast-->><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><<endevent>><</link>>'>><<print _fatigueText>>
+		<<link [[West (<<print getTimeString(_hoursPassed, _minutesPassed)>>)|Bird Hunt Event]]>><<set $bird.hunts.direction to "west">><<set $bird.hunts.distanceEast-->><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><<endevent>><</link>><<print _fatigueText>>
 		<br>
 	<</if>>
 <</if>>
 
 :: Bird Hunt Event
-<<effects>><<flight_distance_check>><<flight_hunt_chance>>
+<<effects>><<flight_distance_check>><<flight_hunt_chance>><<flight_effects>>
 <<if $bird.hunts.duo is true>>
 	<<npc "Great Hawk">>
 <</if>>
@@ -685,7 +685,7 @@ What will you hunt for?
 				<br>
 			<</if>>
 			<<if $bird.hunts.loot.lurkers gte 1>>
-				<<link [[Drop a lurker on their heads (0:05)|Bird Hunt Tent Lurker Drop]]>><<bird_pass 5>><</link>>
+				<<link [[Drop a lurker on their heads (0:05)|Bird Hunt Tent Lurker Drop]]>><<endevent>><<bird_pass 5>><</link>>
 				<br>
 			<</if>>
 		<<else>>
@@ -696,7 +696,7 @@ What will you hunt for?
 			<<link [[Sneak in and steal from them (0:05)|Bird Hunt Tent Steal Alone]]>><<crimeUp 10 "trespassing">><<bird_pass 5>><</link>><<skulduggerydifficulty>><<crimes "thievery" "trespassing">>
 			<br>
 			<<if $bird.hunts.loot.lurkers gte 1>>
-				<<link [[Drop a lurker on their heads (0:05)|Bird Hunt Tent Lurker Drop]]>><<bird_pass 5>><</link>>
+				<<link [[Drop a lurker on their heads (0:05)|Bird Hunt Tent Lurker Drop]]>><<endevent>><<bird_pass 5>><</link>>
 				<br>
 			<</if>>
 		<</if>>
@@ -967,6 +967,7 @@ What will you hunt for?
 				<br><br>
 
 				Before you can say anything, <<bhe>> starts chasing after it. Not wanting to be left behind, you fly after <<bhim>>.
+				<br><br>
 
 				<<link [[Next|Bird Hunt Plane Chase]]>><</link>>
 				<br>
@@ -1059,7 +1060,7 @@ What will you hunt for?
 		<</addinlineevent>>
 	<</if>>
 
-	<<if Time.isBloodMoon()>>
+	<<if Weather.bloodMoon>>
 		<<addinlineevent "bird_hunt_blood" 8>>
 			You feel your stomach twist. The hairs on the back of your neck stand on end.
 			<br><br>
@@ -4415,7 +4416,7 @@ It's clear <<bhes>> not well enough to keep hunting, so you fly back to the cast
 
 <<flight_distance_check>>
 <<flight_time_check _returnTime "silent">>
-<<print '<<link [[Return home ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Hunt Return Injured]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><<endevent>><</link>>'>><<print _fatigueText>>
+<<link [[Return home (<<print getTimeString(_hoursPassed, _minutesPassed)>>)|Bird Hunt Return Injured]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><<endevent>><</link>><<print _fatigueText>>
 <br>
 
 :: Bird Hunt Tent Burnt
@@ -4470,17 +4471,17 @@ You won't be able to do anything else to them today, now that they're alerted.
 <<flight_hunt_remove "lurkers" 1>>
 You decide that you can spare one of your caught lurkers.
 <<if $bird.hunts.duo is true>>
-	<<generate2>><<person1>>
-	You look to your spouse. "Think you can hit a mark this high up?" You hold up your lurker. <<bHe>> flies close to you, grabbing it.
+	<<generate1>><<person1>><<npc "Great Hawk" 2>>
+	You look to your spouse. "Think you can hit a mark this high up?" You hold up your lurker. <<bHe 1>> flies close to you, grabbing it.
 	<br><br>
 
-	The two of you circle for a moment as the Great Hawk aims. <<bHe>> drops the lurker, and it lands true, right on the head of a <<person2>><<person>> below.
+	The two of you circle for a moment as the Great Hawk aims. <<bHe 1>> drops the lurker, and it lands true, right on the head of a <<person1>><<person>> below.
 <<else>>
 	<<generate1>><<person1>>
 	You circle overhead, trying to find a good target. You spot a <<person>> sitting by a firepit. You drop your lurker, and your aim is true.
 	<br><br>
 
-	It lands right on the head of a <<person2>><<person>> below.
+	It lands right on the head of a <<person1>><<person>> below.
 <</if>>
 The impact knocks <<him>> to the ground, and <<he>> begins screaming as the lurker stirs, now returned to a livable altitude.
 More people rush out from the tents to assist their comrade. You can't help but laugh at the mayhem. <<stress -6>><<trauma -3>><<lstress>><<ltrauma>>
@@ -4545,7 +4546,7 @@ You won't be able to do anything else to them today, now that they're alerted.
 		<br><br>
 
 		As you rummage through the trash, you hear a noise behind you. You turn and see a <<beasttype 0>>. <<bHe 0>> looks at you and your <<beasttype 1>>, then turns and runs.
-		<<your_bird_text "cap">> turns to look at <<bhim 0>>.
+		Your <<beasttype 1>> turns to look at <<bhim 0>>.
 		<<if $monster is 1>>
 			"Smart not to interrupt us," <<bhe 1>> says.
 		<<else>>
@@ -4681,7 +4682,7 @@ You won't be able to do anything else to them today, now that they're alerted.
 
 			<<flight_distance_check>>
 			<<flight_time_check _returnTime "silent">>
-			<<print '<<link [[Return to the castle ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Hunt Return]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><<endevent>><</link>>'>><<print _fatigueText>>
+			<<link [[Return to the castle (<<print getTimeString(_hoursPassed, _minutesPassed)>>)|Bird Hunt Return]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><<endevent>><</link>><<print _fatigueText>>
 		<<elseif $daily.emptyCampLoot lte 0>>
 			You take another look around. You've gotten everything of value. All you can do now is leave.
 
@@ -4742,7 +4743,7 @@ Deciding you've found enough, you get ready to leave.
 
 	<<flight_distance_check>>
 	<<flight_time_check _returnTime "silent">>
-	<<print '<<link [[Return to the castle ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Hunt Return]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><<endevent>><</link>>'>><<print _fatigueText>>
+	<<link [[Return to the castle (<<print getTimeString(_hoursPassed, _minutesPassed)>>)|Bird Hunt Return]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><<endevent>><</link>><<print _fatigueText>>
 <<elseif $daily.emptyCampLoot lte 0>>
 	You take another look around. You've gotten everything of value. All you can do now is leave.
 
@@ -5790,12 +5791,14 @@ Like a predator, you begin slowly circling them. When you notice a good opportun
 		<br><br>
 
 		"Shit, <<pshes>> a real fighter," the <<person1>><<person>> gasps. "Alright. We made a bit of a mistake, just take what you want and leave us be." You grab one of their backpacks and rummage through it.
-		<<clotheson>>
-		<<endcombat>>
-
 		<<flight_hunt_get_ambush>>
 		<br>
 		You drop the now empty backpack. You glare at the <<person1>><<person>> and screech once more, prompting <<him>> to hastily pull <<his>> companion from the hole and run off.
+		<<clotheson>>
+		<<endcombat>>
+
+		<<link [[Next|Bird Hunt Ambush End]]>><<endevent>><</link>>
+		<br>
 	<<else>>
 		You push away the <<person1>><<person>>, who stumbles. The <<person2>><<person>> helps <<person1>><<him>> back up. You're all panting, staring each other down, waiting for someone to make the next move.
 		<br><br>
@@ -5861,7 +5864,7 @@ Like a predator, you begin slowly circling them. When you notice a good opportun
 
 	<<flight_distance_check>>
 	<<flight_time_check _returnTime "silent">>
-	<<print '<<link [[Return to the castle ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Hunt Return]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><<endevent>><</link>>'>><<print _fatigueText>>
+	<<link [[Return to the castle (<<print getTimeString(_hoursPassed, _minutesPassed)>>)|Bird Hunt Return]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><<endevent>><</link>><<print _fatigueText>>
 	<br>
 <<elseif $stress gte $stressmax or isPlayerNonparasitePregnancyEnding()>>
 	You feel lightheaded. Before you can return to the top of the pillar, the ground comes hurtling towards you.
@@ -5896,7 +5899,7 @@ Like a predator, you begin slowly circling them. When you notice a good opportun
 
 	<<flight_distance_check>>
 	<<flight_time_check _returnTime "silent">>
-	<<print '<<link [[Return to the castle ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Hunt Return]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><<endevent>><</link>>'>><<print _fatigueText>>
+	<<link [[Return to the castle (<<print getTimeString(_hoursPassed, _minutesPassed)>>)|Bird Hunt Return]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><<endevent>><</link>><<print _fatigueText>>
 	<br>
 <<elseif $bird.hunts.duo is true and $bird.hunts.timer gte 360>>
 	<<endevent>>
@@ -5912,7 +5915,7 @@ Like a predator, you begin slowly circling them. When you notice a good opportun
 
 	<<flight_distance_check>>
 	<<flight_time_check _returnTime "silent">>
-	<<print '<<link [[Return to the castle ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Hunt Return]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><<endevent>><</link>>'>><<print _fatigueText>>
+	<<link [[Return to the castle (<<print getTimeString(_hoursPassed, _minutesPassed)>>)|Bird Hunt Return]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><<endevent>><</link>><<print _fatigueText>>
 	<br>
 <<elseif Weather.dayState is "night">>
 	The moor starts to go quiet. It's too dark to see very far down the path. You won't be ambushing anything else here until morning.
@@ -6088,7 +6091,7 @@ Your stomach rises as you plummet. You try to get your bearings, and your attack
 
 	<<flight_distance_check>>
 	<<flight_time_check _returnTime "silent">>
-	<<print '<<link [[Return home ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Hunt Return Injured]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><<endevent>><</link>>'>><<print _fatigueText>>
+	<<link [[Return home (<<print getTimeString(_hoursPassed, _minutesPassed)>>)|Bird Hunt Return Injured]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><<endevent>><</link>><<print _fatigueText>>
 	<br>
 <<else>>
 	<<bHe 1>>
@@ -6194,7 +6197,7 @@ You gently <<if $tendingSuccess>>hold<<else>>pick up<</if>> the <<childtype>>, a
 <<flight_time_check _returnTime "silent">>
 <br><br>
 
-<<print '<<link [[Return to the castle ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Bird Hunt Return Chick Adopt]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><<endevent>><<set $phase to 0>><</link>>'>><<print _fatigueText>>
+<<link [[Return to the castle (<<print getTimeString(_hoursPassed, _minutesPassed)>>)|Bird Hunt Return Chick Adopt]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><<endevent>><<set $phase to 0>><</link>><<print _fatigueText>>
 <br>
 
 :: Bird Hunt Chick Ignore
@@ -6500,6 +6503,7 @@ land back on the perch<<if $bird.upgrades.decor gte 3>> and push the curtain asi
 <</if>>
 <<clotheson>>
 <<endcombat>>
+<<npc "Great Hawk">><<person1>>
 
 <<if $bird.hunts.lootAmount is 0>>
 	Your hunt wasn't successful, but at least something fun came out of it.
@@ -7340,7 +7344,7 @@ You consider what to do next. You should be able to sneak up to the middle if yo
 					<<set _distanceClose to (_distanceRight gt _distanceLeft ? "left" : "right")>>
 					<<switch _distanceTotal>>
 						<<case 1>>You're able to get a better look at the <<personselect _gg>><<person>> to your _distanceClose.
-						<<case 2>>You can see that the <<personselect _gg>><<person>>is on your _distanceClose, and is somewhat close to you.
+						<<case 2>>You can see that the <<personselect _gg>><<person>> is on your _distanceClose, and is somewhat close to you.
 						<<case 3>>On your _distanceClose, you see the <<personselect _gg>><<person>>. <<He>> is still a good distance away from you.
 						<<default>>You see the <<personselect _gg>><<person>> far away on your _distanceClose.
 					<</switch>>
@@ -7434,7 +7438,6 @@ You consider what to do next. You should be able to sneak up to the middle if yo
 		<</if>>
 		<<if _leftGuard?.position is _leftCheck and _rightGuard?.position is _rightCheck>>
 			<<set _noForward to true>>
-			<span class="purple">You don't think you can go forward with both of them being so near you.</span>
 		<</if>>
 	<</if>>
 	<br>
@@ -7496,6 +7499,9 @@ You consider what to do next. You should be able to sneak up to the middle if yo
 	<<else>>
 		<<if !_noForward>>
 			<<caveicon "north">><<link[[Move forwards|Bird Hunt Silver Sneak]]>><<set $birdSilverHunt.player.action to "forward">><</link>><<note "+ Progress" "green">>
+			<br>
+		<<else>>
+			<span class="purple">You don't think you can move forwards like this.</span>
 			<br>
 		<</if>>
 		<<if !_onGuard>>
