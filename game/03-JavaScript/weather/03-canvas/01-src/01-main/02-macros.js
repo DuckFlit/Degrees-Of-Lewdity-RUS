@@ -14,6 +14,7 @@ Macro.add("banner", {
 		bannerFallbackImage.src = "img/misc/banner.png";
 		bannerFallbackImage.onload = () => {
 			Weather.banner.skybox.empty().append($(bannerFallbackImage));
+			Weather.banner.skybox.css("padding-top", 0);
 		};
 	},
 });

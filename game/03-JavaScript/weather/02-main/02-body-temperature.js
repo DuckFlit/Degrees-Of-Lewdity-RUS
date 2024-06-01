@@ -242,7 +242,6 @@ Weather.BodyTemperature = (() => {
 			return V.player.bodyTemperature < settings.baseBodyTemperature ? interpolate(1, settings.effects.maxPainGainMultiplier, factor) : 1;
 		},
 		get stressModifier() {
-			// temporarily disabled
 			const factor = temperatureFactor();
 			if (V.player.bodyTemperature > settings.baseBodyTemperature) return interpolate(0, settings.effects.upperMaxStressGain, factor);
 			return interpolate(0, settings.effects.lowerMaxStressGain, factor);
