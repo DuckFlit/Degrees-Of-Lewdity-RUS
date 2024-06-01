@@ -408,7 +408,7 @@ const statChange = (() => {
 				}
 			}
 
-			V.pain += pain;
+			V.pain += pain * Weather.BodyTemperature.painModifier;
 		}
 		painClamp();
 	}
