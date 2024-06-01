@@ -4,8 +4,12 @@ Weather.WeatherGeneration = (() => {
 	}
 
 	function getWeather(date) {
+		if (date) {
+			// Do not modify weather obj if searching for another date than the current
+			return interpolateWeather(date);
+		}
 		if (T.currentWeather === undefined) {
-			date = new DateTime(date ?? Time.date);
+			date = new DateTime(Time.date);
 			generateWeather(date);
 			T.currentWeather = interpolateWeather(date);
 		}
