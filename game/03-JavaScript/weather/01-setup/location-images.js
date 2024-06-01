@@ -1758,28 +1758,29 @@ setup.LocationImages = {
 	pirate_ship: {
 		folder: "pirate_ship",
 		base: {
-			default: {
-				condition: () => !Weather.isSnow,
-				image: "base.png",
-				animation: {
-					frameDelay: 250,
-					//cycleDelay: () => 5000,
-				},
+			overlay: {
+				image: "water.png",
 			},
-			snow: {
-				condition: () => Weather.isSnow,
-				image: "snow.png",
+			waves: {
+				image: "waves.png",
 				animation: {
-					frameDelay: 250,
-					//cycleDelay: () => 5000,
+					frameDelay: 450,
 				},
 			},
 		},
-		emissive: {
-			image: "emissive.png",
-			condition: () => Weather.lightsOn,
-			animation: "default",
-			color: "#deae66",
+		reflective: {
+			mask: {
+				image: "reflective.png",
+				alpha: 0.5,
+			},
+		},
+		layerTop: {
+			ship: {
+				image: "ship.png",
+				animation: {
+					frameDelay: 750,
+				},
+			},
 		},
 	},
 	sepulchre: {
