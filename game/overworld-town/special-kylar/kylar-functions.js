@@ -95,11 +95,11 @@ function getKylarLocationInLunchtime() {
 	if (!V.daily.school.lunchEaten) {
 		return { area: "canteen", state: "lunch" };
 	}
-	if (Weather.precipitation !== "none") {
-		// Raining or snowing, Kylar goes to the stump in rear courtyard.
+	if (Weather.precipitation === "none") {
+		// NOT Raining or snowing, Kylar goes to the stump in rear courtyard.
 		return { area: "rear_courtyard", state: "stump" };
 	}
-	// Not raining or snowing, Kylar goes to library.
+	// Raining or snowing, Kylar goes to library.
 	const libraryState = getKylarLibraryState();
 	if (!["elsewhere", "inactive"].includes(libraryState)) {
 		return { area: "library", state: libraryState };
