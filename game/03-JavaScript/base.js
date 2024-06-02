@@ -168,11 +168,11 @@ window.integrityKeyword = integrityKeyword;
  *
  * @param {object} worn clothing article, State.variables.worn.XXXX
  * @param {string} slot clothing article slot used
- * @param {string} alt alt version for metal/plastic devices
  * @returns {string} printable integrity prefix
  */
 function integrityWord(worn, slot) {
 	const kw = integrityKeyword(worn, slot);
+	// alt version for metal/plastic devices
 	const alt = setup.clothes[slot][clothesIndex(slot, worn)].altDamage;
 	if (alt === "parasite") {
 		switch (kw) {
@@ -516,7 +516,7 @@ window.weightedRandom = weightedRandom;
  * If the value is a function, the function is invoked and its result is returned.
  * If it is not a function, the value itself is returned.
  * If the value is undefined, a specified default value is returned instead.
- * 
+ *
  * @param {Function|any} value The value to resolve, which can be a function or any value
  * @param {number} defaultValue The default value to use if the provided value is undefined
  * @returns {number} The resolved value, either from the function call or directly
@@ -648,7 +648,6 @@ window.carriedClear = carriedClear;
 
 Macro.add("carriedClear", {
 	handler() {
-		console.log("Carried clear called", this.args);
 		carriedClear(this.args[0]);
 	},
 });
