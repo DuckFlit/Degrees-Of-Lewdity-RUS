@@ -14,7 +14,7 @@ const DoLSave = ((Story, Save) => {
 	// see game/00-framework-tools/03-compression/dictionaries.js
 	const COMPRESSOR_DICTIONARIES = DoLCompressorDictionaries;
 	// id of the dictionary to use for saving
-	const COMPRESSOR_CURRENT_DICTIONARY_ID = "v1";
+	const COMPRESSOR_CURRENT_DICTIONARY_ID = "v2";
 	/**
 	 * When saving, decompress and compare with the original.
 	 * If results differ, report an error and save the uncompressed version instead.
@@ -332,7 +332,7 @@ const DoLSave = ((Story, Save) => {
 	 * Compress a game state (not delta-encoded: {title, variables, prng, pull}) using most recent dictionary.
 	 * Can throw an error.
 	 *
-	 * @param state
+	 * @param {object} state
 	 */
 	function compressState(state) {
 		DOL.Perflog.logWidgetStart("__DoLSave.compressState");
@@ -361,7 +361,7 @@ const DoLSave = ((Story, Save) => {
 	 * Decompress the saved state using the dictionary it was compressed with.
 	 * Can throw an error.
 	 *
-	 * @param zstate
+	 * @param {object} zstate
 	 */
 	function decompressState(zstate) {
 		DOL.Perflog.logWidgetStart("__DoLSave.decompressState");
@@ -398,7 +398,7 @@ const DoLSave = ((Story, Save) => {
 	 * If compression fails, report and error and do nothing.
 	 * This function returns nothing, it modifies the saveObj parameter.
 	 *
-	 * @param saveObj
+	 * @param {object} saveObj
 	 */
 	function compressIfNeeded(saveObj) {
 		if (!saveObj.metadata) saveObj.metadata = {};
@@ -419,7 +419,7 @@ const DoLSave = ((Story, Save) => {
 	/**
 	 * Decompress a SaveObject (the one with metadata and delta-encoded history), if it is compressed.
 	 *
-	 * @param saveObj
+	 * @param {object} saveObj
 	 */
 	function decompressIfNeeded(saveObj) {
 		const isCompressed = (saveObj.metadata && saveObj.metadata.jsoncompressed === 1) || looksLikeCompressedSave(saveObj.state.history[0]);
