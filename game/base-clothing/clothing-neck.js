@@ -471,6 +471,7 @@ function initNeck() {
 			iconFile: "suspenders.png",
 			accIcon: 0,
 			altposition: "none",
+			altdisabled: [],
 		},
 
 		{
