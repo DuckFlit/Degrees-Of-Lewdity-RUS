@@ -71,6 +71,9 @@ $(document).on(":passagestart", () => {
 		return;
 	}
 
+	// Do nothing if still in start menu
+	if (["Start", "Clothes Testing", "Renderer Test Page", "Tips"].includes(State.passage) && V.location === "banner") return;
+
 	// Remove banner canvas if no longer on start menu
 	if (State.passage !== "Start" && Weather.banner) {
 		Weather.banner.stopAll();
