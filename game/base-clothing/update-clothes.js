@@ -29,11 +29,11 @@ function updateClothingColours(item, itemRef) {
 		case "shield shades":
 		case "punk shades":
 			if (item.colour === 0) item.colour = "black";
-			if (item.accessory_colour === 0) item.colour = "black";
+			if (item.accessory_colour === 0) item.accessory_colour = "black";
 			break;
 		case "aviators":
 			if (item.colour === 0) item.colour = "grey";
-			if (item.accessory_colour === 0) item.colour = "original";
+			if (item.accessory_colour === 0) item.accessory_colour = "original";
 			break;
 		case "glasses":
 			if (item.colour === 0) item.colour = "silver";
@@ -313,7 +313,10 @@ function updateClothesItem(slot, item, debug) {
 		case "kittycat hat":
 			item.name_cap = "Kittycat hat";
 			break;
-	}
+		case "doggy muzzle":
+			item.name_cap = "Doggy muzzle";
+			break;
+		}
 	if (debug) console.log("updateClothesItem:", slot, itemOld, clone(item));
 }
 
