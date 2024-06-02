@@ -93,6 +93,17 @@ Weather.Temperature = (() => {
 	function getWaterTemperature() {
 		// Can override water - in that case, use that value
 		if (T.temperatureOverride?.water) return T.temperatureOverride.water;
+
+		// Location overrides - until location rework
+		switch (V.location) {
+			case "pool":
+				return 28;
+			case "cabin": // Eden's cabin pool
+				return 37;
+			case "hotel": // Avery date
+				return 37;
+		}
+
 		const date = new DateTime(Time.date);
 		const baseTemperature = getBaseTemperature(date);
 		const lowerLimit = -1;
