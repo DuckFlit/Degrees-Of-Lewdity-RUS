@@ -33,6 +33,7 @@ setup.WeatherTemperature = {
 	// Heat generation
 	baseHeatGeneration: 0.07, // The base rate of heat generation by the body.
 	activityRate: 0.09, // How much physical activity affects heat generation.
+	sunIntensityBaseModifier: 10, // At max sun intensity, it adds this to the effective outside temperature
 
 	// Heat dissipation
 	baseDissipation: 0.04, // The base rate of heat dissipation without modifiers.

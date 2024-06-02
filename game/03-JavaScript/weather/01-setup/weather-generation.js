@@ -33,7 +33,7 @@ setup.WeatherGeneration = {
 			// Jan
 			temperatureRange: {
 				average: [-9, 7], // Range of temperature for a specific month. A range of [5, 15] means that it will generate temperatures between that range for that specific month.
-				extreme: [-27, 11],
+				extreme: [-25, 11],
 			},
 			extremeChance: 0.6,
 			sunIntensity: 0.1, // Modifies tanning changes from sun exposure
@@ -42,7 +42,7 @@ setup.WeatherGeneration = {
 			// Feb
 			temperatureRange: {
 				average: [-8, 8],
-				extreme: [-23, 15],
+				extreme: [-21, 15],
 			},
 			extremeChance: 0.5,
 			sunIntensity: 0.2,
@@ -51,7 +51,7 @@ setup.WeatherGeneration = {
 			// Mar
 			temperatureRange: {
 				average: [-3, 11],
-				extreme: [-20, 20],
+				extreme: [-18, 20],
 			},
 			extremeChance: 0.4,
 			sunIntensity: 0.3,
@@ -60,7 +60,7 @@ setup.WeatherGeneration = {
 			// Apr
 			temperatureRange: {
 				average: [0, 15],
-				extreme: [-12, 29],
+				extreme: [-10, 29],
 			},
 			extremeChance: 0.5,
 			sunIntensity: 0.5,
@@ -69,7 +69,7 @@ setup.WeatherGeneration = {
 			// May
 			temperatureRange: {
 				average: [7, 19],
-				extreme: [-1, 33],
+				extreme: [0, 33],
 			},
 			extremeChance: 0.6,
 			sunIntensity: 0.7,
@@ -114,7 +114,7 @@ setup.WeatherGeneration = {
 			// Oct
 			temperatureRange: {
 				average: [5, 16],
-				extreme: [-6, 29],
+				extreme: [-5, 29],
 			},
 			extremeChance: 0.5,
 			sunIntensity: 0.5,
@@ -123,7 +123,7 @@ setup.WeatherGeneration = {
 			// Nov
 			temperatureRange: {
 				average: [-5, 10],
-				extreme: [-12, 19],
+				extreme: [-10, 19],
 			},
 			extremeChance: 0.4,
 			sunIntensity: 0.3,
@@ -132,7 +132,7 @@ setup.WeatherGeneration = {
 			// Dec
 			temperatureRange: {
 				average: [-8, 6],
-				extreme: [-22, 13],
+				extreme: [-20, 13],
 			},
 			extremeChance: 0.5,
 			sunIntensity: 0.1,

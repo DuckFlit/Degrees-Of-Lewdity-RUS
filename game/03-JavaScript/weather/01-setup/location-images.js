@@ -23,6 +23,9 @@ setup.Locations = {
 	chalets: () => {
 		return "beach";
 	},
+	hotel: () => {
+		return "town";
+	},
 	get() {
 		if (typeof this[V.location] === "function") {
 			return this[V.location]();

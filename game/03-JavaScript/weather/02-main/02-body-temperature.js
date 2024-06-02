@@ -102,7 +102,7 @@ Weather.BodyTemperature = (() => {
 
 	function getRestingPoint(iterations = 6, warmth = undefined, bodyTemperature, outside) {
 		let temperature = outside || V.outside ? Weather.temperature : Weather.insideTemperature;
-		if (T.inWater && V.outside) {
+		if (T.inWater) {
 			temperature = Weather.waterTemperature;
 		}
 		let temp = bodyTemperature ?? V.player.bodyTemperature;
@@ -159,8 +159,8 @@ Weather.BodyTemperature = (() => {
 		const warmth = warmth2 ?? getTotalWarmth();
 		const insulationModifier = Math.exp((-warmth * settings.insulationMultiplier) / settings.insulationCap);
 
-		// Wetness increases dissipation
-		const wetnessMultiplier = 1 + calculateWetness() * settings.wetnessFactor;
+		// Wetness increases dissipation - but not if inside warm water
+		const wetnessMultiplier = T.inWater && Weather.waterTemperature >= settings.baseBodyTemperature ? 1 : 1 + calculateWetness() * settings.wetnessFactor;
 
 		// Adjust dissipation based on insulation and temperature difference.
 		return totalDissipation * insulationModifier * wetnessMultiplier;
@@ -174,8 +174,10 @@ Weather.BodyTemperature = (() => {
 	 * @param outsideTemperature
 	 */
 	function calculateHeatGeneration(bodyTemperature, outsideTemperature) {
+		outsideTemperature += settings.sunIntensityBaseModifier * Weather.sunIntensity;
 		const outsideTemperatureDifference = Math.max(0, outsideTemperature - V.player.bodyTemperature);
 		const baseGeneration = settings.baseHeatGeneration + outsideTemperatureDifference * (getTotalWarmth() * settings.warmthHeatModifier);
+		// Sun intensity increases heat
 		const activityHeatGeneration = settings.activityRate * activityLevel();
 		const bodyTemperatureDifference = bodyTemperature - settings.baseBodyTemperature;
 
@@ -193,9 +195,14 @@ Weather.BodyTemperature = (() => {
 		return 0;
 	}
 
+	function baseInsulation() {
+		// Add modifiers here, based on TFs?
+		return settings.baseInsulation;
+	}
+
 	function getTotalWarmth() {
 		return (
-			settings.baseInsulation +
+			baseInsulation() +
 			Object.values(V.worn).reduce((acc, item) => {
 				return acc + (item.warmth || 0);
 			}, 0)
