@@ -132,11 +132,18 @@ Weather.Temperature = (() => {
 		const targetTemperature = 23;
 		const modifierFactor = 0.4;
 
+		// Location modifiers placeholder
+		let locationModifier = 0;
+		switch (V.location) {
+			case "pool":
+				locationModifier = 7;
+		}
+
 		// Logarithmic function for more effect at extremes (low and high temperatures)
 		const deviation = Math.abs(baseTemperature - targetTemperature);
 		const modifier = Math.pow(Math.log1p(deviation), 2) * Math.sign(baseTemperature - targetTemperature) * modifierFactor;
 
-		return round(targetTemperature + modifier, 2);
+		return round(targetTemperature + modifier + locationModifier, 2);
 	}
 
 	/*
