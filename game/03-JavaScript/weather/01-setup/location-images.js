@@ -2103,7 +2103,7 @@ setup.LocationImages = {
 				waitForAnimation: "drivingCar",
 				condition: grp => {
 					// Do not draw if car animation is running
-					return Weather.lightsOn && !grp?.animations.get("drivingCar").inCycle;
+					return Weather.lightsOn && !grp?.animations?.get("drivingCar")?.inCycle;
 				},
 				image: "emissive_flicker.png",
 				color: "#deae66",

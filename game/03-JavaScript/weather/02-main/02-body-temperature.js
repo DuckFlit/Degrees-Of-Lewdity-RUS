@@ -200,13 +200,18 @@ Weather.BodyTemperature = (() => {
 		return settings.baseInsulation;
 	}
 
-	function getTotalWarmth() {
+	function getWarmth() {
 		return (
 			baseInsulation() +
 			Object.values(V.worn).reduce((acc, item) => {
 				return acc + (item.warmth || 0);
 			}, 0)
 		);
+	}
+
+	function getTotalWarmth() {
+		// Total warmth is warmth, but with added modifiers (like from traits)
+		return getWarmth();
 	}
 
 	return Object.create({
@@ -262,6 +267,7 @@ Weather.BodyTemperature = (() => {
 		calculateHeatGeneration,
 		calculateHeatDissipation,
 		getTotalWarmth,
+		getWarmth,
 		getRestingPoint,
 	});
 })();
