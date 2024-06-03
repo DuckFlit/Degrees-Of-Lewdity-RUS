@@ -1049,7 +1049,7 @@ function initFace() {
 		{
 			index: 35,
 			name: "doggy muzzle",
-			name_cap: "Doggy Muzzle",
+			name_cap: "Doggy muzzle",
 			variable: "doggymuzzle",
 			integrity: 30,
 			integrity_max: 30,
