@@ -389,5 +389,11 @@ Weather.Temperature = (() => {
 				T.temperatureOverride = { water: value };
 			},
 		},
+		isExtreme() {
+			return (
+				Weather.genSettings.months[Time.month - 1].temperatureRange.average[0] > Weather.temperature ||
+				Weather.genSettings.months[Time.month - 1].temperatureRange.average[1] < Weather.temperature
+			);
+		},
 	});
 })();
