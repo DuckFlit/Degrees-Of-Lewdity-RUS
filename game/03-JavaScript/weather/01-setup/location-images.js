@@ -515,6 +515,10 @@ setup.LocationImages = {
 				condition: () => !Weather.isSnow,
 				image: "base.png",
 			},
+			snow: {
+				condition: () => Weather.isSnow,
+				image: "snow.png",
+			},
 			drip: {
 				condition: () => Weather.isSnow,
 				image: "drip.png",
