@@ -60,7 +60,7 @@ setup.WeatherGeneration = {
 			// Apr
 			temperatureRange: {
 				average: [0, 15],
-				extreme: [-10, 29],
+				extreme: [-10, 28],
 			},
 			extremeChance: 0.25,
 			sunIntensity: 0.5,
@@ -69,7 +69,7 @@ setup.WeatherGeneration = {
 			// May
 			temperatureRange: {
 				average: [7, 19],
-				extreme: [0, 33],
+				extreme: [0, 32],
 			},
 			extremeChance: 0.3,
 			sunIntensity: 0.7,
@@ -78,7 +78,7 @@ setup.WeatherGeneration = {
 			// Jun
 			temperatureRange: {
 				average: [11, 23],
-				extreme: [3, 38],
+				extreme: [3, 36],
 			},
 			extremeChance: 0.35,
 			sunIntensity: 1,
@@ -87,7 +87,7 @@ setup.WeatherGeneration = {
 			// Jul
 			temperatureRange: {
 				average: [14, 27],
-				extreme: [8, 44],
+				extreme: [8, 40],
 			},
 			extremeChance: 0.4,
 			sunIntensity: 1,
@@ -96,7 +96,7 @@ setup.WeatherGeneration = {
 			// Aug
 			temperatureRange: {
 				average: [14, 24],
-				extreme: [6, 40],
+				extreme: [6, 38],
 			},
 			extremeChance: 0.35,
 			sunIntensity: 0.8,
@@ -105,7 +105,7 @@ setup.WeatherGeneration = {
 			// Sep
 			temperatureRange: {
 				average: [11, 20],
-				extreme: [0, 35],
+				extreme: [0, 32],
 			},
 			extremeChance: 0.3,
 			sunIntensity: 0.7,
@@ -114,7 +114,7 @@ setup.WeatherGeneration = {
 			// Oct
 			temperatureRange: {
 				average: [5, 16],
-				extreme: [-5, 29],
+				extreme: [-5, 28],
 			},
 			extremeChance: 0.25,
 			sunIntensity: 0.5,
