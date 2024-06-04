@@ -35,7 +35,11 @@ Weather.Tooltips = (() => {
 		const tempDescription = Weather.TooltipDescriptions.bodyTemperature();
 		const waterDescription = Weather.TooltipDescriptions.waterTemperature();
 		const tempChangeDescription = Weather.TooltipDescriptions.bodyTemperatureChanges();
-		const overrideDescription = T.temperatureOverrideTooltip;
+		const overrideDescription = T.inWater
+			? T.temperatureOverride.waterTooltip
+			: V.outside
+			? T.temperatureOverride.outsideTooltip
+			: T.temperatureOverride.insideTooltip;
 		const fatigueModifier = categorise(Weather.BodyTemperature.fatigueModifier, 1, Weather.tempSettings.effects.maxFatigueGainMultiplier, 4);
 		const arousalModifier = categorise(Weather.BodyTemperature.arousalModifier, 1, Weather.tempSettings.effects.maxArousalGainMultiplier, 4);
 		const painModifier = categorise(Weather.BodyTemperature.painModifier, 1, Weather.tempSettings.effects.maxPainGainMultiplier, 4);
