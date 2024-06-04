@@ -349,25 +349,30 @@ Weather.Temperature = (() => {
 		add,
 		override: {
 			increase: {
-				inside(value) {
+				inside(value, tooltip) {
 					T.temperatureOverride = { inside: (T.temperatureOverride?.inside ?? Weather.insideTemperature) + value };
+					T.temperatureOverrideTooltip = `<span class="orange">${tooltip}</span>`;
 				},
-				outside(value) {
+				outside(value, tooltip) {
 					T.temperatureOverride = { outside: (T.temperatureOverride?.outside ?? Weather.temperature) + value };
+					T.temperatureOverrideTooltip = `<span class="orange">${tooltip}</span>`;
 				},
-				water(value) {
+				water(value, tooltip) {
 					T.temperatureOverride = { water: (T.temperatureOverride?.water ?? Weather.waterTemperature) + value };
+					T.temperatureOverrideTooltip = `<span class="orange">${tooltip}</span>`;
 				},
 			},
 			decrease: {
-				inside(value) {
+				inside(value, tooltip) {
 					T.temperatureOverride = { inside: (T.temperatureOverride?.inside ?? Weather.insideTemperature) - value };
-				},
-				outside(value) {
+					T.temperatureOverrideTooltip = `<span class="teal">${tooltip}</span>`;
+				outside(value, tooltip) {
 					T.temperatureOverride = { outside: (T.temperatureOverride?.outside ?? Weather.temperature) - value };
+					T.temperatureOverrideTooltip = `<span class="teal">${tooltip}</span>`;
 				},
-				water(value) {
+				water(value, tooltip) {
 					T.temperatureOverride = { water: (T.temperatureOverride?.water ?? Weather.waterTemperature) - value };
+					T.temperatureOverrideTooltip = `<span class="teal">${tooltip}</span>`;
 				},
 			},
 			get outside() {
