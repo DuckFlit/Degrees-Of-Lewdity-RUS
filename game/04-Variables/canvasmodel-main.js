@@ -4077,6 +4077,7 @@ function gray_suffix(path, filter) {
 // Layer generating functions.
 
 function genlayer_clothing_main(slot, overrideOptions) {
+
 	return Object.assign({
 		srcfn(options) {
 			let isHoodDown = options.hood_down &&
