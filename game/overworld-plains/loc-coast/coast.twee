@@ -25,20 +25,20 @@ White rose bushes flower here, unbothered by the wind.
 	<br>
 <</if>>
 <<if $historytrait gte 3>>
-	<<walkicon>><<link [[Walk east along the coast (2:00)|Coast Path East]]>><<pass 120>><</link>>
+	<<walkicon>><<link [[Walk east along the coast (2:00)|Coast Path East]]>><<athletics 4>><<pass 120>><</link>>
 	<br>
-	<<if currentSkillValue('athletics') gte 300 and ($weather is "clear" or $weather is "overcast") and !$worn.feet.type.includes("heels")>>
-		<<runicon>><<link [[Jog east along the coast (1:30)|Coast Path East]]>><<pass 90>><<tiredness 2>><<set $speed to "jog">><</link>><<athleticsdifficulty 250 700>><<gtiredness>>
+	<<if currentSkillValue('athletics') gte 300 and (Weather.precipitation is "none") and !$worn.feet.type.includes("heels")>>
+		<<runicon>><<link [[Jog east along the coast (1:30)|Coast Path East]]>><<athletics 5>><<pass 90>><<tiredness 2>><<set $speed to "jog">><</link>><<athleticsdifficulty 250 700>><<gtiredness>>
 		<br>
 		<<if currentSkillValue('athletics') gte 700>>
-			<<runicon>><<link [[Run east along the coast (1:00)|Coast Path East]]>><<pass 60>><<tiredness 5>><<set $speed to "run">><</link>><<athleticsdifficulty 650 1000>><<gtiredness>>
+			<<runicon>><<link [[Run east along the coast (1:00)|Coast Path East]]>><<athletics 6>><<pass 60>><<tiredness 3>><<set $speed to "run">><</link>><<athleticsdifficulty 650 1000>><<gtiredness>>
 			<br>
 		<</if>>
 	<</if>>
 	<<if $harpy gte 6 and $birdFly gte 1>>
 		<br>
 		<<flight_time_check 20>>
-		<<glideicon>><<print '<<link [[Soar east ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Coast Path East]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<pass _flightTime>><<set $speed to "fly">><</link>>'>><<flight_text>><<gtiredness>>
+		<<glideicon>><<link [[Soar east (<<print getTimeString(_hoursPassed, _minutesPassed)>>)|Coast Path East]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<pass _flightTime>><<set $speed to "fly">><</link>><<flight_text>><<gtiredness>>
 		<br>
 	<</if>>
 <</if>>
@@ -95,7 +95,7 @@ You're on a thin coastal path north of the farmlands, above a cliff facing the s
 	<<icon "tending/cabbage.png">> <<link [[Search for seeds (0:30)|Coast Path Cabbage]]>><<pass 30>><<tending 6>><<set $plants_known.push("cabbage")>><</link>><<gtending>>
 	<br>
 <</if>>
-<<if currentSkillValue('athletics') gte 300 and ($weather is "clear" or $weather is "overcast") and !$worn.feet.type.includes("heels")>>
+<<if currentSkillValue('athletics') gte 300 and (Weather.precipitation is "none") and !$worn.feet.type.includes("heels")>>
 	<<runicon  "west">><<link [[Jog west along the coast (1:30)|Coast Path West]]>><<pass 90>><<tiredness 2>><<set $speed to "jog">><</link>><<athleticsdifficulty 250 700>><<gtiredness>>
 	<br>
 	<<if currentSkillValue('athletics') gte 700>>
@@ -105,7 +105,7 @@ You're on a thin coastal path north of the farmlands, above a cliff facing the s
 <</if>>
 <<if $harpy gte 6 and $birdFly gte 1>>
 	<<flight_time_check 20>>
-	<<glideicon "west">><<print '<<link [[Soar west ('+_hoursPassed+':'+ (_minutesPassed lt 10 ? "0" : "") + _minutesPassed + ')|Coast Path West]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<pass _flightTime>><<set $speed to "fly">><</link>>'>><<flight_text>><<gtiredness>>
+	<<glideicon "west">><<link [[Soar west (<<print getTimeString(_hoursPassed, _minutesPassed)>>)|Coast Path West]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<pass _flightTime>><<set $speed to "fly">><</link>><<flight_text>><<gtiredness>>
 	<br>
 <</if>>
 
@@ -118,7 +118,7 @@ You're on a thin coastal path north of the farmlands, above a cliff facing the s
 
 <<if $speed is "fly">>
 	<<flight_effects>>
-	You run and jump. The wind catches you, and carries you along the trail. <<physique 2>><<athletics 2>>
+	You run and jump. The wind catches you, and carries you along the trail.
 <</if>>
 <br><br>
 You follow the path east. It sometimes runs along the very top of the cliffs. At other times, it dips partway down, so that the route squeezes between a rock face on one side and a sheer drop on the other.
@@ -126,7 +126,7 @@ You follow the path east. It sometimes runs along the very top of the cliffs. At
 	<br><br>
 	<<athleticsdifficulty 250 700 true>>
 	<<if $athleticsSuccess>>
-		You jog against the wind. <span class="green">The sea air <<if $weather is "clear" and Time.dayState is "day">>and sunshine<</if>> is refreshing.</span>
+		You jog against the wind. <span class="green">The sea air <<if Weather.is("clear") and Time.dayState is "day">>and sunshine<</if>> is refreshing.</span>
 	<<else>>
 		You jog against the wind. <span class="red">You feel a little worn out.</span><<gtiredness>><<tiredness 2>>
 	<</if>>
@@ -134,7 +134,7 @@ You follow the path east. It sometimes runs along the very top of the cliffs. At
 	<br><br>
 	<<athleticsdifficulty 650 1000 true>>
 	<<if $athleticsSuccess>>
-		You run against the wind. <span class="green">The sea air <<if $weather is "clear" and Time.dayState is "day">>and sunshine<</if>> is refreshing.</span>
+		You run against the wind. <span class="green">The sea air <<if Weather.is("clear") and Time.dayState is "day">>and sunshine<</if>> is refreshing.</span>
 	<<else>>
 		You jog against the wind. <span class="red">You feel a little worn out.</span><<gtiredness>><<tiredness 5>>
 	<</if>>
@@ -154,8 +154,6 @@ You see fields in the distance.
 	<<flight_effects>>
 	You run and jump. The wind catches you, and carries you along the trail.
 	<br><br>
-	<<physique 2>><<athletics 2>>
-	<br><br>
 <</if>>
 You follow the path west. Wild grasses and other plants intrude on it, sometimes swallowing it all, but it's not hard to find again. It always hugs the cliff.
 <br><br>
@@ -163,7 +161,7 @@ You follow the path west. Wild grasses and other plants intrude on it, sometimes
 	<br><br>
 	<<athleticsdifficulty 250 700 true>>
 	<<if $athleticsSuccess>>
-		You jog against the wind. <span class="green">The sea air <<if $weather is "clear" and Time.dayState is "day">>and sunshine<</if>> is refreshing.</span>
+		You jog against the wind. <span class="green">The sea air <<if Weather.is("clear") and Time.dayState is "day">>and sunshine<</if>> is refreshing.</span>
 	<<else>>
 		You jog against the wind. <span class="red">You feel a little worn out.</span><<gtiredness>><<tiredness 2>>
 	<</if>>
@@ -171,7 +169,7 @@ You follow the path west. Wild grasses and other plants intrude on it, sometimes
 	<br><br>
 	<<athleticsdifficulty 650 1000 true>>
 	<<if $athleticsSuccess>>
-		You run against the wind. <span class="green">The sea air <<if $weather is "clear" and Time.dayState is "day">>and sunshine<</if>> is refreshing.</span>
+		You run against the wind. <span class="green">The sea air <<if Weather.is("clear") and Time.dayState is "day">>and sunshine<</if>> is refreshing.</span>
 	<<else>>
 		You jog against the wind. <span class="red">You feel a little worn out.</span><<gtiredness>><<tiredness 5>>
 	<</if>>

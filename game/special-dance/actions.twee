@@ -645,41 +645,22 @@
 
 <<widget "dancedrunktrip">>
 	You <span class="purple">drunkenly</span> trip and stumble, falling from the table.
-	<<if (!$worn.upper.type.includes("naked") or !$worn.under_upper.type.includes("naked")) and random(1)>>
-		<<if !$worn.upper.type.includes("naked")>>
-			<<set $worn.upper.integrity -= 10>>
-			You're caught, but your $worn.upper.name snags.
-			<<if $worn.upper.integrity lte 0>>
-				<span class="pink">You hear a tear,</span> and look down to find its tattered remains vanishing in the crowd.
-				<<arousal 100>><<upperruined>><<set $audiencearousal += 5>><<set $audienceexcitement += 5>>
-			<<else>>
-				Someone cops a feel of your chest as you climb back up.
-			<</if>>
-		<<else>>
-			<<set $worn.under_upper.integrity -= 10>>
-			You're caught, but your $worn.under_upper.name snags.
-			<<if $worn.under_upper.integrity lte 0>>
-				<span class="pink">You hear a tear,</span> and look down to find its tattered remains vanishing in the crowd.
-				<<arousal 100>><<underupperruined>><<set $audiencearousal += 5>><<set $audienceexcitement += 5>>
-			<<else>>
-				Someone cops a feel of your chest as you climb back up.
-			<</if>>
-		<</if>>
-	<<elseif !$worn.lower.type.includes("naked")>>
-		<<set $worn.lower.integrity -= 10>>
-		You're caught, but your $worn.lower.name snags.
-		<<if $worn.lower.integrity lte 0>>
+	<<outfitChecks>>
+	<<if (!_shirtless) and random(1)>>
+		<<set _top.integrity -= 10>>
+		You're caught, but your _top.name <<= _top.plural is 1 ? "snag" : "snags">>.
+		<<if _top.integrity lte 0>>
 			<span class="pink">You hear a tear,</span> and look down to find its tattered remains vanishing in the crowd.
-			<<arousal 100>><<lowerruined>><<set $audiencearousal += 5>><<set $audienceexcitement += 5>>
+			<<arousal 100>><<if _top is $worn.over_upper>><<overupperruined>><<else>><<upperruined>><</if>><<set $audiencearousal += 5>><<set $audienceexcitement += 5>>
 		<<else>>
-			Someone cops a feel of your <<bottom>> as you climb back up.
+			Someone cops a feel of your chest as you climb back up.
 		<</if>>
-	<<elseif !$worn.under_lower.type.includes("naked")>>
-		<<set $worn.under_lower.integrity -= 10>>
-		You're caught, but your $worn.under_lower.name snags.
-		<<if $worn.under_lower.integrity lte 0>>
+	<<elseif !_bottomless>>
+		<<set _bottom.integrity -= 10>>
+		You're caught, but your _bottom.name snags.
+		<<if _bottom.integrity lte 0>>
 			<span class="pink">You hear a tear,</span> and look down to find its tattered remains vanishing in the crowd.
-			<<arousal 100>><<underlowerruined>><<set $audiencearousal += 5>><<set $audienceexcitement += 5>>
+			<<arousal 100>><<if _bottom is $worn.over_lower>><<overlowerruined>><<else>><<lowerruined>><</if>><<set $audiencearousal += 5>><<set $audienceexcitement += 5>>
 		<<else>>
 			Someone cops a feel of your <<bottom>> as you climb back up.
 		<</if>>
@@ -704,7 +685,8 @@
 <</widget>>
 
 <<widget "dancestrip">>
-	<<if $worn.under_lower.name isnot "naked" and ((setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt is 1 and setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1) or (setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt is 1 and $worn.lower.type.includes("naked")) or (setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1 and $worn.over_lower.type.includes("naked")))>>
+	<<outfitChecks>>
+	<<if $worn.under_lower.name isnot "naked" and _skirtExposed>>
 		You spin, your skirt flaring up. Lacking in decency, a member of your audience seizes the opportunity and lunges for your $worn.under_lower.name.
 		<<set $danceevent to "skirtstrip">><<molested>>
 	<<elseif $worn.over_lower.name isnot "naked">>

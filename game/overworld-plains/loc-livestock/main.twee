@@ -27,7 +27,7 @@ You are in your cell in the barn. There's a bucket of what looks like clean wate
 <br><br>
 
 <<if isPlayerNonparasitePregnancyEnding()>>
-	<<pregnancyWatersBrokenPassout "remy">>
+	<<pregnancyPassout "remy">>
 <<elseif $stress gte $stressmax>>
 	<<passoutremy>>
 	<<if Time.hour gte 5 and Time.hour lt 18>>
@@ -56,18 +56,16 @@ You are in your cell in the barn. There's a bucket of what looks like clean wate
 		<<link [[Ignore it|Eden Shout Ignore]]>><<npcincr Remy dom 1>><<set $daily.eden.farmRescue to 1>><<livestock_obey 5>><</link>><<ggobey>>
 		<br> -->
 		<!-- <</if>> Added the closing if here due to sugarcube being stupid, is not part of the above commented out code itself. confirmed the commented code is still not running <<set _errorCheck to "failed">>-->
-	<<if $livestock_obey lte 30>>
-		<<npc Remy>><<person1>>Remy marches over, looking you right in the eyes. "You're a problem specimen," <<he>> says, entering your cell. "So I'll handle you myself. Come here."
-		<br><br>
+	<<npc Remy>><<person1>>
+	Remy <<= $livestock_obey lte 30 ? "marches" : "walks">> over, looking you right in the eyes. "<<= $livestock_obey lte 30 ? "You're a problem specimen" : "I'll handle this one myself">>," <<he>> says, entering your cell. "<<if $livestock_obey lte 30>>So I'll handle you myself. <</if>>Come here."
+	<br><br>
 
-		<<link [[Obey|Livestock Milking Obey]]>><<npcincr Remy dom 1>><<livestock_obey 5>><</link>><<ggobey>>
+	<<if $livestock_obey gte 80 and C.npc.Remy.love gte 50 and random(1,100) gte 60 and !playerChastity()>>
+		<<link [[Obey|Livestock Milking Obey]]>><<npcincr Remy dom 1>><<livestock_obey 5>><<set $phase to 1>><</link>><<ggobey>>
 		<br>
 		<<link [[Отказаться|Livestock Milking Refuse]]>><<npcincr Remy dom -1>><<livestock_obey -5>><</link>><<lobey>>
 		<br>
 	<<else>>
-		<<npc Remy>><<person1>>Remy walks over, looking you right in the eyes. "I'll handle this one myself," <<he>> says, entering your cell. "Come here."
-		<br><br>
-
 		<<link [[Obey|Livestock Milking Obey]]>><<npcincr Remy dom 1>><<livestock_obey 5>><</link>><<ggobey>>
 		<br>
 		<<link [[Отказаться|Livestock Milking Refuse]]>><<npcincr Remy dom -1>><<livestock_obey -5>><</link>><<lobey>>
@@ -170,9 +168,9 @@ Remy lands in the dirt. Eden helps you find your footing, and together you escap
 	<<link [[Далее|Livestock Cell]]>><</link>>
 	<br>
 <<else>>
-	<<pass 60>><<tiredness 6>>
 	There's enough room in your cell for basic exercise. You work up a sweat, and keep pushing yourself, taking your mind off your imprisonment.
 	<<physique 6>>
+	<<pass 60>><<tiredness 6>>
 	<br><br>
 
 	<<if Time.hour lte 5>>
@@ -301,75 +299,102 @@ It isn't long before the door to the barn opens, and the lights flicker on. Remy
 	"Keep your arms at your side," <<he>> commands. You feel a thrill as <<his>> eyes flicker over your body.
 <</if>>
 <br><br>
-You flinch as <<his>> cold hands touch your <<breasts>>. <<He>> kneads and caresses them, wearing a thoughtful expression.
+<<if $phase is 1>>
+	<<He>> moves <<his>> hands to touch your <<= $player.perceived_breastsize lte 1 ? "chest" : "<<breasts>>">>, and you remain still at <<his>> touch.
 
-<<if $player.breastsize gte 12>>
-	"These udders are the pride of the farm," <<he>> says with a satisfied squeeze. "If only the other cattle could compete." <<He>> pulls a pot of pink gel from <<his>> pocket, and pours it between <<his>> hands. Once good and wet, <<he>> presses the tips of <<his>> fingers against your chest, and rubs. A lewd warmth spreads wherever the gel touches, leaving your skin sensitive to further touching.
-	<<garousal>><<arousal 600 "breasts">><<ginsecurity "breasts_big">><<insecurity "breasts_big" 2>>
-	<br><br>
-	<<if playerBellyVisible() and $pregnancyspeechdisable is "f">>
-		Taking a look and rubbing your belly, <<he>> continues, "Maybe I should put more effort in getting my other cattle pregnant like yourself."
-		<br><br>
+	<<if $lactating is 1>>
+		"You're the pride of the farm," <<he>> says, massaging you. <<He>> tweaks your nipples, and you let out a surprised moo as milk leaks from your tips. "That's my <<girl>>," <<he>> laughs.
+	<<else>>
+		<<He>> kneads and massages, but nothing happens. <<He>> tweaks your nipples, and you moo in surprise, but it doesn't seem like the outcome <<he>> was hoping for. "Still nothing? I would've figured you'd start producing by now," <<he>> says with a disappointed shake of <<his>> head.
 	<</if>>
-<<elseif $player.breastsize gte 8>><<set $breastgrowthtimer to -100>>
-	"Not bad," <<he>> says with a squeeze. "But there's room for improvement." <<He>> pulls a pot of pink gel from <<his>> pocket, and pours it between <<his>> hands. Once good and wet, <<he>> presses the tips of <<his>> fingers against your chest, and rubs. A lewd warmth spreads wherever the gel touches, leaving your skin sensitive to further touching.
-	<<ggarousal>><<arousal 1800 "breasts">><<ginsecurity "breasts_big">><<insecurity "breasts_big" 1>>
-	<br><br>
-	<<if playerBellyVisible()>>
-		Taking a look and rubbing your belly, <<he>> continues, "At this rate, it shouldn't take much longer till you'll be the pride of the farm."
-		<br><br>
-	<</if>>
-	<<if $arousal gte $arousalmax>>
-		<<orgasm>> Remy seems to ignore your spasms, but there's no way <<he>> didn't notice. Your face flushes with shame as much as arousal.
-		<br><br>
-	<</if>>
-<<elseif $player.breastsize gte 6>><<set $breastgrowthtimer to -100>>
-	"You've got some growing to do," <<he>> says with a squeeze. "I have just the thing." <<He>> pulls a pot of pink gel from <<his>> pocket, and pours it between <<his>> hands. Once good and wet, <<he>> presses the tips of <<his>> fingers against your chest, and rubs. A lewd warmth spreads wherever the gel touches, leaving your skin sensitive to further touching.
-	<<ggarousal>><<arousal 1800 "breasts">>
-	<br><br>
-	<<if playerBellyVisible()>>
-		Taking a look and rubbing your belly, <<he>> continues, "It's clearly helping your growth, I should do more tests on other cattle."
-		<br><br>
-	<</if>>
-	<<if $arousal gte $arousalmax>>
-		<<orgasm>> Remy seems to ignore your spasms, but there's no way <<he>> didn't notice. Your face flushes with shame as much as arousal.
-		<br><br>
-	<</if>>
-<<elseif $player.breastsize gte 1>><<set $breastgrowthtimer to -100>>
-	"These won't do at all," <<he>> says with a disappointed sigh. "Fortunately I have just the thing." <<He>> pulls a pot of pink gel from <<his>> pocket, and pours it between <<his>> hands. Once good and wet, <<he>> presses the tips of <<his>> fingers against your chest, and rubs. A lewd warmth spreads wherever the gel touches, leaving your skin sensitive to further touching.
-	<<ggarousal>><<arousal 1800 "breasts">><<ginsecurity "breasts_small">><<insecurity "breasts_small" 1>>
-	<br><br>
-	<<if playerBellyVisible()>>
-		Taking a look at your belly, <<he>> questions, "Well it seems to be working? Maybe you need more assistance in other areas."
-		<br><br>
-	<</if>>
-	<<if $arousal gte $arousalmax>>
-		<<orgasm>> Remy seems to ignore your spasms, but there's no way <<he>> didn't notice. Your face flushes with shame as much as arousal.
-		<br><br>
-	<</if>>
-<<else>>
-	"There's barely anything here at all," <<he>> says with a disappointed sigh. "Fortunately I have just the thing." <<He>> pulls a pot of pink gel from <<his>> pocket, and pours it between <<his>> hands. Once good and wet, <<he>> presses the tips of <<his>> fingers against your chest, and rubs. A lewd warmth spreads wherever the gel touches, leaving your skin sensitive to further touching.
-	<<ggarousal>><<arousal 1800 "breasts">><<ginsecurity "breasts_tiny">><<insecurity "breasts_tiny" 1>>
-	<br><br>
-	<<if playerBellyVisible()>>
-		Taking a look at your belly, <<he>> questions, "This is really unusual, your breasts should at least have grown a little at this point."
-		<br><br>
-	<</if>>
-	<<if $arousal gte $arousalmax>>
-		<<orgasm>> Remy seems to ignore your spasms, but there's no way <<he>> didn't notice. Your face flushes with shame as much as arousal.
-		<br><br>
-	<</if>>
-<</if>>
 
-<<He>> withdraws <<his>> hands, leaving your chest tingling.
-<br><br>
+	<<He>> pulls the familiar pink gel from <<his>> pocket, and begins to rub it across your body.<<garousal>><<arousal 600 "breasts">>
+	<br><br>
 
-<<if $player.penisExist and (!playerChastity("hidden") or $genderknown.includes("Remy"))>>
-	<<link [[Далее|Livestock Penis]]>><</link>>
+	<<if $player.penisExist>>
+		Remy's eyes turn to your penis. <<His>> hand reaches out, giving it a quick squeeze. The touch sends a jolt through your body. <<He>> nods once in approval, then pulls the pot of purple gel from another pocket. <<He>> generously rubs it over your length, leaving it slick and tingling.
+		<<garousal>><<arousal 1800 "genitals">>
+		<br><br>
+	<</if>>
+
+	<<He>> reaches for your collar, then pauses. "Maybe I should do this the old fashioned way. It'll take more time, but more milk from our prized <<if $player.gender_appearance is "m">>bull<<else>>cow<</if>> would be worth it," <<he>> mutters.
+	<br><br>
+
+	<<link [[Encourage|Livestock Handmilking]]>><</link>>
 	<br>
+	<<link [[Shake your head|Livestock Handmilking Refuse]]>><</link>>
+
 <<else>>
-	<<link [[Далее|Livestock Lactate]]>><</link>>
-	<br>
+	You flinch as <<his>> cold hands touch your <<breasts>>. <<He>> kneads and caresses them, wearing a thoughtful expression.
+
+	<<if $player.breastsize gte 12>>
+		"These udders are the pride of the farm," <<he>> says with a satisfied squeeze. "If only the other cattle could compete." <<He>> pulls a pot of pink gel from <<his>> pocket, and pours it between <<his>> hands. Once good and wet, <<he>> presses the tips of <<his>> fingers against your chest, and rubs. A lewd warmth spreads wherever the gel touches, leaving your skin sensitive to further touching.
+		<<garousal>><<arousal 600 "breasts">><<ginsecurity "breasts_big">><<insecurity "breasts_big" 2>>
+		<br><br>
+		<<if playerBellyVisible() and $pregnancyspeechdisable is "f">>
+			Taking a look and rubbing your belly, <<he>> continues, "Maybe I should put more effort in getting my other cattle pregnant like yourself."
+			<br><br>
+		<</if>>
+	<<elseif $player.breastsize gte 8>><<set $breastgrowthtimer to -100>>
+		"Not bad," <<he>> says with a squeeze. "But there's room for improvement." <<He>> pulls a pot of pink gel from <<his>> pocket, and pours it between <<his>> hands. Once good and wet, <<he>> presses the tips of <<his>> fingers against your chest, and rubs. A lewd warmth spreads wherever the gel touches, leaving your skin sensitive to further touching.
+		<<ggarousal>><<arousal 1800 "breasts">><<ginsecurity "breasts_big">><<insecurity "breasts_big" 1>>
+		<br><br>
+		<<if playerBellyVisible()>>
+			Taking a look and rubbing your belly, <<he>> continues, "At this rate, it shouldn't take much longer till you'll be the pride of the farm."
+			<br><br>
+		<</if>>
+		<<if $arousal gte $arousalmax>>
+			<<orgasm>> Remy seems to ignore your spasms, but there's no way <<he>> didn't notice. Your face flushes with shame as much as arousal.
+			<br><br>
+		<</if>>
+	<<elseif $player.breastsize gte 6>><<set $breastgrowthtimer to -100>>
+		"You've got some growing to do," <<he>> says with a squeeze. "I have just the thing." <<He>> pulls a pot of pink gel from <<his>> pocket, and pours it between <<his>> hands. Once good and wet, <<he>> presses the tips of <<his>> fingers against your chest, and rubs. A lewd warmth spreads wherever the gel touches, leaving your skin sensitive to further touching.
+		<<ggarousal>><<arousal 1800 "breasts">>
+		<br><br>
+		<<if playerBellyVisible()>>
+			Taking a look and rubbing your belly, <<he>> continues, "It's clearly helping your growth, I should do more tests on other cattle."
+			<br><br>
+		<</if>>
+		<<if $arousal gte $arousalmax>>
+			<<orgasm>> Remy seems to ignore your spasms, but there's no way <<he>> didn't notice. Your face flushes with shame as much as arousal.
+			<br><br>
+		<</if>>
+	<<elseif $player.breastsize gte 1>><<set $breastgrowthtimer to -100>>
+		"These won't do at all," <<he>> says with a disappointed sigh. "Fortunately I have just the thing." <<He>> pulls a pot of pink gel from <<his>> pocket, and pours it between <<his>> hands. Once good and wet, <<he>> presses the tips of <<his>> fingers against your chest, and rubs. A lewd warmth spreads wherever the gel touches, leaving your skin sensitive to further touching.
+		<<ggarousal>><<arousal 1800 "breasts">><<ginsecurity "breasts_small">><<insecurity "breasts_small" 1>>
+		<br><br>
+		<<if playerBellyVisible()>>
+			Taking a look at your belly, <<he>> questions, "Well it seems to be working? Maybe you need more assistance in other areas."
+			<br><br>
+		<</if>>
+		<<if $arousal gte $arousalmax>>
+			<<orgasm>> Remy seems to ignore your spasms, but there's no way <<he>> didn't notice. Your face flushes with shame as much as arousal.
+			<br><br>
+		<</if>>
+	<<else>>
+		"There's barely anything here at all," <<he>> says with a disappointed sigh. "Fortunately I have just the thing." <<He>> pulls a pot of pink gel from <<his>> pocket, and pours it between <<his>> hands. Once good and wet, <<he>> presses the tips of <<his>> fingers against your chest, and rubs. A lewd warmth spreads wherever the gel touches, leaving your skin sensitive to further touching.
+		<<ggarousal>><<arousal 1800 "breasts">><<ginsecurity "breasts_tiny">><<insecurity "breasts_tiny" 1>>
+		<br><br>
+		<<if playerBellyVisible()>>
+			Taking a look at your belly, <<he>> questions, "This is really unusual, your breasts should at least have grown a little at this point."
+			<br><br>
+		<</if>>
+		<<if $arousal gte $arousalmax>>
+			<<orgasm>> Remy seems to ignore your spasms, but there's no way <<he>> didn't notice. Your face flushes with shame as much as arousal.
+			<br><br>
+		<</if>>
+	<</if>>
+
+	<<He>> withdraws <<his>> hands, leaving your chest tingling.
+	<br><br>
+
+	<<if $player.penisExist and (!playerChastity("hidden") or $genderknown.includes("Remy"))>>
+		<<link [[Далее|Livestock Penis]]>><</link>>
+		<br>
+	<<else>>
+		<<link [[Далее|Livestock Lactate]]>><</link>>
+		<br>
+	<</if>>
 <</if>>
 
 :: Livestock Penis
@@ -560,6 +585,130 @@ Remy kneels, <<his>> eyes level with your <<penis>>.
 <<link [[Далее|Livestock Lactate]]>><</link>>
 <br>
 
+:: Livestock Handmilking
+<<effects>>
+
+You nuzzle up to Remy, and <<he>> smiles. "I think you know I've got a soft spot for you," <<he>> chuckles.
+"Alright, get down, <<girl>>," <<he>> commands. You drop to your hands and knees, and <<he>> brings a large bucket over to you, placing it beneath you.
+<br><br>
+
+<<He>> pulls up a stool and brings <<his>> hands to your nipple. <<He>> presses your breasts inward, before lightly squeezing.
+
+<<if $milk_amount gte 1 and $lactating gte 1>>
+	<<set $livestock_milk to $milk_amount>><<set $milk_produced_stat += Math.trunc($milk_amount)>>
+	Milk leaks from your tips, slowly draining into the bucket underneath you. <<garousal>><<arousal 300 "breasts">>
+	<br><br>
+
+	The pleasure builds as Remy continues to fondle your breasts, until you can no longer bear it. You give a low moo as you reach your peak. <<orgasm>><<silently>><<orgasm>><</silently>>
+
+	Remy gives a pleased hum and continues <<his>> ministrations, forcing your body toward another <<if _deniedOrgasm>>ruined <</if>>orgasm, then another. <<orgasm>><<orgasm>>
+<<else>>
+	<<set $livestock_milk to 0>>
+	<<He>> plays with your nipples, hoping to coax out milk, but nothing leaks out. <<He>> clicks <<his>> tongue, but continues trying. The pleasure builds as Remy persistently fondles your <<breasts>>, and the warm, tingling sensation of the gel tips you over the edge. You give a low moo as you reach your peak. <<orgasm>><<silently>><<orgasm>><</silently>>
+	<br><br>
+
+	Remy gives a neutral hum. You can't tell if <<hes>> pleased with your orgasm, or disappointed at the lack of milk produced. <<He>> continues <<his>> ministrations nonetheless, forcing your body toward another <<if _deniedOrgasm>>ruined <</if>>orgasm, then another. <<orgasm>><<silently>><<orgasm>><</silently>>
+<</if>>
+
+<<if $player.penisExist>>
+	<<set $livestock_semen to $semen_amount>>
+	<<= $lactating is 1 ? ($livestock_milk gt 0 ? "Once <<hes>> coaxed out the last bit of milk, <<he>> moves the bucket over" : "\"That's disappointing,\" <<he>> mutters. \"Let's hope we have better luck here.\" <<He>> moves the bucket over") : "<<He>> adjusts the bucket so it's beneath your groin">>. <<He>> takes you into both hands, <<= $player.penissize lt 1 ? "fondling" : "pumping">> your shaft while massaging the base of your cock. <<orgasm>>
+
+	<<His>> firm, steady strokes and the warm, tingling sensation of the gel brings you to climax again, and again. <<orgasm>><<orgasm>>
+
+	<<if $femaleclimax or _deniedOrgasm>>
+		<<unset $livestock_semen>>
+		Despite Remy's best efforts, no semen is collected as you have multiple <<if _deniedOrgasm>>ruined <</if>>orgasms. Remy frowns. <<if $livestock_milk gte 100>>"Well, no matter," <<he>> mutters. "At least we got something."<</if>> <<He>> gives your cock another <<= $player.penissize lt 0 ? "squeeze" : "stroke">> in one last attempt to coax some cum out.
+	<<else>>
+		You ejaculate into the bucket with a low moo as the repeated orgasms wrack your body. You catch a glimpse of Remy's face. <<He>> looks pleased with <<his>> handiwork.
+	<</if>>
+	<br><br>
+
+	<<barn_img penis no_livestock no_pump>>
+<<else>>
+	<<barn_img breasts no_livestock no_pump>>
+<</if>>
+<br><br>
+
+<<link [[Далее|Livestock Handmilking End]]>><</link>>
+
+:: Livestock Handmilking End
+<<effects>>
+<<if $livestock_milk is undefined>><<set $livestock_milk to 0>><</if>>
+<<if $livestock_semen is undefined>><<set $livestock_semen to 0>><</if>>
+<<set $fluid_forced_stat += ($livestock_milk + $livestock_semen)>>
+
+<<pass 180>>
+<<endevent>>
+<<npc Remy>><<person1>>
+You stay on all fours for what feels like forever, until Remy finally stands up. You slump forward, exhausted from holding the same position. Remy picks up the bucket
+
+<<if $livestock_milk + $livestock_semen gte 5000>><<earnFeat "Pride of the Farm">>
+	<<npcincr Remy love 3>>
+	and smiles at the <span class="green">vast</span> quantity of white fluid. "You truly are the pride of our farm." <<He>> pets <<= $cow gte 2 and $transformationParts.cow.horns isnot "hidden" ? "the base of your horns" : "your head">> fondly. "There's no other <<if $player.gender_appearance is "m">>bull<<else>>cow<</if>> like you. Good <<girl>>."
+	<<gglove>>
+
+<<elseif $livestock_milk + $livestock_semen gte 3000>>
+	<<npcincr Remy love 2>>
+	and smiles at the <span class="teal">great</span> quantity of white fluid. "You're a very good <<girl>>," <<he>> says. <<He>> rubs <<= $cow gte 2 and $transformationParts.cow.horns isnot "hidden" ? "the base of your horns" : "your head">>. "We're lucky to have you in our herd."
+	<<glove>>
+
+<<elseif $livestock_milk + $livestock_semen gte 1000>>
+	<<npcincr Remy love 1>>
+	and smiles at the <span class="lblue">large</span> quantity of white fluid. "Excellent." <<He>> pats your head. "Our herd wouldn't be the same without you in it."
+	<<glove>>
+
+<<elseif $livestock_milk + $livestock_semen gte 500>>
+	and nods at the <span class="blue">decent</span> amount of white fluid. "Very good. I suppose that was worth the time spent milking you myself."
+
+<<elseif $livestock_milk + $livestock_semen gte 300>>
+	and nods at the <span class="purple">small</span> amount of white fluid. "Good, though I know you can do better." <<He>> looks tired from the time spent tending to you. "Otherwise, it's not worth all that time spent taking care of you myself."
+
+<<elseif $livestock_milk + $livestock_semen gte 100>>
+	and sighs at the <span class="pink">tiny</span> amount of white fluid in front of <<him>>. "I expected better than that, with all thet time spent taking care of you myself."
+
+<<elseif $livestock_milk + $livestock_semen gte 1>>
+	and frowns at the <span class="red">dribble</span> of white fluid in front of <<him>>. "Pitiable. All that time, and barely anything to show for it."
+
+<<else>>
+	and frowns down at it. "All that for nothing." <<He>> gives a weary sigh. "What a waste of time. But don't worry, <<girl>>. <<if $fluid_forced_stat gte 1000>>I'm confident we can get your productivity back up there.<<else>>I'm not sure why you have such a hard time producing milk, but I'm confident we'll get there<</if>>. You'll be a valuable member of our herd, if I have anything to say about it."
+<</if>>
+<br><br>
+<<He>> calls over one of the workers tending to the cattle and hands over the bucket, <<= $livestock_milk + $livestock_semen gte 1000 ? "careful not to slosh any onto the floor" : "giving the farmhand a curt nod">>.
+<br><br>
+
+<<if ($livestock_semen + $livestock_milk) lte 300>>
+	Remy rests a hand on your shoulder. You shiver, still aroused from <<his>> rough treatment. "<<= $fluid_forced_stat gte 1000 ? "You used to produce so much. What happened?" : "I would've figured that would work. Still nothing?">>" When you don't respond, <<he>> shakes <<his>> head. "Don't know why I'm asking a <<if $player.gender_appearance is "m">>bull<<else>>cow<</if>>. Maybe you'll be ready to give tomorrow."
+	<br><br>
+
+	<<He>> stands and walks to the gate after scratching you behind the ears. "You're a good <<girl>>. You know that, right?" Despite <<his>> disappointment, <<he>> still gives you a smile as <<he>> shuts the cage. "It's time for bed now."
+<<else>>
+	"You're such a good <<girl>>," <<he>> says, scratching you behind the ears. You lean into <<his>> touch, and <<he>> chuckles. "Time for bed." <<He>> stands and walks to the gate. <<He>> smiles at you as <<he>> shuts the cage.
+<</if>>
+<br><br>
+
+Remy joins the farmhands in freeing the other cattle from the machines. They turn off the lights as they leave, plunging the barn into darkness.
+<br><br>
+
+<<endevent>>
+
+<<unset $livestock_semen>>
+<<unset $livestock_milk>>
+<<unset $deniedOrgasm>>
+<<set $milk_amount to 0>>
+<<unbind>>
+
+<<link [[Далее|Livestock Cell]]>><</link>>
+<br>
+
+:: Livestock Handmilking Refuse
+<<effects>>
+
+You shake your head and remain still. <<He>> purses <<his>> lips, then steps away to set up the milking machine.
+<br><br>
+
+<<link [[Далее|Livestock Lactate]]>><</link>>
+
 :: Livestock Lactate
 <<effects>>
 
@@ -664,24 +813,24 @@ They tie your arms to an iron bar several feet above the ground, and your collar
 <<if $breastfeedingdisable is "f">>
 	<<if $player.penisExist and !playerChastity()>>
 		<<if $player.penissize gte 4>>
-		Remy leans beneath your body, the glass pump still in hand. You feel the tube press against the tip of your <<penis>>, cold and hard. Remy reappears, a frown on <<his>> face. "Hey," <<he>> calls to a passing farmhand. "Pass me a larger one."
-		<br><br>
+			Remy leans beneath your body, the glass pump still in hand. You feel the tube press against the tip of your <<penis>>, cold and hard. Remy reappears, a frown on <<his>> face. "Hey," <<he>> calls to a passing farmhand. "Pass me a larger one."
+			<br><br>
 
-		This time, the tube fits. You feel a similar cold press against your <<breasts>> next. Remy leaves your cage, clanking the door shut after <<him>>. <<He>> approaches the milking machine, and pulls a lever. An incredible suction feeling assaults you.
-		<br><br>
+			This time, the tube fits. You feel a similar cold press against your <<breasts>> next. Remy leaves your cage, clanking the door shut after <<him>>. <<He>> approaches the milking machine, and pulls a lever. An incredible suction feeling assaults you.
+			<br><br>
 
 		<<elseif $player.penissize gte 1>>
-		Remy leans beneath your body, the glass pump still in hand. You feel the tube brush against your <<penis>> and press against your pelvis.
-		<br><br>
+			Remy leans beneath your body, the glass pump still in hand. You feel the tube brush against your <<penis>> and press against your pelvis.
+			<br><br>
 
-		You feel a similar cold press against your <<breasts>> next. Remy leaves your cage, clanking the door shut after <<him>>. <<He>> approaches the milking machine, and pulls a lever. An incredible suction feeling assaults you.
-		<br><br>
+			You feel a similar cold press against your <<breasts>> next. Remy leaves your cage, clanking the door shut after <<him>>. <<He>> approaches the milking machine, and pulls a lever. An incredible suction feeling assaults you.
+			<br><br>
 		<<else>>
-		Remy leans beneath your body, the glass pump still in hand. You feel the tube press against your pelvis, cold and hard. Remy reappears, a frown on <<his>> face. "Hey," <<he>> calls to a passing farmhand. "Pass me a smaller one."
-		<br><br>
+			Remy leans beneath your body, the glass pump still in hand. You feel the tube press against your pelvis, cold and hard. Remy reappears, a frown on <<his>> face. "Hey," <<he>> calls to a passing farmhand. "Pass me a smaller one."
+			<br><br>
 
-		This time, the tube fits. You feel a similar cold press against your <<breasts>> next. Remy leaves your cage, clanking the door shut after <<him>>. <<He>> approaches the milking machine, and pulls a lever. An incredible suction feeling assaults your <<penis>> and chest.
-		<br><br>
+			This time, the tube fits. You feel a similar cold press against your <<breasts>> next. Remy leaves your cage, clanking the door shut after <<him>>. <<He>> approaches the milking machine, and pulls a lever. An incredible suction feeling assaults your <<penis>> and chest.
+			<br><br>
 		<</if>>
 
 		<<if $lactating is 1 and $milk_amount gte 1>>
@@ -895,7 +1044,7 @@ Perhaps the farmers will treat you better if you play along. You allow the sucki
 	<<orgasm>>
 	<<orgasm>>
 
-	You remember the gel Remy rubbed into you, and how unnatural that warmth felt. You feel it again now, as the gel works its devilry on your cock, it also failing to do it's job.
+	You remember the gel Remy rubbed into you, and how unnatural that warmth felt. You feel it again now, as the gel works its devilry on your cock, but failing to do its job.
 	<br><br>
 
 	<<orgasm>>
@@ -1298,14 +1447,17 @@ You're slumped, panting, above the straw-strewn floor. Next thing you know, Remy
 <<if $livestock_semen is undefined>><<set $livestock_semen to 0>><</if>>
 <<set $fluid_forced_stat += ($livestock_milk + $livestock_semen)>>
 <<if $livestock_milk + $livestock_semen gte 5000>><<earnFeat "Pride of the Farm">>
-<<npcincr Remy love 3>>"Phenomenal productivity," <<he>> says, gazing in awe at the <span class="green">vast</span> quantity of white fluid in front of <<him>>. "I know of no other <<if $player.gender_appearance is "m">>bull<<else>>cow<</if>> that could produce so much."
-<<gglove>>
+	<<npcincr Remy love 3>>"Phenomenal productivity," <<he>> says, gazing in awe at the <span class="green">vast</span> quantity of white fluid in front of <<him>>. "I know of no other <<if $player.gender_appearance is "m">>bull<<else>>cow<</if>> that could produce so much."
+	<<gglove>>
+	<br><br>
 <<elseif $livestock_milk + $livestock_semen gte 3000>>
-<<npcincr Remy love 2>>"You're a very good <<girl>>," <<he>> says, staring at the <span class="teal">great</span> quantity of white fluid in front of <<him>>. "Only trouble is," <<he>> smiles. "It might be a bit heavy."
-<<glove>>
+	<<npcincr Remy love 2>>"You're a very good <<girl>>," <<he>> says, staring at the <span class="teal">great</span> quantity of white fluid in front of <<him>>. "Only trouble is," <<he>> smiles. "It might be a bit heavy."
+	<<glove>>
+	<br><br>
 <<elseif $livestock_milk + $livestock_semen gte 1000>>
-<<npcincr Remy love 1>>"With produce like this," <<he>> says, looking at the <span class="lblue">large</span> quantity of white fluid in front of <<him>>. "You're one of the most valuable members of our herd."
-<<glove>>
+	<<npcincr Remy love 1>>"With produce like this," <<he>> says, looking at the <span class="lblue">large</span> quantity of white fluid in front of <<him>>. "You're one of the most valuable members of our herd."
+	<<glove>>
+	<br><br>
 <<elseif $livestock_milk + $livestock_semen gte 500>>
 	"Very good," <<he>> says, looking at the <span class="blue">decent</span> amount of white fluid in front of <<him>>. "You're a valuable member of our herd."
 <<elseif $livestock_milk + $livestock_semen gte 300>>
@@ -1368,7 +1520,7 @@ The lights shut off and plunge the barn into darkness.
 <<effects>>
 
 There's enough room in your cell for basic exercise. You work up a sweat, and keep pushing yourself, taking your mind off your imprisonment.
-<<physique 18>>
+<<physique 18>><<pass 180>>
 <br><br>
 
 <<link [[Далее|Livestock Cell]]>><<endevent>><</link>>
@@ -1441,7 +1593,7 @@ Remy leans against the gate, looking you right in the eyes as <<his>> farmhands 
 
 	<<link [[Wait (3:00)|Livestock Wait]]>><<pass 180>><</link>>
 	<br>
-	<<link [[Work out (3:00)|Livestock Wait Workout]]>><<pass 180>><<tiredness 18>><</link>><<ggtiredness>>
+	<<link [[Work out (3:00)|Livestock Wait Workout]]>><<tiredness 18>><</link>><<gtiredness>>
 	<br>
 
 <<elseif $enemyhealth lte 0>>
@@ -1461,7 +1613,7 @@ The farmhands push past Remy in a panicked scramble for the exit. Remy lingers a
 
 	<<link [[Wait (3:00)|Livestock Wait]]>><<pass 180>><</link>>
 	<br>
-	<<link [[Work out (3:00)|Livestock Wait Workout]]>><<pass 180>><<tiredness 18>><</link>><<gtiredness>>
+	<<link [[Work out (3:00)|Livestock Wait Workout]]>><<tiredness 18>><</link>><<gtiredness>>
 	<br>
 
 <<else>>
@@ -1574,11 +1726,11 @@ A weak light pierces the high windows. It's dawn.
 	<br><br>
 <</if>>
 
-<<if $weather is "rain">>
+<<if Weather.precipitation is "rain">>
 	You emerge outside, into the rain and mud.
-<<elseif $weather is "clear">>
+<<elseif !Weather.isOvercast>>
 	You emerge outside, into sunlight.
-<<elseif $weather is "snow">>
+<<elseif Weather.isSnow>>
 	You emerge outside, into the snow.
 <<else>>
 	You emerge outside.
@@ -1614,7 +1766,7 @@ You refuse to leave your cell. The farmhand who opened it, a <<person>>, steps i
 <br><br>
 <<person1>>
 <<if $livestock_obey gte 80>>
-	"What's gotten into you," Remy says, shaking <<his>> head. "I thought you were a good <<girl>>" <<He>> strokes <<his>> whip with <<his>> thumb as two more farmhands enter the cell. Together they have little trouble pulling you out. They push you with the rest of the herd in their march from the barn. Farmhands flank the group, making sure to drive you in the right direction.
+	"What's gotten into you," Remy says, shaking <<his>> head. "I thought you were a good <<girl>>." <<He>> strokes <<his>> whip with <<his>> thumb as two more farmhands enter the cell. Together they have little trouble pulling you out. They push you with the rest of the herd in their march from the barn. Farmhands flank the group, making sure to drive you in the right direction.
 <<elseif $livestock_obey lte 20>>
 	"Figures," Remy says. "You can't resist the opportunity to be a nuisance." <<He>> strokes <<his>> whip with <<his>> thumb as two more farmhands enter the cell. Together they have little trouble pulling you out. They push you with the rest of the herd in their march from the barn. Farmhands flank the group, making sure to drive you in the right direction.
 <<else>>
@@ -1622,11 +1774,11 @@ You refuse to leave your cell. The farmhand who opened it, a <<person>>, steps i
 <</if>>
 <br><br>
 
-<<if $weather is "rain">>
+<<if Weather.precipitation is "rain">>
 	You emerge outside, into the rain and mud.
-<<elseif $weather is "clear">>
+<<elseif !Weather.isOvercast>>
 	You emerge outside, into sunlight.
-<<elseif $weather is "snow">>
+<<elseif Weather.isSnow>>
 	You emerge outside, into the snow.
 <<else>>
 	You emerge outside.

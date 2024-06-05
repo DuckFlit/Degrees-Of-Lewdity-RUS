@@ -56,7 +56,7 @@
 
 <<widget "passoutdrain">>
 	<<if isPlayerNonparasitePregnancyEnding()>>
-		<<pregnancyWatersBrokenPassout "drain">>
+		<<pregnancyPassout "drain">>
 	<<else>>
 		<<link [[Everything fades to black...->Passout Drain]]>><</link>>
 	<</if>>
@@ -86,7 +86,7 @@
 
 <<widget "eventsdrain">>
 	<<rng>>
-	<<if $wraith.state and $wraith.hunt gte 10 and $wraithIntro is true and isBloodmoon()>>
+	<<if $wraith.state and $wraith.hunt gte 10 and $wraithIntro is true and Time.isBloodMoon()>>
 		The water congeals and warps, forming translucent tendrils that burst from the water. One collides with you, sending you sprawling. <<pain 4>><<gpain>>
 		<br><br>
 		A pale figure rises from the water, creating no disturbance on the surface. It wears a mad smile.
@@ -268,14 +268,14 @@
 <</widget>>
 
 <<widget "morganoptions">>
-	<<if !$worn.over_lower.type.includes("naked")>>
-		<<He>> grasps your $worn.over_lower.name.
-	<<elseif !$worn.over_upper.type.includes("naked")>>
+	<<if !$worn.over_upper.type.includes("naked")>>
 		<<He>> grasps your $worn.over_upper.name.
-	<<elseif !$worn.lower.type.includes("naked")>>
-		<<He>> grasps your $worn.lower.name.
+	<<elseif !$worn.over_lower.type.includes("naked")>>
+		<<He>> grasps your $worn.over_lower.name.
 	<<elseif !$worn.upper.type.includes("naked")>>
 		<<He>> grasps your $worn.upper.name.
+	<<elseif !$worn.lower.type.includes("naked")>>
+		<<He>> grasps your $worn.lower.name.
 	<<elseif !$worn.under_lower.type.includes("naked")>>
 		<<He>> grasps your $worn.under_lower.name.
 	<<else>>
@@ -284,23 +284,23 @@
 	<br><br>
 	<<link [[Go quietly|Sewers Return]]>><</link>>
 	<br>
-	<<if !$worn.over_lower.type.includes("naked")>>
-		<<link [[Struggle free|Sewers Over Lower Struggle]]>><</link>>
-		<br>
-	<<elseif !$worn.over_upper.type.includes("naked")>>
+	<<if !$worn.over_upper.type.includes("naked")>>
 		<<link [[Struggle free|Sewers Over Upper Struggle]]>><</link>>
 		<br>
-	<<elseif !$worn.lower.type.includes("naked")>>
-		<<link [[Struggle free|Sewers Lower Struggle]]>><</link>>
+	<<elseif !$worn.over_lower.type.includes("naked")>>
+		<<link [[Struggle free|Sewers Over Lower Struggle]]>><</link>>
 		<br>
 	<<elseif !$worn.upper.type.includes("naked")>>
 		<<link [[Struggle free|Sewers Upper Struggle]]>><</link>>
+		<br>
+	<<elseif !$worn.lower.type.includes("naked")>>
+		<<link [[Struggle free|Sewers Lower Struggle]]>><</link>>
 		<br>
 	<<elseif !$worn.under_lower.type.includes("naked")>>
 		<<link [[Struggle free|Sewers Under Struggle]]>><</link>>
 		<br>
 	<</if>>
-	<<link [[Драться|Sewers Fight]]>><<set $fightstart to 1>><</link>>
+	<<link [[Fight|Sewers Fight]]>><<set $fightstart to 1>><</link>>
 	<br>
 <</widget>>
 
@@ -419,9 +419,10 @@
 <</widget>>
 
 <<widget "eventssewers">>
-	<<set $sewersevent to random(5,12)>>
+	<<set $sewersevent to random(5,12)>><!-- Candidate for eventpool conversion -->
 	<<rng>>
-	<<if $wraith.state and $eventforced and isBloodmoon() and !_wraithEventSkipped>>
+	<<outfitChecks>>
+	<<if $wraith.state and $eventforced and Time.isBloodMoon() and !_wraithEventSkipped>>
 		<<wraithEventSewers>>
 	<<elseif $rng gte 91>>
 		You hear chanting echo through the tunnels.	It's hard to pinpoint the direction.
@@ -484,37 +485,12 @@
 		<br><br>
 		<<destinationsewers>>
 	<<elseif $rng gte 56 and $slimedisable is "f">>
-		<<if !$worn.over_lower.type.includes("naked")>>
-			A warm, slimy and sticky liquid sprays you from a nearby pipe. It gets all over your $worn.over_lower.name.
-			<<set $worn.over_lower.integrity -= 20>>
-			<<if $worn.over_lower.integrity lte 0>>
-				You try to wipe it off, but your fingers get stuck. You keep tugging, until your $worn.over_lower.name rips from your body with a tear.
-				<<integritycheck>>
-				<br><br>
-				<<destinationsewers>>
-			<<else>>
-				You try to wipe it off, but your fingers get stuck. You keep tugging, until you free yourself with a tear.
-				<br><br>
-				<<destinationsewers>>
-			<</if>>
-		<<elseif !$worn.lower.type.includes("naked")>>
-			A warm, slimy and sticky liquid sprays you from a nearby pipe. It gets all over your $worn.lower.name.
-			<<set $worn.lower.integrity -= 20>>
-			<<if $worn.lower.integrity lte 0>>
-				You try to wipe it off, but your fingers get stuck. You keep tugging, until your $worn.lower.name rips from your body with a tear.
-				<<integritycheck>>
-				<br><br>
-				<<destinationsewers>>
-			<<else>>
-				You try to wipe it off, but your fingers get stuck. You keep tugging, until you free yourself with a tear.
-				<br><br>
-				<<destinationsewers>>
-			<</if>>
-		<<elseif !$worn.under_lower.type.includes("naked")>>
-			A warm, slimy and sticky liquid sprays you from a nearby pipe. It gets all over your $worn.under_lower.name.
-			<<set $worn.under_lower.integrity -= 20>>
-			<<if $worn.under_lower.integrity lte 0>>
-				You try to wipe it off, but your fingers get stuck. You keep tugging, until your $worn.under_lower.name rips from your body with a tear.
+		A warm, slimy and sticky liquid sprays you from a nearby pipe.
+		<<if !_bottomless>>
+			It gets all over your _bottom.name.
+			<<set _bottom.integrity -= 20>>
+			<<if _bottom.integrity lte 0>>
+				You try to wipe it off, but your fingers get stuck. You keep tugging, until your _bottom.name rips from your body with a tear.
 				<<integritycheck>>
 				<br><br>
 				<<destinationsewers>>
@@ -526,7 +502,7 @@
 		<<else>>
 			<<if $player.penisExist>>
 				<<if !$parasite.penis.name>>
-					A warm, slimy and sticky liquid sprays you from a nearby pipe. It gets all over your <<penis>>.
+					It gets all over your <<penis>>.
 					<<if $parasitedisable is "f" and !($parasite.penis.name is "parasite" or $parasite.clit.name is "parasite")>>
 						You try to wipe it off, but it's stuck. You'll need help to remove it.
 						<<parasite penis slime>>
@@ -536,20 +512,20 @@
 					<br><br>
 					<<destinationsewers>>
 				<<else>>
-					A warm, slimy and sticky liquid sprays you from a nearby pipe. It gets all over the $parasite.penis.name on your <<penis>>, which shakes it off.
+					It gets all over the $parasite.penis.name on your <<penis>>, which shakes it off.
 					<br><br>
 					<<destinationsewers>>
 				<</if>>
 			<<else>>
 				<<if !$parasite.clit.name>>
-					A warm, slimy and sticky liquid sprays you from a nearby pipe. It gets all over your <<pussy>>. You try to wipe it off, but it sticks firm to your clitoris. You'll need help to remove it.
+					It gets all over your <<pussy>>. You try to wipe it off, but it sticks firm to your clitoris. You'll need help to remove it.
 					<<parasite clit slime and !($parasite.penis.name is "parasite" or $parasite.clit.name is "parasite")>>
 					<br><br>
 					You take another step, and the fluid on your clit squirms. It starts to suck and tease you.
 					<br><br>
 					<<destinationsewers>>
 				<<else>>
-					A warm, slimy and sticky liquid sprays you from a nearby pipe. It gets all over the $parasite.clit.name on your <<pussy>>, which shakes it off.
+					It gets all over the $parasite.clit.name on your <<pussy>>, which shakes it off.
 					<br><br>
 					<<destinationsewers>>
 				<</if>>
@@ -557,36 +533,10 @@
 		<</if>>
 	<<elseif $rng gte 51 and $slimedisable is "f">>
 		You notice the ceiling glisten.
-		<<if !$worn.over_upper.type.includes("naked")>>
-			It drips on your $worn.over_upper.name. It's thick, slimy and sticky. You try to pull it off, but it's stuck. So are your fingers.
-			<<set $worn.over_upper.integrity -= 20>>
-			<<if $worn.over_upper.integrity lte 0>>
-				You keep tugging, until your whole top comes off with a tear.
-				<br><br>
-				<<integritycheck>>
-				<<destinationsewers>>
-			<<else>>
-				You keep tugging, until it comes away with a tear.
-				<br><br>
-				<<destinationsewers>>
-			<</if>>
-		<<elseif !$worn.upper.type.includes("naked")>>
-			It drips on your $worn.upper.name. It's thick, slimy and sticky. You try to pull it off, but it's stuck. So are your fingers.
-			<<set $worn.upper.integrity -= 20>>
-			<<if $worn.upper.integrity lte 0>>
-				You keep tugging, until your whole top comes off with a tear.
-				<br><br>
-				<<integritycheck>>
-				<<destinationsewers>>
-			<<else>>
-				You keep tugging, until it comes away with a tear.
-				<br><br>
-				<<destinationsewers>>
-			<</if>>
-		<<elseif !$worn.under_upper.type.includes("naked")>>
-			It drips on your $worn.under_upper.name. It's thick, slimy and sticky. You try to pull it off, but it's stuck. So are your fingers.
-			<<set $worn.under_upper.integrity -= 20>>
-			<<if $worn.under_upper.integrity lte 0>>
+		<<if !_topless>>
+			It drips on your _top.name. It's thick, slimy and sticky. You try to pull it off, but it's stuck. So are your fingers.
+			<<set _top.integrity -= 20>>
+			<<if _top.integrity lte 0>>
 				You keep tugging, until your whole top comes off with a tear.
 				<br><br>
 				<<integritycheck>>
@@ -617,10 +567,10 @@
 	<<elseif $rng gte 46 and $slimedisable is "f">>
 		You slip on something slimy, and land on your <<bottom>>.
 		<br><br>
-		<<if !$worn.lower.type.includes("naked")>>
-			<<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
+		<<if !_bottomless>>
+			<<if _bottomIsSkirt and _skirtExposed>>
 				<<if !$parasite.bottom.name>>
-					You try to stand up, but your butt is stuck firm. Your $worn.lower.name flared as you fell, leaving your bare skin exposed to the sticky substance. You keep tugging, until you manage to pull yourself to your feet.
+					You try to stand up, but your butt is stuck firm. Your _bottom.name flared as you fell, leaving your bare skin exposed to the sticky substance. You keep tugging, until you manage to pull yourself to your feet.
 					<br><br>
 					<<if $parasitedisable is "f">>
 						Something squirms against your bottom. Some of the sticky substance remains on your skin. You'll need help to remove it.
@@ -632,12 +582,12 @@
 					<</if>>
 					<<destinationsewers>>
 				<<else>>
-					Your $worn.lower.name flared as you fell, leaving your bare skin exposed to the sticky substance. Fortunately, the $parasite.bottom.name stuck to your butt broke your fall.
+					Your _bottom.name flared as you fell, leaving your bare skin exposed to the sticky substance. Fortunately, the $parasite.bottom.name stuck to your butt broke your fall.
 					<br><br>
 					<<destinationsewers>>
 				<</if>>
 			<<else>>
-				You try to stand up, but your $worn.lower.name is stuck. You tug at it, but it won't budge.
+				You try to stand up, but your _bottom.name is stuck. You tug at it, but it won't budge.
 				<br><br>
 				<<link [[Leave your clothes behind|Sewers Slime Lower Lost]]>><</link>>
 				<br>
