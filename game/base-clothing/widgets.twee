@@ -680,7 +680,7 @@
 			<<elseif $money gte $_cost>>
 				<<generalSend $_return $_slot $_setupItem.index $_item.colour $_item.accessory_colour>>
 				<<if $_item.one_piece is "split">>
-					<<set $_selectedWardrobe to selectWardrobe($_return)>>
+					<<set $_selectedWardrobe to selectWardrobe($_return, "return")>>
 					<<set $_selectedWardrobe[$_slot].last().one_piece to "split">>
 					<<if $_item.outfitPrimary>>
 						<<for $_rangeSlot, $_value range $_selectedWardrobe[$_slot].last().outfitPrimary>>
@@ -714,12 +714,20 @@
 
 <<widget "upperruined">>
 	<<set _noRebuy to _args[0]>>
-	<<generalRuined "upper">>
+	<<if $worn.upper.name is "naked" and $worn.under_upper.type.includes("covered")>>
+		<<generalRuined "under_upper">>
+	<<else>>
+		<<generalRuined "upper">>
+	<</if>>
 <</widget>>
 
 <<widget "lowerruined">>
 	<<set _noRebuy to _args[0]>>
-	<<generalRuined "lower">>
+	<<if $worn.lower.name is "naked" and $worn.under_lower.type.includes("covered")>>
+		<<generalRuined "under_lower">>
+	<<else>>
+		<<generalRuined "lower">>
+	<</if>>
 <</widget>>
 
 <<widget "underupperruined">>
@@ -806,10 +814,11 @@
 		<<generalOn $_slot>>
 	<</for>>
 	<<buttplugon>>
-	<<if !($worn.upper.name is "naked" and $worn.lower.name is "naked" and $worn.under_lower.name is "naked" and $worn.under_upper.name is "naked")>>
-		Ты попровляешь свою одежду<<if $rightarm isnot "bound" and $worn.handheld.name isnot "naked">> и подбираешь $worn.handheld.name<</if>>.<br><br>
+	<<outfitChecks>>
+	<<if !(_fullyNaked)>>
+		Вы поправляете свою одежду<<if $rightarm isnot "bound" and $worn.handheld.name isnot "naked">> и подбираете <<= $worn.handheld.name.includes("balloon") ? "retrieve" : "pick up">> свой $worn.handheld.name<</if>>.<br><br>
 	<<elseif $rightarm isnot "bound" and $worn.handheld.name isnot "naked">>
-		Ты подбираешь $worn.handheld.name.
+		Вы подбираете <<= $worn.handheld.name.includes("balloon") ? "retrieve" : "pick up">> your $worn.handheld.name.
 	<</if>>
 
 	<<exposure>>
@@ -1806,11 +1815,44 @@
 	<</if>>
 <</widget>>
 
+<<widget "getDressedList">>
+	<<set _slots to []>>
+	<<for _slot range setup.clothes_all_slots>>
+		<<if $carried[_slot].name isnot "naked">>
+			<<if $carried[_slot].outfitSecondary>>
+				<<if $carried[_slot].outfitSecondary[0].name is $carried[_slot].outfitSecondary[1]>>
+					<<set _slots.pushUnique(_slot)>>
+				<</if>>
+			<<else>>
+				<<set _slots.pushUnique(_slot)>>
+			<</if>>
+		<</if>>
+	<</for>>
+
+	<<for _item range _slots>>
+		<<capture _item, _slots>>
+			<<link [[`Put on your ${$carried[_item].name}`|$passage]]>>
+				<<if $worn.upper.outfitSecondary and $worn.upper.outfitSecondary[0] is $worn.upper.outfitSecondary[1] and _item is "upper" or _item is "lower">>
+					<<upperruined>>
+				<</if>>
+				<<run _slots.delete(_item)>>
+				<<generalOn _item $carried[_item].index>>
+			<</link>>
+		<</capture>>
+		<br>
+	<</for>>
+	<br>
+	<<if _slots.length gt 1>>
+		<<link [[Get fully dressed|$passage]]>><<clotheson>><</link>>
+		<br>
+	<</if>>
+<</widget>>
+
 <<widget "peppersprays">>
 	<<if $options.pepperSprayDisplay isnot "none">>
 		<div tooltip="<span class='def'>Pepper sprays: $spray / $spraymax</span>" id="pepper-sprays" class="pepper-sprays">
 			<!-- Compact style (dots) -->
-			<<if $spraymax gt 1 and ($options.pepperSprayDisplay is "compact" or $spraymax gt 7 or ($spraymax gt 5 and $options.sidebarRenderer is "both"))>>
+			<<if $spraymax gt 1 and ($options.pepperSprayDisplay is "compact" or $spraymax gt 7)>>
 				<div class="pepper-sprays-dots">
 					<<for _i to 1; _i lte $spraymax; _i++>>
 						<<if $spray gte _i>>
@@ -1824,12 +1866,11 @@
 			<<else>>
 				<<for _i to 1; _i lte $spraymax; _i++>>
 					<<if $spray gte _i>>
-						<img src="img/ui/pepperspray.png">
+						<img draggable="false" src="img/ui/pepperspray.png">
 					<<else>>
-						<img src="img/ui/emptyspray.png">
+						<img draggable="false" src="img/ui/emptyspray.png">
 					<</if>>
 				<</for>>
-
 			<</if>>
 		</div>
 	<</if>>
@@ -1838,7 +1879,7 @@
 <<widget "condomsSidebar">>
 	<<if $condomLvl gte 1 and $options.condomsDisplay isnot "none" and $condoms isnot null and $condoms isnot undefined>>
 		<div tooltip="<span class='meek'>Total condoms: $condoms</span>" id="condoms-sidebar" class="condoms-sidebar">
-			<img src="img/ui/condom.png">
+			<img draggable="false" src="img/ui/condom.png">
 		</div>
 		<div id="condoms-sidebar-text" class="condoms-sidebar-text">
 			$condoms x

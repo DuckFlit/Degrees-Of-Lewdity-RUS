@@ -2,7 +2,7 @@
 <<widget "cheats">>
 	<h3>Cheats</h3>
 	<br>
-	<<link [[Confirm|$passage]]>><</link>>
+	<<link [[Confirm|$passage]]>><<set $cheatReload to true>><</link>>
 	<br>
 	Can cause problems if confirmed during events, or with NPCs around.
 	<br><br>
@@ -1746,6 +1746,15 @@
 	| <<link ">>>">><<npcincr Wren love 100>><<clamp>><<replace "#statswrenlove">><<print Math.trunc(C.npc.Wren.love)>><</replace>><</link>> (50 = full)
 	<br>
 
+	<<link "<<<">><<npcincr Sirris love -100>><<clamp>><<replace "#statssirrislove">><<print Math.trunc(C.npc.Sirris.love)>><</replace>><</link>> |
+	<<link "<<">><<npcincr Sirris love -10>><<clamp>><<replace "#statssirrislove">><<print Math.trunc(C.npc.Sirris.love)>><</replace>><</link>> |
+	<<link "<">><<npcincr Sirris love -1>><<clamp>><<replace "#statssirrislove">><<print Math.trunc(C.npc.Sirris.love)>><</replace>><</link>> |
+	Sirris love: <span id="statssirrislove"><<print Math.trunc(C.npc.Sirris.love)>></span>
+	| <<link ">">><<npcincr Sirris love 1>><<clamp>><<replace "#statssirrislove">><<print Math.trunc(C.npc.Sirris.love)>><</replace>><</link>>
+	| <<link ">>">><<npcincr Sirris love 10>><<clamp>><<replace "#statssirrislove">><<print Math.trunc(C.npc.Sirris.love)>><</replace>><</link>>
+	| <<link ">>>">><<npcincr Sirris love 100>><<clamp>><<replace "#statssirrislove">><<print Math.trunc(C.npc.Sirris.love)>><</replace>><</link>> (50 = full)
+	<br>
+
 	<<link "<<<">><<npcincr Charlie love -100>><<clamp>><<replace "#statscharlielove">><<print Math.trunc(C.npc.Charlie.love)>><</replace>><</link>> |
 	<<link "<<">><<npcincr Charlie love -10>><<clamp>><<replace "#statscharlielove">><<print Math.trunc(C.npc.Charlie.love)>><</replace>><</link>> |
 	<<link "<">><<npcincr Charlie love -1>><<clamp>><<replace "#statscharlielove">><<print Math.trunc(C.npc.Charlie.love)>><</replace>><</link>> |
@@ -2257,12 +2266,41 @@
 
 	<span class="gold">Weather</span>
 	<br>
-	Current weather: $weather
+	Current weather: <<print Weather.name>>
 	<br>
 	Change to:
-	<<link [[Clear|$passage]]>><<set $weather to "clear">><</link>> |
-	<<link [[Overcast|$passage]]>><<set $weather to "overcast">><</link>> |
-	<<link [[Rain|$passage]]>><<set $weather to "rain">><</link>>
+	<<link [[Clear|$passage]]>><<set Weather.set("clear", true, 6 * 60)>><</link>> |
+	<<link [[Light clouds|$passage]]>><<set Weather.set("lightClouds", true, 6 * 60)>><</link>> |
+	<<link [[Heavy clouds|$passage]]>><<set Weather.set("heavyClouds", true, 6 * 60)>><</link>> |
+	<<link [[Light precipitation|$passage]]>><<set Weather.set("lightPrecipitation", true, 6 * 60)>><</link>> |
+	<<link [[Heavy precipitation|$passage]]>><<set Weather.set("heavyPrecipitation", true, 6 * 60)>><</link>>
+	<br>
+	<span class="description">Will change the current weather for at least 6 hours, then return to the weather simulation.</span>
+	<br><br>
+
+	<span class="gold">Temperature</span>
+	<<set $_symbol to $options.fahrenheit ? "°F" : "°C">>
+	<<set _temp to Weather.toSelected(Weather.temperature)>>
+	<br>
+	Current outside temperature: _temp
+	<br>
+	<span class="description">Will increase or decrease the base temperature until the next day - then go back to the proper temperature over time.<br>
+	The base temperature will still be modified by other factors such as time of day - and will not be constant throughout the day.</span>
+	<br>
+	<<link "<">>
+		<<set _temp to Math.round(_temp - 1)>>
+		<<set Weather.Temperature.set($options.fahrenheit ? Weather.Temperature.toCelsius(_temp) : _temp)>>
+		<<set Weather.Temperature.set($options.fahrenheit ? Weather.Temperature.toCelsius(_temp) : _temp, new DateTime(Time.date).addDays(1))>>
+		<<replace "#temperatureCheatDisplay">><<print _temp>><</replace>>
+	<</link>> |
+	New temperature: <span id="temperatureCheatDisplay"><<print _temp>></span>
+	| <<link ">">>
+		<<set _temp to Math.round(_temp + 1)>>
+		<<set Weather.Temperature.set($options.fahrenheit ? Weather.Temperature.toCelsius(_temp) : _temp)>>
+		<<set Weather.Temperature.set($options.fahrenheit ? Weather.Temperature.toCelsius(_temp) : _temp, new DateTime(Time.date).addDays(1))>>
+		<<replace "#temperatureCheatDisplay">><<print _temp>><</replace>>
+	<</link>>
+	<br><span class="description">Changes will be visible after passing at least 1 minutes of time</span>
 	<br><br>
 
 	<<if $maxDefaultActionSets isnot undefined>>
@@ -2306,6 +2344,9 @@
 	<<if ($playerPregnancyBeastDisable is "f" or $playerPregnancyHumanDisable is "f")>>
 		<span class="gold">Pregnancy Cheats</span>
 		<div id="cheatsPregnancyOptions"><<cheatsPregnancyOptions>></div>
+	<<else>>
+		You need to enable pregnancy in the settings to access these settings.
+		<br><br>
 	<</if>>
 <</widget>>
 
@@ -2327,7 +2368,7 @@
 			<<link "Bee">><<impregnateParasite "bee" true _args[0]>><<cheatsImpreg _args[0]>><</link>> |
 			<<link "Squid">><<impregnateParasite "squid" true _args[0]>><<cheatsImpreg _args[0]>><</link>> |
 			<<link "Vine">><<impregnateParasite "vine" true _args[0]>><<cheatsImpreg _args[0]>><</link>> |
-			<<link "Slug">><<impregnateParasite "slug" true _args[0]>><<cheatsImpreg _args[0] true>><</link>> |
+			<<link "Slug">><<impregnateParasite "slug" true _args[0]>><<cheatsImpreg _args[0]>><</link>> |
 			<br>
 			<<if $_pregnancy.motherStatus lt 2>>
 				Get Pregnant with a Hermaphrodite |
@@ -2385,7 +2426,7 @@
 
 <<widget "cheatsPregnancyOptions">>
 	<<set _womb to ($player.vaginaExist ? "vagina" : "anus")>>
-	<<set _elegible to ["Avery", "Eden", "Harper", "Kylar", "Morgan", "Robin", "Whitney", "Black Wolf", "Alex", "Wren", "Sydney"]>>
+	<<set _elegible to ["Avery", "Eden", "Harper", "Kylar", "Morgan", "Robin", "Whitney", "Black Wolf", "Alex", "Wren", "Sydney", "Great Hawk"]>>
 	<<set _impregnatableNPC to []>>
 	<<set _impregnatorNPC to []>>
 	<<set _pregnantNPC to {}>>
@@ -2506,7 +2547,11 @@
 					<<if !_elegible.includes(_actor.nam)>>
 						<<continue>>
 					<</if>>
-					<<set _spermType to (_actor.nam == "Black Wolf" ? "wolf" : "human")>>
+					<<switch _actor.nam>>
+						<<case "Black Wolf">><<set _spermType to "wolf">>
+						<<case "Great Hawk">><<set _spermType to "hawk">>
+						<<default>><<set _spermType to "human">>
+					<</switch>>
 					<<capture _actor, _spermType, _womb>>
 					| <<link [[_actor.nam|$passage]]>>
 						<<playerPregnancy _actor.nam _spermType true _womb undefined true>>
@@ -2560,7 +2605,11 @@
 						<<if !_elegible.includes(_actor.nam)>>
 							<<continue>>
 						<</if>>
-						<<set _spermType to (_actor.nam === "Black Wolf" ? "wolf" : "human")>>
+						<<switch _actor.nam>>
+							<<case "Black Wolf">><<set _spermType to "wolf">>
+							<<case "Great Hawk">><<set _spermType to "hawk">>
+							<<default>><<set _spermType to "human">>
+						<</switch>>
 						<<capture _actor, _spermType, _womb>>
 						| <<link _actor.nam>>
 							<<recordSperm `{target: "pc", spermOwner: _actor.nam, spermType: "human", genital: _womb}`>>
@@ -2588,6 +2637,7 @@
 		<<set _fertileNPC to 0>>
 		<<for _pregEnabled range _impregnatableNPC>>
 			<<set _actor to $NPCName[_pregEnabled]>>
+			<<set _actorNameNoSpace to _actor.nam.replace(" ","")>>
 			<<if !_elegible.includes(_actor.nam) or _actor.pregnancy.fetus.length>>
 				<<continue>>
 			<</if>>
@@ -2602,9 +2652,9 @@
 				<<set _linkText to "Inseminate " + _actor.pronouns.him>>
 				- <<link _linkText>>
 					<<recordSperm `{target: _actor.nam, spermOwner: "pc", spermType: "human", genital: "vagina"}`>>
-					<<replace `"#cheatSpermSources" + _actor.nam`>>(<<print _actor.pregnancy.sperm.length>> doses)<</replace>>
+					<<replace `"#cheatSpermSources" + _actorNameNoSpace`>>(<<print _actor.pregnancy.sperm.length>> doses)<</replace>>
 				<</link>>
-				<span @id="'cheatSpermSources' + _actor.nam" class="description">(<<print _actor.pregnancy.sperm.length>> doses)</span>
+				<span @id="'cheatSpermSources' + _actorNameNoSpace" class="description">(<<print _actor.pregnancy.sperm.length>> doses)</span>
 			<</if>>
 			<<if $cycledisable == "f">>
 				- <<link [[Fertile days|$passage]]>>
@@ -2646,7 +2696,7 @@
 <<widget "cheatPregnancyNPC">>
 	<<set _pregnancyNPC to $NPCName[_args[0]].pregnancy>>
 	<<set $_fatherName to pregnancyNameCorrection(_pregnancyNPC.fetus[0].father)>>
-	Pregnant with <<print _pregnancyNPC.type>>'s from  <<print $_fatherName === "yourself" ? "you" : $_fatherName>>.
+	Pregnant with <<print _pregnancyNPC.type>>'s from <<print $_fatherName === "yourself" ? "you" : $_fatherName>>.
 	<br>
 	<<link "<<">>
 		<<set _pregnancyNPC.timer to Math.clamp(_pregnancyNPC.timer - _pregnancyNPC.timerEnd * 0.05, 0, _pregnancyNPC.timerEnd)>>
@@ -2696,7 +2746,7 @@
 			<<set _pregnancyNPC.pcAwareOf to null>>
 			<<set _pregnancyNPC.potentialFathers to []>>
 			<<set _pregnancyNPC.sperm to []>>
-			<<set _pregnancyNPC.cicleDay to 1>>
+			<<set _pregnancyNPC.cycleDay to 1>>
 			<<run delete C.npc.Alex.pregnancy.selfKnowledge>>
 		<</link>>
 
@@ -2711,7 +2761,7 @@
 			<<set _pregnancyNPC.pcAwareOf to null>>
 			<<set _pregnancyNPC.potentialFathers to []>>
 			<<set _pregnancyNPC.sperm to []>>
-			<<set _pregnancyNPC.cicleDay to 1>>
+			<<set _pregnancyNPC.cycleDay to 1>>
 		<</link>>
 
 	<</if>>

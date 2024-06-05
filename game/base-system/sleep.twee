@@ -74,7 +74,7 @@
 
 				<<elseif (($robinromance is 1 and _robin.lust gte 20) or (_robin.trauma gte 50 and $rng gte 51)) and !$robinbed and $robinwakeday isnot 1 and $kylarbed isnot 1 and $robinmissing is 0 and $robin.timer.hurt is 0 /*and !$robin_kicked_out*/>>
 					<!-- Robin climbs into bed with you -->
-					<<if Time.hour gte 18 or Time.hour lte 6>>
+					<<if (Time.hour gte 18 and $robin.stayup isnot 1) or (Time.hour lte 6 and $robin.stayup isnot 2)>>
 						<<set _sleepinterrupt to 1>>
 						<<set _robin.lovewake to 1>>
 						<<set $robinwakeday to 1>>
@@ -167,7 +167,7 @@
 					<<break>>
 				<</if>>
 			<<case "tower">>
-				<<if wraithSleepEventCheck() and $bird and $bird.mirror is 1>>
+				<<if wraithSleepEventCheck() and $bird and $bird.upgrades and $bird.upgrades.mirror is 1>>
 					<<wraithEvent>>
 				<<elseif $bird.state is "hunting" and $bird.timer lte 0>>
 					<<set _sleepinterrupt to 1>>
@@ -194,7 +194,7 @@
 					<<set _wakeEvent to "slimeWakeMasturbation">>
 					<<break>>
 				<</if>>
-			<<case "seapirates">>
+			<<case "pirate_ship">>
 				<<if wraithSleepEventCheck()>>
 					<<wraithEvent>>
 				<<elseif !$bedGuest and $exposed is 2 and $sleepHoursTotal gte 3 and !$weekly.slimeWakeMasturbation and $earSlime.growth gte (currentSkillValue('willpower') / 7) and random(0,100) lt 4 and $leftarm isnot "bound" and $rightarm isnot "bound">>
@@ -278,9 +278,18 @@
 			<<elseif $island[$island.home].curtains is "advanced">>
 				<<set $tiredness -= 45>>
 			<</if>>
+		<<elseif $location is "tower" and $bedGuest isnot "alone">>
+			<<switch $bird.upgrades.nest>>
+				<<case 0>>
+				<<case 1>><<set $tiredness -= 15>>
+				<<case 2>><<set $tiredness -= 30>>
+				<<case 3>><<set $tiredness -= 45>>
+			<</switch>>
 		<</if>>
 		<<set $tiredness -= $_bonusFatigueLoss>>
 
+		<<set Weather.BodyTemperature.addActivity("sleep")>>
+		
 		<<if $location is "tower">>
 			<<bird_pass 60>>
 		<<else>>
@@ -365,7 +374,7 @@
 	<<if $earSlime.defyCooldown is 0 and Time.dayState is "night">>
 		<<set _eventsList.push("masturbate to orgasm")>>
 	<</if>>
-	<<if !$earSlime.alwaysSleepNaked and $earSlime.promiscuity gte 2 and $earSlime.deviancy gte 2>>
+	<<if $earSlime.promiscuity gte 2 and $earSlime.deviancy gte 2>>
 		<<run _eventsList.push("have sex with someone or something")>>
 	<<elseif $earSlime.promiscuity gte 2>>
 		<<run _eventsList.push("have sex with someone")>>
@@ -623,7 +632,7 @@
 <<widget "earSlimeFocusChoice">>
 	/* This event cannot run endevent or make changes to loaded npc's in anyway */
 	<<set _prevLocation to $location>>
-	<<set $location to "tentworld">>
+	<<set $location to "tentworld">><<set $outside to 0>>
 	<<set _pregnancyEnabled to $playerPregnancyHumanDisable is "f" or $playerPregnancyBeastDisable is "f">>
 	<<if $earSlime.dreamRejected>>
 		Oh, the dream in the tentacle plains again, you were correct that you wouldn't remember it outside the dream.
@@ -631,14 +640,14 @@
 			You feel like they are becoming less frequent the more you reject it.
 		<</if>>
 		<br><br>
-		Once again, three blurred figures appear in front of you. It reminds you that it is a <span class="sub">choice that cannot be ignored or easily taken back</span> and that you should <span class="lewd">should reach towards one of them</span> to become your true self.
+		Once again, three blurred figures appear in front of you. It reminds you that it is a <span class="sub">choice that cannot be ignored or easily taken back</span> and that you <span class="lewd">should reach towards one of them</span> to become your true self.
 		<<if $earSlime.dreamRejected gte 10>>
 			The voice seems more desperate in its attempts to get you to do what it asks.
 		<</if>>
 	<<else>>
 		You seem to wake in the tentacle plains, though with the knowledge that what you look at isn't real, and you won't remember it outside the dream.
 		<br><br>
-		All at once, 3 blurred figures appear in front of you. Something tells you that this is a <span class="sub">choice that cannot be ignored or easily taken back</span> and that you should <span class="lewd">should reach towards one of them</span> to become your true self.
+		All at once, 3 blurred figures appear in front of you. Something tells you that this is a <span class="sub">choice that cannot be ignored or easily taken back</span> and that you <span class="lewd">should reach towards one of them</span> to become your true self.
 	<</if>>
 	<br><br>
 	The first thing you notice about one on the left,
@@ -681,7 +690,7 @@
 	<<else>>
 		penis-like parasite.
 	<</if>>
-	Their <<chest>> is  the same as yours<<if $breastfeedingdisable is "f">> and is clear of milk<</if>>. The voice tells you that you won't benefit or <span class="lewd">be pleasured</span> in the same way as the other two due to the lack of focus.
+	Their <<chest>> is the same as yours<<if $breastfeedingdisable is "f">> and is clear of milk<</if>>. The voice tells you that you won't benefit or <span class="lewd">be pleasured</span> in the same way as the other two due to the lack of focus.
 
 	<br><br>
 	<<link [[Reach for the left one|$passage]]>><<set $location to _prevLocation>><<set $earSlime.focus to "pregnancy">><<set $earSlime.growth++>><</link>><<if $player.gender is "m" and $analdisable is "t" and _pregnancyEnabled>><<note "With anal being disabled, pregnancy cannot occur for you" "italic">><</if>>

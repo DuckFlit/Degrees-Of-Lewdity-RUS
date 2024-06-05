@@ -1,5 +1,5 @@
 :: Eden Cabin
-<<set $outside to 0>><<set $location to "cabin">><<effects>><<set $bus to "edencabin">><<getTarget true>>
+<<set $outside to 0>><<set $location to "cabin">><<effects>><<set $bus to "edencabin">><<getTarget true>><<edenFluidsCheck>>
 /* make sure that all links that lead here have <<endevent>> */
 <<npc Eden>><<person1>>
 
@@ -25,8 +25,11 @@ You are in Eden's cabin.
 	<</if>>
 <</if>>
 
+There is a thermometer outside the window. It reads <span class="teal"><<print Weather.toSelectedString(Weather.temperature, 0)>></span>.
+<br><br>
+
 <<if isPlayerNonparasitePregnancyEnding() and !$possessed>>
-	<<pregnancyWatersBrokenPassout "edencabin">>
+	<<pregnancyPassout "edencabin">>
 <<elseif $stress gte $stressmax and !$possessed>>
 	<br><br>
 
@@ -113,25 +116,15 @@ You are in Eden's cabin.
 
 	<<if Time.dayState is "night">>
 		Embers burn in the hearth.
-	<<elseif Time.dayState is "dawn">>
-
-	<<elseif Time.dayState is "dusk">>
-
-	<<else>>
-
 	<</if>>
 
-	<<if $weather is "clear">>
-
-	<<elseif $weather is "overcast">>
-
-	<<elseif $weather is "rain">>
+	<<if Weather.precipitation is "rain">>
 		<<if $edenroof gte 5>>
 			Rain pours down on the cabin's roof with a soothing sound.
 		<<else>>
 			Droplets of rainwater seep through the wooden ceiling and patter on the ground.
 		<</if>>
-	<<elseif $weather is "snow">>
+	<<elseif Weather.precipitation is "snow">>
 		Snow settles on the window sills.
 	<</if>>
 
@@ -323,7 +316,7 @@ You are in Eden's cabin.
 
 			<<noClothingCheck>>
 			<<if _nude is false>>
-				<<link [[Strip and get in (0:30)|Eden Bath]]>><<pass 30>><<npcincr Eden dom 1>><<npcincr Eden love 1>><<set $phase to 0>><<strip>><<set $edenClothes to true>><</link>><<gdom>><<glove>>
+				<<link [[Strip and get in (0:30)|Eden Bath]]>><<pass 30>><<npcincr Eden dom 1>><<npcincr Eden love 1>><<set $phase to 0>><<strip>><<set $edenClothes to true>><<set $edenFluidsCheck to "clean">><</link>><<gdom>><<glove>>
 			<<else>>
 				<<link [[Get in (0:30)|Eden Bath]]>><<pass 30>><<npcincr Eden dom 1>><<npcincr Eden love 1>><<set $phase to 0>><<strip>><</link>><<gdom>><<glove>>
 			<</if>>
@@ -423,21 +416,21 @@ You are in Eden's cabin.
 <<effects>>
 <<if Time.hour lte 20>>/* if hour >= 21 and it's the last day of october, passing 3h will make it november, which unsets the variables, making nans */
 	<<if $edenwall lt 5>>
-		<<edenicon "fix">><<link [[Fix the cracks in the walls (3:00)|Eden Wall]]>><<pass 3 hours>><<npcincr Eden love 1>><<npcincr Eden dom 1>><<housekeeping 1 1000>><</link>><<glove>><<gdom "Eden">><<ghousekeeping 1000>>
+		<<edenicon "fix">><<link [[Fix the cracks in the walls (3:00)|Eden Wall]]>><<npcincr Eden love 1>><<npcincr Eden dom 1>><<housekeeping 1 1000>><</link>><<glove>><<gdom "Eden">><<ghousekeeping 1000>>
 	<<else>>
 		<span class="green">The walls are fully repaired.</span>
 	<</if>>
 	<br>
 
 	<<if $edenchimney lt 5>>
-		<<edenicon "broom">><<link [[Clean the chimney (3:00)|Eden Chimney]]>><<pass 3 hours>><<npcincr Eden love 1>><<npcincr Eden dom 1>><<housekeeping 1 1000>><</link>><<glove>><<gdom "Eden">><<ghousekeeping 1000>>
+		<<edenicon "broom">><<link [[Clean the chimney (3:00)|Eden Chimney]]>><<npcincr Eden love 1>><<npcincr Eden dom 1>><<housekeeping 1 1000>><</link>><<glove>><<gdom "Eden">><<ghousekeeping 1000>>
 	<<else>>
 		<span class="green">The chimney is clean.</span>
 	<</if>>
 	<br>
 
 	<<if $edenroof lt 5>>
-		<<edenicon "fix">><<link [[Fix the roof (3:00)|Eden Roof]]>><<pass 3 hours>><<npcincr Eden love 1>><<npcincr Eden dom 1>><<housekeeping 1 1000>><</link>><<glove>><<gdom "Eden">><<ghousekeeping 1000>>
+		<<edenicon "fix">><<link [[Fix the roof (3:00)|Eden Roof]]>><<npcincr Eden love 1>><<npcincr Eden dom 1>><<housekeeping 1 1000>><</link>><<glove>><<gdom "Eden">><<ghousekeeping 1000>>
 	<<else>>
 		<span class="green">The roof is fixed.</span>
 	<</if>>
@@ -447,14 +440,18 @@ You are in Eden's cabin.
 	<br>
 <</if>>
 <br>
-
-<<getouticon>><<link [[Go back|Eden Clearing]]>><<endevent>><</link>>
+<<if $outside is 0>>
+	<<getouticon>><<link [[Go back|Eden Cabin]]>><<endevent>><</link>>
+<<else>>
+	<<getouticon>><<link [[Go back|Eden Clearing]]>><<endevent>><</link>>
+<</if>>
+<br>
 
 :: Cabin Eden Actions
 <<effects>>
 Eden glances at you.
 <br><br>
-
+<<edenFluidsCheck>>
 <<if Time.hour gte 18 and Time.hour lte 23>>
 	<<if $edencushions is 2 and $edenloveseat is 9>>
 		<<couchicon>><<link [[Cuddle on the loveseat (0:30)|Eden Cuddle]]>><<trauma -3>><<stress -3>><<pass 30>><<npcincr Eden love 1>><<npcincr Eden lust 1>><</link>><<glove>><<glust>><<ltrauma>><<lstress>>
@@ -545,7 +542,7 @@ Eden glances at you.
 	<br>
 <</if>>
 
-<<if $leftarm is "bound" or $rightarm is "bound" or $feetuse is "bound">>
+<<if $leftarm is "bound" or $rightarm is "bound" or $feetuse is "bound" or $worn.feet.name is "ankle cuffs">>
 	<<undobindingsicon>><<link [[Ask Eden to undo your bindings (0:01)|Eden Bindings]]>><<pass 1>><<unbind>><</link>>
 	<br>
 <</if>>
@@ -607,7 +604,7 @@ You take a moment to look around the cabin.
 	<i>You could visit the shopping centre to buy cushion materials for your loveseat</i>
 	<br>
 <</if>>
-<<if $edencushions is 2 and $edenloveseat is 9 and $edenblanket is 0>>
+<<if $edencushions is 2 and $edenloveseat is 9 and !$edenblanket>>
 	<<shopicon "tailor">><<link [[Sew a fur blanket (0:30)|Eden Blanket One]]>><<pass 30>><<npcincr Eden love 1>><<npcincr Eden dom 1>><<set $edenblanket to 1>><</link>><<glove>><<gdom "Eden">>
 	<br>
 <</if>>
@@ -619,7 +616,7 @@ You take a moment to look around the cabin.
 	<<shopicon "tailor">><<link [[Sew a fur blanket (0:30)|Eden Blanket Three]]>><<pass 30>><<npcincr Eden love 1>><<npcincr Eden dom 1>><<set $edenblanket to 3>><</link>><<glove>><<gdom "Eden">>
 	<br>
 <</if>>
-<<if $edenpillow is 2 and $edendesign lt 9>>
+<<if $edenpillow is 2 and ($edendesign lt 9 or !$edendesign)>>
 	<<if !$edendesign>><<set $edendesign to 0>><</if>>
 	<<shopicon "tailor">><<link [[Sew designs in the pillows (0:30)|Eden Design]]>><<pass 30>><<npcincr Eden love 1>><<npcincr Eden dom 1>><<set $edendesign += 1>><</link>><<glove>><<gdom "Eden">>
 	<br>
@@ -773,7 +770,7 @@ Your clothes are kept in the corner.
 <<sleep>>
 <<effects>>
 
-<<if $wraith.nightmare is 2 and isBloodmoon()>>
+<<if $wraith.nightmare is 2 and Time.isBloodMoon()>>
 	<<sleepeffects>>
 	You dream of a beautiful figure, cloaked in white, standing under the red moon. It has its arms spread out to you in a welcoming gesture. You can feel its gaze boring into your mind as you step closer.
 	<br><br>
@@ -1101,6 +1098,9 @@ You are in the clearing outside Eden's cabin. The surrounding trees are so huge 
 	<br><br>
 	<<set $foresthunt to 0>>
 <</if>>
+<<if Time.hour gte 7>>
+	<<edenFluidsCheck>>
+<</if>>
 
 <<if $edenCagedEscape and Time.hour gte 7>>
 	Eden looks up as you approach the cabin. <<He>> does a double take when <<he>> sees you. "There you are!" <<he>> shouts, quickly making <<his>> way over to you. "You're in so much trouble, you disobedient whore."
@@ -1171,7 +1171,7 @@ You are in the clearing outside Eden's cabin. The surrounding trees are so huge 
 
 <<elseif $stress gte $stressmax>>
 	<<if isPlayerNonparasitePregnancyEnding()>>
-		<<pregnancyWatersBrokenPassout "edencabin">>
+		<<pregnancyPassout "edencabin">>
 	<<else>>
 		<<link [[Everything fades to black...|Eden Cabin Passout]]>><</link>>
 	<</if>>
@@ -1205,13 +1205,12 @@ You are in the clearing outside Eden's cabin. The surrounding trees are so huge 
 		<br><br>
 	<</if>>
 
-	<<if $weather is "rain">>
+	<<if Weather.precipitation is "rain">>
 		Rainwater drips from the branches above.
-		<br><br>
-	<<elseif $weather is "snow">>
+	<<elseif Weather.precipitation is "snow">>
 		Snow weighs down the branches above.
-		<br><br>
 	<</if>>
+	<br><br>
 
 	<<if ($edenfreedom is 2 and $edendays lt 8) or ($edenfreedom is 1 and $edendays lt 2)>>
 		<<set $edendays to 0>>
@@ -1498,7 +1497,7 @@ You nod, and <<he>> gives you one last look before walking off.
 You walk to the edge of the clearing and gaze into the darkness of the forest. Are you sure you want to escape?
 <br><br>
 
-<<link [[Yes|Forest]]>><<endevent>><</link>>
+<<link [[Yes|Forest]]>><<endevent>><<if $edenFluidsCheck is "clean">><<set $edenFluidsCheck to "cleanLeave">><</if>><</link>>
 <br>
 <<link [[No|Eden Clearing]]>><<endevent>><</link>>
 <br>
@@ -1750,14 +1749,14 @@ Eden leads you back to the safety of <<his>> cabin.
 You grab a few animal pelts and start sewing. It's slow work, but you get some of the blanket done.
 <br><br>
 
-<<link [[Далее|Cabin House Actions]]>><<endevent>><</link>>
+<<link [[Далее|Cabin House Actions]]>><</link>>
 
 :: Eden Blanket Two
 <<effects>>
 You grab more pelts and sew them together. The blanket's getting bigger now.
 <br><br>
 
-<<link [[Далее|Cabin House Actions]]>><<endevent>><</link>>
+<<link [[Далее|Cabin House Actions]]>><</link>>
 
 :: Eden Blanket Three
 <<effects>>
@@ -1767,7 +1766,7 @@ You sew on the remaining pelts and look over your work. Running your hands over 
 Looking around the cabin, your eyes are drawn to the loveseat. You drape it over, stepping back and nodding in satisfaction at your work. Eden will be happy when <<he>> sees this.
 <br><br>
 
-<<link [[Далее|Cabin House Actions]]>><<endevent>><</link>>
+<<link [[Далее|Cabin House Actions]]>><</link>>
 
 :: Eden Design
 <<effects>>
@@ -2213,7 +2212,7 @@ The song leads you two into a slow waltz. You stare into Eden's eyes and feel a 
 <br><br>
 
 Eden seems to have trouble maintaining your gaze, but holds you tight nonetheless. You can feel the nervousness settle in <<his>> shoulders, causing them to feel stiff at your touch.
-In fact, the vulnerability of the moment seems to have exposed <<him>>, somehow. Let you see the part of <<him>> that <<he>> tries so hard to hide from the world.
+In fact, the vulnerability of the moment seems to have exposed <<him>>, somehow. It lets you see the part of <<him>> that <<he>> tries so hard to hide from the world.
 <br><br>
 
 You feel glad that <<hes>> showing this to you now, even if it's through uncertain and awkward movements. Maybe, that's what makes it special.
