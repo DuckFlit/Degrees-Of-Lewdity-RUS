@@ -76,7 +76,8 @@ function playerBellyVisible(pregnancyOnly = false) {
 	const size = playerBellySize(pregnancyOnly);
 	if (size <= 7) return false;
 	if (size <= 12 && ((V.worn.upper.name !== "naked" && !V.worn.upper.type.includes("bellyShow")) || !V.worn.over_upper.type.includes("naked"))) return false;
-	if (size <= 17 && (V.worn.upper.type.includes("bellyHide") || V.worn.lower.type.includes("bellyHide") || !V.worn.over_upper.type.includes("naked"))) return false;
+	if (size <= 17 && (V.worn.upper.type.includes("bellyHide") || V.worn.lower.type.includes("bellyHide") || !V.worn.over_upper.type.includes("naked")))
+		return false;
 
 	return true;
 }
@@ -129,9 +130,14 @@ window.npcPregnancyEnding = npcPregnancyEnding;
 function birdEggsReady(npc) {
 	if (V.playerPregnancyEggLayingDisable === "t" || !C.npc[npc] || C.npc[npc].vagina === "none") return undefined;
 	const pregnancy = C.npc[npc].pregnancy;
-	if (npcPregnancyEnding(npc) || pregnancy.timer > pregnancy.timerEnd) return 'fertilised';
-	if (npc === 'Great Hawk' && V.daily.hawkUnfertilisedEggs) return undefined;
-	if (!npcIsPregnant(npc) && ((V.cycledisable === "f" && pregnancy.cycleDay === pregnancy.cycleDangerousDay + 2) || (V.cycledisable !== "f" && pregnancy.nonCycleRng[0] >= 1 && pregnancy.nonCycleRngHasEggs))) return 'unfertilised';
+	if (npcPregnancyEnding(npc) || pregnancy.timer > pregnancy.timerEnd) return "fertilised";
+	if (npc === "Great Hawk" && V.daily.hawkUnfertilisedEggs) return undefined;
+	if (
+		!npcIsPregnant(npc) &&
+		((V.cycledisable === "f" && pregnancy.cycleDay === pregnancy.cycleDangerousDay + 2) ||
+			(V.cycledisable !== "f" && pregnancy.nonCycleRng[0] >= 1 && pregnancy.nonCycleRngHasEggs))
+	)
+		return "unfertilised";
 }
 window.birdEggsReady = birdEggsReady;
 

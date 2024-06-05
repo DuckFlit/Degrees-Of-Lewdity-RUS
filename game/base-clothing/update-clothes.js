@@ -316,7 +316,7 @@ function updateClothesItem(slot, item, debug) {
 		case "doggy muzzle":
 			item.name_cap = "Doggy muzzle";
 			break;
-		}
+	}
 	if (debug) console.log("updateClothesItem:", slot, itemOld, clone(item));
 }
 

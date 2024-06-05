@@ -35,7 +35,7 @@ setup.WeatherGeneration = {
 				average: [-9, 7], // Range of temperature for a specific month. A range of [5, 15] means that it will generate temperatures between that range for that specific month.
 				extreme: [-25, 11],
 			},
-			extremeChance: 0.6,
+			extremeChance: 0.3,
 			sunIntensity: 0.1, // Modifies tanning changes from sun exposure
 		},
 		{
@@ -44,7 +44,7 @@ setup.WeatherGeneration = {
 				average: [-8, 8],
 				extreme: [-21, 15],
 			},
-			extremeChance: 0.5,
+			extremeChance: 0.25,
 			sunIntensity: 0.2,
 		},
 		{
@@ -53,70 +53,70 @@ setup.WeatherGeneration = {
 				average: [-3, 11],
 				extreme: [-18, 20],
 			},
-			extremeChance: 0.4,
+			extremeChance: 0.2,
 			sunIntensity: 0.3,
 		},
 		{
 			// Apr
 			temperatureRange: {
 				average: [0, 15],
-				extreme: [-10, 29],
+				extreme: [-10, 28],
 			},
-			extremeChance: 0.5,
+			extremeChance: 0.25,
 			sunIntensity: 0.5,
 		},
 		{
 			// May
 			temperatureRange: {
 				average: [7, 19],
-				extreme: [0, 33],
+				extreme: [0, 32],
 			},
-			extremeChance: 0.6,
+			extremeChance: 0.3,
 			sunIntensity: 0.7,
 		},
 		{
 			// Jun
 			temperatureRange: {
 				average: [11, 23],
-				extreme: [3, 38],
+				extreme: [3, 36],
 			},
-			extremeChance: 0.7,
+			extremeChance: 0.35,
 			sunIntensity: 1,
 		},
 		{
 			// Jul
 			temperatureRange: {
 				average: [14, 27],
-				extreme: [8, 44],
+				extreme: [8, 40],
 			},
-			extremeChance: 0.8,
+			extremeChance: 0.4,
 			sunIntensity: 1,
 		},
 		{
 			// Aug
 			temperatureRange: {
 				average: [14, 24],
-				extreme: [6, 40],
+				extreme: [6, 38],
 			},
-			extremeChance: 0.7,
+			extremeChance: 0.35,
 			sunIntensity: 0.8,
 		},
 		{
 			// Sep
 			temperatureRange: {
 				average: [11, 20],
-				extreme: [0, 35],
+				extreme: [0, 32],
 			},
-			extremeChance: 0.6,
+			extremeChance: 0.3,
 			sunIntensity: 0.7,
 		},
 		{
 			// Oct
 			temperatureRange: {
 				average: [5, 16],
-				extreme: [-5, 29],
+				extreme: [-5, 28],
 			},
-			extremeChance: 0.5,
+			extremeChance: 0.25,
 			sunIntensity: 0.5,
 		},
 		{
@@ -125,7 +125,7 @@ setup.WeatherGeneration = {
 				average: [-5, 10],
 				extreme: [-10, 19],
 			},
-			extremeChance: 0.4,
+			extremeChance: 0.2,
 			sunIntensity: 0.3,
 		},
 		{
@@ -134,7 +134,7 @@ setup.WeatherGeneration = {
 				average: [-8, 6],
 				extreme: [-20, 13],
 			},
-			extremeChance: 0.5,
+			extremeChance: 0.25,
 			sunIntensity: 0.1,
 		},
 	],
