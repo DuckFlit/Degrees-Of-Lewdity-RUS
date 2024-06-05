@@ -8,7 +8,7 @@
 	<<else>>
 		<!-- Note: Don't try to move the <<endevent>> outside these links, that would make this widget less portable. -->
 		<<if $money gte 200>>
-			<<foodicon "cocoa">><<link [[Buy hot chocolate (0:15)|Robin Chocolate Purchase]]>><<stress -6>><<trauma -1>><<pass 15>><<clotheson>><</link>><<lstress>><<ltrauma>>
+			<<foodicon "cocoa">><<link [[Buy hot chocolate (0:15)|Robin Chocolate Purchase]]>><<stress -6>><<trauma -1>><<pass 15>><<clotheson>><<endevent>><</link>><<lstress>><<ltrauma>>
 			<br>
 		<</if>>
 		<<robinicon "cocoa">><<link [[Offer help (0:30)|Robin Chocolate Help]]>><<endevent>><<npcincr Robin love 1>><<npcincr Robin trauma -1>><<pass 30>><<clotheson>><</link>><<glove>><<lrtrauma>>
@@ -26,14 +26,13 @@
 
 	Robin waves when <<he>> sees you. <<He>> stirs a steaming pot with <<his>> other hand. "Hey," <<he>> says. "People don't buy much lemonade when it's so cold. I'm selling hot chocolate instead. Here." <<He>> mixes warm milk from the pot with cocoa powder and sugar, then hands you the mug. It's very sweet.<<lstress>><<stress -6>>
 <<else>>
-	You see Robin stood behind <<his>> hot chocolate stand, wrapped up warm against the cold. <<print $robin.timer.hurt gte 1 ? "<<He>> glances away when <<he>> sees you." : C.npc.Robin.trauma gte 40 ? "<<He>> flinches whenever somebody passes <<him>>. When <<he>> sees you, <<he>> gives a timid wave." : "<<He>> waves when <<he>> sees you.">>
+	You see Robin <<if $robin.stayup isnot 2>>stood<<else>>nodding off<</if>> behind <<his>> hot chocolate stand, wrapped up warm against the cold. <<print $robin.timer.hurt gte 1 ? "<<He>> glances away when <<he>> sees you." : C.npc.Robin.trauma gte 40 ? "<<He>> flinches whenever somebody passes <<him>>. When <<he>> sees you, <<he>> gives a timid wave." : $robin.stayup is 2 ? "<<He>> startles awake when you approach <<him>>." : "<<He>> waves when <<he>> sees you.">>
 <</if>>
 <br><br>
 <<balloonRobinTalk>>
 <<robinChocolateOfferHelp>>
 
 :: Robin Chocolate Purchase
-
 <<effects>><<npc Robin>><<person1>>
 <<set $money -= 200>>
 <<wearProp "cocoa">>
@@ -68,7 +67,7 @@ You take your time with the mug, letting it warm your hands as you sip away at t
 <br><br>
 
 "<<print either(
-"...Have you ever watched the sky on a clear night? There's so many stars out there… So many worlds just like ours. ...It might be a little too cold for that now, though.",
+"...Have you ever watched the sky on a clear night? There's so many stars out there... So many worlds just like ours. ...It might be a little too cold for that now, though.",
 "...Do you think Bailey will ever be gone? There has to be someone powerful out there who hates <<nnpc_him Bailey>>, right?",
 "It's hard to keep the stand running some days. But it's worth it in the end.")>>"
 <br><br>
@@ -77,7 +76,7 @@ You take your time with the mug, letting it warm your hands as you sip away at t
 	"It's getting nippy out," Robin says. "Could you help me carry my stuff home?"
 	<<endevent>>
 	<br><br>
-	<<link [[Accept (0:30)|Orphanage]]>><<npcincr Robin love 1>><<pass 30>><</link>><<clotheson>><<glove>>
+	<<link [[Accept (0:30)|Orphanage]]>><<npcincr Robin love 1>><<pass 30>><<clotheson>><</link>><<glove>>
 	<br>
 	<<link [[Отказаться|Park]]>><<clotheson>><</link>>
 	<br>
@@ -209,33 +208,7 @@ You take your time with the mug, letting it warm your hands as you sip away at t
 			<br><br>
 			<<robinChocolateOfferHelp>>
 		<</if>>
-	<<elseif $rng gte 21>>
-		<<if _robin.trauma gte 40>>
-			"I need some more milk. I'm sorry. I know it's heavy, but could you buy some more?" <<He>> shivers even through <<his>> warm attire. "Harvest street has some." <<He>> hands you £5 and a large bottle. "That should be enough."
-		<<else>>
-			"I need to start heating another pot of milk. I don't like asking because it's heavy, but could you buy some more? You'll need to go to Harvest Street for the fresh stuff." <<He>> hands you £5 and a large bottle. "That should be enough to fill it."
-		<</if>>
-		<br><br>
-		<<if $breastfeedingdisable is "f" and $lactating is 1 and $promiscuity gte 35 and $awareness gte 100>>
-			A thought strikes as you pass the toilets. There's a closer source of fresh milk.
-			<br><br>
-
-			<<link [[Milk yourself|Robin Milk Masturbation]]>><<set $masturbationstart to 1>><</link>><<promiscuous3>>
-			<br>
-		<<else>>
-			You leave the park, and follow the road to Harvest Street.
-			<br><br>
-		<</if>>
-		<<link [[Buy the milk|Robin Milk Buy]]>><</link>>
-		<br>
-		<<set $skulduggerydifficulty to 400>>
-		<<link [[Steal the milk|Robin Milk Steal]]>><<crimeUp 5 "petty">><</link>><<skulduggerydifficulty>><<crime "petty">>
-		<br>
-		<<if $promiscuity gte 15>>
-			<<link [[Flirt for cheaper milk|Robin Milk Seduction]]>><</link>><<promiscuous2>>
-			<br>
-		<</if>>
-	<<else>>
+	<<elseif $rng gte 41 and Weather.isSnow>>
 		<<if _robin.trauma gte 40>>
 			"I think I'm okay right now, but could you please stay with me?" Robin asks you as <<he>> fidgets.
 		<<else>>
@@ -273,6 +246,32 @@ You take your time with the mug, letting it warm your hands as you sip away at t
 			"Thank you for spending time with me," <<he>> says after a while.
 			<br><br>
 			<<robinChocolateOfferHelp>>
+		<</if>>
+	<<else>>
+		<<if _robin.trauma gte 40>>
+			"I need some more milk. I'm sorry. I know it's heavy, but could you buy some more?" <<He>> shivers even through <<his>> warm attire. "Harvest street has some." <<He>> hands you £5 and a large bottle. "That should be enough."
+		<<else>>
+			"I need to start heating another pot of milk. I don't like asking because it's heavy, but could you buy some more? You'll need to go to Harvest Street for the fresh stuff." <<He>> hands you £5 and a large bottle. "That should be enough to fill it."
+		<</if>>
+		<br><br>
+		<<if $breastfeedingdisable is "f" and $lactating is 1 and $promiscuity gte 35 and $awareness gte 100>>
+			A thought strikes as you pass the toilets. There's a closer source of fresh milk.
+			<br><br>
+
+			<<link [[Milk yourself|Robin Milk Masturbation]]>><<set $masturbationstart to 1>><</link>><<promiscuous3>>
+			<br>
+		<<else>>
+			You leave the park, and follow the road to Harvest Street.
+			<br><br>
+		<</if>>
+		<<link [[Buy the milk|Robin Milk Buy]]>><</link>>
+		<br>
+		<<set $skulduggerydifficulty to 400>>
+		<<link [[Steal the milk|Robin Milk Steal]]>><<crimeUp 5 "petty">><</link>><<skulduggerydifficulty>><<crime "petty">>
+		<br>
+		<<if $promiscuity gte 15>>
+			<<link [[Flirt for cheaper milk|Robin Milk Seduction]]>><</link>><<promiscuous2>>
+			<br>
 		<</if>>
 	<</if>>
 <</if>>

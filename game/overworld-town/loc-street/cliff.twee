@@ -15,33 +15,33 @@ You are on Cliff Street. Several civic buildings are located here, including the
 <</if>>
 There's a path leading down to the beach.
 <<if Time.dayState is "day">>
-	<<if $weather is "rain">>
+	<<if Weather.precipitation is "rain">>
 		Wind howls in from the sea.
-	<<elseif $weather is "snow">>
+	<<elseif Weather.isFreezing>>
 		Wind howls in from the sea.
 	<<else>>
 		A gentle breeze blows in from the sea.
 	<</if>>
 <<elseif Time.dayState is "dawn">>
-	<<if $weather is "rain">>
+	<<if Weather.precipitation is "rain">>
 		Rain sweeps in from the sea.
-	<<elseif $weather is "snow">>
+	<<elseif Weather.isFreezing>>
 		Icy wind howls in from the sea.
 	<<else>>
 		There's a lot of traffic. People are driving to work.
 	<</if>>
 <<elseif Time.dayState is "dusk">>
-	<<if $weather is "rain">>
+	<<if Weather.precipitation is "rain">>
 		Rain sweeps in from the sea, soddening people on their way home from work.
-	<<elseif $weather is "snow">>
+	<<elseif Weather.isFreezing>>
 		Icy wind sweeps in from the sea, chilling people on their way home from work.
 	<<else>>
 		There's a lot of traffic. People are driving home from work.
 	<</if>>
 <<elseif Time.dayState is "night">>
-	<<if $weather is "rain">>
+	<<if Weather.precipitation is "rain">>
 		The sea roars below.
-	<<elseif $weather is "snow">>
+	<<elseif Weather.isFreezing>>
 		The sea murmers below.
 	<<else>>
 		The street is dark and quiet. Only the ocean can be heard.
@@ -72,11 +72,14 @@ There's a path leading down to the beach.
 	<</if>>
 <<else>>
 	<<if ndef $pillory_tenant>><<setup_pillory>><</if>>
+	<<set $_endTime to new DateTime($pillory_tenant.endTime)>>
+	<<set $_timeLeft to Time.date.compareWith($_endTime)>>
+
 	<<if $pillory_tenant.exists is 1>> /* If someone is in pillory... */
-		<<if $timeStamp gte $pillory_tenant.endDate>>/* If sentence finished before today. */
+		<<if $_endTime.hours lt -2>> /* If sentence finished before today. */
 			<<clear_pillory>>
-		<<elseif ($pillory_tenant.endDate - $timeStamp) lte TimeConstants.secondsPerDay>>
-			<<if Time.hour is $pillory_tenant.endhour>> /* If ending now? */
+		<<elseif $_timeLeft.days lt 1>>
+			<<if $pillory_tenant.endTime <= Time.date.timeStamp>> /* If ending now? */
 				<<end_npc_pillory>>
 			<<else>> /* Sentence ongoing. */
 				<<npc_pillory>>
@@ -84,7 +87,7 @@ There's a path leading down to the beach.
 		<<else>> /* Sentence ongoing to tomorrow. */
 			<<npc_pillory>>
 		<</if>>
-	<<elseif $rng %10 is 0>> /* Pillory empty gives 10% chance of new person */
+	<<elseif $rng lte 100>> /* Pillory empty gives 10% chance of new person */
 		<<new_npc_pillory>>
 	<</if>>
 <</if>>
@@ -105,7 +108,7 @@ There's a path leading down to the beach.
 
 		<<link [[Get in|Chef Blackmail Car]]>><<sub 1>><</link>>
 		<br>
-		<<link [[Отказаться|Chef Blackmail Car Refuse]]>><<crimeUp 3000 "resisting">><<def 1>><</link>><<crime "resisting">>
+		<<link [[Refuse|Chef Blackmail Car Refuse]]>><<crimeUp 3000 "resisting">><<def 1>><</link>><<crime "resisting">>
 	<<elseif $chef_sus gte 10 and $rng gte 51>>
 		<<generate1>><<person1>>"Hey you," a voice says to the side. "The chef." You turn to see a <<person>> leaning against a wall beside an alley. "Nice cream you have. Tastes good. I bet I can guess the ingredients though." <<He>> grins. "You're a naughty one. Not something you want the authorities to find out, that's for sure."
 		<br><br>
@@ -157,7 +160,8 @@ There's a path leading down to the beach.
 			<</if>>
 			<br>
 		<<elseif $pillory_tenant.exists is 1 and $exposed lte 0>>
-			<<if Time.hour is ($pillory_tenant.endhour -1) and Time.minute gte 50>>
+			<<set $_timeLeft to Time.date.compareWith($pillory_tenant.endTime)>>
+			<<if $_timeLeft.hours eq 0 and $_timeLeft.minutes lte 10>>
 				<span class="blue">A police officer starts trying to disperse the crowd.</span>
 				<br>
 				<<pilloryicon>><<link [[Watch (0:10)|Cliff Street]]>><<pass 10>><</link>>
@@ -168,15 +172,15 @@ There's a path leading down to the beach.
 			<</if>>
 		<</if>>
 		<<if Time.dayState is "night" and $exposed lte 0>>
-			<<townhallicon>><<link [[Mayor's Office (0:01)|Town Hall Sneak]]>><</link>>
+			<<townhallicon>><<link [[Mayor's Office (0:01)|Town Hall Sneak]]>><<pass 1>><</link>>
 			<br>
 		<<elseif $exposed lte 0>>
-			<<townhallicon>><<link [[Mayor's Office (0:01)|Town Hall]]>><</link>>
+			<<townhallicon>><<link [[Mayor's Office (0:01)|Town Hall]]>><<pass 1>><</link>>
 			<br>
 		<</if>>
 		<<beachicon>><<link [[Beach (0:05)|Beach]]>><<pass 5>><</link>>
 		<br>
-		<<if $exhibitionismrun is "cliff" and $weather is "clear">>
+		<<if $exhibitionismrun is "cliff" and !Weather.isOvercast>>
 			<<ind>><<link [[Take off your clothes (0:07)|Cliff Challenge]]>><</link>>
 			<br>
 		<</if>>
@@ -968,16 +972,19 @@ or whatever and let you off with community service. But it's your call. What'll 
 <br>
 
 :: Cliff Street Prisoner Escape Fail 5
-<<set $outside to 1>><<set $location to "town">><<effects>><<set $bus to "cliff">><<earnFeat "You're the Laughingstock">>
-<<set _sentence_days_left to Math.floor(($pillory_tenant.endDate - $timeStamp) / TimeConstants.secondsPerDay)>>/* Calc hours remaining */
-<<set _hours to Math.floor(($pillory_tenant.endDate - $timeStamp) / TimeConstants.secondsPerHour)>>/* hours to end hour */
-<<if _hours gte 27>><<set _hours to 27>><</if>>
-<<if _hours lt 2>><<set _hours to 2>><</if>> /* cap hours: high and low */
+<<set $outside to 1>>
+<<set $location to "town">><<set $bus to "cliff">>
+<<effects>>
+<<earnFeat "You're the Laughingstock">>
+
+<<set $_endTime to new DateTime($pillory_tenant.endTime)>>
+<<set $_timeLeft to Time.date.compareWith($_endTime, true)>>
+<<set $_hours to Math.clamp($_timeLeft / TimeConstants.secondsPerHour, 2, 27)>>
 
 <<person2>>
 <<if $phase lte 1>>
-	<<if _hours gte 18>><<famegood 30>>"Wow!" The <<person>> looks taken aback. "That's- That's shockingly selfless. And I'm sure the public won't mind. Sure."
-	<<elseif _hours gte 12>><<famegood 20>>The <<person>> looks taken aback. "That's- That's actually rather honourable. And I'm sure the public won't mind. Sure."
+	<<if $_hours gte 18>><<famegood 30>>"Wow!" The <<person>> looks taken aback. "That's- That's shockingly selfless. And I'm sure the public won't mind. Sure."
+	<<elseif $_hours gte 12>><<famegood 20>>The <<person>> looks taken aback. "That's- That's actually rather honourable. And I'm sure the public won't mind. Sure."
 	<<else>><<famegood 10>>The <<person>> looks taken aback. "Okay. I never thought you'd follow through."
 	<</if>>
 <<else>>
@@ -987,17 +994,16 @@ or whatever and let you off with community service. But it's your call. What'll 
 <<The_pillory_person>> is relieved to be released early and thanks you earnestly. <<famegood 5>>
 The police officers force you into the pillory in <<his>> place, and clamp the mechanism down, locking your arms and head in place.
 <br><br>
-The <<person2>><<person>> gently pats your bare butt. "Have fun in there. Someone'll be along to let you out in <<number _hours>> hours.
-<<if $phase is 3>><<set _bonus to random(2,4)>><<set _hours += _bonus>>No... <<Number _hours>> hours. <<Number _bonus>> bonus-hours for making us run. Enjoy!"
-<<elseif $phase is 0>><<set _discount to random(2,4)>><<set _hours -= _discount>>Aw... Make it <<number _hours>> hours. You apologised, so <<number _discount>> hours off."
+The <<person2>><<person>> gently pats your bare butt. "Have fun in there. Someone'll be along to let you out in <<number $_hours>> hours.
+<<if $phase is 3>><<set $_bonus to random(2,4)>><<set $_hours += $_bonus>>No... <<Number $_hours>> hours. <<Number $_bonus>> bonus-hours for making us run. Enjoy!"
+<<elseif $phase is 0>><<set $_discount to random(2,4)>><<set $_hours -= $_discount>>Aw... Make it <<number $_hours>> hours. You apologised, so <<number $_discount>> hours off."
 <<else>>If we remember."
 <</if>><br><br>
 The police officers walk away. The <<person4>><<person>> <<if $phase is 3>>who chased you down<</if>> blows you a kiss.
-<<set $pillorytime to _hours>>
+<<set $pillorytime to $_hours>>
 <<set $pilloryaudience to ($pillory_tenant.crowd/2)>>
 <<crimeDown 5000>>
 <<clear_pillory>>
 <<endevent>>
 <br><br>
 <<link [[Далее|Pillory]]>><</link>>
-<br>

@@ -129,7 +129,7 @@
 		<<if $earSlime.growth gte 200 and $earSlime.exhibitionism gte 2 and $exhibitionism gte 15>>
 			<span class="red">You know the ear slimes wouldn't let you do anything but expose yourself.</span>
 			<br>
-			<<link [[Cross Slowly|Street Footbridge Cross]]>><<set $phase to 2>><</link>>
+			<<link [[Cross slowly|Street Footbridge Cross]]>><<set $phase to 2>><</link>>
 		<<elseif numberOfEarSlime() and $earSlime.growth gte 30 - ($earSlime.exhibitionism * 10) and $earSlime.corruption gte random(0, 80)>>
 			<span class="lewd">You feel the slime in your head command you to cross the bridge slowly, never looking down at any point.</span> It promises rewards if you comply<<if $earSlime.startedThreats>>, and threatens consequences if you do not<</if>>.
 			<br><br>
@@ -334,7 +334,7 @@
 	"'Ey <<girl>>," a voice says to your right. A <<person1>><<person>> leans against an open van, panting. "Fancy making some cash? My usual help didn't turn up, and I'm struggling to move all these boxes. I'll pay you three times the usual. So <span class="gold">£30.</span> Should take about an hour."
 	<br><br>
 
-	<<link [[Помочь (1:00)|Street Van Help]]>><<pass 60>><<tiredness 6>><</link>><<gtiredness>>
+	<<link [[Помочь (1:00)|Street Van Help]]>><<tiredness 6>><</link>><<gtiredness>>
 	<br>
 	<<link [[Отказаться|Street Van Refuse]]>><</link>>
 	<br>
@@ -348,7 +348,7 @@
 	As you walk closer you hear the trio jeer at <<him>>. The <<person3>><<person>> snatches the <<person1>><<persons>> bag away, and starts rifling through it.
 	<br><br>
 
-	<<link [[Вмешаться|Street Bullies Intervene]]>><<stress 6>><<def 1>><<famegood 1>><<famescrap 1>><</link>><<gstress>>
+	<<link [[Intervene|Street Bullies Intervene]]>><<stress 6>><<def 1>><<famegood 1>><<famescrap 1>><</link>><<gstress>>
 	<br>
 	<<if $submissive lte 500>>
 		<<link [[Attack the bullies|Street Bullies Attack]]>><<def 1>><<famegood 1>><<famescrap 1>><<stress -6>><</link>><<lstress>><<defianttext>>
@@ -359,6 +359,7 @@
 <</widget>>
 
 <<widget "streetrocks">>
+	<<outfitChecks>>
 	<<if $worn.feet.type.includes("naked")>>
 		Your bare foot steps on something sharp. It's a loose rock.
 		<<gpain>><<pain 4>>
@@ -371,21 +372,11 @@
 			<span class="red">You stumble to your knees.</span>
 			<<gpain>><<gstress>><<pain 4>><<stress 6>>
 			<br><br>
-			<<if !$worn.over_lower.type.includes("naked")>>
-				Your $worn.over_lower.name scrape<<if $worn.over_lower.plural isnot 1>>s<</if>> against the ground. You hear a tear.
-				<<set $worn.over_lower.integrity -= 10>>
+			<<if _bottom>>
+				Your _bottom.name scrape<<if _bottom.plural isnot 1>>s<</if>> against the ground. You hear a tear.
+				<<set _bottom.integrity -= 10>>
 				<br><br>
-				<<if $worn.over_lower.integrity lte 0>>
-					<<integritycheck>><<exposure>>
-
-					You try to hold the fabric together, but it's no use.
-					<br><br>
-				<</if>>
-			<<elseif !$worn.lower.type.includes("naked")>>
-				Your $worn.lower.name scrape<<if $worn.lower.plural isnot 1>>s<</if>> against the ground. You hear a tear.
-				<<set $worn.lower.integrity -= 10>>
-				<br><br>
-				<<if $worn.lower.integrity lte 0>>
+				<<if _bottom.integrity lte 0>>
 					<<integritycheck>><<exposure>>
 
 					You try to hold the fabric together, but it's no use.
@@ -402,21 +393,11 @@
 			You trip on a loose rock, and <span class="red">stumble to your knees.</span>
 			<<gpain>><<gstress>><<pain 4>><<stress 6>>
 			<br><br>
-			<<if !$worn.over_lower.type.includes("naked")>>
-				Your $worn.over_lower.name scrape<<if $worn.over_lower.plural isnot 1>>s<</if>> against the ground. You hear a tear.
-				<<set $worn.over_lower.integrity -= 10>>
+			<<if _bottom>>
+				Your _bottom.name scrape<<if _bottom.plural isnot 1>>s<</if>> against the ground. You hear a tear.
+				<<set _bottom.integrity -= 10>>
 				<br><br>
-				<<if $worn.over_lower.integrity lte 0>>
-					<<integritycheck>><<exposure>>
-
-					You try to hold the fabric together, but it's no use.
-					<br><br>
-				<</if>>
-			<<elseif !$worn.lower.type.includes("naked")>>
-				Your $worn.lower.name scrape<<if $worn.lower.plural isnot 1>>s<</if>> against the ground. You hear a tear.
-				<<set $worn.lower.integrity -= 10>>
-				<br><br>
-				<<if $worn.lower.integrity lte 0>>
+				<<if _bottom.integrity lte 0>>
 					<<integritycheck>><<exposure>>
 
 					You try to hold the fabric together, but it's no use.
@@ -614,7 +595,8 @@
 			<<link [[Игнорировать|Catcall Ignore]]>><</link>><<gstress>><<gtrauma>>
 			<br>
 		<</if>>
-		<<if (setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt is 1 and setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1) or (setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt is 1 and $worn.lower.name is "naked") or (setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1 and $worn.over_lower.name is "naked")>>
+		<<outfitChecks>>
+		<<if _skirtExposed>>
 			<<if $exhibitionism gte 75 and $worn.under_lower.type.includes("naked")>>
 				<<link [[Give them a show|Catcall Skirt]]>><</link>><<exhibitionist5>><<lstress>><<garousal>>
 				<br><br>
@@ -711,6 +693,10 @@
 				You will not be able to do this while wearing a $worn.under_upper.name.
 				<br><br>
 			<<else>>
+				<<if $earSlime.growth gte 200 and $earSlime.exhibitionism gte 2>>
+					<span class="red">You know the ear slimes wouldn't let you leave without exposing yourself.</span>
+					<<set _slimeNoExit to true>>
+				<</if>>
 				<<if $worn.under_lower.name is "naked">>
 					<<link [["Say you're not wearing any"|Street Panties]]>><<set $phase to 2>><</link>><<exhibitionist2>>
 					<br>
@@ -723,9 +709,7 @@
 			<</if>>
 			<br>
 		<</if>>
-		<<if $earSlime.growth gte 200 and $worn.under_lower.name is "naked" and $earSlime.exhibitionism gte 2>>
-			<span class="red">You know the ear slimes wouldn't let you leave without exposing yourself.</span>
-		<<else>>
+		<<if !_slimeNoExit>>
 			<<link [[Отказаться|Street Panties]]>><<set $phase to 3>><</link>><<gstress>>
 		<</if>>
 		<br>
@@ -783,64 +767,27 @@
 <</widget>>
 
 <<widget "street6">>
-	<<if setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt is 1>>
-		Your $worn.over_lower.name snag<<if $worn.over_lower.plural isnot 1>>s<</if>> on a passing car, <<set $worn.over_lower.integrity -= 10>>
-		<<outfitChecks>>
-		<<if $worn.over_lower.integrity lte 0>>
-			<<overlowerruined>><<clothesruinstat>><<if $worn.lower.exposed gte 1>><<set $loweroff to 0>><</if>>
-			<span class="lewd">and <<overlowerplural>> torn clean from your body</span><<if $worn.lower.exposed gte 1 and !_underBottoms>>, leaving your <<lewdness>> displayed in the middle of the street<</if>>.
-		<<else>>
-			tearing <<overlowerit>> and leaving <<overlowerit>> worse for wear.
-		<</if>>
-		<br><br>
-		<<destinationeventend>>
-	<<elseif !$worn.over_upper.type.includes("naked")>>
-		Your $worn.over_upper.name snag<<if $worn.over_upper.plural isnot 1>>s<</if>> on a passing car, <<set $worn.over_upper.integrity -= 10>>
-		<<if $worn.over_upper.integrity lte 0>>
-			<<overupperruined>><<clothesruinstat>><<if $worn.upper.exposed gte 1>><<set $upperoff to 0>><</if>>
-			<span class="lewd">and <<overupperplural>> torn clean from your body</span><<if $worn.upper.exposed gte 1 and !_underTop>>, leaving your <<lewdness>> displayed in the middle of the street<</if>>.
-		<<else>>
-			tearing <<overupperit>> and leaving <<overupperit>> worse for wear.
-		<</if>>
-		<br><br>
-		<<destinationeventend>>
-	<<elseif setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
-		Your $worn.lower.name snag<<if $worn.lower.plural isnot 1>>s<</if>> on a passing car, <<set $worn.lower.integrity -= 10>>
-		<<if $worn.lower.integrity lte 0>>
-			<<lowerruined>><<clothesruinstat>><<set $loweroff to 0>>
-			<span class="lewd">and <<lowerplural>> torn clean from your body</span><<if !_underBottoms>>, leaving your <<lewdness>> displayed in the middle of the street<</if>>.
-		<<else>>
-			tearing <<if $worn.lower.plural>>them<<else>>it<</if>> and leaving <<if $worn.lower.plural>>them<<else>>it<</if>> worse for wear.
-		<</if>>
-		<br><br>
-		<<destinationeventend>>
-	<<elseif !$worn.upper.type.includes("naked")>>
-		Your $worn.upper.name snag<<if $worn.upper.plural isnot 1>>s<</if>> on a passing car, <<set $worn.upper.integrity -= 10>>
-		<<if $worn.upper.integrity lte 0>>
-			<<upperruined>><<clothesruinstat>><<set $upperoff to 0>>
-			<span class="lewd">and <<upperplural>> torn clean from your body</span><<if !_underTop>>, leaving your <<lewdness>> displayed in the middle of the street<</if>>.
-		<<else>>
-			tearing <<upperit>> and leaving <<upperit>> worse for wear.
-		<</if>>
-		<br><br>
-		<<destinationeventend>>
-	<<elseif !$worn.under_upper.type.includes("naked")>>
-		Your $worn.under_upper.name snag<<if $worn.under_upper.plural isnot 1>>s<</if>> on a passing car, <<set $worn.under_upper.integrity -= 10>>
-		<<if $worn.under_upper.integrity lte 0>>
-			<<underupperruined>><<clothesruinstat>><<set $underupperoff to 0>>
-			<span class="lewd">and <<underupperplural>> torn clean from your body,</span> leaving your <<lewdness>> displayed in the middle of the street.
-		<<else>>
-			tearing <<underupperit>> and leaving <<underupperit>> worse for wear.
-		<</if>>
-		<br><br>
-		<<destinationeventend>>
-	<<else>>
+	<<outfitChecks>>
+	<<set $_tornItem to _bottomIsSkirt ? _bottom : !_shirtless ? _top : "none">>
+	<<if $_tornItem is "none">>
 		<<generate1>><<person1>>A <<person>> shouts at you from a passing car while leering at your exposed chest. "Thanks for the show." You feel self-conscious.
 		<<gtrauma>><<gstress>><<garousal>><<trauma 1>><<stress 1>><<arousal 100>>
 		<br><br>
 		<<endevent>>
 		<<destinationeventend>>
+	<<else>>
+		Your $_tornItem.name <<= $_tornItem.plural is 1 ? "snag" : "snags">> on a passing car, <<set $_tornItem.integrity -= 10>>
+		<<if $_tornItem.integrity lte 0>>
+			<<integritycheck no_text>>
+			<<clothesruinstat>>
+			<<if $worn.lower.exposed gte 1>><<set $loweroff to 0>><<elseif $worn.upper.exposed gte 1>><<set $upperoff to 0>><</if>>
+			<span class="lewd">and <<= $_tornItem.plural is 1 ? "are" : "is">> torn clean from your body</span><<outfitChecks>><<if _bottomExposed or _shirtless>>, leaving your <<lewdness>> displayed in the middle of the street<</if>>.
+		<<else>>
+			tearing <<= $_tornItem.plural is 1 ? "them" : "it">> and leaving <<= $_tornItem.plural is 1 ? "them" : "it">> worse for wear.
+		<</if>>
 	<</if>>
+	<br><br>
+	<<destinationeventend>>
 <</widget>>
 
 <<widget "street7">>
@@ -1081,7 +1028,7 @@
 
 	<<if $pain gte 20>>
 		You try to reassure <<him>> that you're okay, but <<he>> can't miss the tears.
-		"Are you hurt? Let me take a look"
+		"Are you hurt? Let me take a look."
 		<br><br>
 		<<He>> checks you over, noting your bruises. You're not sure you can show <<him>> everything here on the street, though.
 		<br><br>
@@ -1457,14 +1404,15 @@
 <<widget "streettentacle">>
 	<<set $phase to 0>>
 	<<set _target to 'none'>>
+	<<outfitChecks>>
 
 	You feel something touch your thigh. You look down to see a slimy tentacle extending from an open manhole. It worms around your leg and
 
-	<<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>
+	<<if _bottomIsSkirt and _skirtExposed>>
 		<<if !playerChastity() and !$worn.under_lower.type.includes("naked")>>
-			up your $worn.lower.name. It tangles in your $worn.under_lower.name.
+			up your _bottom.name. It tangles in your $worn.under_lower.name.
 		<<elseif $worn.under_lower.type.includes("naked")>>
-			up your $worn.lower.name. It winds around inside the fabric until it touches your
+			up your _bottom.name. It winds around inside the fabric until it touches your
 			<<set $phase to 1>>
 			<<rng>>
 			<<if $analdisable is "f" and $rng gte 60>>
@@ -1484,7 +1432,7 @@
 			<</if>>
 			You feel an excited tremble running through the tentacle.
 		<<else>>
-			up your $worn.lower.name. It bunches up and winds around the fabric.
+			up your _bottom.name. It bunches up and winds around the fabric.
 		<</if>>
 	<<elseif $worn.lower.type.includes("naked")>>
 		<<if !playerChastity() and !$worn.under_lower.type.includes("naked")>>
@@ -1494,7 +1442,7 @@
 			<<set $phase to 2>>
 		<</if>>
 	<<else>>
-		tangles in your $worn.lower.name.
+		tangles in your _bottom.name.
 	<</if>>
 	<br><br>
 
@@ -1795,7 +1743,7 @@
 	<<if $exhibitionism gte 55 and ($uncomfortable.underwear is false or $uncomfortable.nude is false)>>
 		<<run _avaliableActions.push("flaunt")>>
 	<</if>>
-	<<if ((setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt is 1 and setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1) or (setup.clothes.over_lower[clothesIndex('over_lower', $worn.over_lower)].skirt is 1 and $worn.lower.type.includes("naked")) or (setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1 and $worn.over_lower.type.includes("naked")))>>
+	<<if _skirtExposed>>
 		<<if $exhibitionism gte 75 and $worn.under_lower.type.includes("naked") and $uncomfortable.nude is false>>
 			<<run _avaliableActions.push("flashSkirt1")>>
 		<<elseif $exhibitionism gte 35 and playerChastity() and $uncomfortable.nude is false>>
@@ -2501,7 +2449,7 @@
 :: Widget Passout Street [widget]
 <<widget "passoutstreet">>
 	<<if isPlayerNonparasitePregnancyEnding()>>
-		<<pregnancyWatersBrokenPassout "street">>
+		<<pregnancyPassout "street">>
 	<<else>>
 		<<link [[Everything fades to black...->Passout street]]>><</link>>
 	<</if>>
@@ -2563,9 +2511,9 @@
 :: Widgets Danube [widget]
 <<widget "danube">>
 	<<if $nextPassageCheck is "Danube Street">>
-		<<add_link "<span class='nextLink'><<danubeicon>><<link [[Дунай-стрит (0:05) (Особняки)|Danube Street]]>><<pass 5>><</link>></span><br>">>
+		<<add_link "<span class='nextLink'><<danubeicon>><<link [[Danube Street (0:05) (Mansions)|Danube Street]]>><<pass 5>><</link>></span><br>">>
 	<<else>>
-		<<add_link "<<danubeicon>><<link [[Дунай-стрит (0:05) (Особняки)|Danube Street]]>><<pass 5>><</link>><br>">>
+		<<add_link "<<danubeicon>><<link [[Danube Street (0:05) (Mansions)|Danube Street]]>><<pass 5>><</link>><br>">>
 	<</if>>
 	<<hideDisplay true>>
 <</widget>>
@@ -2766,7 +2714,7 @@
 
 <<widget "passoutcompound">>
 	<<if isPlayerNonparasitePregnancyEnding()>>
-		<<pregnancyWatersBrokenPassout "compound">>
+		<<pregnancyPassout "compound">>
 	<<else>>
 		You've pushed yourself too much. You black out.
 		<br><br>
@@ -2851,9 +2799,9 @@
 :: Widgets Barb [widget]
 <<widget "barb">>
 	<<if $nextPassageCheck is "Barb Street">>
-		<<add_link "<span class='nextLink'><<barbicon>><<link [[Барб-стрит (0:05) (Студия)|Barb Street]]>><<pass 5>><</link>></span><br>">>
+		<<add_link "<span class='nextLink'><<barbicon>><<link [[Barb Street (0:05) (Studio)|Barb Street]]>><<pass 5>><</link>></span><br>">>
 	<<else>>
-		<<add_link "<<barbicon>><<link [[Барб-стрит (0:05) (Студия)|Barb Street]]>><<pass 5>><</link>><br>">>
+		<<add_link "<<barbicon>><<link [[Barb Street (0:05) (Studio)|Barb Street]]>><<pass 5>><</link>><br>">>
 	<</if>>
 	<<hideDisplay true>>
 <</widget>>
@@ -3201,7 +3149,7 @@
 <<widget "eventsstreet">>
 	<<set $dangerevent to random(1, 100)>>
 	<<rng>>
-	<<if $wraith.state and $eventforced and isBloodmoon() and !_wraithEventSkipped>>
+	<<if $wraith.state and $eventforced and Time.isBloodMoon() and !_wraithEventSkipped>>
 		<<wraithEventStreet>>
 	<<elseif $kylarwatched is 1>>
 		<<kylarwatched>>
@@ -3759,9 +3707,9 @@
 
 	<<if $bus is "domus" or $bus is "danube" or $bus is "barb" or $bus is "connudatus">>
 		<<link[[Take the detour|Residential alleyways]]>><</link>>
-	<<elseif $bus is "cliff" or $bus is "high" or $bus is "wolf" or $bus is "harvest">>
+	<<elseif $bus is "cliff" or $bus is "high" or $bus is "wolf">>
 		<<link[[Take the detour|Commercial alleyways]]>><</link>>
-	<<elseif $bus is "oxford" or $bus is "mer" or $bus is "elk">>
+	<<elseif $bus is "oxford" or $bus is "mer" or $bus is "elk" or $bus is "harvest">>
 		<<link[[Take the detour|Industrial alleyways]]>><</link>>
 	<<elseif $bus is "starfish" or $bus is "nightingale">>
 		<<link[[Take the detour|Park]]>><</link>>
@@ -3868,7 +3816,7 @@
 	<<elseif $dangerevent lte 184>>
 		<<streetnpcflash>>
 	<<elseif $dangerevent lte 190>>
-		<<if ($bus is "domus" or $bus is "danube") and $weather is "rainy" and ($upperwetstage is 1 or $lowerwetstage is 1)>>
+		<<if ($bus is "domus" or $bus is "danube") and Weather.precipitation is "rain" and ($upperwetstage is 1 or $lowerwetstage is 1)>>
 			<<rainyDayHarass>>
 		<<else>>
 			<<eventAmbient>>
