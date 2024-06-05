@@ -246,16 +246,22 @@ function effects() {
 	sWikifier("<<autoTakePillCheck>>");
 	fragment.append(effectsWater());
 	fragment.append(effectsMakeup());
-	wikifier("temperature");
 
 	V.speechcycle++;
 	if (V.speechcycle >= 7) V.speechcycle = 0;
 
-	if (!V.inwater && V.squidcount) {
+	if (Weather.bodyTemperature < setup.WeatherTemperature.minTemperature + 1 && !Weather.BodyTemperature.isIncreasing()) {
+		element("span", `You're very cold, and about to get hypothermia!`, "red");
+		br();
+	} else if (Weather.bodyTemperature > setup.WeatherTemperature.maxTemperature - 1 && !Weather.BodyTemperature.isDecreasing()) {
+		element("span", `You're extremely hot, and about to get heatstroke!`, "red");
+		br();
+	}
+
+	if (!T.inWater && V.squidcount) {
 		element("span", `The squid${V.squidcount > 1 ? "s" : ""} drop${V.squidcount > 1 ? "" : "s"} off you, seeking water.`, "blue");
 		V.squidcount = 0;
 	}
-	V.inwater = 0;
 
 	if (V.scienceproject === "ongoing" && V.scienceprojectdays === 0 && !V.scienceprojectwarning) {
 		V.scienceprojectwarning = 1;
@@ -934,7 +940,7 @@ function effects() {
 						? ` and clit. It ${looks} like you have your own penis now`
 						: `A new parasite forms around the base of your clit, it ${looks} similar to a penis`;
 				}
-				sWikifier(`<span class="blue">A satisfied warmth fills you. ${parasiteMessage}</span>`);
+				sWikifier(`<span class="blue">A satisfied warmth fills you. ${parasiteMessage}.</span>`);
 				element("span", `You can tell that ${parasiteCount > 1 ? "they are" : "it's"} from the slimes in your ears.`);
 				if (V.earSlimePenisParasite && V.earSlimePenisParasite !== 1) {
 					element("span", `The previous ${V.earSlimePenisParasite} falls off shortly after it finishes growing.`, "red");
@@ -951,7 +957,7 @@ function effects() {
 		if (V.penisslimebrokenchastitymessage) {
 			element(
 				"span",
-				`The parasite at the base of your genitals frees you from the${
+				`The parasite at the base of your genitals frees you from the ${V.penisslimebrokenchastitymessage}${
 					V.penisslimecagemessage === 1 ? ", and almost just as quickly, a new chastity parasite forms around your penis" : ""
 				}.`,
 				"purple"

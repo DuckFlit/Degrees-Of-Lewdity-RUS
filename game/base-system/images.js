@@ -1,48 +1,64 @@
 function gainSchoolStar(variable) {
-	if (V.statdisable === "t") return "";
+	if (V.statdisable === "t") return document.createDocumentFragment();
+	const createElement = (type, clas, content) => {
+		const element = document.createElement(type);
+		element.classList.add(clas);
+		if (type === "img") {
+			element.src = content;
+		} else {
+			element.textContent = content;
+		}
+		return element;
+	};
+	const fragment = document.createDocumentFragment();
 	if (V.options.images === 1) {
+		const img = document.createElement("img");
+		img.classList.add("icon");
 		if (V[variable] + 1 === 3) {
-			return `<img class="icon" src="img/ui/gold_star.png">`;
+			fragment.appendChild(createElement("img", "icon", "img/ui/gold_star.png"));
 		} else if (V[variable] + 1 === 2) {
-			return `<img class="icon" src="img/ui/silver_star.png">`;
+			fragment.appendChild(createElement("img", "icon", "img/ui/silver_star.png"));
 		} else if (V[variable] + 1 === 1) {
-			return `<img class="icon" src="img/ui/bronze_star.png">`;
+			fragment.appendChild(createElement("img", "icon", "img/ui/bronze_star.png"));
 		}
 	} else {
 		if (V[variable] + 1 === 3) {
-			return `<span class="gold">Gold Star</span>`;
+			fragment.appendChild(createElement("span", "gold", "Gold Star"));
 		} else if (V[variable] + 1 === 2) {
-			return `<span class="platinum">Silver Star</span>`;
+			fragment.appendChild(createElement("span", "platinum", "Silver Star"));
 		} else if (V[variable] + 1 === 1) {
-			return `<span class="brown">Bronze Star</span>`;
+			fragment.appendChild(createElement("span", "brown", "Bronze Star"));
 		}
 	}
-	return "";
+	return fragment;
 }
 window.gainSchoolStar = gainSchoolStar;
 
 function schoolStar(variable) {
+	const createElement = (type, clas, content) => {
+		const element = document.createElement(type);
+		element.classList.add(clas);
+		if (type === "img") {
+			element.src = content;
+		} else {
+			element.textContent = content;
+		}
+		return element;
+	};
+	const fragment = document.createDocumentFragment();
 	if (V.options.images === 1) {
 		if (V[variable] >= 3) {
-			return `<img class="icon" src="img/ui/gold_star.png">`;
+			fragment.appendChild(createElement("img", "icon", "img/ui/gold_star.png"));
 		} else if (V[variable] === 2) {
-			return `<img class="icon" src="img/ui/silver_star.png">`;
+			fragment.appendChild(createElement("img", "icon", "img/ui/silver_star.png"));
 		} else if (V[variable] === 1) {
-			return `<img class="icon" src="img/ui/bronze_star.png">`;
+			fragment.appendChild(createElement("img", "icon", "img/ui/bronze_star.png"));
 		} else {
-			return `<img class="icon" src="img/ui/empty_star.png">`;
+			fragment.appendChild(createElement("img", "icon", "img/ui/empty_star.png"));
 		}
 	} else {
-		return `<span class="platinum">${V[variable]} / 3 stars</span>`;
+		fragment.appendChild(createElement("span", "platinum", `${V[variable]} / 3 stars`));
 	}
+	return fragment;
 }
 window.schoolStar = schoolStar;
-
-DefineMacroS("g_science_star", () => gainSchoolStar("science_star"));
-DefineMacroS("science_star", () => schoolStar("science_star"));
-DefineMacroS("g_maths_star", () => gainSchoolStar("maths_star"));
-DefineMacroS("maths_star", () => schoolStar("maths_star"));
-DefineMacroS("g_english_star", () => gainSchoolStar("english_star"));
-DefineMacroS("english_star", () => schoolStar("english_star"));
-DefineMacroS("g_history_star", () => gainSchoolStar("history_star"));
-DefineMacroS("history_star", () => schoolStar("history_star"));

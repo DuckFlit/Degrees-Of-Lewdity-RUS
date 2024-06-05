@@ -19,6 +19,7 @@ function ampm(hour, minute) {
 	}
 	return !ampm ? ("0" + getTimeString(hour, minute)).slice(-5) : getTimeString(hour, minute) + ampm;
 }
+window.ampm = ampm;
 DefineMacroS("ampm", ampm);
 
 function advanceToHour() {
@@ -114,11 +115,10 @@ function schoolTerm() {
 		if (date.year === Time.year && date.month === Time.month && date.day === Time.monthDay) {
 			if (date.timeStamp > Time.date.timeStamp) return "School term finishes today.";
 		} else {
-			return "School term finishes on " + date.weekDayName + " the " + ordinalSuffixOf(date.day) + " of " + date.monthName;
+			return "School term finishes on " + date.weekDayName + " the " + ordinalSuffixOf(date.day) + " of " + date.monthName + ".";
 		}
 	}
 	const date = Time.nextSchoolTermStartDate;
-	return "School term starts on " + date.weekDayName + " the " + ordinalSuffixOf(date.day) + " of " + date.monthName;
+	return "School term starts on " + date.weekDayName + " the " + ordinalSuffixOf(date.day) + " of " + date.monthName + ".";
 }
-
 DefineMacroS("schoolterm", schoolTerm);

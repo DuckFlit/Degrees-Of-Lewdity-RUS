@@ -1,4 +1,6 @@
-// eslint-disable-next-line no-unused-vars
+/*
+	Old version can be found at https://gitgud.io/Vrelnir/degrees-of-lewdity/-/blob/master/game/special-masturbation/effects.twee?ref_type=7f47147b
+*/
 function masturbationEffects() {
 	const fragment = document.createDocumentFragment();
 	const br = () => document.createElement("br");
@@ -1105,11 +1107,11 @@ function masturbationEffectsArms(
 							`You grope ${altText.oneOfYour} with your ${arm} and enjoy the feeling of tightness as your balls clench up against the base of your <<penis>>.`
 						);
 					} else if (V.arousal >= V.arousalmax * (3 / 5)) {
-						fragment.append(span(`You fondle ${altText.oneOfYour} with your ${arm} and enjoy the tickling feeling.`));
+						fragment.append(span(`You fondle ${altText.oneOfYour} with your ${arm} hand and enjoy the tickling feeling.`));
 					} else if (V.arousal >= V.arousalmax * (2 / 5)) {
-						fragment.append(span(`You jiggle ${altText.oneOfYour} in your ${arm} and enjoy the feeling of gravity on it.`));
+						fragment.append(span(`You jiggle ${altText.oneOfYour} in your ${arm} hand and enjoy the feeling of gravity on it.`));
 					} else {
-						fragment.append(span(`You stroke ${altText.oneOfYour} with your ${arm}.`));
+						fragment.append(span(`You stroke ${altText.oneOfYour} with your ${arm} hand.`));
 					}
 				}
 				additionalEffect.hands = "ballplayeffects";
@@ -2747,7 +2749,7 @@ function masturbationEffectsMouth({
 				}
 				if (genitalsExposed()) {
 					wikifier("arousal", 100, "masturbationGenital");
-					sWikifier(`<span class="blue">You get close enough to your chasitity parasite to reach out and it with your tongue.</span>`);
+					sWikifier(`<span class="blue">You get close enough to your chasitity parasite to reach out and lick it with your tongue.</span>`);
 				} else {
 					sWikifier(
 						`<span class="blue">You run your tongue over your chasitity parasite${
@@ -3309,7 +3311,7 @@ function masturbationEffectsVaginaAnus({ span, otherElement, additionalEffect, s
 			clearAction("vagina");
 			V.vaginause = "mpenisflowerrub";
 			V.moorPhallusPlant = 2;
-			if (genitalsExposed()) {
+			if (!genitalsExposed()) {
 				wikifier("arousal", 100, "anal");
 				fragment.append(span("You grind your crotch against the plant, although your clothing gets in the way."));
 			} else {
@@ -3406,7 +3408,7 @@ function masturbationEffectsVaginaAnus({ span, otherElement, additionalEffect, s
 			clearAction("anus");
 			V.anususe = "mpenisflowerrub";
 			V.moorPhallusPlant = 2;
-			if (genitalsExposed()) {
+			if (!genitalsExposed()) {
 				wikifier("arousal", 100, "anal");
 				fragment.append(span("You grind your ass against the plant, although your clothes get in the way."));
 			} else {

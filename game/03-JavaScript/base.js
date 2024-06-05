@@ -94,8 +94,8 @@ window.rangeIterate = rangeIterate;
  *
  * @param {string} macroName
  * @param {Function} macroFunction
- * @param {object} tags
- * @param {boolean} skipArgs
+ * @param {object=} tags
+ * @param {boolean=} skipArgs
  */
 function DefineMacro(macroName, macroFunction, tags, skipArgs) {
 	Macro.add(macroName, {
@@ -127,9 +127,9 @@ function DefineMacro(macroName, macroFunction, tags, skipArgs) {
  *
  * @param {string} macroName
  * @param {Function} macroFunction
- * @param {object} tags
- * @param {boolean} skipArgs
- * @param {boolean} maintainContext
+ * @param {object=} tags
+ * @param {boolean=} skipArgs
+ * @param {boolean=} maintainContext
  */
 function DefineMacroS(macroName, macroFunction, tags, skipArgs, maintainContext) {
 	DefineMacro(
@@ -168,11 +168,11 @@ window.integrityKeyword = integrityKeyword;
  *
  * @param {object} worn clothing article, State.variables.worn.XXXX
  * @param {string} slot clothing article slot used
- * @param {string} alt alt version for metal/plastic devices
  * @returns {string} printable integrity prefix
  */
 function integrityWord(worn, slot) {
 	const kw = integrityKeyword(worn, slot);
+	// alt version for metal/plastic devices
 	const alt = setup.clothes[slot][clothesIndex(slot, worn)].altDamage;
 	if (alt === "parasite") {
 		switch (kw) {
@@ -302,19 +302,57 @@ window.clothesColour = clothesColour;
  * @returns {void}
  */
 function outfitChecks() {
+	/* Boolean variables */
 	T.underOutfit = (V.worn.under_lower.outfitSecondary && V.worn.under_lower.outfitSecondary[1] === V.worn.under_upper.name) || false;
 	T.middleOutfit = (V.worn.lower.outfitSecondary && V.worn.lower.outfitSecondary[1] === V.worn.upper.name) || false;
 	T.overOutfit = (V.worn.over_lower.outfitSecondary && V.worn.over_lower.outfitSecondary[1] === V.worn.over_upper.name) || false;
 
-	T.underBottoms = V.worn.lower.name === "naked" && V.worn.under_lower.type.includes("covered");
-	T.underTop = V.worn.upper.name === "naked" && V.worn.under_upper.type.includes("covered");
-	T.underNaked = V.worn.under_lower.name === "naked" && V.worn.under_upper.name === "naked";
-	T.middleNaked = V.worn.lower.name === "naked" && V.worn.upper.name === "naked";
-	T.overNaked = V.worn.over_lower.name === "naked" && V.worn.over_upper.name === "naked";
+	T.skirtExposed =
+		(setup.clothes.over_lower[clothesIndex("over_lower", V.worn.over_lower)].skirt === 1 &&
+			setup.clothes.lower[clothesIndex("lower", V.worn.lower)].skirt === 1) ||
+		(setup.clothes.over_lower[clothesIndex("over_lower", V.worn.over_lower)].skirt === 1 && V.worn.lower.type.includes("naked")) ||
+		(V.worn.over_lower.type.includes("naked") && setup.clothes.lower[clothesIndex("lower", V.worn.lower)].skirt === 1);
+	T.bottomExposed = V.worn.over_lower.name === "naked" && V.worn.lower.name === "naked" && !V.worn.under_lower.type.includes("covered");
+	T.shirtless =
+		V.worn.over_upper.name === "naked" &&
+		V.worn.upper.name === "naked" &&
+		!V.worn.lower.type.includes("covered") &&
+		!V.worn.under_upper.type.includes("covered");
+
 	T.topless =
 		V.worn.over_upper.name === "naked" && V.worn.upper.name === "naked" && V.worn.under_upper.name === "naked" && !V.worn.lower.type.includes("covered");
 	T.bottomless = V.worn.over_lower.name === "naked" && V.worn.lower.name === "naked" && V.worn.under_lower.name === "naked";
+	T.overNaked = V.worn.over_lower.name === "naked" && V.worn.over_upper.name === "naked";
+	T.middleNaked = T.shirtless && T.bottomExposed;
+	T.underNaked = V.worn.under_lower.name === "naked" && V.worn.under_upper.name === "naked";
 	T.fullyNaked = T.topless && T.bottomless;
+
+	/* Temporary $worn[slot] variables. Generally called as _bottom.integrity or _top.name */
+	const topLayers = [V.worn.over_upper, V.worn.upper, V.worn.under_upper];
+	const bottomLayers = ["over_lower", "lower", "under_lower"];
+	T.top = topLayers.find(item => item.name !== "naked" && (!V.worn.lower || item !== V.worn.lower || item.type.includes("covered"))) || null;
+	T.topUnder = topLayers.slice(topLayers.indexOf(T.top) + 1).find(item => item.name !== "naked") || null;
+	T.bottom =
+		V.worn[
+			bottomLayers.find(item => {
+				return V.worn[item].name !== "naked" && ((T.bottomIsSkirt = setup.clothes[item][clothesIndex(item, V.worn[item])].skirt), true);
+			})
+		];
+	if (T.bottom !== V.worn.under_lower) {
+		T.bottomUnder =
+			V.worn[
+				bottomLayers.slice(bottomLayers.indexOf(T.bottom)).find(item => {
+					return V.worn[item].name !== "naked" && ((T.bottomUnderIsSkirt = setup.clothes[item][clothesIndex(item, V.worn[item])].skirt), true);
+				})
+			];
+	}
+	T.swimwear =
+		((V.worn.under_lower.type.includes("swim") && V.worn.lower.type.includes("naked")) || V.worn.lower.type.includes("swim")) &&
+		(V.worn.under_upper.type.includes("swim") || V.worn.under_upper.type.includes("naked")) &&
+		(V.worn.upper.type.includes("swim") || V.worn.upper.type.includes("naked"));
+	T.outfit = (T.bottom?.outfitSecondary && T.bottom?.outfitSecondary[1] === T.top?.name) || null;
+	if (!T.top && !T.shirtless) T.top = T.bottom;
+	if (T.outfit) T.bottom = T.top;
 }
 window.outfitChecks = outfitChecks;
 DefineMacro("outfitChecks", outfitChecks);
@@ -462,7 +500,7 @@ function weightedRandom(...options) {
 		return [value, totalWeight];
 	});
 
-	const random = Math.random() * totalWeight;
+	const random = State.random() * totalWeight;
 	for (const [value, cumulativeWeight] of processedOptions) {
 		if (cumulativeWeight >= random) {
 			return value;
@@ -472,6 +510,24 @@ function weightedRandom(...options) {
 	return options[0][0];
 }
 window.weightedRandom = weightedRandom;
+
+/**
+ * Resolves the provided value by checking if it is a function or a direct value.
+ * If the value is a function, the function is invoked and its result is returned.
+ * If it is not a function, the value itself is returned.
+ * If the value is undefined, a specified default value is returned instead.
+ *
+ * @param {Function|any} value The value to resolve, which can be a function or any value
+ * @param {number} defaultValue The default value to use if the provided value is undefined
+ * @returns {number} The resolved value, either from the function call or directly
+ */
+function resolveValue(value, defaultValue = undefined) {
+	if (typeof value === "function") {
+		return value();
+	}
+	return value ?? defaultValue;
+}
+window.resolveValue = resolveValue;
 
 /**
  * This macro sets $rng. If the variable $rngOverride is set, $rng will always be set to that.
@@ -572,5 +628,26 @@ Macro.add("foldout", {
 			setFoldoutState(foldoutState, 100);
 		});
 		e.appendTo(this.output);
+	},
+});
+
+/* global ClothedSlots */
+
+/**
+ * @param {ClothedSlots} slot
+ */
+function carriedClear(slot) {
+	const slotFound = slot in V.carried;
+	if (!slotFound) {
+		return;
+	}
+
+	V.carried[slot] = clone(setup.clothes[slot][0]);
+}
+window.carriedClear = carriedClear;
+
+Macro.add("carriedClear", {
+	handler() {
+		carriedClear(this.args[0]);
 	},
 });

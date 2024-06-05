@@ -12,37 +12,8 @@ setup.debugMenu = {
 setup.debugMenu.eventList = {
 	Main: [
 		{
-			link: [`test`, `Test`],
-			widgets: [`<<set $molestationstart to 0>>`],
-		},
-		{
-			link: [`CanvasModel Example`, `CanvasModel Example`],
-			widgets: [``],
-		},
-		{
 			link: [`Home`, `Bedroom`],
 			widgets: [`<<endcombat>>`],
-		},
-		{
-			link: [`Wardrobe`, `Wardrobe`],
-			widgets: [``],
-		},
-		{
-			link: [`Strip`, stayOnPassageFn],
-			widgets: [`<<undressclothes "wardrobe">>`],
-		},
-		{
-			link: [`Strip to undies`, stayOnPassageFn],
-			widgets: [
-				`<<generalUndress wardrobe over_upper>>`,
-				`<<generalUndress wardrobe over_lower>>`,
-				`<<generalUndress wardrobe upper>>`,
-				`<<generalUndress wardrobe lower>>`,
-			],
-		},
-		{
-			link: [`Strip all`, stayOnPassageFn],
-			widgets: [`<<undress "wardrobe">>`],
 		},
 		{
 			link: [`Pass 1 minute`, stayOnPassageFn],
@@ -83,6 +54,31 @@ setup.debugMenu.eventList = {
 		{
 			link: [`Pass 24 hours`, stayOnPassageFn],
 			widgets: [`<<pass 24 hours>>`],
+		},
+		{
+			link: [`Wardrobe`, `Wardrobe`],
+			widgets: [``],
+		},
+		{
+			link: [`Strip`, stayOnPassageFn],
+			widgets: [`<<undressclothes "wardrobe">>`],
+		},
+		{
+			link: [`Strip to undies`, stayOnPassageFn],
+			widgets: [
+				`<<generalUndress wardrobe over_upper>>`,
+				`<<generalUndress wardrobe over_lower>>`,
+				`<<generalUndress wardrobe upper>>`,
+				`<<generalUndress wardrobe lower>>`,
+			],
+		},
+		{
+			link: [`Strip all`, stayOnPassageFn],
+			widgets: [`<<undress "wardrobe">>`],
+		},
+		{
+			link: [`CanvasModel Example`, `CanvasModel Example`],
+			widgets: [``],
 		},
 		{
 			link: [`Enemy Trust +++`, stayOnPassageFn],
@@ -530,6 +526,10 @@ setup.debugMenu.eventList = {
 			widgets: [`<<endcombat>><<set $sexstart to 1>>`],
 		},
 		{
+			link: [`statDisplay test`, `statDisplay Test`],
+			widgets: [`<<endcombat>>`],
+		},
+		{
 			link: [`Eels Swarm Me`, `Sea Eels`],
 			widgets: [`<<endcombat>>`, `<<set $molestationstart to 1>>`],
 		},
@@ -662,6 +662,15 @@ setup.debugMenu.eventList = {
 				`<<endcombat>>`,
 				`<<npc "Black Wolf">>`,
 				`<<set $molestationstart to 1>>`,
+			],
+		},
+		{
+			link: [`Great Hawk Hunt Capture`, `Moor`],
+			widgets: [
+				`<<set $moor to 50>>`,
+				`<<set $eventskip to 1>>`,
+				`<<moor_hunt_start>>`,
+				`<<set $moor_hunt to 10>>`,
 			],
 		},
 		{
@@ -1146,10 +1155,6 @@ setup.debugMenu.eventList = {
 		},
 		{
 			text_only: "\n\n",
-		},
-		{
-			link: [`Sunlight`, stayOnPassageFn],
-			widgets: [`<<set $weather to "clear">>`],
 		},
 		{
 			link: [`Wash`, stayOnPassageFn],
