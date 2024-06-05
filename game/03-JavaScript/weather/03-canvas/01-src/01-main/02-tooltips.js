@@ -40,7 +40,6 @@ Weather.Tooltips = (() => {
 			: V.outside
 			? T.temperatureOverride?.outsideTooltip
 			: T.temperatureOverride?.insideTooltip;
-		console.log(overrideDescription);
 		const fatigueModifier = categorise(Weather.BodyTemperature.fatigueModifier, 1, Weather.tempSettings.effects.maxFatigueGainMultiplier, 4);
 		const arousalModifier = categorise(Weather.BodyTemperature.arousalModifier, 1, Weather.tempSettings.effects.maxArousalGainMultiplier, 4);
 		const painModifier = categorise(Weather.BodyTemperature.painModifier, 1, Weather.tempSettings.effects.maxPainGainMultiplier, 4);
