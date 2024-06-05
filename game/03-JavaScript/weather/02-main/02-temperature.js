@@ -132,11 +132,18 @@ Weather.Temperature = (() => {
 		const targetTemperature = 23;
 		const modifierFactor = 0.4;
 
+		// Location modifiers placeholder
+		let locationModifier = 0;
+		switch (V.location) {
+			case "pool":
+				locationModifier = 7;
+		}
+
 		// Logarithmic function for more effect at extremes (low and high temperatures)
 		const deviation = Math.abs(baseTemperature - targetTemperature);
 		const modifier = Math.pow(Math.log1p(deviation), 2) * Math.sign(baseTemperature - targetTemperature) * modifierFactor;
 
-		return round(targetTemperature + modifier, 2);
+		return round(targetTemperature + modifier + locationModifier, 2);
 	}
 
 	/*
@@ -342,25 +349,43 @@ Weather.Temperature = (() => {
 		add,
 		override: {
 			increase: {
-				inside(value) {
-					T.temperatureOverride = { inside: (T.temperatureOverride?.inside ?? Weather.insideTemperature) + value };
+				inside(value, tooltip) {
+					T.temperatureOverride = {
+						inside: (T.temperatureOverride?.inside ?? Weather.insideTemperature) + value,
+						insideTooltip: tooltip ? `<span class="orange">${tooltip}</span>` : "",
+					};
 				},
-				outside(value) {
-					T.temperatureOverride = { outside: (T.temperatureOverride?.outside ?? Weather.temperature) + value };
+				outside(value, tooltip) {
+					T.temperatureOverride = {
+						outside: (T.temperatureOverride?.outside ?? Weather.temperature) + value,
+						outsideTooltip: tooltip ? `<span class="orange">${tooltip}</span>` : "",
+					};
 				},
-				water(value) {
-					T.temperatureOverride = { water: (T.temperatureOverride?.water ?? Weather.waterTemperature) + value };
+				water(value, tooltip) {
+					T.temperatureOverride = {
+						water: (T.temperatureOverride?.water ?? Weather.waterTemperature) + value,
+						waterTooltip: tooltip ? `<span class="orange">${tooltip}</span>` : "",
+					};
 				},
 			},
 			decrease: {
-				inside(value) {
-					T.temperatureOverride = { inside: (T.temperatureOverride?.inside ?? Weather.insideTemperature) - value };
+				inside(value, tooltip) {
+					T.temperatureOverride = {
+						inside: (T.temperatureOverride?.inside ?? Weather.insideTemperature) - value,
+						insideTooltip: tooltip ? `<span class="teal">${tooltip}</span>` : "",
+					};
 				},
-				outside(value) {
-					T.temperatureOverride = { outside: (T.temperatureOverride?.outside ?? Weather.temperature) - value };
+				outside(value, tooltip) {
+					T.temperatureOverride = {
+						outside: (T.temperatureOverride?.outside ?? Weather.temperature) - value,
+						outsideTooltip: tooltip ? `<span class="teal">${tooltip}</span>` : "",
+					};
 				},
-				water(value) {
-					T.temperatureOverride = { water: (T.temperatureOverride?.water ?? Weather.waterTemperature) - value };
+				water(value, tooltip) {
+					T.temperatureOverride = {
+						water: (T.temperatureOverride?.water ?? Weather.waterTemperature) - value,
+						waterTooltip: tooltip ? `<span class="teal">${tooltip}</span>` : "",
+					};
 				},
 			},
 			get outside() {
@@ -381,6 +406,12 @@ Weather.Temperature = (() => {
 			set water(value) {
 				T.temperatureOverride = { water: value };
 			},
+		},
+		isExtreme() {
+			return (
+				Weather.genSettings.months[Time.month - 1].temperatureRange.average[0] > Weather.temperature ||
+				Weather.genSettings.months[Time.month - 1].temperatureRange.average[1] < Weather.temperature
+			);
 		},
 	});
 })();
