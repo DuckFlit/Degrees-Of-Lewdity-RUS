@@ -836,7 +836,7 @@ window.DefaultActions = {
 
 function selectWardrobe(targetLocation = V.wardrobe_location, type) {
 	let wardrobe = V.wardrobes[targetLocation];
-	if (type !== "return" && wardrobe.locationRequirement && !wardrobe.locationRequirement.includes(V.location)) {
+	if (type !== "return" && wardrobe?.locationRequirement && !wardrobe.locationRequirement.includes(V.location)) {
 		V.wardrobe_location = "wardrobe";
 		wardrobe = V.wardrobe;
 	}
