@@ -1,4 +1,17 @@
-/* For any item that has a colour_combat tag, set it to 0 if that item ever gets its own combat sprites. */
+/* For any item that has a colour_combat tag, set it to 0 if that item ever gets its own combat sprites.
+
+Warmth checklist:
+	Base: 0
+	Covers hands: +1
+	Covers arms: +1
+
+	Materials
+	Thin: -1
+	Normal: 0
+	Thick: +1
+
+	Max warmth: 3
+*/
 function initHands() {
 	setup.clothes.hands = [
 		{
@@ -47,7 +60,7 @@ function initHands() {
 			colour_sidebar: 1,
 			type: ["normal"],
 			gender: "n",
-			warmth: 5,
+			warmth: 1,
 			cost: 1000,
 			description: "Перчатки без разделения пальцев, которые согреют ваши руки.",
 			shop: ["clothing"],
@@ -80,7 +93,7 @@ function initHands() {
 			colour_sidebar: 1,
 			type: ["normal"],
 			gender: "n",
-			warmth: 50,
+			warmth: 2,
 			cost: 400,
 			description: "Они не рассчитаны на отдельные пальцы, но это не должно быть проблемой.",
 			shop: ["clothing"],
@@ -99,8 +112,8 @@ function initHands() {
 
 		{
 			index: 3,
-			name: "грелки для рук",
-			name_cap: "Грелки для рук",
+			name: "митенки",
+			name_cap: "Митенки",
 			variable: "armwarmers",
 			integrity: 100,
 			integrity_max: 100,
@@ -113,9 +126,9 @@ function initHands() {
 			colour_sidebar: 1,
 			type: ["normal"],
 			gender: "n",
-			warmth: 40,
+			warmth: 2,
 			cost: 1000,
-			description: "Держи свои руки в тепле.",
+			description: "Держат руки в тепле.",
 			shop: ["clothing"],
 			accessory: 1,
 			accessory_colour: 0,
@@ -133,8 +146,8 @@ function initHands() {
 
 		{
 			index: 4,
-			name: "кружевные грелки для рук",
-			name_cap: "Кружевные грелки для рук",
+			name: "кружевные митенки",
+			name_cap: "Кружевные митенки",
 			variable: "lacewarmers",
 			integrity: 30,
 			integrity_max: 30,
@@ -148,9 +161,9 @@ function initHands() {
 			type: ["formal"],
 			gender: "f",
 			femininity: 200,
-			warmth: 5,
+			warmth: 2,
 			cost: 2500,
-			description: "Модные.",
+			description: "Fashionable.",
 			shop: ["clothing"],
 			accessory: 0,
 			accessory_colour: 0,
@@ -199,7 +212,7 @@ function initHands() {
 			colour_combat: 0,
 			type: ["normal", "sticky_fingers", "stealthy"],
 			gender: "n",
-			warmth: 10,
+			warmth: 2,
 			cost: 8000,
 			description: "Модные и удобные для ношения в карманах.",
 			shop: ["clothing", "adult"],
@@ -218,8 +231,8 @@ function initHands() {
 
 		{
 			index: 6,
-			name: "перчатки болельщицы",
-			name_cap: "Перчатки болельщицы",
+			name: "перчатки черлидерши",
+			name_cap: "Перчатки черлидерши",
 			variable: "pompoms",
 			integrity: 200,
 			integrity_max: 200,
@@ -233,7 +246,7 @@ function initHands() {
 			type: ["costume"],
 			gender: "f",
 			femininity: 200,
-			warmth: 15,
+			warmth: 1,
 			cost: 1500,
 			description: "Для подбадривания своей команды до победного.",
 			shop: ["clothing", "school", "adult"],
@@ -298,7 +311,7 @@ function initHands() {
 			colour_options: [],
 			type: ["costume"],
 			gender: "n",
-			warmth: 20,
+			warmth: 1,
 			cost: 1000,
 			description: "Милый принт в виде коровы.",
 			shop: ["forest"],
@@ -331,9 +344,9 @@ function initHands() {
 			colour_sidebar: 0,
 			type: ["normal"],
 			gender: "n",
-			warmth: 20,
+			warmth: 2,
 			cost: 1500,
-			description: "Дляс того что бы пачкать свои руки.",
+			description: "Дляс того что бы запачкать свои руки.",
 			shop: ["clothing"],
 			accessory: 0,
 			accessory_colour: 0,
@@ -363,7 +376,7 @@ function initHands() {
 			colour_sidebar: 0,
 			type: ["holy", "costume", "fetish"],
 			gender: "f",
-			warmth: 10,
+			warmth: 1,
 			cost: 3000,
 			description: "Отлично подходит для искоренения греха.",
 			shop: ["forest"],
@@ -406,6 +419,38 @@ function initHands() {
 			cursed: 0,
 			location: 0,
 			iconFile: "wrist_cuffs.png",
+			accIcon: 0,
+			mainImage: 0,
+			leftImage: 1,
+			rightImage: 1,
+		},
+		{
+			index: 12,
+			name: "gold shackles",
+			name_cap: "Gold shackles",
+			variable: "goldshackles",
+			integrity: 200,
+			integrity_max: 200,
+			fabric_strength: 20,
+			reveal: 300,
+			word: "n",
+			plural: 1,
+			colour: 0,
+			colour_options: [],
+			type: ["holy", "fetish"],
+			gender: "n",
+			femininity: 0,
+			warmth: 0,
+			cost: 25000,
+			description: "Bound by obsession. Bound by vanity.",
+			shop: [],
+			accessory: 0,
+			accessory_colour: 0,
+			accessory_colour_options: [],
+			back_img: 0,
+			cursed: 1,
+			location: 0,
+			iconFile: "gold_bracelets.png",
 			accIcon: 0,
 			mainImage: 0,
 			leftImage: 1,
