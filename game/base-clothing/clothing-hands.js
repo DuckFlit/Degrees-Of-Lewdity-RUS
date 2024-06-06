@@ -112,8 +112,8 @@ function initHands() {
 
 		{
 			index: 3,
-			name: "грелки для рук",
-			name_cap: "Грелки для рук",
+			name: "митенки",
+			name_cap: "Митенки",
 			variable: "armwarmers",
 			integrity: 100,
 			integrity_max: 100,
@@ -128,7 +128,7 @@ function initHands() {
 			gender: "n",
 			warmth: 2,
 			cost: 1000,
-			description: "Держи свои руки в тепле.",
+			description: "Держат руки в тепле.",
 			shop: ["clothing"],
 			accessory: 1,
 			accessory_colour: 0,
@@ -146,8 +146,8 @@ function initHands() {
 
 		{
 			index: 4,
-			name: "кружевные грелки для рук",
-			name_cap: "Кружевные грелки для рук",
+			name: "кружевные митенки",
+			name_cap: "Кружевные митенки",
 			variable: "lacewarmers",
 			integrity: 30,
 			integrity_max: 30,
@@ -163,7 +163,7 @@ function initHands() {
 			femininity: 200,
 			warmth: 2,
 			cost: 2500,
-			description: "Модные.",
+			description: "Fashionable.",
 			shop: ["clothing"],
 			accessory: 0,
 			accessory_colour: 0,
@@ -231,8 +231,8 @@ function initHands() {
 
 		{
 			index: 6,
-			name: "перчатки болельщицы",
-			name_cap: "Перчатки болельщицы",
+			name: "перчатки черлидерши",
+			name_cap: "Перчатки черлидерши",
 			variable: "pompoms",
 			integrity: 200,
 			integrity_max: 200,
@@ -346,7 +346,7 @@ function initHands() {
 			gender: "n",
 			warmth: 2,
 			cost: 1500,
-			description: "Дляс того что бы пачкать свои руки.",
+			description: "Дляс того что бы запачкать свои руки.",
 			shop: ["clothing"],
 			accessory: 0,
 			accessory_colour: 0,
