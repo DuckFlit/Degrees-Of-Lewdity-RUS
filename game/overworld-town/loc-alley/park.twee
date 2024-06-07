@@ -5,10 +5,10 @@
 <<if Time.dayState is "dawn">>
 	Несколько человек гуляют, кто-то занимается бегом. У некоторых есть собаки.
 <<elseif Time.dayState is "day">>
-	<<if $weather is "rain">>
-		На улице очень мало людей, все дорожки в лужах, люди их обходят стороной. 
-	<<elseif $weather is "snow">>
-		Многие люди гуляют с собаками или кто-то занимается пробежкой, тепло укутавшись от холода.
+	<<if Weather.precipitation is "rain">>
+		Very few people are out, walking around the puddles that dot the paths.
+	<<elseif Weather.precipitation is "snow">>
+		Many people are out, walking their dogs or jogging, wrapped up warm against the cold.
 	<<else>>
 		Многие люди гуляют, выгуливают собак кто-то бегает. Вы слышите на детской площадке голоса детей.
 	<</if>>
@@ -163,7 +163,7 @@
 			<br>
 			<<if _robin_location is "park">>
 				<!-- if robin met, is not missing, trauma < 80%, on winter sundays 09:00 - 16:59 -->
-				<<robinicon "cocoa">><<link [[Прилавок с горячим шоколадом Robin's|Robin Chocolate]]>><</link>>
+				<<robinicon "cocoa">><<link [[Robin's прилавок с горячим шоколадом|Robin Chocolate]]>><</link>>
 				<br>
 			<</if>>
 			<<set _kylarLocation to getKylarLocation()>>
@@ -172,8 +172,8 @@
 					<br>
 					Kylar сидит у фонтана и время от времени бросает туда монеты.
 					<br>
-					<<parkicon "fountain">><<link [[Подойти|Kylar Park]]>><<set $kylar_text_trigger to true>><</link>>
-				<<elseif _kylarLocation.state is "bench">>
+					<<parkicon "fountain">><<link [[Approach|Kylar Park]]>><<set $kylar_text_trigger to true>><</link>>
+				<<else>>
 					<br>
 					Kylar сидит на скамейке и что-то зарисовывает.
 					<br>
@@ -198,25 +198,25 @@
 			You cannot go for a run with $_boundType bound.
 		<<elseif $worn.feet.type.includes("heels") and ($exposed is 0 or Time.dayState is "night")>>
 			<br>
-			<<heelsicon>><<link [[Упражнения на каблуках (0:30)|Park Exercise Heels]]>><<pass 30>><<tiredness 3>><<stress -1>><<athletics 2>><<slimeEventEnd "running">><</link>><<ggtiredness>><<gathletics>><<lstress>>
+			<<heelsicon>><<link [[Exercise in heels (0:30)|Park Exercise Heels]]>><<athletics 3>><<physique 1>><<pass 30>><<tiredness 4>><<stress -1>><<slimeEventEnd "running">><</link>><<ggtiredness>><<gathletics>><<lstress>>
 		<<else>>
 			<<if Time.dayState is "night">>
 				<<if $exposed gte 2 and $exhibitionism gte 35>>
 					<br>
-					<<runicon>><<link [[Пробежка(0:30)|Park Run Exposed]]>><<pass 30>><<set $phase to 0>><<tiredness 3>><<stress -3>><<athletics 3>><<slimeEventEnd "running">><</link>><<exhibitionist3>><<gtiredness>><<gathletics>><<lstress>>
+					<<runicon>><<link [[Пробежка (0:30)|Park Run Exposed]]>><<athletics 4>><<set $phase to 0>><<tiredness 3>><<stress -3>><<slimeEventEnd "running">><</link>><<exhibitionist3>><<gtiredness>><<gathletics>><<lstress>>
 				<<elseif $exposed is 1>>
 					<br>
-					<<runicon>><<link [[Пробежка(0:30)|Park Run Exposed]]>><<pass 30>><<set $phase to 1>><<tiredness 3>><<stress -3>><<athletics 3>><<slimeEventEnd "running">><</link>><<exhibitionist1>><<gtiredness>><<gathletics>><<lstress>>
+					<<runicon>><<link [[Пробежка (0:30)|Park Run Exposed]]>><<athletics 4>><<set $phase to 1>><<tiredness 3>><<stress -3>><<slimeEventEnd "running">><</link>><<exhibitionist1>><<gtiredness>><<gathletics>><<lstress>>
 				<<elseif $exposed is 0>>
 					<br>
-					<<runicon>><<link [[Пробежка(0:30)|Park Run]]>><<pass 30>><<tiredness 3>><<stress -3>><<athletics 3>><<slimeEventEnd "running">><</link>><<gtiredness>><<gathletics>><<lstress>>
+					<<runicon>><<link [[Пробежка (0:30)|Park Run]]>><<athletics 4>><<physique 1>><<pass 30>><<tiredness 3>><<stress -3>><<slimeEventEnd "running">><</link>><<gtiredness>><<gathletics>><<lstress>>
 				<</if>>
 			<<elseif $exposed is 0>>
 				<br>
-				<<runicon>><<link [[Пробежка(0:30)|Park Run]]>><<pass 30>><<tiredness 3>><<stress -3>><<athletics 3>><<slimeEventEnd "running">><</link>><<gtiredness>><<gathletics>><<lstress>>
+				<<runicon>><<link [[Пробежка (0:30)|Park Run]]>><<athletics 4>><<physique 1>><<pass 30>><<tiredness 3>><<stress -3>><<slimeEventEnd "running">><</link>><<gtiredness>><<gathletics>><<lstress>>
 			<</if>>
 		<</if>>
-		<<if (($weather isnot "rain" and $weather isnot "snow") or $worn.handheld.type.includes("rainproof"))>>
+		<<if (Weather.precipitation is "none" or $worn.handheld.type.includes("rainproof"))>>
 			<<if $milkshake gte 1 and $exposed lte 0>>
 				<br>
 				<<foodicon "milkshake">><<link [[Выпить свой молочный коктейль (0:10)|Beach Milkshake]]>><<pass 10>><<set $milkshake -= 1>><<stress -5>><</link>><<lstress>>
@@ -226,13 +226,13 @@
 				<<foodicon "popcorn">><<link [[Съесть попкорн (0:10)|Balloon Consume]]>><<pass 10>><<set $popcorn -= 1>><<wearProp "popcorn">><<trauma -3>><<set $phase to "park">><</link>><<ltrauma>>
 			<</if>>
 		<</if>>
-		<<if Time.dayState is "night" and $exhibitionism gte 55 and $daily.ex.fountain is undefined>>
+		<<if Time.dayState is "night" and !Weather.isFrozen("fountain") and $exhibitionism gte 55 and $daily.ex.fountain is undefined>>
 			<br>
-			<<parkicon "fountain">><<link [[Искупайтесь в фонтане (0:10)|Park Fountain]]>><<set $daily.ex.fountain to 1>><</link>><<exhibitionist4>>
+			<<parkicon "fountain">><<link [[Искупаться в фонтане (0:10)|Park Fountain]]>><<set $daily.ex.fountain to 1>><</link>><<exhibitionist4>>
 		<</if>>
 		<<if $exposed gte 1 and Time.dayState isnot "night">>
 			<br>
-			<<ind>><<link [[Спрячьтесь в ящике (0:10)|Crate Ex]]>><<pass 10>><</link>>
+			<<ind>><<link [[Спрятаться в ящике (0:10)|Crate Ex]]>><<pass 10>><</link>>
 			<br>
 			<<if $exposed gte 2 and $exhibitionism gte 75>>
 				<<link [[Пересечение эстакады в промышленном районе (0:05)|Flyover Ex Naked]]>><</link>><<if $daily.ex.flyover is undefined>><<exhibitionist5>><</if>>

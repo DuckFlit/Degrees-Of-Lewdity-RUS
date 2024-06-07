@@ -3,34 +3,34 @@
 <<set $outside to 1>><<set $location to "alley">><<effects>><<set $bus to "residential">><<getTarget true>>
 Вы находитесь в переулке в жилом районе.
 <<if Time.dayState is "day">>
-	<<if $weather is "rain">>
-		Многие люди смело идут под дождем.
-	<<elseif $weather is "snow">>
-		На снегу видны следы.
+	<<if Weather.precipitation is "rain">>
+		Many people brave the rain.
+	<<elseif Weather.precipitation is "snow">>
+		The snow is covered in footprints.
 	<<else>>
 		Вокруг много людей.
 	<</if>>
 <<elseif Time.dayState is "dusk">>
-	<<if $weather is "rain">>
-		Люди торопятся под дождем.
-	<<elseif $weather is "snow">>
-		Тропинки были хорошо протоптаны по снегу.
+	<<if Weather.precipitation is "rain">>
+		People hurry through the rain.
+	<<elseif Weather.isSnow>>
+		Paths have been well-trodden through the snow.
 	<<else>>
 		Вы слышите голоса вокруг.
 	<</if>>
 <<elseif Time.dayState is "night">>
-	<<if $weather is "rain">>
-		Дождевая вода заполняет водостоки.
-	<<elseif $weather is "snow">>
-		Снег покрывает крыши домов.
+	<<if Weather.precipitation is "rain">>
+		Rainwater fills the gutters.
+	<<elseif Weather.precipitation is "snow">>
+		Snow covers rooftops.
 	<<else>>
 		Вы слышите лай собаки.
 	<</if>>
 <<elseif Time.dayState is "dawn">>
-	<<if $weather is "rain">>
-		Люди не бояться дождя, направляясь на работу или в другие места.
-	<<elseif $weather is "snow">>
-		Люди не боятся холода, по пути на работу или в другое место.
+	<<if Weather.precipitation is "rain">>
+		People brave the rain, on their way to work or elsewhere.
+	<<elseif Weather.isFreezing>>
+		People brave the cold, on their way to work or elsewhere.
 	<<else>>
 		Вокруг уже много пешеходов и велосипедистов.
 	<</if>>
@@ -78,34 +78,34 @@
 			<<map "residential">>
 			<br>
 		<</if>>
-		Достопримечательности
+		Places of interest
 		<br>
 		<<if $exposed gte 1>>
-			<<homeicon>><<link [[Идти домой (0:02)->Home Fence]]>><<if $daily.fenceClimb isnot 1>><<set $daily.fenceClimb to 1>><<transform cat 1>><</if>><<pass 2>><</link>>
+			<<homeicon>><<link [[Go home (0:02)->Home Fence]]>><<if $daily.fenceClimb isnot 1>><<set $daily.fenceClimb to 1>><<transform cat 1>><</if>><<pass 2>><</link>>
 			<br>
 		<<else>>
-			<<homeicon>><<link [[Идти домой (0:02)->Garden]]>><<if $daily.fenceClimb isnot 1>><<set $daily.fenceClimb to 1>><<transform cat 1>><</if>><<pass 2>><</link>>
+			<<homeicon>><<link [[Go home (0:02)->Garden]]>><<if $daily.fenceClimb isnot 1>><<set $daily.fenceClimb to 1>><<transform cat 1>><</if>><<pass 2>><</link>>
 			<br>
 		<</if>>
-		/*<<link [[Убирать мусор (1:00)|Residential Scavenge]]>><<pass 60>><<housekeeping 100>><</link>><<ghousekeeping 100>>
+		/*<<link [[Scavenge (1:00)|Residential Scavenge]]>><<pass 60>><<housekeeping 100>><</link>><<ghousekeeping 100>>
 		<br>*/
 		<<if $town_projects.thicket gte 4>>
-			<<foresticon "bush">><<link [[Заросли (0:01)|Residential Thicket]]>><<pass 1>><</link>>
+			<<foresticon "bush">><<link [[Thicket (0:01)|Residential Thicket]]>><<pass 1>><</link>>
 			<br>
 		<</if>>
 		<<if $cat gte 6 and Time.dayState is "night">>
-			<<ind>><<link [[Мяу (0:30)|Residential Meow]]>><<pass 30>><<stress -3>><</link>><<cat>><<lstress>>
+			<<ind>><<link [[Meow (0:30)|Residential Meow]]>><<pass 30>><<stress -3>><</link>><<cat>><<lstress>>
 			<br>
 		<</if>>
 		<<if Time.dayState isnot "night">>
 			<<if $exposed gte 2>>
 				<<if $exhibitionism gte 75>>
-					<<connudatusicon>><<link [[Пересечь улицу Коннудатус (0:05)|Road Ex]]>><</link>><<if $daily.ex.road is undefined>><<exhibitionist5>><</if>>
+					<<connudatusicon>><<link [[Cross Connudatus Street (0:05)|Road Ex]]>><</link>><<if $daily.ex.road is undefined>><<exhibitionist5>><</if>>
 					<br>
 				<</if>>
 			<<elseif $exposed is 1>>
 				<<if $exhibitionism gte 35>>
-					<<connudatusicon>><<link [[Пересечь улицу Коннудатус (0:05)|Road Ex]]>><</link>><<if $daily.ex.road is undefined>><<exhibitionist3>><</if>>
+					<<connudatusicon>><<link [[Cross Connudatus Street (0:05)|Road Ex]]>><</link>><<if $daily.ex.road is undefined>><<exhibitionist3>><</if>>
 					<br>
 				<</if>>
 			<</if>>
@@ -138,10 +138,10 @@
 :: Residential Meow
 
 <<set $outside to 1>><<set $location to "town">><<effects>>
-<<if $weather is "rain">>
-	Ты мяукаешь в ночи, соревнуясь с дождем.
-<<elseif $weather is "snow">>
-	Ты мяукаешь в снежную ночь.
+<<if Weather.precipitation is "rain">>
+	You meow into the night, competing with the rain.
+<<elseif Weather.precipitation is "snow">>
+	You meow into the snowy night.
 <<else>>
 	Ты мяукаешь в ночи.
 <</if>>
@@ -150,7 +150,7 @@
 	<<beastNEWinit 1 cat>>
 	В ответ раздается еще одно мяуканье, и приближается маленький <<beasttype>>. <<if $monster is 1>><<bHe>> смотрит на тебя невинными глазами.<</if>>
 	<br><br>
-	<<link [[Домашний петомец|Residential Pet]]>><<stress -6>><</link>><<lstress>>
+	<<link [[Покормить|Residential Pet]]>><<stress -6>><</link>><<lstress>>
 	<br>
 	<!-- Modified for Monster People -->
 	<<if $monster is 1 or $bestialitydisable is "f">>
@@ -162,7 +162,7 @@
 				<br>
 			<</if>>
 			<<if playerRutMinArousal() and $NPCList[0].vagina isnot "none" and !playerChastity("penis")>>
-				<<link [[Игривое поглаживание|Residential Rub]]>><</link>><<deviant5>><<rut>>
+				<<link [[Игриво погладить|Residential Rub]]>><</link>><<deviant5>><<rut>>
 				<br>
 			<</if>>
 		<</if>>
@@ -176,7 +176,7 @@
 	<<beastNEWinit 1 cat>>
 	В ответ раздается рычание. Гигантский <<beasttype>> крадется из темноты и пристально смотрит на вас.
 	<br><br>
-	<<link [[Домашний петомец|Residential Big Pet]]>><<stress 6>><<trauma -6>><</link>><<gstress>><<ltrauma>>
+	<<link [[Покормить|Residential Big Pet]]>><<stress 6>><<trauma -6>><</link>><<gstress>><<ltrauma>>
 	<br>
 	<<if $monster is 1 or $bestialitydisable is "f">><!-- Modified for Monster People -->
 		<<link [[Дразнить|Residential Big Tease]]>><</link>><<deviant1>>
@@ -187,7 +187,7 @@
 				<br>
 			<</if>>
 			<<if playerRutMinArousal() and $NPCList[0].vagina isnot "none" and !playerChastity("penis")>>
-				<<link [[Игривое поглаживание|Residential Rub]]>><</link>><<deviant5>><<rut>>
+				<<link [[Игриво погладить|Residential Rub]]>><</link>><<deviant5>><<rut>>
 				<br>
 			<</if>>
 		<</if>>
@@ -260,7 +260,7 @@
 <br><br>
 <!-- Modified for Beast People -->
 <<if $deviancy gte 15>>
-	<<link [[Соблазнять|Residential Beast]]>><<set $sexstart to 1>><</link>><<deviant2>>
+	<<link [[Соблазнить|Residential Beast]]>><<set $sexstart to 1>><</link>><<deviant2>>
 	<br>
 <</if>>
 <<link [[Shoo|Residential Shoo]]>><</link>>
@@ -389,16 +389,16 @@
 Вы находитесь в чаще в жилом районе.
 
 <<if Time.dayState is "night">>
-	<<if $weather is "rain">>
-		С навеса падают крупные капли холодной воды.
-	<<elseif $weather is "snow">>
-		Ветви склоняются над головой, отягощенные снегом.
+	<<if Weather.precipitation is "rain">>
+		Large drops of cold water fall from the canopy.
+	<<elseif Weather.isSnow>>
+		The branches bow above, weighed down by snow.
 	<<else>>
 		Ветви колышутся на прохладном ветерке.
 	<</if>>
 <<else>>
-	<<if $weather is "rain">>
-		Дождь отпугивает людей.
+	<<if Weather.precipitation is "rain">>
+		The rain is keeping people away.
 	<<elseif Time.season is "autumn">>
 		<<if Time.schoolDay and Time.hour gte 16>>
 			Ученики из школы собирают ежевику.
@@ -409,7 +409,7 @@
 		<<else>>
 			Вы видите белку, взбегающую по стволу.
 		<</if>>
-	<<elseif $weather is "snow">>
+	<<elseif Weather.isSnow>>
 		<<if Time.schoolDay and Time.hour gte 16>>
 			Ученики из школы болтают между деревьями, рядом несколько снежных ангелов.
 		<<elseif Time.hour is 12>>
@@ -435,15 +435,15 @@
 <</if>>
 <<if $historytrait gte 2>>
 	<<if $thicket_tunnel_intro is 1>>
-		<<foresticon>><<link [[Пройди по секретному туннелю в лес(0:05)|Forest]]>><<pass 5>><<set $forest to 0>><<set $eventskip to 1>><<set $thicket_tunnel_intro to 1>><</link>>
+		<<foresticon>><<link [[Пройти по секретной тропинке в лес (0:05)|Forest]]>><<pass 5>><<set $forest to 0>><<set $eventskip to 1>><<set $thicket_tunnel_intro to 1>><</link>>
 		<br>
 	<<else>>
-		<<foresticon>><<link [[Пройди по секретному туннелю в лес(0:05)|Residential Thicket Tunnel]]>><<pass 5>><</link>>
+		<<foresticon>><<link [[Пройти по секретной тропинке в лес (0:05)|Residential Thicket Tunnel]]>><<pass 5>><</link>>
 		<br>
 	<</if>>
 <</if>>
 <br>
-<<getouticon>><<link [[Покинуть(0:01)|Residential alleyways]]>><<pass 1>><</link>>
+<<getouticon>><<link [[Пркинуть (0:01)|Residential alleyways]]>><<pass 1>><</link>>
 <br>
 
 :: Residential Thicket Tunnel
