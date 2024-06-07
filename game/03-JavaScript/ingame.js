@@ -836,7 +836,7 @@ window.DefaultActions = {
 
 function selectWardrobe(targetLocation = V.wardrobe_location, type) {
 	let wardrobe = V.wardrobes[targetLocation];
-	if (type !== "return" && wardrobe.locationRequirement && !wardrobe.locationRequirement.includes(V.location)) {
+	if (type !== "return" && wardrobe?.locationRequirement && !wardrobe.locationRequirement.includes(V.location)) {
 		V.wardrobe_location = "wardrobe";
 		wardrobe = V.wardrobe;
 	}
@@ -869,6 +869,11 @@ function clothingData(slot, item, data) {
 	return setup.clothes[slot][clothesIndex(slot, item)][data];
 }
 window.clothingData = clothingData;
+
+function getSetupClothing(slot, item) {
+	return setup.clothes[slot][clothesIndex(slot, item)];
+}
+window.getSetupClothing = getSetupClothing;
 
 function clothesDataTrimmerLoop() {
 	if (!V.passage || V.passage === "Start") return;
@@ -2002,3 +2007,17 @@ function earSlimeMakingMundaneRequests() {
 	return true;
 }
 window.earSlimeMakingMundaneRequests = earSlimeMakingMundaneRequests;
+
+/**
+ * @param {string} slot
+ * @param {ClothesItem} value
+ * @returns {void}
+ */
+function fixIntegrityMax(slot, value) {
+	if (value.integrity_max !== 0) {
+		return; // Integrity is fine
+	}
+	const setupClothing = getSetupClothing(slot, value);
+	value.integrity_max = setupClothing.integrity_max;
+}
+window.fixIntegrityMax = fixIntegrityMax;

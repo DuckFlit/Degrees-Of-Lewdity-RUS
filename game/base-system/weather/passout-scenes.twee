@@ -62,7 +62,7 @@
 					<</addinlineevent>>
 				<</if>>
 			<<case "forest">>
-				You trek through the dense forest, shivering as the relentless cold seeps into your bones with each step. Your body trembles, <<if Weather.isFreezing>>your breath fogs in the frigid air, <</if>>and your heart races as you struggle to push on.<<if Weather.isSnow>>The snow crunches underfoot.<</if>>
+				You trek through the dense forest, shivering as the relentless cold seeps into your bones with each step. Your body trembles, <<if Weather.isFreezing>>your breath fogs in the frigid air, <</if>>and your heart races as you struggle to push on. <<if Weather.isSnow>>The snow crunches underfoot.<</if>>
 				<br><br>
 
 				The weight of exhaustion bears down on you, the world blurring as darkness creeps into your vision. Overwhelmed by the cold and fatigue, you collapse onto the forest floor. The ground rushes up to meet you as your consciousness slips away.
@@ -100,7 +100,7 @@
 						<<link [[Everything fades to black...|Passout Bird Hypothermia]]>><</link>>
 					<<else>>
 						<<npc "Great Hawk">><<person1>>
-						You stumble to the <<= Weather.isSnow ? "snowy ground" : "ground">> ground, too weak to go on. Your lips are cracked from <<= Weather.temperature lte 4 ? "the frigid air" : "your laboured breathing">>, but you manage to croak out a desperate plea for help.
+						You stumble to the <<= Weather.isSnow ? "snowy ground" : "ground">>, too weak to go on. Your lips are cracked from <<= Weather.temperature lte 4 ? "the frigid air" : "your laboured breathing">>, but you manage to croak out a desperate plea for help.
 						<br><br>
 
 						Your cry is answered. A <<hawkScreechDesc>> pierces the air. <<hawkRescueApproachSentence>>
@@ -536,7 +536,7 @@ To get the previous major area passage, use: $safePassage (for links in the last
 /* Generic frostbite passout: safe */
 :: Passout Hypothermia Rescue
 <<effects>><<generate1>><<person1>><<outfitChecks>><<rng>>
-<<hypothermiaClothes>>
+<<hypothermiaClothes>><<set $outside to 0>>
 
 You wake up, feeling a little better than you remember. <<if _clothes.length gte 1>>You're wearing <<= _clothes.join(" and ")>><</if>>. <<if _wet>>Your wet clothes are folded neatly beside you.<</if>> You sit up and get a look at your surroundings. It looks like you're in
 <<if $location is "forest">>
@@ -771,7 +771,7 @@ You thank your rescuer, and <<he>> nods. "Try and be more mindful of the heat fr
 
 /* Location passouts */
 :: Passout Livestock Hot Cold
-<<effects>>
+<<set $outside to 0>><<set $location to "farm">><<effects>>
 <<npc Remy>><<generate2>><<generate3>>
 <<set _cow to $player.gender_appearance is "m" ? "bull" : "cow">>
 
@@ -785,7 +785,7 @@ You awaken in a dingy windowless room, the stone walls lit only by a flaming tor
 	"We found you passed out. You caused quite the worry, but my examination found no problems. You simply overheated." <<He>> strokes your hair. "<<= $farmGateCD is 0 ? "One of my men said you were acting up tonight. Maybe next time you'll be a good _cow and behave, hmm?" : "I'm proud you're being such a hard worker, but we can't have such a valuable member of our herd fainting, now can we?">> All that exercise must have gotten to you. Here, <<girl>>."
 	<br><br>
 
-	Remy holds up a bowl of water, and you realise just how parched you are. He lifts the bowl to your lips, and you gulp down the cool water greedily. Your desperation to slake your thirst causes some to spill on your <<chest>> and <<he>> chuckles. When the last drop of water is gone, you sigh with relief.
+	Remy holds up a bowl of water, and you realise just how parched you are. <<He>> lifts the bowl to your lips, and you gulp down the cool water greedily. Your desperation to slake your thirst causes some to spill on your <<chest>> and <<he>> chuckles. When the last drop of water is gone, you sigh with relief.
 	<br><br>
 
 	Remy sets down the bowl and <<= $cow gte 2 and $transformationParts.cow.horns isnot "hidden" ? "rubs the base of your horns" : "pets your head">>. "That's a good <<girl>>. You'll take care next time, won't you?"
@@ -859,7 +859,9 @@ You awaken in a dingy windowless room, the stone walls lit only by a flaming tor
 
 :: Passout Beach Heatstroke
 <<effects>><<outfitChecks>>
-You sit straight up, coughing water out of your lungs as the ocean waves surge over your prone body. It looks like the tide has come in. <<if !_fullyNaked and !_swimwear>>
+<<silently>><<water>><</silently>>
+You sit straight up, coughing water out of your lungs as the ocean waves surge over your prone body. It looks like the tide has come in.
+<<if !_fullyNaked and !_swimwear>>
 	<span class="red">Your clothes are soaked.</span> <<= $exhibitionism gte 75 ? "You shiver with excitement, your <<lewdness>> on full display" : "You quickly cover up and look for the nearest changing room">>. <<gstress>><<stress 6>>
 	<<silently>><<water>><</silently>>
 	<br><br>
@@ -873,6 +875,7 @@ You sit straight up, coughing water out of your lungs as the ocean waves surge o
 
 :: Passout Beach Heatstroke Lemonade
 <<effects>><<npc Robin>><<person1>>
+<<set V.player.bodyTemperature-->>
 You feel a pair of hands on your body, trying to shake you awake. "Wake up!" a familiar voice says. There's a splash of cold water on your face, and you blink, looking around. Your vision is fuzzy, but you can make out most of the features of the person standing in front of you. It's Robin.
 <br><br>
 
@@ -956,6 +959,7 @@ Robin stands up. "I should get back to my stand now," <<he>> says, glancing over
 
 You feel a pair of arms hook under you and lift you off the sand.
 <<if $cool gte 240>>
+	<<set V.player.bodyTemperature-->>
 	Someone splashes water over your face. Some of your friends are standing over you, a concerned look on their faces. "We found you on the sand. What happened?" one of them asks.
 	<br><br>
 	"Hot..." you mumble, feeling ready to go back to sleep. They pull you closer to the surf, dragging you across the rough sand. The cool water laps over your feet.
@@ -1033,7 +1037,7 @@ You feel a pair of arms hook under you and lift you off the sand.
 <</if>>
 
 :: Passout Beach Heatstroke Students End
-
+<<effects>>
 <<if $enemyhealth lte 0>>
 	The <<person>> stumbles back, glaring at you. "That's how you show gratitude? What a <<bitch>>," <<he>> spits. One of <<his>> friends kicks you in the <<= playerBellyVisible() ? "shin" : "stomach">> before leaving. <<gpain>><<pain 6>>
 <<elseif $enemyarousal gte $enemyarousalmax>>
@@ -1099,6 +1103,7 @@ The last thing you hear is a <<personsimple>>'s voice. "Wait, I know that face..
 <<link [[Wake up|Hospital Bed]]>><<set $passoutReason to "hypothermia">><</link>>
 
 :: Passout Beach Hypothermia Molest
+
 <<if $molestationstart is 1>>
 	<<set $molestationstart to 0>>
 	You wake up to someone ripping your clothes from you. You open your eyes and see your assailant, a <<generate1>><<person1>><<person>>. "Sharing body heat is important when you're cold," <<he>> says. "I'll warm you right up." <<He>> flashes you a smirk before rubbing against your body.
@@ -1188,6 +1193,7 @@ The last thing you hear is a <<personsimple>>'s voice. "Wait, I know that face..
 :: Passout Beach Hypothermia Robin
 <<effects>>
 <<outfitChecks>>
+<<set $outside to 0>>
 <<npc Robin>><<person1>>
 Someone is shaking you. You open your eyes, your vision swimming. Robin kneels over you, and <<his>> voice is panicked. "I saw you just keel over, and I thought you had been drugged or something!" <<he>> says. "But you're freezing..."
 <br><br>
@@ -1229,7 +1235,7 @@ You apologise, but your words come out slurred. <<He>> looks even more worried. 
 <</if>>
 
 :: Passout Beach Hypothermia Robin Towel
-<<effects>>
+<<effects>><<set $outside to 0>>
 
 You take the towel with some difficulty, your fingers still stiff and numb. You wrap it around your body and call for Robin.
 <br><br>
@@ -1237,7 +1243,7 @@ You take the towel with some difficulty, your fingers still stiff and numb. You 
 <<link [[Next|Passout Beach Hypothermia Robin End]]>><</link>>
 
 :: Passout Beach Hypothermia Robin Help
-<<effects>>
+<<effects>><<set $outside to 0>>
 <<towelup>>
 <<if $speech_attitude is "meek">>
 	You try to reach out and grab the towel, but you don't get very far. "Robin... could you wrap it around me?"
@@ -1254,7 +1260,7 @@ You take the towel with some difficulty, your fingers still stiff and numb. You 
 <<link [[Next|Passout Beach Hypothermia Robin End]]>><</link>>
 
 :: Passout Beach Hypothermia Robin End
-<<effects>>
+<<effects>><<set $outside to 0>>
 
 <<if C.npc.Robin.trauma gte 40>>
 	<<He>> pulls you into a hug, and you can tell <<hes>> working hard to keep <<his>> breathing steady.
@@ -1381,6 +1387,7 @@ You spread your <<= $harpy gte 6 ? "wings" : "arms">> wide, feeling the cool win
 <<if _top>><<set _top.integrity -= 5>><<set _damagedClothes to _top.name>><</if>>
 <<integritycheck "no_text">><<strip>><<exposure>>
 <<if $harpy gte 6 and (($transformationParts.bird.wings isnot "hidden") or ($transformationParts.bird.plumage isnot "hidden"))>><<set _feathered to true>><</if>>
+<<set Weather.Temperature.override.increase.outside(5, "Feathers and fabric warm your body.")>>
 
 You awaken in the Great Hawk's nest, naked but warm. You stir, <<= _eggs ? "careful not to disturb the actual eggs in the nest" : "letting <<bhim>> know you're awake">>.
 <br><br>
@@ -1404,7 +1411,6 @@ After a few minutes, <<bhe>> gets off of you. <<if $monster is 1>>"Wait here," <
 <<elseif !_fullyNaked>>
 	You allow the Great Hawk to pull the fabric over your body. You spot a pile of your clothes, which are looking worse for the wear. Fortunately, it looks like they're still intact.
 <</if>>
-
 
 <<if $monster is 1>>
 	<<if _feathered>>
@@ -1440,6 +1446,7 @@ After a few minutes, <<bhe>> gets off of you. <<if $monster is 1>>"Wait here," <
 
 :: Passout Bird Hypothermia 2
 <<effects>>
+<<set Weather.Temperature.override.increase.outside(5, "The nearby fire warms you up.")>>
 
 <<if $bird.upgrades.firepit gte 1>>
 	As <<bhe>> holds you close, <<bhe>> guides you closer to the firepit.
@@ -1474,6 +1481,7 @@ After a few minutes, <<bhe>> gets off of you. <<if $monster is 1>>"Wait here," <
 
 :: Passout Bird Hypothermia Thank
 <<effects>>
+<<set Weather.Temperature.override.increase.outside(2, "The nearby fire warms you up.")>>
 
 <<if $phase is 1>>
 	You lean in close to <<your_bird_text>>. <<bHe>> turns <<bhis>> head towards you and nuzzles against your cheek. <<He>> <<= $monster is 1 ? "presses <<bhis>> lips to yours" : "pecks <<bhis>> beak against your lips">>. You return the <<= $monster is 1 ? "kiss, twining your arms around <<bhis>> neck" : "peck, peppering <<bhis>> face with small kisses">>. <<takeKissVirginity "Great Hawk" "loveInterest">>
@@ -1551,7 +1559,7 @@ You rest in the nest, conserving your strength while the Great Hawk hunts. By th
 <<effects>><<outfitChecks>>
 <<npc Whitney>><<generatey2>><<person1>>
 
-You wake up to cold water drenching your face. Whitney stands above you, holding an empty water bottle.
+You wake up to cold water drenching your face. Whitney stands above you, holding an empty water bottle. <<set V.player.bodyTemperature-->>
 <<if $whitneyrescued>>
 	You feel a strange sense of deja vu. You meet Whitney's eyes and see the sentiment reflected in them for the briefest of seconds. It dissipates at the sound of hushed snickers from <<his>> friends.
 <<else>>
@@ -1651,8 +1659,10 @@ I found you fainted outside while I was picking berries. You had me worried! <<=
 <br><br>
 
 <<if $passoutReason is "hyperthermia">>
+	<<set Weather.Temperature.override.increase.inside(-5, "The fan keeps you cool.")>>
 	Fetching a wooden chair, Gwylan guides you to sit down next to a running fan. "Rest here for a bit. I'll make you some tea. Cold tea, of course," <<he>> declares. <<He>> hesitates, then adds, "Unless you want hot tea instead." The thought of drinking something warm right now makes you queasy, so you agree to the iced beverage.
 <<else>>
+	<<set Weather.Temperature.override.increase.inside(5, "The thick blanket keeps you warm.")>>
 	Fetching a big cushion, <<he>> guides you to sit down before the fireplace. <<He>> drapes a thick blanket over your shoulders.
 <</if>>
 <br><br>
@@ -1664,6 +1674,11 @@ Once you're settled, <<he>> disappears into the back of the shop. You can still 
 
 :: Passout Gwylan Hot Cold Tea
 <<set $outside to 0>><<set $location to "forest_shop">><<effects>>
+<<if $passoutReason is "hyperthermia">>
+	<<set Weather.Temperature.override.increase.inside(-5, "The fan keeps you cool.")>>
+<<else>>
+	<<set Weather.Temperature.override.increase.inside(5, "The thick blanket keeps you warm.")>>
+<</if>>
 
 <<He>> returns, balancing a tray laden with a variety of ingredients: several herbs, a basket of freshly washed berries and lemons, and a honey jar. Alongside them rest a knife, a ladle, a patterned tea set, and some biscuits. <<He>> carries a glass pot of hot water<<if $passoutReason is "hyperthermia">> and a container of ice cubes as well<</if>>, ready to prepare the tea.
 <br><br>
@@ -1681,6 +1696,11 @@ Once you're settled, <<he>> disappears into the back of the shop. You can still 
 :: Passout Gwylan Hot Cold Order
 <<set $outside to 0>><<set $location to "forest_shop">><<effects>>
 <<set $gwylanTea to $gwylanTea || 0>>
+<<if $passoutReason is "hyperthermia">>
+	<<set Weather.Temperature.override.increase.inside(-5, "The fan keeps you cool.")>>
+<<else>>
+	<<set Weather.Temperature.override.increase.inside(5, "The thick blanket keeps you warm.")>>
+<</if>>
 
 Humming cheerfully, <<he>> begins preparing the tea to your specifications.
 <<switch $phase>>
@@ -1702,6 +1722,11 @@ Humming cheerfully, <<he>> begins preparing the tea to your specifications.
 
 :: Passout Gwylan Hot Cold Sip
 <<set $outside to 0>><<set $location to "forest_shop">><<effects>>
+<<if $passoutReason is "hyperthermia">>
+	<<set Weather.Temperature.override.increase.inside(-5, "The fan keeps you cool.")>>
+<<else>>
+	<<set Weather.Temperature.override.increase.inside(5, "The thick blanket keeps you warm.")>>
+<</if>>
 
 You take a sip.
 <<if $gwylanTea is 0>>
@@ -1784,6 +1809,7 @@ Fur tickles your cheek as something warm and heavy settles on your chest.
 <<if $passoutReason is "hyperthermia">>
 	It only takes a few moments for the heat to become unbearable, and you whimper for relief. You open your eyes.
 <<else>>
+	<<set Weather.Temperature.override.increase.inside(5, "Thick fur warms your frozen body.")>>
 	Your body tingles, every nerve ending on fire as the warmth starts to return to your frozen extremities. You open your eyes.
 <</if>>
 <br><br>
@@ -1920,6 +1946,7 @@ The <<person1>><<person>> takes out an informational pamphlet meant for tourists
 <</if>>
 :: Passout Heatstroke Kiss End
 <<effects>>
+<<set Weather.Temperature.override.increase.inside(-3, "The impromptu fan brings some relief.")>>
 
 <<if $phase is 0>>
 	<<if $speech_attitude is "meek">>
