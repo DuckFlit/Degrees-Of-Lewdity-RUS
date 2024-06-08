@@ -2018,7 +2018,7 @@ function initUpper() {
 			cursed: 0,
 			location: 0,
 			iconFile: "punk_leather_jacket.png",
-			accIcon: 0,
+			accIcon: "punk_leather_jacket_acc.png",
 			notuck: 1,
 			pregType: "split",
 		},
