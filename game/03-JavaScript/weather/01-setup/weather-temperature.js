@@ -5,6 +5,7 @@ setup.WeatherTemperature = {
 		fill: "img/misc/icon/weather/thermo_filled.png",
 		upArrow: "img/misc/icon/weather/arrow_up.png",
 		downArrow: "img/misc/icon/weather/arrow_down.png",
+		constant: "img/misc/icon/weather/constant.png",
 	},
 	dayMultiplier: 1.5, // Multiplier on day calculations
 	seasonMultiplier: 2, // Multiplier on season calculations

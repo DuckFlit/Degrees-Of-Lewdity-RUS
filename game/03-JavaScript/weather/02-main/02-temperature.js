@@ -229,6 +229,7 @@ Weather.Temperature = (() => {
 		if (townLocations.includes(V.location)) {
 			return 3;
 		}
+		return 0;
 	}
 
 	/*
