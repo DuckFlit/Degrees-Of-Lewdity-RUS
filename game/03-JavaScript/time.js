@@ -413,7 +413,8 @@ function yearPassed() {
 	V.mathsproject = "none";
 	V.englishPlay = "none";
 
-	V.yearly.clearProperties();
+	delete V.yearly;
+	V.yearly = clone(setup.yearlyObject);
 
 	return fragment;
 }
@@ -510,7 +511,8 @@ function weekPassed() {
 
 	statChange.worldCorruption("soft", V.world_corruption_hard);
 
-	V.weekly.clearProperties();
+	delete V.weekly;
+	V.weekly = clone(setup.weeklyObject);
 
 	return fragment;
 }
@@ -855,7 +857,8 @@ function dayPassed() {
 		if (V.harpyEggsPrevent <= 0) delete V.harpyEggsPrevent;
 	}
 
-	V.daily.clearProperties();
+	delete V.daily;
+	V.daily = clone(setup.dailyObject);
 
 	return fragment;
 }
