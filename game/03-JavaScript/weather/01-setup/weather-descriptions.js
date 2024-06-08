@@ -137,6 +137,8 @@ setup.WeatherDescriptions = {
 		}
 	},
 	bodyTemperatureChanges: () => {
+		if (Math.abs(Weather.BodyTemperature.target - Weather.bodyTemperature) <= 0.5)
+			return "";
 		if (Weather.bodyTemperature < 35) {
 			if (Weather.BodyTemperature.target - Weather.bodyTemperature > 1) {
 				return "You let the warmth take the chill from your bones.";

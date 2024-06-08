@@ -175,7 +175,10 @@ const Weather = (() => {
 			return Weather.Temperature.getWaterTemperature();
 		},
 		get bodyTemperature() {
-			return Weather.BodyTemperature.current;
+			return Weather.BodyTemperature.get();
+		},
+		set bodyTemperature(value) {
+			Weather.BodyTemperature.set(value);
 		},
 		get wetness() {
 			return Weather.BodyTemperature.wetness;
