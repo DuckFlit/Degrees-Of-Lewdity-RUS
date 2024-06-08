@@ -12,6 +12,12 @@ class Orbital {
 	 * @param {DateTime} date
 	 */
 	setPosition(date) {
+		const position = this.getPosition(date);
+		this.position = position;
+		this.factor = this.getFactor(date);
+	}
+
+	getPosition(date) {
 		const currentTime = Time.getSecondsSinceMidnight(date);
 
 		const riseTimeInSeconds = this.settings.riseTime * TimeConstants.secondsPerHour;
@@ -37,21 +43,20 @@ class Orbital {
 		const factor = 1 - 4 * Math.pow(adjustedTimePercent - 0.5, 2);
 
 		// Use a simple lerp for the x position while y uses a parabolic function for a simplified arc
-		this.position = {
+		return {
 			x: lerp(adjustedTimePercent, startX, endX),
 			y: baselineY + amplitude * factor,
 			bottom: bottomY + amplitude,
 		};
-
-		const steepness = 5;
-		this.setFactor(steepness, 1);
 	}
 
-	setFactor(steepness, amplitude) {
+	getFactor(date) {
+		const position = this.getPosition(date);
+		const steepness = 5;
 		const horizon = this.settings.path.horizon * this.setup.scale;
 		const peakY = this.settings.path.peakY * this.setup.scale;
-		const x = (this.position.y - horizon) / (peakY - horizon);
-		this.factor = 2 * Math.pow(1 / (1 + Math.exp(-steepness * x)), amplitude) - 1;
+		const x = (position.y - horizon) / (peakY - horizon);
+		return 2 * Math.pow(1 / (1 + Math.exp(-steepness * x)), 1) - 1;
 	}
 }
 window.Orbital = Orbital;

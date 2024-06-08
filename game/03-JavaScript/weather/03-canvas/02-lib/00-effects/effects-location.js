@@ -429,10 +429,13 @@ Weather.Renderer.Effects.add({
 							image.src = this.fullPath + imagePath;
 							image.onload = handleLoadedImage;
 							image.onerror = () => {
-								console.error("Could not load image", image.src);
+								console.warn("Could not load image", image.src);
 								resolve();
 							};
+							return;
 						}
+						Errors.report("Warning: Missing location image: " + image.src);
+						resolve();
 					};
 				}
 			});
