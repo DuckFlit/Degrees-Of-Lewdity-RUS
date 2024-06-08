@@ -155,10 +155,6 @@ setup.WeatherGeneration = {
 				small: () => random(0, 2),
 				large: () => 0,
 			},
-			// This is a factor that adjusts temperature based on weather conditions. It generally increases
-			// in clear weather to simulate greater heat from the sun or faster heat loss during clear nights and winters.
-			// Conversely, it decreases under cloudy conditions to reflect the effect of cloud cover on temperature.
-			temperatureModifier: 2,
 			// Modifies the tanning factor, based on cloud coverage. A modifier of 1 has no penalties.
 			tanningModifier: 1,
 			// Determines how overcast the sky should be. (Between 0 and 1)
@@ -182,7 +178,6 @@ setup.WeatherGeneration = {
 				small: () => random(1, 3),
 				large: () => random(0, 1),
 			},
-			temperatureModifier: 1.5,
 			tanningModifier: 0.5,
 			overcast: () => randomFloat(0, 0.3),
 			precipitationIntensity: 0,
@@ -202,7 +197,6 @@ setup.WeatherGeneration = {
 				small: () => 0,
 				large: () => random(0, 4),
 			},
-			temperatureModifier: 1.2,
 			tanningModifier: 0.2,
 			overcast: () => randomFloat(0.5, 0.8),
 			precipitationIntensity: 0,
@@ -222,7 +216,6 @@ setup.WeatherGeneration = {
 				small: () => 0,
 				large: () => random(1, 5),
 			},
-			temperatureModifier: 1,
 			tanningModifier: 0.2,
 			overcast: () => randomFloat(0.8, 1),
 			precipitationIntensity: 1,
@@ -242,7 +235,6 @@ setup.WeatherGeneration = {
 				small: () => 0,
 				large: () => random(2, 5),
 			},
-			temperatureModifier: 1,
 			tanningModifier: 0.1,
 			overcast: () => 1,
 			precipitationIntensity: 1.5,
@@ -262,7 +254,6 @@ setup.WeatherGeneration = {
 				small: () => 0,
 				large: () => random(3, 5),
 			},
-			temperatureModifier: 1,
 			tanningModifier: 0,
 			overcast: () => 1,
 			precipitationIntensity: 2,

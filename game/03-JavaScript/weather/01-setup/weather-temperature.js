@@ -6,6 +6,11 @@ setup.WeatherTemperature = {
 		upArrow: "img/misc/icon/weather/arrow_up.png",
 		downArrow: "img/misc/icon/weather/arrow_down.png",
 	},
+	dayMultiplier: 1.5, // Multiplier on day calculations
+	seasonMultiplier: 2, // Multiplier on season calculations
+	precipitationEffect: 1.5, // Effect on temperature, in degrees - per precipitationIntensity
+	maxDiurnalVariation: 6.5, // Max temperature difference between day and night (if 0 overcast)
+	minDiurnalVariation: 2.25, // Min temperature difference between day and night (if 1 overcast)
 	snow: {
 		minAccumulation: 15, // Min 15 mm for it to be considered snow on the ground
 		maxAccumulation: 500, // max 500 mm of accumulated snow on the ground

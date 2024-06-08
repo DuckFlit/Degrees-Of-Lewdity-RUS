@@ -8,7 +8,7 @@ Weather.Temperature = (() => {
 	function set(temperature, date) {
 		date = new DateTime(date ?? Time.date);
 		if (V.weatherObj.monthlyTemperatures.length < 1) return;
-		const modifiers = calculateModifiers(date);
+		const modifiers = calculateModifiers(temperature, date);
 		V.weatherObj.monthlyTemperatures[0].t[date.day - 1] = temperature - modifiers;
 		const baseTemperature = interpolateDailyTemperature(date);
 		T.baseTemperature = round(baseTemperature, 2);
@@ -78,7 +78,7 @@ Weather.Temperature = (() => {
 		if (T.currentTemperature === undefined) {
 			const date = new DateTime(Time.date);
 			const baseTemperature = getBaseTemperature(date);
-			const modifiers = calculateModifiers(date);
+			const modifiers = calculateModifiers(baseTemperature, date);
 			T.currentTemperature = round(baseTemperature + modifiers, 2);
 		}
 		return T.currentTemperature;
@@ -170,34 +170,64 @@ Weather.Temperature = (() => {
 	/*
 		Calculates additional temperature modifiers based on sun, season, current weather conditions, and location.
 	*/
-	function calculateModifiers(date) {
-		const dayModifier = calculateDayModifier(date.fractionOfDay);
-		const seasonModifier = calculateSeasonModifier(date);
-		const weatherModifier = getWeatherModifier(Weather.name);
+	function calculateModifiers(baseTemperature, date) {
+		const precipitationModifier = calculatePrecipitationModifier(baseTemperature);
+		const dayModifier = calculateDayModifier(date) * setup.WeatherTemperature.dayMultiplier;
 		const locationModifier = getLocationModifier();
-		return round(locationModifier + (1.5 * dayModifier + 2 * seasonModifier) * weatherModifier, 2);
+		return round(precipitationModifier + dayModifier + locationModifier, 2);
 	}
 
-	function calculateDayModifier(fraction) {
-		return 2 * (1 - Math.abs(fraction - 0.5) * 2) - 1;
+	function calculatePrecipitationModifier(baseTemperature) {
+		if (baseTemperature <= 0) return 0;
+		return Weather.type.precipitationIntensity * setup.WeatherTemperature.precipitationEffect;
 	}
 
-	function calculateSeasonModifier(date) {
-		const totalDaysInYear = DateTime.getDaysOfYear(date.year);
-		return -2 * Math.pow((Time.getDayOfYear(date) - totalDaysInYear / 2) / (totalDaysInYear / 2), 2) + 1;
+	function calculateDayModifier(date) {
+		const factor = Weather.sky?.orbitals?.sun.getFactor(date) ?? 0;
+		return factor * getWeatherModifier();
 	}
 
-	function getWeatherModifier(weatherCondition) {
-		return Weather.genSettings.weatherTypes.find(type => type.name === weatherCondition)?.temperatureModifier ?? 1.0;
+	function getWeatherModifier() {
+		const maxVariation = setup.WeatherTemperature.maxDiurnalVariation * 0.5;
+		const minVariation = setup.WeatherTemperature.minDiurnalVariation * 0.5;
+		return interpolate(minVariation, maxVariation, 1 - Weather.overcast);
 	}
 
 	function getLocationModifier() {
 		// Location modifiers placeholder
-		switch (V.location) {
-			case "town":
-				return 3;
-			default:
-				return 0;
+		// Placeholder
+		const townLocations = [
+			"alley",
+			"brothel",
+			"canal",
+			"compound",
+			"dance_studio",
+			"dilapitaded_shop",
+			"estate",
+			"factory",
+			"home",
+			"hospital",
+			"kylar_manor",
+			"landfill",
+			"market",
+			"museum",
+			"office",
+			"park",
+			"police_station",
+			"pool",
+			"pub",
+			"school",
+			"sewers",
+			"shopping_centre",
+			"spa",
+			"studio",
+			"strip_club",
+			"temple",
+			"town",
+		];
+		// +3 in town
+		if (townLocations.includes(V.location)) {
+			return 3;
 		}
 	}
 
