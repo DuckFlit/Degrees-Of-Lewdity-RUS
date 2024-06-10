@@ -6,7 +6,7 @@ setup.WeatherDescriptions = {
 			day: "The sky is bright and sunny.",
 			dusk: "Deep orange colors the sky.",
 			night: "The stars shine brightly across the dark horizon.",
-			bloodMoon: "The night sky glows ominously red under the glowing moon.",
+			bloodMoon: "The night sky glows ominously red under the blood moon.",
 			transition: () => Weather.isOvercast ? "The remnants of clouds are clearing, revealing a vivid sky." : null,
 		},
 		lightClouds: {
@@ -137,6 +137,8 @@ setup.WeatherDescriptions = {
 		}
 	},
 	bodyTemperatureChanges: () => {
+		if (Math.abs(Weather.BodyTemperature.target - Weather.bodyTemperature) <= 0.5)
+			return "";
 		if (Weather.bodyTemperature < 35) {
 			if (Weather.BodyTemperature.target - Weather.bodyTemperature > 1) {
 				return "You let the warmth take the chill from your bones.";

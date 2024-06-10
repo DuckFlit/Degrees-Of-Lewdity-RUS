@@ -65,8 +65,7 @@ Weather.Tooltips = (() => {
 			message:
 				tempDescription +
 				(waterDescription ? "<br>" + waterDescription : "") +
-				"<br>" +
-				tempChangeDescription +
+				(tempChangeDescription ? "<br>" + tempChangeDescription : "") +
 				(overrideDescription ? "<br>" + overrideDescription : "") +
 				modifiers +
 				debug,
