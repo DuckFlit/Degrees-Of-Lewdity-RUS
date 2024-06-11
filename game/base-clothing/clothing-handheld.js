@@ -978,26 +978,6 @@ function initHandheld() {
 			accessory_colour_sidebar: 0,
 			coverImage: 0,
 		},
-		{
-			index: 35,
-			name: "ornate telescope",
-			name_cap: "Ornate telescope",
-			variable: "ornatetelescope",
-			word: "an",
-			plural: 0,
-			colour: 0,
-			colour_options: [],
-			colour_sidebar: 0,
-			type: ["prop"],
-			shop: [],
-			gender: "n",
-			description: "In surprisingly good shape.",
-			accessory: 0,
-			accessory_colour: 0,
-			accessory_colour_options: [],
-			accessory_colour_sidebar: 0,
-			coverImage: 0,
-		},
 	];
 
 	/*
