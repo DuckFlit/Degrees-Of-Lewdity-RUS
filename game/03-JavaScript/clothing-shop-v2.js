@@ -597,7 +597,7 @@ DefineMacro("updatewarmthscale", () => {
 	$(() => {
 		const indicator = $("#warmthIndicator");
 		const indicatorNew = $("#warmthIndicatorNew");
-		const currentWarmth = Weather.BodyTemperature.getTotalWarmth();
+		const currentWarmth = Weather.BodyTemperature.getWarmth();
 		clothingWarmthScale(indicator, Weather.BodyTemperature.getRestingPoint(8, currentWarmth, 37, true));
 		indicator.tooltip({
 			message: "Warmth: " + currentWarmth,

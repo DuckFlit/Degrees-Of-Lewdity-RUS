@@ -76,7 +76,8 @@ function playerBellyVisible(pregnancyOnly = false) {
 	const size = playerBellySize(pregnancyOnly);
 	if (size <= 7) return false;
 	if (size <= 12 && ((V.worn.upper.name !== "naked" && !V.worn.upper.type.includes("bellyShow")) || !V.worn.over_upper.type.includes("naked"))) return false;
-	if (size <= 17 && (V.worn.upper.type.includes("bellyHide") || V.worn.lower.type.includes("bellyHide") || !V.worn.over_upper.type.includes("naked"))) return false;
+	if (size <= 17 && (V.worn.upper.type.includes("bellyHide") || V.worn.lower.type.includes("bellyHide") || !V.worn.over_upper.type.includes("naked")))
+		return false;
 
 	return true;
 }
