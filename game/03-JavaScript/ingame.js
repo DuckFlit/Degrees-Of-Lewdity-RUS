@@ -1,3 +1,5 @@
+/* global ClothesItem, ClothedSlots */
+
 function mapMove(moveTo) {
 	const currentPassage = V.passage;
 	const destinationTable = [];
@@ -870,6 +872,11 @@ function clothingData(slot, item, data) {
 }
 window.clothingData = clothingData;
 
+/**
+ * @param {ClothedSlots} slot
+ * @param {ClothesItem} item
+ * @returns {ClothesItem}
+ */
 function getSetupClothing(slot, item) {
 	return setup.clothes[slot][clothesIndex(slot, item)];
 }
@@ -2007,6 +2014,16 @@ function earSlimeMakingMundaneRequests() {
 	return true;
 }
 window.earSlimeMakingMundaneRequests = earSlimeMakingMundaneRequests;
+
+function fixIntegrityUpdater() {
+	Object.entries(V.worn).forEach(([slot, item]) => fixIntegrityMax(slot, item));
+	Object.entries(V.store).forEach(([slot, items]) => items.forEach(item => fixIntegrityMax(slot, item)));
+	setup.clothes_all_slots.forEach(slot => V.wardrobe[slot].forEach(item => fixIntegrityMax(slot, item)));
+	const wardrobes = Object.entries(V.wardrobes).filter(([name, wardrobe]) => !["shopReturn", "wardrobe"].includes(name));
+	wardrobes.forEach(([name, wardrobe]) => setup.clothes_all_slots.forEach(slot => wardrobe[slot].forEach(item => fixIntegrityMax(slot, item))));
+	Object.entries(V.carried).forEach(([slot, item]) => fixIntegrityMax(slot, item));
+}
+window.fixIntegrityUpdater = fixIntegrityUpdater;
 
 /**
  * @param {string} slot
