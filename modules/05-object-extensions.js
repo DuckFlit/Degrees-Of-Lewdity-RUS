@@ -61,7 +61,15 @@ const ObjectAssignDeep = (function () {
 	function mergeObjects(target, source, options, filterFn, depth) {
 		return Object.keys(source).reduce((obj, key) => {
 			if (filterFn && !filterFn(key, source[key], depth)) return obj;
-			obj[key] = getTypeOf(source[key]) === "object" ? mergeObjects(target[key] || {}, source[key], options, filterFn, depth + 1) : source[key];
+
+			if (options.arrayBehaviour === "strict-replace" && getTypeOf(source[key]) === "object") {
+				obj[key] = cloneValue(source[key]);
+			} else if (getTypeOf(source[key]) === "object") {
+				obj[key] = mergeObjects(target[key] || {}, source[key], options, filterFn, depth + 1);
+			} else {
+				obj[key] = cloneValue(source[key]);
+			}
+
 			return obj;
 		}, target);
 	}
@@ -84,7 +92,9 @@ const ObjectAssignDeep = (function () {
 
 				const valueType = getTypeOf(object[key]);
 				if (valueType === "object") {
-					target[key] = mergeObjects(target[key] || {}, object[key], { arrayBehaviour }, filterFn, depth + 1);
+					target[key] = arrayBehaviour === "strict-replace"
+						? cloneValue(object[key])
+						: mergeObjects(target[key] || {}, object[key], { arrayBehaviour }, filterFn, depth + 1);
 				} else if (valueType === "array" && getTypeOf(target[key]) === "array") {
 					target[key] = mergeArrays(target[key], object[key], { arrayBehaviour });
 				} else {

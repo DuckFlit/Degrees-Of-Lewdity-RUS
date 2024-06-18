@@ -45,8 +45,8 @@ End of '<<print $replayScene.name>>' scene.
 		Error occurred in scene viewer. <<print $replayScene.name>>. Please report.
 		<br><br>
 		<<set _exitpassage to clone($replayScene.exitpassage)>>
-		<<unset $replayScene>>
 		<<unfreezePlayerStats>>
+		<<unset $replayScene>>
 		<<link [[Back|_exitpassage]]>>
 		<</link>>
 <</switch>>
@@ -672,14 +672,17 @@ End of '<<print $replayScene.name>>' scene.
 
 <<widget "unfreezePlayerStats">>
 	<<script>>
+	const mergeOption = V.replayScene ? "strict-replace" : "replace";
 		delete V.statFreeze;
 		if (V.frozenValues) {
-			V.deepMerge(V.frozenValues);
+			V.deepMerge(V.frozenValues, mergeOption);
 			delete V.frozenValues;
 			Time.set();
 		}
 	<</script>>
-	<<doVersionCheck>>
+	<<if $replayScene is undefined>>
+		<<doVersionCheck>>
+	<</if>>
 <</widget>>
 
 <!-- False passages to initiate scene viewer scenes, for cases where starting passages have too many potential roadblocks -->
