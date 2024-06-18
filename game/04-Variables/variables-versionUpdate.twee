@@ -3529,7 +3529,7 @@
 	/* Code that should not be moved into a check like above */
 	<<set $runWardrobeSanityChecker to true>>
 
-	<<if $objectVersion.updateClothes lt 55 or $objectVersion.updateClothes is undefined>>
+	<<if $objectVersion.updateClothes lt 56 or $objectVersion.updateClothes is undefined>>
 		<<updateClothes>>
 		<<if $objectVersion.updateClothes lt 38>>
 			<!-- V0.4.0.7 return items stuck in $store without proper .location -->
@@ -3540,14 +3540,15 @@
 			<!--Should'nt need to re-run that often-->
 			<<run clothesDataTrimmerLoop()>>
 		<</if>>
-		
+
 		<!--If you have added any `colour_combat` or `accessory_colour_combat` to clothes that need their `colour` or `accessory_colour`, this will clear them.
 		Remove `colour_combat` or `accessory_colour_combat` where this is the case, they are independant so `colour_combat` will only clear `colour`-->
-		
+
 		<!-- integrity_max was zero for a piece of clothing [Skimpy Leotard], this caused an infinity money bug at tailor, update people's clothing here -->
-		<<run Object.entries(V.worn).forEach(([key, value]) => fixIntegrityMax(key, value))>>
-		<<run Object.entries(V.store).forEach(([key, value]) => value.forEach(item => fixIntegrityMax(key, value)))>>
-		<<set $objectVersion.updateClothes to 55>>
+		<<if $objectVersion.updateClothes lt 56>>
+			<<run fixIntegrityUpdater()>>
+		<</if>>
+		<<set $objectVersion.updateClothes to 56>>
 	<</if>>
 
 	<<if $objectVersion.specialClothes lt 15 or $objectVersion.specialClothes is undefined>>
@@ -5065,9 +5066,22 @@
 		<<set $objectVersion.defileSacredGroundStore to 2>>
 	<</if>>
 	/* Docks dog-related scenes refactor*/
-	<<if $dock_dog isnot undefined>>
-		<<beastNEWinit 1 dog>>
+	<<if $dock_dog isnot undefined and typeof $dock_dog is "string">>
+		<<set $_indexTmp to $index>>
+		<<set $_isOverwritingNPC to !!$NPCList[0].fullDescription>>
+		<<if $_isOverwritingNPC>>
+			<<saveNPC 0 "dockDogUpdate">>
+			<<clearsinglenpc 0>>
+		<</if>>
+		<<generateBEAST 1 "dog">>
 		<<set $dock_dog to clone($NPCList[0])>>
+		<<if $_isOverwritingNPC>>
+			<<loadNPC 0 "dockDogUpdate">>
+			<<clearNPC "dockDogUpdate">>
+		<</if>>
+		<<personselect $_indexTmp>>
+		<<unset $_indexTmp>>
+		<<unset $_isOverwritingNPC>>
 	<</if>>
 	/* Kill the leather leggings with fire */
 	/* Commenting out again due to continued issues
