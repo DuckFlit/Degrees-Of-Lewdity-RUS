@@ -9,7 +9,7 @@
 	/* FROSTBITE */
 	<<if _passout is "cold">>
 		<<set Weather.bodyTemperature to Weather.tempSettings.minTemperature + 1.5>>
-		<<if !["beach", "forest", "moor", "sea"].includes($location)>>
+		<<if !["beach", "forest", "moor", "sea", "park"].includes($location)>>
 			You pass out from the cold.
 			<br><br>
 		<</if>>
@@ -146,6 +146,20 @@
 				<<addinlineevent "default" 1>>
 					<<link [[Everything fades to black...|Moor Bird Wake]]>><</link>>
 				<</addinlineevent>>
+			<<case "park">>
+				You stumble forward, and slump to the cold ground, too battered to keep going.
+				<br><br>
+				/* Park events needed - adding default ones now to prevent empty passages */
+				<<if getRobinLocation() is "park" and !$daily.robin.passout>>
+					<<addinlineevent "park" 1.25>>
+						<<link [[Everything fades to black...|Passout Robin Hypothermia Park]]>><</link>>
+					<</addinlineevent>>
+				<</if>>
+			
+					<<addinlineevent "rescue" 1>>
+						<<link [[Everything fades to black...|Passout Hypothermia Rescue]]>><</link>>
+					<</addinlineevent>>
+			
 			<<default>>
 				/* Generic events */
 				<<addinlineevent "ambulance" 0.1>>
@@ -1990,3 +2004,87 @@ The <<person1>><<person>> takes out an informational pamphlet meant for tourists
 Soaked in sweat and still somewhat weak, you climb to your feet. Maybe you should try finding a way to cool down.
 <br><br>
 <<link [[Next|$safePassage]]>><<endevent>><<set $eventskip to 1>><</link>>
+
+:: Passout Robin Hypothermia Park
+<<effects>><<npc Robin>><<person1>>
+
+You wake up to the smell of hot chocolate. Robin kneels next to you, looking worried. "Are you okay?" <<He>> takes a look at what you're wearing<<if $exposed gte 1>>, or rather what you're not wearing<</if>>. 
+<br><br>
+<<if C.npc.Robin.dom gte 50>>
+	"What in the world are you wearing? In this weather?" <<he>> tuts. <<He>> drapes <<his>> puffer jacket over your shoulders and then places a warm thermos in your hands. "Here, drink this. It'll help you warm up."
+	<<set Weather.Temperature.override.increase.outside(-5, "Robin's puffer jacket making you warm.")>>
+<<else>>
+	"Erm... A-aren't you cold, dressed like that?" <<he>> asks anxiously. <<He>> helps you sit up and places a warm thermos in your hands. "Here, this should help."
+	<<set Weather.Temperature.override.increase.outside(-3, "Robin's hot chocolate warming you up.")>>
+<</if>>
+<br><br>
+The hot chocolate is warm and sweet as it goes down, and the radiant heat of the thermos eases the stiffness in your fingers.  
+<br><br>
+"Th-thanks," you say, teeth chattering. Robin helps you stand to your feet <<if $exposed gte 1>>while trying to avoid looking directly at your <<lewdness>>,<</if>> but stops you when you start to walk away. 
+<br><br>
+<<if C.npc.Robin.dom gte 50>>
+	"Hey, no way," <<he>> says firmly. "I'm taking you home to change into something else."
+<<else>>
+	"H-hey, erm... M-maybe you should go home and change. I can come with you?"
+<</if>>
+<br><br>
+<<link [[Accept|Passout Robin Hypothermia Park 2]]>><<set $phase to 0>><</link>>
+<br>
+<<link [[Decline|Passout Robin Hypothermia Park 2]]>><<set $phase to 1>><</link>>
+
+:: Passout Robin Hypothermia Park 2
+<<effects>>
+<<if $phase is 0>>
+	Robin places an away sign at <<his>> stand and walks you to the Orphanage. 
+
+	<<if C.npc.Robin.trauma gte 50>>
+		<<He>> doesn't say much along the way.
+	<<elseif C.npc.Robin.dom gte 50 and $robinromance is 1>>
+		<<He>> holds your hand the whole way.
+	<<else>>
+		<<He>> doesn't seem to mind taking a break to help you.
+	<</if>>
+
+	<<He>> escorts you to your bedroom, pausing at the door. "I have to get back. Please be careful."
+	<br><br>
+	"I will," you assure <<him>>. "Thanks for walking me home."
+	<br><br>
+	<<if $robinromance is 1>>
+		<<if C.npc.Robin.dom gte 50>>
+			<<He>> places a firm smooch on your cheek.
+		<<else>>
+			<<He>> hesitates, but plants a small kiss on your cheek. 
+		<</if>>
+	<</if>>
+
+	You give <<him>> a placating smile and see <<him>> off.
+	<br><br>
+	<<link [[Next|Bedroom]]>><<endevent>><<set $daily.robin.passout to 1>><</link>>
+
+<<else>>
+	<<if C.npc.Robin.dom gte 50>>
+		"...Okay." <<He>> nods after a terse huff. "As long as you know what you're doing..." 
+		<br><br>
+		You give <<his>> jacket back.
+		<<if $worn.hands.name is "naked">>
+			<<He>> removes <<his>> fingerless gloves and gives them to you. "I don't need them back, just... be safe, you know?"
+			<<handswear 1 "purple">>
+		<</if>>
+	<<else>>
+		"I... O-okay, if you know what you're doing..." <<He>> looks to <<his>> feet. "Just... promise me you'll be careful." 
+	<</if>>
+	<br><br>
+	"I'll be fine," you say. 
+	<br><br>
+	<<if $robinromance is 1>>
+		<<if C.npc.Robin.dom gte 50>>
+			<<He>> places a firm smooch on your cheek. "You know where to find me if you need anything."
+		<<else>>
+			<<He>> hesitates, but plants a small kiss on your cheek. "Okay. If you say so..."
+		<</if>>
+	<</if>>
+	<br><br>
+	You give <<him>> a reassuring smile and carry on as you are.
+	<br><br>
+	<<link [[Next|Park]]>><<endevent>><<set $daily.robin.passout to 1>><</link>>
+<</if>>
