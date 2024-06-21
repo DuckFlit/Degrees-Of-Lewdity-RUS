@@ -59,7 +59,7 @@ const ObjectAssignDeep = (function () {
 	}
 
 	function mergeObjects(target, source, options, filterFn, depth) {
-		return Object.keys(source).reduce((obj, key) => {
+		const merged = Object.keys(source).reduce((obj, key) => {
 			if (filterFn && !filterFn(key, source[key], depth)) return obj;
 
 			if (options.arrayBehaviour === "strict-replace" && getTypeOf(source[key]) === "object") {
@@ -71,7 +71,17 @@ const ObjectAssignDeep = (function () {
 			}
 
 			return obj;
-		}, target);
+		}, {});
+
+		if (options.arrayBehaviour === "strict-replace") {
+			Object.keys(target).forEach(key => {
+				if (!(key in source)) {
+					delete target[key];
+				}
+			});
+		}
+
+		return merged;
 	}
 
 	function mergeArrays(target, source, options) {
@@ -87,14 +97,22 @@ const ObjectAssignDeep = (function () {
 
 	function executeDeepMerge(target, objects, arrayBehaviour, filterFn, depth = 1) {
 		objects.forEach(object => {
+			if (arrayBehaviour === "strict-replace" && depth === 1) {
+				Object.keys(target).forEach(key => {
+					if (!(key in object)) {
+						delete target[key];
+					}
+				});
+			}
 			Object.keys(object).forEach(key => {
 				if (filterFn && !filterFn(key, object[key], depth)) return;
 
 				const valueType = getTypeOf(object[key]);
 				if (valueType === "object") {
-					target[key] = arrayBehaviour === "strict-replace"
-						? cloneValue(object[key])
-						: mergeObjects(target[key] || {}, object[key], { arrayBehaviour }, filterFn, depth + 1);
+					target[key] =
+						arrayBehaviour === "strict-replace" && depth > 1
+							? cloneValue(object[key])
+							: mergeObjects(target[key] || {}, object[key], { arrayBehaviour }, filterFn, depth + 1);
 				} else if (valueType === "array" && getTypeOf(target[key]) === "array") {
 					target[key] = mergeArrays(target[key], object[key], { arrayBehaviour });
 				} else {
@@ -152,7 +170,7 @@ Object.defineProperty(Object.prototype, "deepCopy", {
  *
  * const foundValue = myObject.find((key, value) => key === 'level2');
  * Returns Object { level3: "value1" }
- * 
+ *
  * const foundValue = myObject.find((key, value) => value.level3 === "value2");
  * Returns Object { level3: "value2" }
  */
@@ -214,5 +232,5 @@ Object.defineProperty(Object.prototype, "clearProperties", {
 			}
 		};
 		clearProperties(this);
-	}
+	},
 });

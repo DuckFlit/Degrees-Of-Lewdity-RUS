@@ -657,25 +657,24 @@ End of '<<print $replayScene.name>>' scene.
 
 <<widget "freezePlayerStats">>
 	<<script>>
+		setup.skipKeysOnFreeze = ["replayScene", "frozenValues", "statFreeze", "passage", "debug", "debugMenu", "options"];
 		V.statFreeze = true;
-		const skipKeys = ["replayScene", "frozenValues", "statFreeze", "passage", "debug", "options"];
 		V.frozenValues = {};
-
 		V.frozenValues.deepMerge(V, (key, value, depth) => {
-			if ((depth === 1 && skipKeys.includes(key)) || typeof value === "function") {
-				return false;
-			}
-			return true;
+			return !(depth === 1 && setup.skipKeysOnFreeze.includes(key)) && typeof value !== "function";
 		});
 	<</script>>
 <</widget>>
 
 <<widget "unfreezePlayerStats">>
 	<<script>>
-	const mergeOption = V.replayScene ? "strict-replace" : "replace";
 		delete V.statFreeze;
 		if (V.frozenValues) {
-			V.deepMerge(V.frozenValues, mergeOption);
+			const retainedKeys = Object.fromEntries(
+				Object.entries(V).filter(([key]) => setup.skipKeysOnFreeze.includes(key))
+			);
+			V.deepMerge(V.frozenValues, "strict-replace");
+			Object.assign(V, retainedKeys);
 			delete V.frozenValues;
 			Time.set();
 		}
