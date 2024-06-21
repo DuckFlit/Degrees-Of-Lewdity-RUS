@@ -1,3 +1,5 @@
+/* eslint-disable jsdoc/require-param */
+/* eslint-disable prettier/prettier */
 ///<reference path="model.d.ts"/>
 /*
  * Created by aimozg on 29.08.2020.
@@ -12,14 +14,18 @@ var Renderer;
         };
     Renderer.DefaultImageLoader = {
         loadImage(src, layer, successCallback, errorCallback) {
-            const image = new Image();
-            image.onload = () => {
-                successCallback(src, layer, image);
-            };
-            image.onerror = (event) => {
-                errorCallback(src, layer, event);
-            };
-            image.src = src;
+			if (src instanceof HTMLCanvasElement) {
+				successCallback(src, layer, src);
+			} else {
+				const image = new Image();
+				image.onload = () => {
+					successCallback(src, layer, image);
+				};
+				image.onerror = (event) => {
+					errorCallback(src, layer, event);
+				};
+				image.src = src;
+			}
         }
     };
     Renderer.ImageLoader = Renderer.DefaultImageLoader;
@@ -223,7 +229,7 @@ var Renderer;
      */
     function composeOverRect(sourceImage, color, blendMode, targetCanvas = createCanvas(sourceImage.width, sourceImage.height)) {
         // Fill with target color
-        targetCanvas.globalCompositeOperation = 'source-over';
+        //targetCanvas.globalCompositeOperation = 'source-over';
         targetCanvas.fillStyle = color;
         targetCanvas.fillRect(0, 0, sourceImage.width, sourceImage.height);
         targetCanvas.globalCompositeOperation = blendMode;
@@ -770,7 +776,9 @@ var Renderer;
                 }
                 layer.image = image;
                 layer.imageSrc = src;
-                Renderer.ImageCaches[src] = image;
+				if (!(layer.src instanceof HTMLCanvasElement)) {
+					Renderer.ImageCaches[src] = image;
+				}
                 maybeRenderResult();
             }, (src, layer, error) => {
                 // Mark this src as erroneous to avoid blinking due to reload attempts
@@ -793,7 +801,9 @@ var Renderer;
                 }
                 layer.mask = image;
                 layer.cachedMaskSrc = src;
-                Renderer.ImageCaches[src] = image;
+				if (!(layer.src instanceof HTMLCanvasElement)) {
+					Renderer.ImageCaches[src] = image;
+				}
                 maybeRenderResult();
             }, (src, layer, error) => {
                 // Mark this src as erroneous to avoid blinking due to reload attempts
@@ -811,7 +821,7 @@ var Renderer;
         for (const layer of layers) {
             let needImage = true;
             if (layer.image) {
-                if (layer.imageSrc === layer.src) {
+                if (layer.imageSrc === layer.src || layer.src instanceof HTMLCanvasElement) {
                     needImage = false;
                 }
                 else {
@@ -835,7 +845,7 @@ var Renderer;
             }
             let needMask = !!layer.masksrc;
             if (layer.mask) {
-                if (layer.cachedMaskSrc === layer.masksrc) {
+                if (layer.cachedMaskSrc === layer.masksrc || layer.masksrc instanceof HTMLCanvasElement) {
                     needMask = false;
                 }
                 else {
@@ -860,6 +870,13 @@ var Renderer;
         maybeRenderResult();
     }
     Renderer.composeLayers = composeLayers;
+	function refresh(model) {
+		Renderer.ImageCaches = {};
+		Renderer.ImageErrors = {};
+		Renderer.invalidateLayerCaches(model.layerList);
+		model.redraw();
+    }
+    Renderer.refresh = refresh;
     function invalidateLayerCaches(layers) {
         for (let layer of layers) {
             delete layer.image;
