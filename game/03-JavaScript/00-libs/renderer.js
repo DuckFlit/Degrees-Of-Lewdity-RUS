@@ -240,7 +240,7 @@ var Renderer;
      */
     function composeOverRect(sourceImage, color, blendMode, targetCanvas = createCanvas(sourceImage.width, sourceImage.height)) {
         // Fill with target color
-        //targetCanvas.globalCompositeOperation = 'source-over';
+        targetCanvas.globalCompositeOperation = 'source-over';
         targetCanvas.fillStyle = color;
         targetCanvas.fillRect(0, 0, sourceImage.width, sourceImage.height);
         targetCanvas.globalCompositeOperation = blendMode;
