@@ -77,6 +77,7 @@
  * @property {number} width Frame width.
  * @property {number} height Frame height.
  * @property {number} frames Number of frames for CSS animation.
+ * @property {boolean} scale Set to true to scale layers to the canvas size, if smaller.
  * @property {Object<string, CanvasModelLayer>} layers Layers (by name).
  * @property {Function} [generatedOptions] Function ()=>string[] names of generated options.
  * @property {Function} [defaultOptions] Function ()=>object returning default options.
@@ -89,6 +90,7 @@
  * @property {number} width Frame width.
  * @property {number} height Frame height.
  * @property {number} frames Number of frames for CSS animation.
+  * @property {boolean} scale Set to true to scale layers to the canvas size, if smaller.
  * @property {Function} defaultOptions Function ()=>object returning default options.
  * @property {string[]} generatedOptions Names of generated options.
  * @property {Object<string, CanvasModelLayer>} layers Layers (by name).
@@ -104,6 +106,7 @@ window.CanvasModel = class CanvasModel {
 		this.width = options.width;
 		this.height = options.height;
 		this.frames = options.frames || 1;
+		this.scale = options.scale || false;
 		if ("generatedOptions" in options) this.generatedOptions = options.generatedOptions;
 		if ("defaultOptions" in options) this.defaultOptions = options.defaultOptions;
 		if ("preprocess" in options) this.preprocess = options.preprocess;
@@ -286,6 +289,7 @@ window.CanvasModel = class CanvasModel {
 		}
 
 		for (const layer of this.layerList) {
+			layer.model = this;
 			layer.show || propeval(layer, "show");
 			propeval(layer, "src");
 			if (!layer.src) {
@@ -307,6 +311,8 @@ window.CanvasModel = class CanvasModel {
 			propeval(layer, "dy");
 			propeval(layer, "width");
 			propeval(layer, "height");
+			propeval(layer, "scale");
+			if (!layer.scale) layer.scale = this.scale;
 			if (layer.show !== false && layer.filters) {
 				for (const filterName of layer.filters) {
 					const filter = options.filters[filterName];

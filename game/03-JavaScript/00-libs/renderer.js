@@ -12,6 +12,15 @@ var Renderer;
         } : function () {
             return new Date().getTime();
         };
+
+	function rescaleImageToCanvasHeight(image, targetHeight) {
+		const aspectRatio = image.width / image.height;
+		const scaledWidth = targetHeight * aspectRatio;
+		const i2 = createCanvas(scaledWidth, targetHeight);
+		i2.imageSmoothingEnabled = false;
+        i2.drawImage(image, 0, 0, scaledWidth, targetHeight);
+        return i2.canvas;
+	}
     Renderer.DefaultImageLoader = {
         loadImage(src, layer, successCallback, errorCallback) {
 			if (src instanceof HTMLCanvasElement) {
@@ -19,7 +28,9 @@ var Renderer;
 			} else {
 				const image = new Image();
 				image.onload = () => {
-					successCallback(src, layer, image);
+					// Rescale the image to the canvas height, if layer.scale is true
+					const rescaledImage = layer.scale ? rescaleImageToCanvasHeight(image, layer.model.height) : image;
+					successCallback(src, layer, rescaledImage);
 				};
 				image.onerror = (event) => {
 					errorCallback(src, layer, event);

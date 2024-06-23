@@ -239,6 +239,7 @@ Renderer.CanvasModels["main"] = {
 	width: 256,
 	height: 256,
 	frames: 2,
+	scale: true, // Can be overriden for each layer
 	generatedOptions() {
 		return [
 			"blink_animation",
