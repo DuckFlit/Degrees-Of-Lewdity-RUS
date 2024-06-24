@@ -11,26 +11,41 @@ namespace Renderer {
 			return new Date().getTime()
 		};
 
+	function rescaleImageToCanvasHeight(image: HTMLImageElement, targetHeight: number): HTMLCanvasElement {
+		const aspectRatio = image.width / image.height;
+		const scaledWidth = targetHeight * aspectRatio;
+		const i2 = createCanvas(scaledWidth, targetHeight);
+		i2.imageSmoothingEnabled = false;
+		i2.drawImage(image, 0, 0, scaledWidth, targetHeight);
+		return i2.canvas;
+	}
+
 	export interface LayerImageLoader {
 		loadImage(src: string,
-		          layer: CompositeLayer,
-		          successCallback: (src: string, layer: CompositeLayer, image: HTMLImageElement) => any,
-		          errorCallback: (src: string, layer: CompositeLayer, error: any) => any
+			layer: CompositeLayer,
+			successCallback: (src: string, layer: CompositeLayer, image: HTMLImageElement | HTMLCanvasElement) => any,
+			errorCallback: (src: string, layer: CompositeLayer, error: any) => any
 		);
 	}
 	export const DefaultImageLoader: LayerImageLoader = {
 		loadImage(src: string,
-		          layer: CompositeLayer,
-		          successCallback: (src: string, layer: CompositeLayer, image: HTMLImageElement) => any,
-		          errorCallback: (src: string, layer: CompositeLayer, error: any) => any) {
-			const image = new Image();
-			image.onload = () => {
-				successCallback(src, layer, image);
+			layer: CompositeLayer,
+			successCallback: (src: string, layer: CompositeLayer, image: HTMLImageElement | HTMLCanvasElement) => any,
+			errorCallback: (src: string, layer: CompositeLayer, error: any) => any) {
+			if (src instanceof HTMLCanvasElement) {
+				successCallback(src, layer, src);
+			} else {
+				const image = new Image();
+				image.onload = () => {
+					// Rescale the image to the canvas height, if layer.scale is true
+					const rescaledImage = layer.scale ? rescaleImageToCanvasHeight(image, layer.model.height) : image;
+					successCallback(src, layer, rescaledImage);
+				};
+				image.onerror = (event) => {
+					errorCallback(src, layer, event);
+				};
+				image.src = src;
 			}
-			image.onerror = (event) => {
-				errorCallback(src, layer, event);
-			}
-			image.src = src;
 		}
 	}
 	export let ImageLoader: LayerImageLoader = DefaultImageLoader;
@@ -989,7 +1004,9 @@ namespace Renderer {
 					}
 					layer.image = image;
 					layer.imageSrc = src;
-					ImageCaches[src] = image;
+					if (!(layer.src instanceof HTMLCanvasElement)) {
+						ImageCaches[src] = image as HTMLImageElement;
+					}
 					maybeRenderResult();
 				},
 				(src,layer,error)=>{
@@ -1016,7 +1033,9 @@ namespace Renderer {
 					}
 					layer.mask = image;
 					layer.cachedMaskSrc = src;
-					ImageCaches[src] = image;
+					if (!(layer.src instanceof HTMLCanvasElement)) {
+						ImageCaches[src] = image as HTMLImageElement;
+					}
 					maybeRenderResult();
 				},
 				(src,layer,error)=>{
@@ -1036,7 +1055,7 @@ namespace Renderer {
 		for (const layer of layers) {
 			let needImage = true;
 			if (layer.image) {
-				if (layer.imageSrc === layer.src) {
+				if (layer.imageSrc === layer.src || layer.src instanceof HTMLCanvasElement) {
 					needImage = false;
 				} else {
 					// Layer was loaded in previous render, but then its src was changed - purge cache
@@ -1057,7 +1076,7 @@ namespace Renderer {
 			}
 			let needMask = !!layer.masksrc;
 			if (layer.mask) {
-				if (layer.cachedMaskSrc === layer.masksrc) {
+				if (layer.cachedMaskSrc === layer.masksrc || layer.masksrc instanceof HTMLCanvasElement) {
 					needMask = false;
 				} else {
 					// Layer mask was loaded in previous render, but then its masksrc was changed - purge cache
@@ -1127,6 +1146,13 @@ namespace Renderer {
 		start(): void;
 
 		stop(): void;
+	}
+
+	export function refresh(model: { layerList: CompositeLayerSpec[], redraw: () => void }) {
+		ImageCaches = {};
+		ImageErrors = {};
+		invalidateLayerCaches(model.layerList);
+		model.redraw();
 	}
 
 	export function invalidateLayerCaches(layers: CompositeLayer[]) {

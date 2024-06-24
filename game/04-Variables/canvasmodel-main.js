@@ -3103,16 +3103,6 @@ Renderer.CanvasModels["main"] = {
 				return options.belly_mask_src;
 			}
 		}),
-		/*** Did not work
-		"upper_belly_shadow": genlayer_clothing_belly_highlight("upper", {
-			zfn(options) {
-				return options.zupper
-			},
-			masksrcfn(options) {
-				return options.belly_mask_upper_shadow_src;
-			}
-		}),
-		*/
 		"upper_belly_acc": genlayer_clothing_belly_acc("upper", {
 			zfn(options) {
 				return options.zupper
