@@ -42,7 +42,7 @@
  * @property {number} [contrast] Adjust contrast (before recoloring), default 1.
  * @property {string} [blendMode] Recoloring mode (see docs for globalCompositeOperation; "hard-light", "multiply" and "screen" ), default none.
  * @property {string|object} [blend] Color for recoloring, CSS color string or gradient spec (see model.d.ts).
- * @property {string} [masksrc] Mask image path. If present, only parts where mask is opaque will be displayed.
+ * @property {string|string[]} [masksrc] Single mask image path or array of mask image paths. If present, only parts where mask(s) are opaque will be displayed.
  * @property {string} [animation] Name of animation to apply, default none.
  * @property {number} [frames] Frame numbers used to display static images, array of subsprite indices. For example, if model frame count is 6 but layer has only 3 subsprites, default frames would be [0, 0, 1, 1, 2, 2].
  * @property {string[]} [filters] Names of filters that should be applied to the layer; filters themselves are taken from model options.
@@ -61,7 +61,7 @@
  * @property {Function} [contrastftn] (options)=>number.
  * @property {Function} [blendModefn] (options)=>(string|object).
  * @property {Function} [blendfn] (options)=>string.
- * @property {Function} [masksrcfn] (options)=>string.
+ * @property {Function} [masksrcfn] (options)=>string|string[].
  * @property {Function} [animationfn] (options)=>string.
  * @property {Function} [framesfn] (options)=>number[].
  * @property {Function} [filtersfn] (options)=>string[].

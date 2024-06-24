@@ -4240,8 +4240,8 @@ function drawLinearGradient(ctx, maxAlpha, intensity, height) {
 }
 
 function drawColorOverlay(ctx, color, maxAlpha, intensity) {
-	const alpha = intensity * maxAlpha;
-	const rgbaColor = ColourUtils.hexToRgba(color, alpha);
+	const alpha = Math.round((intensity * maxAlpha) * 255).toString(16).padStart(2, "0")
+	const rgbaColor = tinycolor(color + alpha).toRgbString();
 	ctx.fillStyle = rgbaColor;
 	ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 }

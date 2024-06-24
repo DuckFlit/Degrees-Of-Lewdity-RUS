@@ -1,18 +1,11 @@
-/* eslint-disable jsdoc/require-param */
-/* eslint-disable spaced-comment */
-/* eslint-disable no-var */
-/* eslint-disable prettier/prettier */
 ///<reference path="model.d.ts"/>
 /*
  * Created by aimozg on 29.08.2020.
  */
 var Renderer;
 (function (Renderer) {
-    const millitime = (typeof performance === 'object' && typeof performance.now === 'function') ?
-        function () {
-            return performance.now();
-        } : function () {
-        return new Date().getTime();
+    const millitime = function () {
+        return performance.now();
     };
     function rescaleImageToCanvasHeight(image, targetHeight) {
         const aspectRatio = image.width / image.height;
@@ -610,7 +603,20 @@ var Renderer;
             return !!layer.mask;
         },
         render(image, layer, context) {
-            return cutoutFrom(ensureCanvas(image).getContext('2d'), layer.mask).canvas;
+            if (Array.isArray(layer.mask)) {
+                let combinedCtx = Renderer.createCanvas(image.width, image.height);
+                combinedCtx.fillRect(0, 0, combinedCtx.canvas.width, combinedCtx.canvas.height);
+                combinedCtx.globalCompositeOperation = 'destination-in';
+                layer.mask.forEach(mask => {
+                    if (!mask)
+                        return;
+                    combinedCtx.drawImage(mask, 0, 0);
+                });
+                return Renderer.cutoutFrom(Renderer.ensureCanvas(image).getContext('2d'), combinedCtx.canvas).canvas;
+            }
+            else {
+                return Renderer.cutoutFrom(Renderer.ensureCanvas(image).getContext('2d'), layer.mask).canvas;
+            }
         }
     };
     const RenderingStepCutout = {
@@ -808,29 +814,31 @@ var Renderer;
                 maybeRenderResult();
             });
         }
-        function loadLayerMask(layer) {
-            Renderer.ImageLoader.loadImage(layer.masksrc, layer, (src, layer, image) => {
-                layersLoaded++;
-                if (listener && listener.loaded) {
-                    listener.loaded(layer.name || 'unnamed', src);
-                }
-                layer.mask = image;
-                layer.cachedMaskSrc = src;
-                if (!(layer.src instanceof HTMLCanvasElement)) {
-                    Renderer.ImageCaches[src] = image;
-                }
+        function loadLayerMasks(layer) {
+            if (!layer.masksrc) {
                 maybeRenderResult();
-            }, (src, layer, error) => {
-                // Mark this src as erroneous to avoid blinking due to reload attempts
-                Renderer.ImageErrors[src] = true;
-                if (listener && listener.loadError) {
-                    listener.loadError(layer.name || 'unnamed', src);
+                return;
+            }
+            const maskSrcArray = Array.isArray(layer.masksrc) ? layer.masksrc : [layer.masksrc];
+            let loadedMasks = [];
+            let loadedCount = 0;
+            maskSrcArray.forEach((maskSrc, index) => {
+                if (!maskSrc) {
+                    loadedCount++;
+                    return;
                 }
-                else {
+                Renderer.ImageLoader.loadImage(maskSrc, layer, (src, layer, image) => {
+                    loadedMasks[index] = image;
+                    loadedCount++;
+                    if (loadedCount === maskSrcArray.length) {
+                        layer.mask = maskSrcArray.length > 1 ? loadedMasks : loadedMasks[0];
+                        maybeRenderResult();
+                    }
+                }, (src, layer, error) => {
                     console.error('Failed to load mask ' + src + (layer.name ? ' for layer ' + layer.name : ''));
-                }
-                delete layer.masksrc;
-                maybeRenderResult();
+                    layer.show = false;
+                    maybeRenderResult();
+                });
             });
         }
         for (const layer of layers) {
@@ -878,7 +886,7 @@ var Renderer;
                     layer.cachedMaskSrc = layer.masksrc;
                 }
                 else {
-                    loadLayerMask(layer);
+                    loadLayerMasks(layer);
                 }
             }
         }

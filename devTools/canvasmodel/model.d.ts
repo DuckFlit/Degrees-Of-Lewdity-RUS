@@ -71,7 +71,7 @@ declare interface CompositeLayerParams {
 	/**
 	 * Mask, a stencil image to cut out and display only select parts of this layer.
 	 */
-	masksrc?: string | HTMLCanvasElement;
+	masksrc?: string | HTMLCanvasElement | (string | HTMLCanvasElement)[];
 	/**
 	 * Alpha, 0-1. Default 1
 	 */
@@ -160,7 +160,7 @@ declare interface CompositeLayer extends CompositeLayerSpec {
 	/**
 	 * Value of `masksrc` corresponding to current `mask` (if masksrc changes mask will be reloaded)
 	 */
-	cachedMaskSrc?: string;
+	cachedMaskSrc?: string | HTMLCanvasElement | (string | HTMLCanvasElement)[];
 	/**
 	 * Encoded processing options used to display cachedImage
 	 */
