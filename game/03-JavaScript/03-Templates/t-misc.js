@@ -146,6 +146,7 @@ Template.add("gwylanItem", () =>
 		"novelty camera",
 		"ziplock bag filled with seashells",
 		"miniature stepladder",
+		"bottle of lube",
 		"knick-knack of unknown purpose"
 	)
 );

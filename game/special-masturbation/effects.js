@@ -1656,7 +1656,7 @@ function masturbationEffectsArms(
 			} else {
 				altText.toys = `You attempt to use your ${toyDisplay(altText.selectedToy)} on your <<breasts>>,`;
 			}
-			if (V.lactating === 1 && V.breastfeedingdisable === "f") {
+			if (V.lactating === 1) {
 				if (V.milk_amount >= 1 && V.earSlime.focus === "pregnancy" && V.earSlime.growth >= 100 && !V.earSlime.defyCooldown) {
 					wikifier("arousal", 100 * handsOn, "masturbationNipples");
 					sWikifier(`${altText.toys} <span class="lewd">and milk surges from your buds, quickly filling the bottle.</span>`);
