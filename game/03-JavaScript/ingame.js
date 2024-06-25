@@ -643,7 +643,7 @@ function isInPark(name) {
 			return ["active", "rescued"].includes(C.npc.Whitney.state)
 				&& C.npc.Whitney.init === 1 && Weather.precipitation !== "none"
 				&& Time.dayState === "day" && !Time.schoolTime
-				&& V.daily.whitney.park === undefined && V.pillory_tenant.special.name !== "Whitney";
+				&& V.daily.whitney.park === undefined && V.pillory.tenant.special.name !== "Whitney";
 		default:
 			return false;
 	}

@@ -614,6 +614,20 @@ Config.navigation.override = function (dest) {
 		return passageArgs.name;
 	}
 
+	// Scene viewer redirect
+	if (V.replayScene) {
+		if (passageArgs.name === V.replayScene.startPassage) {
+			return false;
+		}
+		if (passageArgs.name === "Scene Viewer End") {
+			delete V.replayScene.startPassage;
+			return false;
+		}
+		if (!V.replayScene.passages.includes(passageArgs.name)) {
+			return "Scene Viewer End";
+		}
+	}
+
 	if (pageLoading) {
 		pageLoading = false;
 		const passageOverride = checkPassages(dest);

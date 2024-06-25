@@ -45,8 +45,8 @@ End of '<<print $replayScene.name>>' scene.
 		Error occurred in scene viewer. <<print $replayScene.name>>. Please report.
 		<br><br>
 		<<set _exitpassage to clone($replayScene.exitpassage)>>
-		<<unset $replayScene>>
 		<<unfreezePlayerStats>>
+		<<unset $replayScene>>
 		<<link [[Back|_exitpassage]]>>
 		<</link>>
 <</switch>>
@@ -657,15 +657,11 @@ End of '<<print $replayScene.name>>' scene.
 
 <<widget "freezePlayerStats">>
 	<<script>>
+		setup.skipKeysOnFreeze = ["replayScene", "frozenValues", "statFreeze", "passage", "debug", "debugMenu", "options"];
 		V.statFreeze = true;
-		const skipKeys = ["replayScene", "frozenValues", "statFreeze", "passage", "debug", "options"];
 		V.frozenValues = {};
-
 		V.frozenValues.deepMerge(V, (key, value, depth) => {
-			if ((depth === 1 && skipKeys.includes(key)) || typeof value === "function") {
-				return false;
-			}
-			return true;
+			return !(depth === 1 && setup.skipKeysOnFreeze.includes(key)) && typeof value !== "function";
 		});
 	<</script>>
 <</widget>>
@@ -674,12 +670,18 @@ End of '<<print $replayScene.name>>' scene.
 	<<script>>
 		delete V.statFreeze;
 		if (V.frozenValues) {
-			V.deepMerge(V.frozenValues);
+			const retainedKeys = Object.fromEntries(
+				Object.entries(V).filter(([key]) => setup.skipKeysOnFreeze.includes(key))
+			);
+			V.deepMerge(V.frozenValues, "strict-replace");
+			Object.assign(V, retainedKeys);
 			delete V.frozenValues;
 			Time.set();
 		}
 	<</script>>
-	<<doVersionCheck>>
+	<<if $replayScene is undefined>>
+		<<doVersionCheck>>
+	<</if>>
 <</widget>>
 
 <!-- False passages to initiate scene viewer scenes, for cases where starting passages have too many potential roadblocks -->

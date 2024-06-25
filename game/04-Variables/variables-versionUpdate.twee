@@ -961,7 +961,10 @@
 		<<set $chef_sus to 0>>
 	<</if>>
 
-	<<if ndef $pillory_tenant>> /* Pillory related */
+	<<if $pillory is undefined>>
+		<<set $pillory to {}>>
+	<</if>>
+	<<if $pillory.tenant is undefined>> /* Pillory related */
 		<<setup_pillory>>
 	<</if>>
 	<<if ndef $police_intro>>							/* Police hack related*/
@@ -3959,7 +3962,7 @@
 		<<set $whitneyrescued to true>>
 		<<set C.npc.Whitney.state to "active">>
 	<</if>>
-	<<if $pillory_tenant.special.name is "Whitney" and C.npc.Whitney.state isnot "pillory">>
+	<<if $pillory_tenant isnot undefined and ($pillory_tenant.special.name is "Whitney" and C.npc.Whitney.state isnot "pillory")>>
 		<!-- Making "pillory" a state means that whitney's state shouldn't be anything but "pillory" when they're locked up -->
 		<<set C.npc.Whitney.state to "pillory">>
 	<</if>>
@@ -4676,7 +4679,7 @@
 	<</if>>
 
 	<!-- V.pillory_tenant.endDate update -->
-	<<if !$pillory_tenant.endDate and $pillory_tenant.endday>>
+	<<if $pillory_tenant isnot undefined and (!$pillory_tenant.endDate and $pillory_tenant.endday)>>
 		<<set $pillory_tenant.endDate to ($pillory_tenant.endday * TimeConstants.secondsPerDay + ($pillory_tenant.endhour - 7) * TimeConstants.secondsPerHour)>>
 		<<run delete $pillory_tenant.endday>>
 	<</if>>
@@ -5164,7 +5167,7 @@
     <</if>>
 
 	<!-- Pillory time fixes -->
-	<<if $pillory_tenant.starthour isnot undefined or $pillory_tenant.startday isnot undefined>>
+	<<if $pillory_tenant isnot undefined and ($pillory_tenant.starthour isnot undefined or $pillory_tenant.startday isnot undefined)>>
 		<!-- The start day / hour are broken anyways - so resetting the starttime to current time -->
 		<<set $_newTime to new DateTime(Time.date)>>
 		<<set $_endTime to new DateTime($_newTime.timeStamp).addHours($pillory_tenant.duration)>>
@@ -5264,5 +5267,32 @@
 
 	<<if !Number.isFinite($money)>>
 		<<set $money to 0>>
+	<</if>>
+
+	<!-- 5.0.6 -->
+	<<if $pillory is undefined>>
+		<<set $pillory to {}>>
+	<</if>>
+	<<if $pillorytime isnot undefined>>
+		<<set _pilloryStartTime to new DateTime(Time.date)>>
+		<<set _pilloryEndTime to new DateTime(Time.date).addMinutes(60 - Time.date.minute)>>
+		<<if !isNaN($pillorytime) and $pillorytime gte 0>>
+			<<set _pilloryEndTime.addHours($pillortime)>>
+		<</if>>
+		<<set $pillory.time to {
+			start: _pilloryStartTime.timeStamp,
+			end: _pilloryEndTime.timeStamp,
+		}>>
+		<<unset $pillorytime>>
+	<</if>>
+	<<if $pilloryaudience isnot undefined>>
+		<<if !isNaN($pilloryaudience) and $pilloryaudience gte 0>>
+			<<set $pillory.audience to $pilloryaudience>>
+		<</if>>
+		<<unset $pilloryaudience>>
+	<</if>>
+	<<if $pillory_tenant isnot undefined>>
+		<<set $pillory.tenant to $pillory_tenant>>
+		<<unset $pillory_tenant>>
 	<</if>>
 <</widget>>
