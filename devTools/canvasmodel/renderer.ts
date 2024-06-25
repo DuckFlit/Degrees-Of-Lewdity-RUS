@@ -796,7 +796,7 @@ namespace Renderer {
 				combinedCtx.fillRect(0, 0, combinedCtx.canvas.width, combinedCtx.canvas.height);
 				combinedCtx.globalCompositeOperation = 'destination-in';
 				layer.mask.forEach(mask => {
-					if(!mask) return;
+					if(!mask) return Renderer.ensureCanvas(image).getContext('2d').canvas;
 					combinedCtx.drawImage(mask as CanvasImageSource, 0, 0);
 				});
 	
@@ -993,6 +993,7 @@ namespace Renderer {
 			for (const layer of layers) {
 				if (layer.show !== false && !layer.image) return;
 				if (layer.masksrc && !layer.mask) return;
+				if((Array.isArray(layer.masksrc) && layer.masksrc.length < 1) && !layer.mask) return;
 			}
 			if (listener && listener.loadingDone) listener.loadingDone(millitime() - t0, layersLoaded);
 			try {
@@ -1031,34 +1032,38 @@ namespace Renderer {
 				}
 			)
 		}
-		function loadLayerMasks(layer: CompositeLayer) {
-			if (!layer.masksrc) {
-				maybeRenderResult();
-				return;
+		function loadLayerMask(layer: CompositeLayer) {
+			if (!Array.isArray(layer.masksrc)) {
+				if (layer.masksrc == null) return;
+				layer.masksrc = [layer.masksrc];
 			}
-
-			const maskSrcArray = Array.isArray(layer.masksrc) ? layer.masksrc : [layer.masksrc];
-			let loadedMasks: CanvasImageSource[] = [];
-			let loadedCount = 0;
-			maskSrcArray.forEach((maskSrc, index) => {
-				if (!maskSrc) {
-					loadedCount++;
-					return;
-				}
+		
+			const masksLoaded: (HTMLImageElement | HTMLCanvasElement)[] = [];
+			let masksToLoad = layer.masksrc.length;
+		
+			layer.masksrc.forEach((src, index) => {
 				ImageLoader.loadImage(
-					maskSrc,
+					src,
 					layer,
 					(src, layer, image) => {
-						loadedMasks[index] = image;
-						loadedCount++;
-						if (loadedCount === maskSrcArray.length) {
-							layer.mask = maskSrcArray.length > 1 ? loadedMasks : loadedMasks[0];
+						masksLoaded[index] = image;
+						masksToLoad--;
+		
+						if (!(src instanceof HTMLCanvasElement)) {
+							ImageCaches[src] = image as HTMLImageElement;
+						}
+		
+						if (masksToLoad === 0) {
+							layer.mask = masksLoaded.length === 1 ? masksLoaded[0] : masksLoaded;
+							layer.cachedMaskSrc = layer.masksrc;
 							maybeRenderResult();
 						}
 					},
 					(src, layer, error) => {
 						console.error('Failed to load mask ' + src + (layer.name ? ' for layer ' + layer.name : ''));
 						layer.show = false;
+						ImageErrors[src] = true;
+						layer.masksrc = null;
 						maybeRenderResult();
 					}
 				);
@@ -1087,6 +1092,12 @@ namespace Renderer {
 					loadLayerImage(layer);
 				}
 			}
+			if (Array.isArray(layer.masksrc)) {
+				layer.masksrc = layer.masksrc.filter(value => value != null);
+				if (layer.masksrc.length === 0 || layer.masksrc.every(value => value == null)) {
+					layer.masksrc = null;
+				}
+			}
 			let needMask = !!layer.masksrc;
 			if (layer.mask) {
 				if (layer.cachedMaskSrc === layer.masksrc || layer.masksrc instanceof HTMLCanvasElement) {
@@ -1098,13 +1109,27 @@ namespace Renderer {
 				}
 			}
 			if (needMask) {
-				if (ImageErrors[layer.masksrc]) {
-					delete layer.masksrc;
-				} else if (layer.masksrc in ImageCaches) {
-					layer.mask = ImageCaches[layer.masksrc];
-					layer.cachedMaskSrc = layer.masksrc;
+				if (Array.isArray(layer.masksrc)) {
+					layer.mask = [];
+					layer.masksrc.forEach(src => {
+						if (ImageErrors[src]) {
+							layer.masksrc = null;
+						} else if (src in ImageCaches) {
+							layer.mask.push(ImageCaches[src]);
+							layer.cachedMaskSrc = layer.masksrc;
+						} else {
+							loadLayerMask(layer);
+						}
+					});
 				} else {
-					loadLayerMasks(layer);
+					if (ImageErrors[layer.masksrc]) {
+						layer.masksrc = null;
+					} else if (layer.masksrc in ImageCaches) {
+						layer.mask = ImageCaches[layer.masksrc];
+						layer.cachedMaskSrc = layer.masksrc;
+					} else {
+						loadLayerMask(layer);
+					}
 				}
 			}
 		}
