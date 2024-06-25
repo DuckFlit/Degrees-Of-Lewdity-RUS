@@ -4824,33 +4824,23 @@ function genlayer_clothing_arm_acc_fitted(arm, slot, overrideOptions) {
 			return filterFnArmAcc(slot, options);
 		},
 		showfn(options) {
-			return options.show_clothes &&
-				options["worn_" + slot] > 0 &&
-				options["worn_" + slot + "_setup"].sleeve_img === 1 &&
-				options["worn_" + slot + "_setup"].sleeve_acc_img === 1 &&
-				["f", "a"].includes(options.body_type) &&
-				options.arm_left === "idle" &&
-				!(options.belly > 7) &&
-				options["arm_" + arm] !== "none"
+			return options.show_clothes
+				&& options[`worn_${slot}`] > 0
+				&& options[`worn_${slot}_setup`].sleeve_img === 1
+				&& options[`worn_${slot}_setup`].sleeve_acc_img === 1
+				&& ["f", "a"].includes(options.body_type)
+				&& options.arm_left === "idle"
+				&& !(options.belly > 7)
+				&& options[`arm_${arm}`] !== "none";
 		},
-		alphafn(options) {
-			return options["worn_" + slot + "_alpha"]
+		srcfn(options) {
+			const hold = options.handheld_position && arm === "right" ? "hold" : arm;
+			const cover = options[`arm_${arm}`] === "cover" ? `${arm}_cover` : hold;
+
+			const path = `img/clothes/${slot}/${options[`worn_${slot}_setup`].variable}/${cover}_acc.png`;
+			return gray_suffix(path, options.filters[this.filtersfn(options)[0]]);
 		},
-		filtersfn(options) {
-			switch (options["worn_" + slot + "_setup"].accessory_colour_sidebar) {
-				case undefined:
-				case "":
-				case "primary":
-					return ["worn_" + slot];
-				case "secondary":
-					return ["worn_" + slot + "_acc"];
-				case "no":
-				default:
-					return [];
-			}
-		},
-		animation: "idle"
-	}, overrideOptions)
+	}, overrideOptions))
 }
 
 /* Events */
