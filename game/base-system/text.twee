@@ -1061,6 +1061,7 @@
 	<<else>>
 		<<set _text_output2 to "">>
 	<</if>>
+	<<set _mouthSensitivityDescribed to true>>
 <</silently>><<print _text_output2>><</widget>>
 
 <<widget "breastsensitivity">><<silently>>
@@ -1073,6 +1074,7 @@
 	<<else>>
 		<<set _text_output2 to "">>
 	<</if>>
+	<<set _breastSensitivityDescribed to true>>
 <</silently>><<print _text_output2>><</widget>>
 
 <<widget "bottomsensitivity">><<silently>>
@@ -1085,10 +1087,11 @@
 	<<else>>
 		<<set _text_output2 to "">>
 	<</if>>
+	<<set _bottomSensitivityDescribed to true>>
 <</silently>><<print _text_output2>><</widget>>
 
 <<widget "nipple">>
-	<<breastsensitivity>><<print "nipple">>
+	<<if !_breastSensitivityDescribed>><<breastsensitivity>><</if>><<print "nipple">>
 <</widget>>
 
 <<widget "nipples">>
@@ -1114,7 +1117,7 @@
 	<<elseif $options.debugdisable is "f">>
 		<<set _text_output to "ERROR - $$player.breastsize is not a number: $player.breastsize">>
 	<</if>>
-<</silently>><<breastsensitivity>><<print _text_output>><</widget>>
+<</silently>><<if !_breastSensitivityDescribed>><<breastsensitivity>><</if>><<print _text_output>><</widget>>
 
 <<widget "breastssimple">><<silently>>
 	<<if Number.isInteger($player.breastsize)>>
@@ -1154,7 +1157,7 @@
 
 <<widget "mouth">><<silently>>
 	<<set _text_output to "lips">>
-<</silently>><<mouthsensitivity>><<print _text_output>><</widget>>
+<</silently>><<if !_mouthSensitivityDescribed>><<mouthsensitivity>><</if>><<print _text_output>><</widget>>
 
 <<widget "undertop">><<silently>>
 	<<if $worn.under_upper.exposed lte 0>>
@@ -1213,13 +1216,18 @@
 			/* ^^^ placeholders for later if people want to fill them out */
 		<</if>>
 	<</if>>
+	<<if _args[0] is "penis">>
+		<<set _penisStateDescribed to true>>
+	<<elseif _args[0] is "pussy">>
+		<<set _pussyStateDescribed to true>>
+	<</if>>
 <</silently>><<print _text_output>><</widget>>
 
 <<widget "bottom">><<silently>>
 	<<set _text_output to ["slender", "slim", "modest", "cushioned", "soft", "round", "plump", "large", "huge"][Math.clamp(0, 8, $player.bottomsize)]>>
 	/* _args[0] is a flag to prevent .pluck() from altering state random when calling from overlays */
 	<<set _text_output to _text_output + [" ass", " bum", " butt"].pluck(_args[0])>>
-<</silently>><<bottomsensitivity>><<print _text_output>><</widget>>
+<</silently>><<if !_bottomSensitivityDescribed>><<bottomsensitivity>><</if>><<print _text_output>><</widget>>
 
 <!-- Too small and too big outputs are intended as error messages
 	so that it's more obvious what's wrong when people report bugs -->
@@ -1235,13 +1243,16 @@
 		<<case 4>><<set _text_output to "enormous">>
 		<<default>><<set _text_output to "[Widget 'penissize' - Invalid Penis Value of - " + $_size + ($playerHasStraponOverride ? " - $playerHasStraponOverride is set" : "") + "]">>
 	<</switch>>
+	<<set _penisSizeDescribed to true>>
 <</silently>><<print _text_output>><</widget>>
 
 <!-- [0] - if truthy, genital sensitivity is omitted -->
 <<widget "pussy">><<silently>>
-	<<genitalstate "pussy">><<set _genital_state_text to _text_output>>
+	<<if !_pussyStateDescribed>>
+		<<genitalstate "pussy">><<set _genital_state_text to _text_output>>
+	<</if>>
 	<<set _text_output to "">>
-	<<if !_args[0]>>
+	<<if !_args[0] and !_genitalSensitivityDescribed>>
 		<<genitalsensitivity>>
 	<</if>>
 	/* _args[1] is a flag to prevent .pluck() from altering state random when calling from overlays */
@@ -1254,7 +1265,7 @@
 		<<penis>>
 	<<else>>
 		<<set _text_output to "">>
-		<<if !_args[0]>>
+		<<if !_args[0] and !_genitalSensitivityDescribed>>
 			<<genitalsensitivity>>
 		<</if>>
 		<<set _text_output += "clit">>
@@ -1263,13 +1274,24 @@
 
 <!-- [0] - if truthy, genital sensitivity is omitted -->
 <<widget "penis">><<silently>>
-	<<penissize>><<set _penissize_text to _text_output>>
-	<<if _penissize_text isnot "">>
-		<<set _penissize_text to _penissize_text + " ">>
+	<!-- Size, skip if mentioned this passage already -->
+	<<if _penisSizeDescribed>>
+		<<set _penissize_text to "">>
+	<<else>>
+		<<penissize>><<set _penissize_text to _text_output>>
+		<<if _penissize_text isnot "">>
+			<<set _penissize_text to _penissize_text + " ">>
+		<</if>>
 	<</if>>
-	<<genitalstate "penis">><<set _genital_state_text to _text_output>>
+	<!-- State, skip if mentioned this passage already -->
+	<<if _penisStateDescribed>>
+		<<set _genital_state_text to "">>
+	<<else>>
+		<<genitalstate "penis">><<set _genital_state_text to _text_output>>
+	<</if>>
 	<<set _text_output to "">>
-	<<if !_args[0]>>
+	<!-- Sensitivity, skip if mentioned this passage already -->
+	<<if !_args[0] and !_genitalSensitivityDescribed>>
 		<<genitalsensitivity>>
 	<</if>>
 	/* _args[1] is a flag to prevent .pluck() from altering state random when calling from overlays */
@@ -1682,6 +1704,7 @@
 	<<else>>
 		<<set _text_output to "">>
 	<</if>>
+	<<set _genitalSensitivityDescribed to true>>
 <</silently>><<print _text_output>><</widget>>
 
 <!--
@@ -2995,9 +3018,9 @@
 
 		<<if $leftarm is "bound" and $rightarm is "bound" and $exposed gte 1>>
 			With your arms bound, there's little you can do to shield your <<lewdness>> from prying eyes.
-			<<if !$uncomfortable.nude and $exposed gte 2 and $exhibitionism gte 95>>
+			<<if !$uncomfortable.nude and $exposed gte 2 and hasSexStat("exhibitionism", 6)>>
 				You quiver with excitement.
-			<<elseif !$uncomfortable.nude and $exposed is 1 and $exhibitionism gte 55>>
+			<<elseif !$uncomfortable.nude and $exposed is 1 and hasSexStat("exhibitionism", 4)>>
 				You quiver with excitement.
 			<</if>>
 		<<elseif ($exposed gte 2 and ($exhibitionism lt 95 or $uncomfortable.nude))
