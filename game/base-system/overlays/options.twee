@@ -13,16 +13,19 @@ IMPORTANT:
 		window.Theme.initControl();
 		onInputChanged(() => {
 			if(!T.optionsRefresh) T.optionsRefresh = true;
-			Wikifier.wikifyEval("<<setFont true>>");
+			if(T.globalThemeDefaults) Wikifier.wikifyEval("<<setFont true>>");
 		});
 	<</script>>
 <</widget>>
 
 <<widget "optionsgeneral">>
-	<<setupOptions>>
-	<span class="gold">General</span>
-	<br>
-
+	<<set _globalGeneralDefaults to JSON.parse(localStorage.getItem("dolDefaultGeneralSettings"))>>
+	<<if !_globalGeneralDefaults>>
+		<<set _globalGeneralDefaults to {}>>
+	<</if>>
+	<<if !_globalThemeDefaults>>
+		<<set _globalThemeDefaults to {}>>
+	<</if>>
 	<<if $debug is 1>>
 		/*<label><<checkbox "$notifyUpdate" false true autocheck>> Notify when there's a new game update available</label>
 		<br>*/
@@ -31,30 +34,102 @@ IMPORTANT:
 		<</link>>
 		<br><br>*/
 	<</if>>
-	<div>
-		<div class="settingsToggle">
+	<div class="settingsGrid">
+		<div>
+			<<button "Save Current As Default">>
+				<<set _toSaveDefaults to {}>>
+				<<if $options.general>><<set _toSaveDefaults.general to $options.general>><</if>>
+				<<if $options.dateFormat>><<set _toSaveDefaults.dateFormat to $options.dateFormat>><</if>>
+				<<if $options.fahrenheit>><<set _toSaveDefaults.fahrenheit to $options.fahrenheit>><</if>>
+				<<if $options.timestyle>><<set _toSaveDefaults.timestyle to $options.timestyle>><</if>>
+				<<if $options.mapMovement>><<set _toSaveDefaults.mapMovement to $options.mapMovement>><</if>>
+				<<if $options.mapLegacy>><<set _toSaveDefaults.mapLegacy to $options.mapLegacy>><</if>>
+				<<if $options.mapMarkers>><<set _toSaveDefaults.mapMarkers to $options.mapMarkers>><</if>>
+				<<if $options.mapTop>><<set _toSaveDefaults.mapTop to $options.mapTop>><</if>>
+				<<if $options.closeButtonMobile>><<set _toSaveDefaults.closeButtonMobile to $options.closeButtonMobile>><</if>>
+				<<if $options.passageCount>><<set _toSaveDefaults.passageCount to $options.passageCount>><</if>>
+				<<if $options.playtime>><<set _toSaveDefaults.playtime to $options.playtime>><</if>>
+				<<if $options.neverNudeMenus>><<set _toSaveDefaults.neverNudeMenus to $options.neverNudeMenus>><</if>>
+				<<if $options.autosaveDisabled>><<set _toSaveDefaults.autosaveDisabled to $options.autosaveDisabled>><</if>>
+				<<if $options.numberify_enabled>><<set _toSaveDefaults.numberify_enabled to $options.numberify_enabled>><</if>>
+				<<run localStorage.setItem("dolDefaultGeneralSettings",JSON.stringify(_toSaveDefaults))>>
+				<<replace #customOverlayContent>><<optionsgeneral>><</replace>>
+			<</button>>
+			<<button "Reset Defaults">>
+				<<run localStorage.removeItem("dolDefaultGeneralSettings")>>
+			<</button>>
+		</div>
+	</div>
+	<div class="settingsGrid">
+		<div class="settingsHeader options"><span class="gold">General</span></div>
+		<div class="settingsToggleItem">
 			<label>
 				<<checkbox "$options.neverNudeMenus" false true autocheck>>
 				Hide player nudity in menus
 			</label>
 		</div>
-		<div class="settingsToggle">
+		<div class="settingsToggleItem">
 			<label data-disabledif="V.ironmanmode===true">
 				<<checkbox "$options.autosaveDisabled" false true autocheck>> Disable autosave on sleeping
 			</label>
 		</div>
-		<div class="settingsToggle">
+		<div class="settingsToggleItem">
+			<span class="gold">Date Format:</span><<optionsThemeDefault "dateFormat">>
+			<br>
+			<label class="en-GB"><<radiobutton "$options.dateFormat" "en-GB" autocheck>> dd/mm/yyyy</label> |
+			<label class="en-US"><<radiobutton "$options.dateFormat" "en-US" autocheck>> mm/dd/yyyy</label> |
+			<label class="zh-CN"><<radiobutton "$options.dateFormat" "zh-CN" autocheck>> yyyy/mm/dd</label>
+		</div>
+		<div class="settingsToggleItem">
+			<span class="gold">Temperature Format:</span><<optionsThemeDefault "fahrenheit">>
+			<br>
+			<label><<checkbox "$options.fahrenheit" false true autocheck>> Use Fahrenheit for temperatures</label>
+		</div>
+		<div class="settingsToggleItemWide">
 			<label data-disabledif="!StartConfig.enableLinkNumberify">
 				<<checkbox "$options.numberify_enabled" 0 1 autocheck>> Enable numbered link navigation
 			</label>
 			<span class="tooltip-anchor linkBlue" tooltip="Allows navigation with keyboard">(?)</span>
 		</div>
-		<div style="clear:both;">/*Keep at end of toggles*/</div>
 	</div>
-	<br>
-	<span class="gold">Sidebar</span>
-	<div>
-		<div class="settingsToggle">
+	<hr>
+	<div class="settingsGrid">
+		<div class="settingsHeader options">Sidebar</div>
+		<div class="settingsToggleItem">
+			<span class="gold">Time format:</span>
+			<br>
+			<label><<radiobutton "$options.timestyle" "military" autocheck>> 24-hour</label> |
+			<label><<radiobutton "$options.timestyle" "ampm" autocheck>> 12-hour</label>
+		</div>
+		<div class="settingsToggleItem">
+			<span class="gold">Body shape:</span> <span class="tooltip-anchor linkBlue" tooltip="Separate from body type. This is a cosmetic change that does not count towards femininity.">(?)</span>
+			<br>
+			<<if !$options.genderBody>><<set $options.genderBody to "default">><</if>>
+			<label><<radiobutton "$options.genderBody" "default" autocheck>> Default</label> |
+			<label><<radiobutton "$options.genderBody" "m" autocheck>> Masculine</label> |
+			<label><<radiobutton "$options.genderBody" "a" autocheck>> Androgynous</label> |
+			<label><<radiobutton "$options.genderBody" "f" autocheck>> Feminine</label>
+		</div>
+		<div class="settingsToggleItem">
+			<span class="gold">Condoms display:</span>
+			<br>
+			<label><<radiovar "$options.condomsDisplay" "standard">><<updatesidebarimg>><</radiovar>> Standard</label> |
+			<label><<radiovar "$options.condomsDisplay" "none">><<updatesidebarimg>><</radiovar>> Hidden</label>
+		</div>
+		<div class="settingsToggleItem">
+			<span class="gold">Pepper sprays display:</span>
+			<br>
+			<label><<radiovar "$options.pepperSprayDisplay" "sprays">><<updatesidebarimg>><</radiovar>> Standard</label> |
+			<label><<radiovar "$options.pepperSprayDisplay" "compact">><<updatesidebarimg>><</radiovar>> Compact</label>
+			<label><<radiovar "$options.pepperSprayDisplay" "none">><<updatesidebarimg>><</radiovar>> Hidden</label>
+		</div>
+		<div class="settingsToggleItem">
+			<label><<checkbox "$options.tipdisable" "t" "f" autocheck>> Enable sidebar hints and tips</label>
+		</div>
+		<div class="settingsToggleItem">
+			<label><<checkbox "$options.debugdisable" "t" "f" autocheck>> Enable additional error messages</label>
+		</div>
+		<div class="settingsToggleItem">
 			Show stats when sidebar is closed:
 			<<listbox "$options.sidebarStats" autoselect>>
 				<<option "Disabled" "disabled">>
@@ -63,7 +138,7 @@ IMPORTANT:
 			<</listbox>>
 			<div class="mobile-rec gold">It's a good idea to enable this on mobile!</div>
 		</div>
-		<div class="settingsToggle">
+		<div class="settingsToggleItem">
 			Show clock when sidebar is closed:
 			<<listbox "$options.sidebarTime" autoselect>>
 				<<option "Disabled" "disabled">>
@@ -72,63 +147,28 @@ IMPORTANT:
 			<</listbox>>
 			<div class="mobile-rec gold">It's a good idea to enable this on mobile!</div>
 		</div>
-		<div class="settingsToggle">
-			Time format:
-			<label><<radiobutton "$options.timestyle" "military" autocheck>> 24-hour</label> |
-			<label><<radiobutton "$options.timestyle" "ampm" autocheck>> 12-hour</label>
-		</div>
-		<div class="settingsToggle">
-			<label><<checkbox "$options.oldclock" false true autocheck>> Use old clock style in the sidebar</label>
-		</div>
-		<div class="settingsToggle">
-			<label><<checkbox "$options.showCaptionText" false true autocheck>> Show Caption Text in Sidebar</label>
-		</div>
-		<div class="settingsToggle">
-			Condoms display:
-			<label><<radiovar "$options.condomsDisplay" "standard">><<updatesidebarimg>><</radiovar>> Standard</label> |
-			<label><<radiovar "$options.condomsDisplay" "none">><<updatesidebarimg>><</radiovar>> Hidden</label>
-		</div>
-		<div class="settingsToggle">
-			<<if !$options.genderBody>><<set $options.genderBody to "default">><</if>>
-			<label><<radiobutton "$options.genderBody" "default" autocheck>> Default</label> |
-			<label><<radiobutton "$options.genderBody" "m" autocheck>> Masculine</label> |
-			<label><<radiobutton "$options.genderBody" "a" autocheck>> Androgynous</label> |
-			<label><<radiobutton "$options.genderBody" "f" autocheck>> Feminine</label>
-		</div>
-		<div class="settingsToggle">
-			<label><<checkbox "$options.tipdisable" "t" "f" autocheck>> Enable sidebar hints and tips</label>
-		</div>
-		<div class="settingsToggle">
-			<label><<checkbox "$options.debugdisable" "t" "f" autocheck>> Enable additional error messages</label>
-		</div>
-		<div class="settingsToggle">
+		<div class="settingsToggleItem">
 			<label><<checkbox "$options.clothingCaption" false true autocheck>> Show clothing descriptions in sidebar <span class="tooltip-anchor linkBlue" tooltip="Still displays the description as a tooltip when hovering over the avatar when disabled.">(?)</span></label>
 		</div>
-		<div class="settingsToggle">
-			Pepper sprays display:
-			<<listbox "$options.pepperSprayDisplay" autoselect>>
-				<<option "Sprays" "sprays">>
-				<<option "Compact (dots)" "compact">>
-				<<option "None" "none">>
-			<</listbox>>
+		<div class="settingsToggleItem">
+			<label><<checkbox "$options.showCaptionText" false true autocheck>> Show caption text in sidebar</label>
 		</div>
-		<div style="clear:both;">/*Keep at end of toggles*/</div>
 	</div>
-	<br>
-	<span class="gold">Combat</span>
-	<div>
-		<div class="settingsToggle">
+	<hr>
+	<div class="settingsGrid">
+		<div class="settingsHeader options">Combat</div>
+		<div class="settingsToggleItem">
 			"Yourself" as a target:
 			<label><<radiobutton "$options.targetYourself" false autocheck>> Disabled</label> |
 			<label><<radiobutton "$options.targetYourself" true autocheck>> Enabled</label>
 		</div>
-		<div class="settingsToggle">
+		<div class="settingsToggleItem">
 			<label>
 				<<checkbox "$options.scrollRemember" false true autocheck>>
 				Restore scrolling position during combat
 			</label>
 		</div>
-		<div class="settingsToggle">
+		<div class="settingsToggleItemWide">
 			Combat Controls:
 			<<listbox "$options.combatControls" autoselect>>
 				<<option "Radio Buttons" "radio">>
@@ -137,44 +177,41 @@ IMPORTANT:
 				<<option "Lists (Width Limit)" "limitedLists">>
 			<</listbox>>
 		</div>
-		<div style="clear:both;">/*Keep at end of toggles*/</div>
 	</div>
 
 	<<if $map isnot undefined>>
-		<br>
-		<span class="gold">Map</span>
-		<div>
-			<div class="settingsToggle">
+		<hr>
+		<div class="settingsGrid">
+			<div class="settingsHeader options">Map</div>
+			<div class="settingsToggleItem">
 				<label data-target="images" data-disabledif="V.options.images===0"><<checkbox "$options.mapMovement" false true autocheck>> Enable map movement by clicking/touching the map icons</label>
 			</div>
-			<div class="settingsToggle">
+			<div class="settingsToggleItem">
 				<label data-target="images" data-disabledif="V.options.images===0"><<checkbox "$options.mapLegacy" false true autocheck>> Disable SVG map. Enable if town map is not visible.</label>
 			</div>
-			<div class="settingsToggle">
+			<div class="settingsToggleItem">
 				<label data-target="['images', 'maplegacy]" data-disabledif="V.options.images===0||V.options.mapLegacy"><<checkbox "$options.mapMarkers" false true autocheck>> Show clickable area on map</label>
 			</div>
-			<div class="settingsToggle">
+			<div class="settingsToggleItem">
 				<label data-target="images" data-disabledif="V.options.images===0"><<checkbox "$options.mapTop" false true autocheck>> Move the map above the map links</label>
 			</div>
-			<div style="clear:both;">/*Keep at end of toggles*/</div>
 		</div>
 	<</if>>
-	<br>
-	<span class="gold">Overlays</span>
-	<div>
-		<div class="settingsToggle">
-			Position of the close-button for overlay menus
+	<hr>
+	<div class="settingsGrid">
+		<div class="settingsHeader options">Overlays</div>
+		<div class="settingsToggleItemWide">
+			<span class="gold">Position of the close-button for overlay menus:</span>
 			<mouse class="tooltip linkBlue">(?)<span>Updated next time overlay is opened</span></mouse><br>
 			<label><<radiobutton "$options.closeButtonMobile" false autocheck>> Normal</label> |
 			<label><<radiobutton "$options.closeButtonMobile" true autocheck>> Mobile (Left-hand side)</label>
 		</div>
-		<div style="clear:both;">/*Keep at end of toggles*/</div>
 	</div>
-	<br>
-	<span class="gold">Extra Info</span>
-	<div>
-		<div class="settingsToggle">
-			Display passage count in the top right of the screen
+	<hr>
+	<div class="settingsGrid">
+		<div class="settingsHeader options">Extra Info</div>
+		<div class="settingsToggleItem">
+			<span class="gold">Display passage count in the top right of the screen:</span>
 			<br>
 			<label><<radiobutton "$options.passageCount" "disabled" autocheck>> Disable</label>
 			<br>
@@ -184,15 +221,14 @@ IMPORTANT:
 			<label><<radiobutton "$options.passageCount" "total" autocheck>> Passage Count</label>
 			<mouse class="tooltip linkBlue">(?)<span>Total number of times a new passage has been loaded (Clicking on links in most cases). Passages such as the settings are excluded. Not tracked in versions '0.3.12.X' and older</span></mouse>
 		</div>
-		<div class="settingsToggle">
-			Display play time in the top right of the screen
+		<div class="settingsToggleItem">
+			<span class="gold">Display play time in the top right of the screen:</span>
 			<mouse class="tooltip linkBlue">(?)<span>Formatted into 'h:mm:ss'. Be aware that leaving the game for hours alone, then saving will have its time tracked. To avoid, save the game before ending play and then load the save when you resume play. Not tracked in versions '0.3.13.X' and older</span></mouse>
 			<br>
 			<label><<radiobutton "$options.playtime" false autocheck>> Disable</label>
 			<br>
 			<label><<radiobutton "$options.playtime" true autocheck>> Enable</label>
 		</div>
-		<div style="clear:both;">/*Keep at end of toggles*/</div>
 	</div>
 
 	<<if $passage isnot "Start">>
@@ -207,85 +243,54 @@ IMPORTANT:
 
 <<widget "optionstheme">>
 	<<setupOptions>>
-
 	<<set _globalThemeDefaults to JSON.parse(localStorage.getItem("dolDefaultThemeSettings"))>>
 	<<if !_globalThemeDefaults>>
 		<<set _globalThemeDefaults to {}>>
 	<</if>>
-
-	<<button "Save Current As Default">>
-		<<set _toSaveDefaults to {}>>
-		<<if $options.theme>><<set _toSaveDefaults.theme to $options.theme>><</if>>
-		<<if $options.dateFormat>><<set _toSaveDefaults.dateFormat to $options.dateFormat>><</if>>
-		<<if $options.passageMaxWidth>><<set _toSaveDefaults.passageMaxWidth to $options.passageMaxWidth>><</if>>
-		<<if $options.passageLineHeight>><<set _toSaveDefaults.passageLineHeight to $options.passageLineHeight>><</if>>
-		<<if $options.overlayLineHeight>><<set _toSaveDefaults.overlayLineHeight to $options.overlayLineHeight>><</if>>
-		<<if $options.sidebarLineHeight>><<set _toSaveDefaults.sidebarLineHeight to $options.sidebarLineHeight>><</if>>
-		<<if $options.passageFontSize>><<set _toSaveDefaults.passageFontSize to $options.passageFontSize>><</if>>
-		<<if $options.overlayFontSize>><<set _toSaveDefaults.overlayFontSize to $options.overlayFontSize>><</if>>
-		<<if $options.sidebarFontSize>><<set _toSaveDefaults.sidebarFontSize to $options.sidebarFontSize>><</if>>
-		<<if $options.font>><<set _toSaveDefaults.font to $options.font>><</if>>
-		<<run localStorage.setItem("dolDefaultThemeSettings",JSON.stringify(_toSaveDefaults))>>
-		<<replace #customOverlayContent>><<optionstheme>><</replace>>
-	<</button>>
-	<<button "Reset Defaults">>
-		<<run localStorage.removeItem("dolDefaultThemeSettings")>>
-	<</button>>
-	<br><br>
-	<span class="gold">Theme</span><<optionsThemeDefault "theme">><mouse class="tooltip linkBlue">(!)<span>Currently unable to save as default.</span></mouse>
-	<br>
-	Theme:
-	<label><input type="radio" name="theme" value="system-default" /> Default</label> |
-	<label><input type="radio" name="theme" value="dark" /> Dark</label> |
-	<label><input type="radio" name="theme" value="arctic" /> Nord</label> |
-	<label><input type="radio" name="theme" value="zen" /> Zenburn</label> |
-	<label><input type="radio" name="theme" value="monokai" /> Monokai</label> |
-	<label><input type="radio" name="theme" value="storm" /> Storm</label> |
-	<label><input type="radio" name="theme" value="latte" /> Catppuccin Latte</label> |
-	<label><input type="radio" name="theme" value="frappe" /> Catppuccin Frappé</label> |
-	<label><input type="radio" name="theme" value="macchiato" /> Catppuccin Macchiato</label> |
-	<label><input type="radio" name="theme" value="mocha" /> Catppuccin Mocha</label> |
-	<br><br>
-
-	<span class="gold">Date Format</span><<optionsThemeDefault "dateFormat">>
-	<br>
-	<label><<radiobutton "$options.dateFormat" "en-GB" autocheck>> dd/mm/yyyy</label> |
-	<label><<radiobutton "$options.dateFormat" "en-US" autocheck>> mm/dd/yyyy</label> |
-	<label><<radiobutton "$options.dateFormat" "zh-CN" autocheck>> yyyy/mm/dd</label>
-	<br><br>
-
-	<span class="gold">Temperature Format</span><<optionsThemeDefault "dateFormat">>
-	<br>
-	<div class="settingsToggle">
-		<<checkbox "$options.fahrenheit" false true autocheck>> Use fahrenheit for temperatures
-	</div>
-	<br><br>
-
-	<<if $debug is 1>>
-		<!-- Known issues in the start menu, might cause other issues elsewhere -->
-		<span class="gold">Passage Max Width</span> <mouse class="tooltip linkBlue">(!)<span>May have issues with certain UI element.</span></mouse>
+	<div class="settingsGrid">
 		<div>
-			<div class="settingsToggle">
-				<<listbox "$options.passageMaxWidth" autoselect>>
-					<<option "Default" undefined>>
-					<<option "50em" 50>>
-					<<option "60em" 60>>
-					<<option "65em" 65>>
-					<<option "70em" 70>>
-					<<option "75em" 75>>
-					<<option "80em" 80>>
-				<</listbox>>
-				<<optionsThemeDefault "passageMaxWidth">>
-			</div>
-			<div style="clear:both;">/*Keep at end of toggles*/</div>
+			<<button "Save Current As Default">>
+				<<set _toSaveDefaults to {}>>
+				<<if $options.theme>><<set _toSaveDefaults.theme to $options.theme>><</if>>
+				<<if $options.passageMaxWidth>><<set _toSaveDefaults.passageMaxWidth to $options.passageMaxWidth>><</if>>
+				<<if $options.passageLineHeight>><<set _toSaveDefaults.passageLineHeight to $options.passageLineHeight>><</if>>
+				<<if $options.overlayLineHeight>><<set _toSaveDefaults.overlayLineHeight to $options.overlayLineHeight>><</if>>
+				<<if $options.sidebarLineHeight>><<set _toSaveDefaults.sidebarLineHeight to $options.sidebarLineHeight>><</if>>
+				<<if $options.passageFontSize>><<set _toSaveDefaults.passageFontSize to $options.passageFontSize>><</if>>
+				<<if $options.overlayFontSize>><<set _toSaveDefaults.overlayFontSize to $options.overlayFontSize>><</if>>
+				<<if $options.sidebarFontSize>><<set _toSaveDefaults.sidebarFontSize to $options.sidebarFontSize>><</if>>
+				<<if $options.font>><<set _toSaveDefaults.font to $options.font>><</if>>
+				<<run localStorage.setItem("dolDefaultThemeSettings",JSON.stringify(_toSaveDefaults))>>
+				<<replace #customOverlayContent>><<optionstheme>><</replace>>
+			<</button>>
+			<<button "Reset Defaults">>
+				<<run localStorage.removeItem("dolDefaultThemeSettings")>>
+			<</button>>
 		</div>
-		<br>
-	<</if>>
+	</div>
+	<div class="settingsGrid">
+		<div class="settingsHeader options">Theme<<optionsThemeDefault "theme">></div>
+		<div class="settingsToggleItemWide">
+			<span class="gold">Style:</span>
+			<label><input type="radio" name="theme" value="system-default" /> Default</label> |
+			<label><input type="radio" name="theme" value="dark" /> Dark</label> |
+			<label><input type="radio" name="theme" value="arctic" /> Nord</label> |
+			<label><input type="radio" name="theme" value="zen" /> Zenburn</label> |
+			<label><input type="radio" name="theme" value="monokai" /> Monokai</label> |
+			<label><input type="radio" name="theme" value="storm" /> Storm</label> |
+			<label><input type="radio" name="theme" value="latte" /> Catppuccin Latte</label> |
+			<label><input type="radio" name="theme" value="frappe" /> Catppuccin Frappé</label> |
+			<label><input type="radio" name="theme" value="macchiato" /> Catppuccin Macchiato</label> |
+			<label><input type="radio" name="theme" value="mocha" /> Catppuccin Mocha</label>
+			<div class="small-description">Selected styles cannot currently be saved as the 'default' option, though they will carry over to new saves.</div>
+		</div>
+	</div>
+	<hr>
 
-	<span class="gold">Line Height</span>
-	<div>
-		<div class="settingsToggle">
-			Passage
+	<div class="settingsGrid">
+		<div class="settingsHeader options">Line Height</div>
+		<div class="settingsToggleItem">
+			Passage:
 			<<listbox "$options.passageLineHeight" autoselect>>
 				<<option "Default" undefined>>
 				<<option "1" 1>>
@@ -296,7 +301,7 @@ IMPORTANT:
 			<</listbox>>
 			<<optionsThemeDefault "passageLineHeight">>
 		</div>
-		<div class="settingsToggle">
+		<div class="settingsToggleItem">
 			Overlay:
 			<<listbox "$options.overlayLineHeight" autoselect>>
 				<<option "Default" undefined>>
@@ -308,7 +313,7 @@ IMPORTANT:
 			<</listbox>>
 			<<optionsThemeDefault "overlayLineHeight">>
 		</div>
-		<div class="settingsToggle">
+		<div class="settingsToggleItemWide">
 			Sidebar:
 			<<listbox "$options.sidebarLineHeight" autoselect>>
 				<<option "Default" undefined>>
@@ -320,12 +325,12 @@ IMPORTANT:
 			<</listbox>>
 			<<optionsThemeDefault "sidebarLineHeight">>
 		</div>
-		<div style="clear:both;">/*Keep at end of toggles*/</div>
 	</div>
-	<br>
-	<span class="gold">Font Size</span>
-	<div>
-		<div class="settingsToggle">
+	<hr>
+
+	<div class="settingsGrid">
+		<div class="settingsHeader options">Font Size</div>
+		<div class="settingsToggleItem">
 			Passage:
 			<<listbox "$options.passageFontSize" autoselect>>
 				<<option "Default" undefined>>
@@ -338,8 +343,8 @@ IMPORTANT:
 			<</listbox>>
 			<<optionsThemeDefault "passageFontSize">>
 		</div>
-		<div class="settingsToggle">
-			Overlay <mouse class="tooltip linkBlue">(?)<span>Default is equal to passage font size.</span></mouse>:
+		<div class="settingsToggleItem">
+			Overlay <mouse class="tooltip linkBlue">(?)<span>Default is equivalent to passage font size.</span></mouse>:
 			<<listbox "$options.overlayFontSize" autoselect>>
 				<<option "Default" undefined>>
 				<<option "10px" 10>>
@@ -351,7 +356,7 @@ IMPORTANT:
 			<</listbox>>
 			<<optionsThemeDefault "overlayFontSize">>
 		</div>
-		<div class="settingsToggle">
+		<div class="settingsToggleItemWide">
 			Sidebar:
 			<<listbox "$options.sidebarFontSize" autoselect>>
 				<<option "Default" undefined>>
@@ -363,40 +368,42 @@ IMPORTANT:
 			<</listbox>>
 			<<optionsThemeDefault "sidebarFontSize">>
 		</div>
-		<div style="clear:both;">/*Keep at end of toggles*/</div>
 	</div>
-	<br>
+	<hr>
 
-	<span class="gold">Font Style</span> <<optionsThemeDefault "font">>
-	<br>
-	<label><<radiobutton "$options.font" "" `$options.font is undefined ? 'checked' : 'autocheck'`>> Use system default</label>
-	<br>
-	Sans-serif:
-	<label class="Arial"><<radiobutton "$options.font" "Arial" autocheck>> Arial</label> |
-	<label class="Verdana"><<radiobutton "$options.font" "Verdana" autocheck>> Verdana</label>
-	<br>
-	Serif:
-	<label class="TimesNewRoman"><<radiobutton "$options.font" "TimesNewRoman" autocheck>> Times New Roman</label> |
-	<label class="Georgia"><<radiobutton "$options.font" "Georgia" autocheck>> Georgia</label> |
-	<label class="Garamond"><<radiobutton "$options.font" "Garamond" autocheck>> Garamond</label>
-	<br>
-	Monospace:
-	<label class="CourierNew"><<radiobutton "$options.font" "CourierNew" autocheck>> Courier New</label> |
-	<label class="LucidaConsole"><<radiobutton "$options.font" "LucidaConsole" autocheck>> Lucida Console</label> |
-	<label class="Monaco"><<radiobutton "$options.font" "Monaco" autocheck>> Monaco</label>
-	<br>
-	Accessibility:
-	<label class="OpenDyslexicMono"><<radiobutton "$options.font" "OpenDyslexicMono" autocheck>> OpenDyslexic Mono</label> |
-	<label class="ComicSans"><<radiobutton "$options.font" "ComicSans" autocheck>> Comic Sans</label>
-
-
-	<br><br>
+	<div class="settingsGrid">
+		<div class="settingsHeader options">Font Style</div>
+		<div class="settingsToggleItemWide">
+			<<optionsThemeDefault "font">>
+			<label><<radiobutton "$options.font" "" `$options.font is undefined ? 'checked' : 'autocheck'`>> Use system default</label>
+			<br>
+			<span class="gold">Sans-serif:</span>
+			<label class="Arial"><<radiobutton "$options.font" "Arial" autocheck>> Arial</label> |
+			<label class="Verdana"><<radiobutton "$options.font" "Verdana" autocheck>> Verdana</label>
+			<br>
+			<span class="gold">Serif:</span>
+			<label class="TimesNewRoman"><<radiobutton "$options.font" "TimesNewRoman" autocheck>> Times New Roman</label> |
+			<label class="Georgia"><<radiobutton "$options.font" "Georgia" autocheck>> Georgia</label> |
+			<label class="Garamond"><<radiobutton "$options.font" "Garamond" autocheck>> Garamond</label>
+			<br>
+			<span class="gold">Monospace:</span>
+			<label class="CourierNew"><<radiobutton "$options.font" "CourierNew" autocheck>> Courier New</label> |
+			<label class="LucidaConsole"><<radiobutton "$options.font" "LucidaConsole" autocheck>> Lucida Console</label> |
+			<label class="Monaco"><<radiobutton "$options.font" "Monaco" autocheck>> Monaco</label>
+			<br>
+			<span class="gold">Accessibility:</span>
+			<label class="OpenDyslexicMono"><<radiobutton "$options.font" "OpenDyslexicMono" autocheck>> OpenDyslexic Mono</label> |
+			<label class="ComicSans"><<radiobutton "$options.font" "ComicSans" autocheck>> Comic Sans</label>
+		</div>
+	</div>
 <</widget>>
 
 <<widget "optionsThemeDefault">>
 	<<if _args[0]>>
 		<span @id="'optionsThemeDefault-' + _args[0]">
-			<<if _globalThemeDefaults[_args[0]]>> Default: (<<print _globalThemeDefaults[_args[0]]>>)<</if>>
+			<<if _globalThemeDefaults[_args[0]]>> Default: (<<print _globalThemeDefaults[_args[0]]>>)
+			<<elseif _globalGeneralDefaults[_args[0]]>> Default: (<<print _globalGeneralDefaults[_args[0]]>>)
+			<</if>>
 		</span>
 	<</if>>
 <</widget>>
@@ -404,210 +411,199 @@ IMPORTANT:
 <<widget "optionsperformance">>
 	<<setupOptions>>
 	<<if StartConfig.enableImages is true>>
-		<span class="gold">Images</span>
-		<br>
-		<div>
-			<div class="settingsToggle">
+		<div class="settingsGrid">
+			<div class="settingsHeader options">Images</div>
+			<div class="settingsToggleItem">
 				<label><<checkbox "$options.images" 0 1 autocheck>> Enable images</label>
 				<mouse class="tooltip-small linkBlue">(?)<span>Images may not load properly on older Androids</span></mouse>
 			</div>
-			<div class="settingsToggle">
+			<div class="settingsToggleItem">
 				<label data-target="options.images" data-disabledif="V.options.images===0"><<checkbox "$options.combatImages" 0 1 autocheck>> Enable combat images</label>
 			</div>
 
-			<div class="settingsToggle">
+			<div class="settingsToggleItem">
 				<label data-target="options.images" data-disabledif="V.options.images===0">
-					<<checkbox "$options.bodywritingImages" false true autocheck>> Enable body-writing Images
+					<<checkbox "$options.bodywritingImages" false true autocheck>> Enable bodywriting images
 					<mouse class="tooltip-small linkBlue">(?)<span>Disabling may improve performance and potentially prevent images from not loading correctly</span></mouse>
 				</label>
 			</div>
-			<div class="settingsToggle">
+			<div class="settingsToggleItem">
 				<label data-target="options.images" data-disabledif="V.options.images===0"><<checkbox "$options.silhouetteEnabled" false true autocheck>> Enable NPC silhouettes</label>
 			</div>
-			<div class="settingsToggle">
+			<div class="settingsToggleItem">
 				<label data-target="options.images" data-disabledif="V.options.images===0">
 					<<checkbox "$options.tanImgEnabled" false true autocheck>> Visual representation of the player's and NPCs' skin colour
 					<mouse class="tooltip-small linkBlue">(?)<span>May hinder performance on some devices</span></mouse>
 				</label>
 			</div>
-			<div class="settingsToggle">
+			<div class="settingsToggleItem">
 				<label data-target='["options.images", "tanimgenabled"]' data-disabledif="V.options.images===0||V.options.tanImgEnabled===false">
 					<<checkbox "$options.tanningEnabled" false true autocheck>> Tanning changes due to sun exposure
 					<mouse class="tooltip-small linkBlue">(?)<span>Option to disable may be removed at a later date</span></mouse>
 				</label>
 			</div>
-			<div style="clear:both;">/*Keep at end of toggles*/</div>
 		</div>
-		<br>
-		<span class="gold">Rendering</span>
-		<br>
-		<div class="description">Close the options menu for the change to apply.</div>
-		<div>
-			<div class="settingsToggle">
+		<hr>
+		<div class="settingsGrid">
+			<div class="settingsHeader options">Rendering</div>
+			<div class="settingsToggleItem">
 				<label data-target="options.images" data-disabledif="V.options.images===0"><<checkbox "$options.weatherUpdate" false true autocheck>> Use new weather renderer for sidebar</label>
 			</div>
-		</div>
-		<div>
-			<div class="settingsToggle">
+			<div class="settingsToggleItem">
 				<label data-target='["options.images", "weatherupdate"]' data-disabledif="V.options.images===0||V.options.weatherUpdate===false"><<checkbox "$options.reflections" false true autocheck>> Render water reflections
 					<span class="linkBlue" tooltip="Could cause performance issues on old devices.">(?)</span>
 				</label>
 			</div>
+			<div class="description">Close the options menu for the change to apply.</div>
 		</div>
-		<br><br><br>
-		<span class="gold">Animations</span>
-		<div>
-			<div class="settingsToggle">
+		<hr>
+		<div class="settingsGrid">
+			<div class="settingsHeader options">Animations</div>
+			<div class="settingsToggleItem">
 				<label data-target="options.images" data-disabledif="V.options.images===0"><<checkbox "$options.sidebarAnimations" false true autocheck>> Sidebar character animations</label>
 			</div>
-			<div class="settingsToggle">
+			<div class="settingsToggleItem">
 				<label data-target='["options.images", "sidebaranimations"]' data-disabledif="V.options.images===0||V.options.sidebarAnimations===false"><<checkbox "$options.blinkingEnabled" false true autocheck>> Animate eyes blinking</label>
 			</div>
-			<div class="settingsToggle">
+			<div class="settingsToggleItemWide">
 				<label data-target="images" data-disabledif="V.options.images===0||V.options.combatImages===0">
 					<<checkbox "$options.combatAnimations" false true autocheck>> Combat animations
 					<mouse class="tooltip-small linkBlue">(?)<span>Disabling may help improve performance and prevent images from loading incorrectly. Gif images will not be affected. Try disabling sidebar images first</span></mouse>
 				</label>
 			</div>
 			<<if $eyelidTEST is true>>
-				<div class="settingsToggle">
+				<div class="settingsToggleItem">
 					<label data-target='["options.images", "sidebaranimations"]' data-disabledif="V.options.images===0||V.options.sidebarAnimations===false"><<checkbox "$options.halfClosedEnabled" false true autocheck>> Enable half-closed eyes graphics</label></div>
 					<div class="description">Draw eyelids in sidebar as half-closed when highly aroused.
 				</div>
 			<</if>>
-			<div style="clear:both;">/*Keep at end of toggles*/</div>
 		</div>
-		<br>
-		<span class="gold">Character Lighting</span>
+		<hr>
 		<div>
-			<div class="settingsToggle" onchange="Renderer.refresh(Renderer.lastModel);">
-				<label data-target="options.images" data-disabledif="V.options.images===0">
-					<<checkbox "$options.characterLightEnabled" false true autocheck>> Enable character lighting
-				</label>
-			</div>
-			<div style="clear:both;">/*Keep at end of toggles*/</div>
-			<div data-target='["images", "characterLightEnabled"]' data-disabledif="V.options.images===0||V.options.characterLightEnabled===false" oninput="Renderer.refresh(Renderer.lastModel);">
-				<div class="settingsToggle">
+			<div class="settingsGrid" data-target='["images", "characterLightEnabled"]' data-disabledif="V.options.images===0||V.options.characterLightEnabled===false" oninput="new Wikifier(null, '<<updatesidebarimg>>')">
+				<div class="settingsHeader options">Character Lighting</div>
+				<div class="settingsToggleItem">
 					<label>
 						Spotlight<br>
 						<<numberslider "$options.lightSpotlight" $options.lightSpotlight 0 1 0.05>>
 					</label>
 				</div>
-				<div class="settingsToggle">
+				<div class="settingsToggleItem">
 					<label>
 						Gradient<br>
 						<<numberslider "$options.lightGradient" $options.lightGradient 0 1 0.05>>
 					</label>
 				</div>
-				<div class="settingsToggle">
+				<div class="settingsToggleItem">
 					<label>
 						Glow<br>
 						<<numberslider "$options.lightGlow" $options.lightGlow 0 1 0.05>>
 					</label>
 				</div>
-				<div class="settingsToggle">
+				<div class="settingsToggleItem">
 					<label>
 						Flat<br>
 						<<numberslider "$options.lightFlat" $options.lightFlat 0 1 0.05>>
 					</label>
 				</div>
-				<div class="settingsToggle">
+				<div class="settingsToggleItem">
 					<label data-target="images" data-disabledif="V.options.images===0||V.options.combatImages===0">
 						Combat Light<br>
 						<<numberslider "$options.lightCombat" $options.lightCombat 0 1 0.05>>
 					</label>
 				</div>
-				<div class="settingsToggle">
+				<div class="settingsToggleItem">
 					<label>
-						Angel/Devil TF colour component<br>
+						Colour Component<br>
 						<<numberslider "$options.lightTFColor" $options.lightTFColor 0 1 0.05>>
+						<span class="description">Requires Angel/Demon transformation</span>
 					</label>
 				</div>
 			</div>
-			<div style="clear:both;">/*Keep at end of toggles*/</div>
+			<div style="margin-left: 10px" onchange="new Wikifier(null, '<<updatesidebarimg>>')">
+				<label data-target="options.images" data-disabledif="V.options.images===0">
+					<<checkbox "$options.characterLightEnabled" false true autocheck>> Enable character lighting
+				</label>
+			</div>
 		</div>
 	<<else>>
 		<br>
 		Images disabled
 	<</if>>
-	<br>
-	<span class="gold">History depth</span>
-	<br>
-	<div class="description">Enables going back in history up to N-1 passages.</div>
-	<div class="settingsToggle">
-		States saved to memory:
-		<<numberslider "$options.maxStates" `$options.maxStates gt 20 ? 20 : $options.maxStates` 1 20 1 $ironmanmode>>
-
-		States saved to session storage <mouse class="tooltip-small linkBlue">(?)<span>Bigger value = worse performance. Only useful for restoring the game state after F5 or session reload. Won't save more states than the slider above allows.</span></mouse>
-		<<numberslider "$options.maxSessionStates" `$options.maxSessionStates gt 20 ? 20 : $options.maxSessionStates` 0 20 1 $ironmanmode>>
-
-		<label>
-			<<ind>><<checkbox "$options.historyControls" false true autocheck>> Display history controls in the sidebar
-		</label>
+	<hr>
+	<div class="settingsGrid">
+		<div class="settingsHeader options">History Depth</div>
+		<div class="settingsToggleItem">
+			Enables going back in history up to N-1 passages. Useful for reporting bugs or undoing decisions.
+			<hr>
+			<label>
+				<<checkbox "$options.historyControls" false true autocheck>> Display history controls in the sidebar
+			</label>
+		</div>
+		<div class="settingsToggleItem">
+			<span class="gold">States saved to memory:</span>
+			<<numberslider "$options.maxStates" `$options.maxStates gt 20 ? 20 : $options.maxStates` 1 20 1 $ironmanmode>>
+			<br><br>
+			<span class="gold">States saved to session storage</span> <mouse class="tooltip-small linkBlue">(?)<span>Bigger value = worse performance. Only useful for restoring the game state after F5 or session reload. Won't save more states than the slider above allows.</span></mouse>
+			<<numberslider "$options.maxSessionStates" `$options.maxSessionStates gt 20 ? 20 : $options.maxSessionStates` 0 20 1 $ironmanmode>>
+		</div>
 	</div>
-	<br><br>
 <</widget>>
 
 <<widget "optionsadvanced">>
 	<<setupOptions>>
-	<span class="gold">Advanced settings</span>
-	<div>
-		<div class="settingsToggle">
+	<div class="settingsGrid">
+		<div class="settingsHeader options">Advanced Settings</div>
+		<div class="settingsToggleItem">
 			<label>
 				<<checkbox "$options.numpad" false true autocheck>>
 				Enable numpad
 				<mouse class="tooltip-small linkBlue">(?)<span>Useful on mobile if links break due to translation software</span></mouse>
 			</label>
 		</div>
-		<div class="settingsToggle">
-			<label>
-				<<checkbox "$options.newWardrobeStyle" true false autocheck>>
-				Use the old wardrobe style
-			</label>
-		</div>
-		<div class="settingsToggle">
+		<div class="settingsToggleItem">
 			<label>
 				<<checkbox "$options.useNarrowMarket" false true autocheck>>
 				Use "narrow screen" version of the market inventory
 			</label>
 		</div>
-		<div class="settingsToggle">
-			<label>
-				<<checkbox "$options.skipStatisticsConfirmation" false true autocheck>>
-				Skip asking for confirmation when viewing Extra Stats
-			</label>
-		</div>
-		<div class="settingsToggle">
+		<div class="settingsToggleItem">
 			<label><<checkbox "$options.showDebugRenderer" false true autocheck>> Enable renderer debugger</label>
 		</div>
-		<div class="settingsToggle">
+		<div class="settingsToggleItem">
 			<label onclick="setTimeout(() => {toggleConfirmDialogUponTabClose();}, 100)">
 				<<checkbox "$options.confirmDialogUponTabClose" false true autocheck>>
 				Prompt confirmation dialog upon closing tab
 			</label>
 		</div>
-		<div style="clear:both;">/*Keep at end of toggles*/</div>
 	</div>
-	<br>
-	<span class="gold">Game Zoom</span>
-	<mouse class="tooltip linkBlue">(?)<span>Will allow you to adjust the size of game elements and text.
-	<span class="red">
-		Please be careful with this setting! Only save if you are happy with the changes made, as reloading the game will reset it to the last value used in that save.
-		Depending on the device and browser, the setting may break entirely, and may cause unexpected effects.
-	</span></span></mouse>
-	<br>
-	<span class="red">Not supported in all browsers</span>
-	<br>
-	<br>
-
-	<<numberslider "$options.zoom" $options.zoom 50 200 1>>
-	<input type="button" value="Set" onclick='zoom()'/>
-	<input type="button" value="Reset" onclick='zoom(100)'/>
+	<hr>
+	<div class="settingsGrid">
+		<div class="settingsHeader options">Game Zoom</div>
+		<div class="settingsToggleItemWide">
+				<span class="gold">Zoom Size:</span>
+				<mouse class="tooltip linkBlue">(?)
+					<span>Will allow you to adjust the size of game elements and text.
+						<span class="red">
+							Please be careful with this setting! Only save if you are happy with the changes made, as reloading the game will reset it to the last value used in that save.
+							Depending on the device and browser, the setting may break entirely, and may cause unexpected effects.
+						</span>
+					</span>
+				</mouse>
+				<br>
+				<span class="description red">Not supported in all browsers</span>
+				<br>
+				<<numberslider "$options.zoom" $options.zoom 50 200 1>>
+				<br><br>
+				<input type="button" value="Set" onclick='zoom()'/>
+				<input type="button" value="Reset" onclick='zoom(100)'/>
+		</div>
+	</div>
 <</widget>>
 
 <<widget "optionsinformation">>
 	<div class="p-2 text-align-center">
-		<h3>People of interest</h3>
+		<h3>People of Interest</h3>
 
 		<div class="m-2">
 			<span class="gold">Creator: </span><span>Vrelnir</span>
@@ -618,7 +614,7 @@ IMPORTANT:
 	</div>
 
 	<div class="p-2 text-align-center">
-		<h3>Useful resources</h3>
+		<h3>Useful Resources</h3>
 
 		<<linkinformation>>
 

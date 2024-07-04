@@ -601,6 +601,53 @@ Config.navigation.override = function (dest) {
 			case "Beach Cave Rope Over Top":
 				return "Beach Cave Rope Top";
 
+			case "Museum Box":
+				return "Museum Waterlogged Ivory Box";
+			case "Museum Silver Ring":
+				return "Museum Worn Silver Ring";
+			case "Museum Gold Necklace":
+				return "Museum Ornate Gold Necklace";
+			case "Museum Gold Chastity Belt":
+				return "Museum Golden Chastity Belt";
+			case "Museum Ivory Necklace":
+				return "Museum Immaculate Ivory Necklace";
+			case "Museum Crystal":
+				return "Museum Arousing Crystal";
+			case "Museum Horn":
+				return "Museum Hunting Horn";
+			case "Museum Watch":
+				return "Museum Old Watch";
+			case "Museum Dildo":
+				return "Museum Odd Medical Aid";
+			case "Museum Candlestick":
+				return "Museum Noble Candle Stick";
+			case "Museum Arrow":
+				return "Museum Mossy Forest Arrow";
+			case "Museum Dagger":
+				return "Museum Rusted Forest Dagger";
+			case "Museum Gem":
+				return "Museum Pulsing Forest Gem";
+			case "Museum Hourglass":
+				return "Museum Inscribed Hourglass";
+			case "Museum Cup":
+				return "Museum Discarded Cup";
+			case "Museum Burner":
+				return "Museum Incense Burner";
+			case "Museum Brass Statuette":
+				return "Museum Forgotten Brass Statuette";
+			case "Museum Grenade":
+				return "Museum Old Grenade";
+			case "Museum Bell":
+				return "Museum Sonorous Bell";
+			case "Museum Shell":
+				return "Museum Artillery Shell";
+			case "Museum Hourglass":
+				return "Museum Inscribed Hourglass";
+			case "Museum Mine Sign":
+				return "Museum Bailey Sign";
+			case "Museum Island Arrow":
+				return "Museum Islander Arrow";
+
 			default:
 				return false;
 		}
