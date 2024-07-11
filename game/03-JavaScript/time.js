@@ -948,7 +948,8 @@ function minutePassed(minutes) {
 
 	parasiteProgressTime(minutes);
 	parasiteProgressTime(minutes, "vagina");
-	if (isPlayerNonparasitePregnancyEnding()) {
+	// eslint-disable-next-line no-undef
+	if (isPregnancyEnding()) {
 		// To prevent new events from occurring, allowing players to more easily go to the hospital or similar locations
 		V.eventskip = 1;
 		V.stress += Math.floor(minutes * 40);

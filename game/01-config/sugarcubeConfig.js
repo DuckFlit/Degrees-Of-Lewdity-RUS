@@ -594,6 +594,9 @@ Config.navigation.override = function (dest) {
 			case "Beach Cave Rope Over Top":
 				return "Beach Cave Rope Top";
 
+			case "Prison Wren Intro Met":
+				return "Prison Wren Intro";
+
 			case "Museum Box":
 				return "Museum Waterlogged Ivory Box";
 			case "Museum Silver Ring":
@@ -634,8 +637,6 @@ Config.navigation.override = function (dest) {
 				return "Museum Sonorous Bell";
 			case "Museum Shell":
 				return "Museum Artillery Shell";
-			case "Museum Hourglass":
-				return "Museum Inscribed Hourglass";
 			case "Museum Mine Sign":
 				return "Museum Bailey Sign";
 			case "Museum Island Arrow":
