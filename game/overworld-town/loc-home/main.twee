@@ -2166,6 +2166,7 @@ You snuggle under the covers with Robin. You can feel the heat from <<his>> <<pr
 :: Orphanage
 <<set $outside to 0>><<set $location to "home">><<home_effects>><<effects>>
 <<set _robin to statusCheck("Robin")>>
+<<set _robinAtOrphanage to ["orphanage","bath","sleep"].includes(_robin_location)>>
 
 You are in the main hall of the orphanage.
 
@@ -2251,7 +2252,7 @@ You are in the main hall of the orphanage.
 	<<if $renttime lte 0>>
 		"Pay your dues next time so we won't have to go through this again. Speaking of which..." <<He>> holds out <<his>> hand.
 		<<endevent>>
-		<<if $robinfirstrentfight and ($baileypaychain lt 2 or $renttime lte -1)>>
+		<<if $robinfirstrentfight and ($baileypaychain lt 2 or $renttime lte -1) and _robinAtOrphanage>>
 			<<rentduerobin 0>>
 		<<else>>
 			<<rentdue 0>>
@@ -2287,7 +2288,7 @@ You are in the main hall of the orphanage.
 		<<link [[Next|Bedroom]]>><<endevent>><</link>>
 		<br>
 	<</if>>
-<<elseif $robinmissing is "pillory" and !$robinPillory.known and Time.hour gte 7 and Time.hour lte 15>>
+<<elseif $robinmissing is "pillory" and !$robinPillory.known and $robinPillory.active and Time.hour gte 7 and Time.hour lte 15>>
 	<<generatey1>><<person1>>
 	<<npc Robin 2>>
 
@@ -2371,8 +2372,7 @@ You are in the main hall of the orphanage.
 <<elseif $renttime lte 0>>
 	<<set $bus to "home">>
 	A hand rests on your shoulder from behind. <span class="red">It's Bailey.</span>
-	<br><br>
-	<<if $robinfirstrentfight and ($baileypaychain lt 2 or $renttime lte -1)>>
+	<<if $robinfirstrentfight and ($baileypaychain lt 2 or $renttime lte -1) and _robinAtOrphanage>>
 		<<rentduerobin 0>>
 	<<else>>
 		<<rentdue 0>>
@@ -3044,12 +3044,8 @@ Attitudes
 <</if>>
 <br><br>
 
-<<if $robinfirstrentfight>> <!-- the first robin fight has already happened -->
-	<<if !["sleep", "orphanage"].includes(_robin_location)>>
-		<<rentduerobin 0>>
-	<<else>>
-		<<rentduerobin 1>>
-	<</if>>
+<<if $robinfirstrentfight and ["orphanage","bath","sleep"].includes(_robin_location)>> <!-- the first robin fight has already happened -->
+	<<rentduerobin `!["sleep", "orphanage"].includes(_robin_location)`>>
 <<else>>
 	<<if ["sleep", "orphanage"].includes(_robin_location) and $inRobinsRoom>>
 		<<rentdue 1>> <!-- Robin is in the room with the PC -->
