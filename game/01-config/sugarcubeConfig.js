@@ -154,13 +154,6 @@ window.StartConfig.version_numeric = tmpver[0] * 1000000 + tmpver[1] * 10000 + t
 
 Config.saves.autosave = "autosave";
 
-Config.saves.isAllowed = function () {
-	if (tags().includes("nosave")) {
-		return false;
-	}
-	return true;
-};
-
 importStyles("style.css")
 	.then(function () {
 		console.log("External Style Sheet Active");
