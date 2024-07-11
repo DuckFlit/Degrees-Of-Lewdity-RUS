@@ -3682,6 +3682,15 @@
 		<<undress "wardrobe">>
 		<<storeon "whitneyShopping">>
 	<<else>>
+		/* Remember the colours used */
+		<<set _itemColours to {}>>
+		<<run Object.entries($worn).forEach(([slot, item]) => {
+			if (item.index) {
+				T.itemColours[slot] = {};
+				if (item.colour) T.itemColours[slot].colour = item.colour;
+				if (item.accessory_colour) T.itemColours[slot].accessory_colour = item.accessory_colour;
+			}
+		})>>
 		<<headruined true>>
 		<<faceruined true>>
 		<<upperruined true>>
@@ -3693,7 +3702,9 @@
 		<<feetruined true>>
 		<<storeon "whitneyShopping">>
 		<<run Object.entries(_whitneyClothingChoices[$whitneyClothingChoice.last()].items).forEach(([slot, item]) => {
-			wikifier("generalWear", slot, item[0], item[1] ? `"${item[1]}"` : undefined, item[2] ? `"${item[2]}"` : undefined);
+			let colour = T.itemColours[slot]?.colour || item[1];
+			let accessory_colour = T.itemColours[slot]?.accessory_colour || item[2];
+			wikifier("generalWear", slot, item[0], `"${colour}"`, `"${accessory_colour}"`);
 		})>>
 	<</if>>
 <</widget>>
