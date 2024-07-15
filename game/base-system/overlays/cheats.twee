@@ -103,7 +103,7 @@
 		<br>
 	<</if>>
 
-	Infinite spray: <span id="statsinfinitespray"><<print ($infinitespray ? "on" : "off")>></span> |
+	Infinite spray: <span id="statsinfinitespray"><<print ($infinitespray ? "On" : "Off")>></span> |
 	<<link "Change">>
 		<<if $infinitespray is 1>>
 			<<set $infinitespray to 0>>
@@ -111,12 +111,12 @@
 			<<spray 5>>
 			<<set $infinitespray to 1>>
 		<</if>>
-		<<replace "#statsinfinitespray">><<print ($infinitespray ? "on" : "off")>><</replace>>
+		<<replace "#statsinfinitespray">><<print ($infinitespray ? "On" : "Off")>><</replace>>
 	<</link>>
 	<br>
 
 	<<if $debug is 1>>
-		Pheromones: <span id="statsalluretest">$alluretest</span> |
+		Pheromones (DEBUG): <span id="statsalluretest"><<= $alluretest ? "On" : "Off">></span> |
 		<<link "Change">>
 			<<if $alluretest is 1>>
 				<<set $alluretest to 0>>
@@ -129,145 +129,42 @@
 	<</if>>
 	<br>
 
-	<span class="gold">Player Body</span>
+	<span class="gold">Body</span> <mouse class="tooltip linkBlue">(?)<span>Changing the player's genitalia will wash the player of lewd fluids, to prevent them from lingering on nonexisting body parts.</span></mouse>
 	<br>
-	<<if _inWardrobe>>
-		/*passage change is intentional to allow the players to quickly see the visual differences*/
-		Current Gender: <<gender>>
-		<mouse class="tooltip linkBlue">(?)<span>This has other effects such as washing the player to prevent issues from occuring.</span></mouse>
-		<br>
-		<<if $earSlime.growth gt 50>>
-			Ear Slime current growth currently preventing gender changing. Remove the ear slime to enable these cheats again.
-		<<elseif $sexStats.vagina.menstruation.currentState is "normal">>
-			Change to:
-			<<if $player.gender isnot "m">>
-				<<link [[Become boy|$passage]]>>
-					<<wash>>
-					<<set $vaginause to "none">>
-					<<set $vaginastate to "none">>
-					<<set $penisuse to 0>>
-					<<set $penisstate to 0>>
-					<<set $player.gender to "m">>
-					<<set $player.sex to "m">>
-					<<set $player.ballsExist to true>>
-					<<set $player.penisExist to true>>
-					<<set $player.vaginaExist to false>>
-					<<set $sexStats.vagina.menstruation.running = false>>
-				<</link>> |
-			<</if>>
-			<<if $player.gender isnot "f">>
-				<<link [[Become girl|$passage]]>>
-					<<wash>>
-					<<set $vaginause to 0>>
-					<<set $vaginastate to 0>>
-					<<set $penisuse to "none">>
-					<<set $penisstate to "none">>
-					<<set $player.gender to "f">>
-					<<set $player.sex to "f">>
-					<<set $player.ballsExist to false>>
-					<<set $player.penisExist to false>>
-					<<set $player.vaginaExist to true>>
-					<<set $sexStats.vagina.menstruation.running = true>>
-				<</link>> |
-			<</if>>
-			<<if $player.gender isnot "h">>
-				<<link [[Become hermaphrodite|$passage]]>>
-					<<wash>>
-					<<set $vaginause to 0>>
-					<<set $vaginastate to 0>>
-					<<set $penisuse to 0>>
-					<<set $penisstate to 0>>
-					<<set $player.gender to "h">>
-					<<set $player.sex to "h">>
-					<<set $player.penisExist to true>>
-					<<set $player.vaginaExist to true>>
-					<<set $sexStats.vagina.menstruation.running = true>>
-				<</link>> |
-			<</if>>
-		<<else>>
-			Gender can only be changed when you're not pregnant to prevent potential issues.
-		<</if>>
-		<<if $player.gender is "h">>
-			<br><br>
-			Hermaphrodite Balls: <span id="statsBallsExist"><<print $player.ballsExist>></span> |
-			<<link [[Change|$passage]]>>
-				<<set $player.ballsExist to clone(!$player.ballsExist)>>
-				<<replace #statsBallsExist>><<print $player.ballsExist>><</replace>>
-			<</link>> |
-		<</if>>
-	<<else>>
-		Gender can only be changed when accessing your wardrobe to prevent potential issues.
-	<</if>>
-	<br><br>
+	Sex:
+	<span id="statsGender">
+		<<cheatsGender>>
+	</span>
+	<br>
 	<<set _gender_body_words to {"m": "Masculine", "f": "Feminine", "a": "Androgynous"}>>
 	Body type:
 	<span id="statsBodyType">
-		<<print _gender_body_words[$player.gender_body]>>
+		<<cheatsBody>>
 	</span>
 	<br>
-	<<link "Masculine">>
-		<<set $player.gender_body to "m">>
-		<<replace "#statsBodyType">><<print _gender_body_words[$player.gender_body]>><</replace>><<updatesidebarimg>>
-	<</link>> |
-	<<link "Feminine">>
-		<<set $player.gender_body to "f">>
-		<<replace "#statsBodyType">><<print _gender_body_words[$player.gender_body]>><</replace>><<updatesidebarimg>>
-	<</link>> |
-	<<link "Androgynous">>
-		<<set $player.gender_body to "a">>
-		<<replace "#statsBodyType">><<print _gender_body_words[$player.gender_body]>><</replace>><<updatesidebarimg>>
-	<</link>> |
-	<br><br>
 	<<set _bodysize_words to ["Tiny","Small","Normal","Large"]>>
 	Body size:
 	<span id="statsBodySize">
-		<<print _bodysize_words[$bodysize]>>
+		<<cheatsBodySize>>
 	</span>
-	<br>
-	<<link "Tiny">>
-		<<set $bodysize to 0>>
-		<<set _physique_max_old to $physiquesize>>
-		<<set $physiquesize to 6000>>
-		<<set $physique *= $physiquesize / _physique_max_old>>
-		<<replace "#statsBodySize">><<print _bodysize_words[$bodysize]>><</replace>>
-	<</link>> |
-	<<link "Small">>
-		<<set $bodysize to 1>>
-		<<set _physique_max_old to $physiquesize>>
-		<<set $physiquesize to 10000>>
-		<<set $physique *= $physiquesize / _physique_max_old>>
-		<<replace "#statsBodySize">><<print _bodysize_words[$bodysize]>><</replace>>
-	<</link>> |
-	<<link "Normal">>
-		<<set $bodysize to 2>>
-		<<set _physique_max_old to $physiquesize>>
-		<<set $physiquesize to 12000>>
-		<<set $physique *= $physiquesize / _physique_max_old>>
-		<<replace "#statsBodySize">><<print _bodysize_words[$bodysize]>><</replace>>
-	<</link>> |
-	<<link "Large">>
-		<<set $bodysize to 3>>
-		<<set _physique_max_old to $physiquesize>>
-		<<set $physiquesize to 16000>>
-		<<set $physique *= $physiquesize / _physique_max_old>>
-		<<replace "#statsBodySize">><<print _bodysize_words[$bodysize]>><</replace>>
-	<</link>> |
 	<br><br>
 
+	<span class="gold">Virginity</span>
+	<br>
 	<<set _virginity to clone($player.virginity)>>
 	<<if $player.vaginaExist or $player.virginity.vaginal isnot true>>
-		Vaginal virginity: <<cheatVirginityToggle "vaginal">>
+		Vaginal: <<cheatVirginityToggle "vaginal">>
 		<br>
 	<</if>>
 	<<if $player.penisExist or $player.virginity.penile isnot true>>
-		Penile virginity: <<cheatVirginityToggle "penile">>
+		Penile: <<cheatVirginityToggle "penile">>
 		<br>
 	<</if>>
-	Anal virginity: <<cheatVirginityToggle "anal">>
+	Anal: <<cheatVirginityToggle "anal">>
 	<br>
-	Oral virginity: <<cheatVirginityToggle "oral">>
+	Oral: <<cheatVirginityToggle "oral">>
 	<br>
-	Handholding virginity: <<cheatVirginityToggle "handholding">>
+	Handholding: <<cheatVirginityToggle "handholding">>
 	<br>
 	First kiss: <<cheatVirginityToggle "kiss">>
 	<br><br>
@@ -319,7 +216,7 @@
 	Fatigue: <span id="statstiredness"><<print Math.trunc($tiredness)>></span>
 	| <<link ">">><<set $tiredness += 10>><<clamp>><<replace "#statstiredness">><<print Math.trunc($tiredness)>><</replace>> <<updatesidebarimg>><</link>>
 	| <<link ">>">><<set $tiredness += 100>><<clamp>><<replace "#statstiredness">><<print Math.trunc($tiredness)>><</replace>> <<updatesidebarimg>><</link>>
-	| <<link ">>>">><<set $tiredness += 1000>><<clamp>><<replace "#statstiredness">><<print Math.trunc($tiredness)>><</replace>> <<updatesidebarimg>><</link>> (Bar full at <<print C.tiredness.max>>)
+	| <<link ">>>">><<set $tiredness += 1000>><<clamp>><<replace "#statstiredness">><<print Math.trunc($tiredness)>><</replace>> <<updatesidebarimg>><</link>>
 	<br>
 
 	<<link "<<<">><<set $stress -= 1000>><<clamp>><<replace "#statsstress">><<print Math.trunc($stress)>><</replace>> <<updatesidebarimg>><</link>> |
@@ -1122,7 +1019,7 @@
 <</widget>>
 
 <<widget "cheats-characterVisual">>
-	<span class="gold">Character Hair</span>
+	<span class="gold">Hair Length</span>
 	<br>
 	<<if $passage is "Hairdressers Seat">>
 		Hair cheats are disabled while at the hairdressers.
@@ -1249,7 +1146,7 @@
 		$('#numberslider-value-playerbottomsize').html(" "+_butts[e.currentTarget.value]);
 		wikifier('<<updatesidebarimg>>');
 	}).trigger('change') })>>
-	<br>
+	<br><br>
 
 	<<if $player.penisExist>>
 		<span class="gold">Penis</span>
@@ -1261,14 +1158,14 @@
 		}).trigger('change') })>>
 		<br>
 		<<if $debug is 1>>
-			<span class="gold">Balls (DEBUG):</span>
+			Ball Size (DEBUG):
 			<<link "<">><<set $ballssize -= 1>><<clamp>><<replace "#statsballssize">><<print Math.trunc($ballssize)>><</replace>> <<updatesidebarimg>><</link>> |
-			Balls size: <span id="statsballssize"><<print Math.trunc($ballssize)>></span>
+			<span id="statsballssize"><<print Math.trunc($ballssize)>></span>
 			| <<link ">">><<set $ballssize += 1>><<clamp>><<replace "#statsballssize">><<print Math.trunc($ballssize)>><</replace>> <<updatesidebarimg>><</link>>
 			<br>
 		<</if>>
+		<br>
 	<</if>>
-	<br>
 
 	<span class="gold">Sensitivity</span>
 	<br>
@@ -2950,5 +2847,144 @@
 	<<else>>
 		<<removeclass _args[0] "green">>
 		<<addclass _args[0] "red">>
+	<</if>>
+<</widget>>
+
+<<widget "cheatsBody">>
+	<span @class="$player.gender_body is 'm' ? 'goldLink' : 'unselected'">
+		<<link "Masculine">>
+			<<set $player.gender_body to "m">>
+			<<replace "#statsBodyType">><<cheatsBody>><</replace>><<updatesidebarimg>>
+		<</link>>
+	</span>	|
+	<span @class="$player.gender_body is 'f' ? 'goldLink' : 'unselected'">
+		<<link "Feminine">>
+			<<set $player.gender_body to "f">>
+			<<replace "#statsBodyType">><<cheatsBody>><</replace>><<updatesidebarimg>>
+		<</link>>
+	</span> |
+	<span @class="$player.gender_body is 'a' ? 'goldLink' : 'unselected'">
+		<<link "Androgynous">>
+			<<set $player.gender_body to "a">>
+			<<replace "#statsBodyType">><<cheatsBody>><</replace>><<updatesidebarimg>>
+		<</link>>
+	</span>
+<</widget>>
+
+<<widget "cheatsBodySize">>
+	<span @class="$bodysize is 0 ? 'goldLink' : 'link'">
+		<<link "Tiny">>
+			<<set $bodysize to 0>>
+			<<set _physique_max_old to $physiquesize>>
+			<<set $physiquesize to 6000>>
+			<<set $physique *= $physiquesize / _physique_max_old>>
+			<<replace "#statsBodySize">><<cheatsBodySize>><</replace>>
+		<</link>>
+	</span> |
+	<span @class="$bodysize is 1 ? 'goldLink' : 'link'">
+		<<link "Small">>
+			<<set $bodysize to 1>>
+			<<set _physique_max_old to $physiquesize>>
+			<<set $physiquesize to 10000>>
+			<<set $physique *= $physiquesize / _physique_max_old>>
+			<<replace "#statsBodySize">><<cheatsBodySize>><</replace>>
+		<</link>>
+	</span> |
+	<span @class="$bodysize is 2 ? 'goldLink' : 'link'">
+		<<link "Normal">>
+			<<set $bodysize to 2>>
+			<<set _physique_max_old to $physiquesize>>
+			<<set $physiquesize to 12000>>
+			<<set $physique *= $physiquesize / _physique_max_old>>
+			<<replace "#statsBodySize">><<cheatsBodySize>><</replace>>
+		<</link>>
+	</span> |
+	<span @class="$bodysize is 3 ? 'goldLink' : 'link'">
+		<<link "Large">>
+			<<set $bodysize to 3>>
+			<<set _physique_max_old to $physiquesize>>
+			<<set $physiquesize to 16000>>
+			<<set $physique *= $physiquesize / _physique_max_old>>
+			<<replace "#statsBodySize">><<cheatsBodySize>><</replace>>
+		<</link>>
+	</span>
+<</widget>>
+
+<<widget "cheatsGender">>
+	<<if _inWardrobe>>
+		<<if $earSlime.growth gt 50>>
+			<span class="gold"><<= $player.gender is "m" ? "Male" : $player.gender is "f" ? "Female" : "Hermaphrodite">></span>
+			| This setting cannot be changed due to your ear slime's current growth. Remove the ear slime to enable these cheats again.
+		<<elseif $sexStats.vagina.menstruation.currentState is "normal">>
+			<<if $player.gender is "m">>
+				<span class="gold">Male</span> |
+			<<else>>
+				<<link "Male">>
+					<<wash>>
+					<<set $vaginause to "none">>
+					<<set $vaginastate to "none">>
+					<<set $penisuse to 0>>
+					<<set $penisstate to 0>>
+					<<set $player.gender to "m">>
+					<<set $player.sex to "m">>
+					<<set $player.ballsExist to true>>
+					<<set $player.penisExist to true>>
+					<<set $player.vaginaExist to false>>
+					<<set $sexStats.vagina.menstruation.running = false>>
+					<<updatesidebarimg>>
+					<<replace "#statsGender">><<cheatsGender>><</replace>>
+				<</link>> |
+			<</if>>
+			<<if $player.gender is "f">>
+				<span class="gold">Female</span> |
+			<<else>>
+				<<link "Female">>
+					<<wash>>
+					<<set $vaginause to 0>>
+					<<set $vaginastate to 0>>
+					<<set $penisuse to "none">>
+					<<set $penisstate to "none">>
+					<<set $player.gender to "f">>
+					<<set $player.sex to "f">>
+					<<set $player.ballsExist to false>>
+					<<set $player.penisExist to false>>
+					<<set $player.vaginaExist to true>>
+					<<set $sexStats.vagina.menstruation.running = true>>
+					<<updatesidebarimg>>
+					<<replace "#statsGender">><<cheatsGender>><</replace>>
+				<</link>> |
+			<</if>>
+			<<if $player.gender is "h">>
+				<span class="gold">Hermaphrodite</span>
+			<<else>>
+				<<link "Hermaphrodite">>
+					<<wash>>
+					<<set $vaginause to 0>>
+					<<set $vaginastate to 0>>
+					<<set $penisuse to 0>>
+					<<set $penisstate to 0>>
+					<<set $player.gender to "h">>
+					<<set $player.sex to "h">>
+					<<set $player.penisExist to true>>
+					<<set $player.vaginaExist to true>>
+					<<set $sexStats.vagina.menstruation.running = true>>
+					<<updatesidebarimg>>
+					<<replace "#statsGender">><<cheatsGender>><</replace>>
+				<</link>>
+			<</if>>
+		<<else>>
+			<span class="gold"><<= $player.gender is "m" ? "Male" : $player.gender is "f" ? "Female" : "Hermaphrodite">></span> | This setting can only be changed when accessing your wardrobe.
+		<</if>>
+		<<if $player.gender is "h">>
+			<br>
+			Hermaphrodite Balls: <span id="statsBallsExist"><<= $player.ballsExist ? "Present" : "Disabled">></span> |
+			<<link "Change">>
+				<<set $player.ballsExist to clone(!$player.ballsExist)>>
+				<<updatesidebarimg>>
+				<<replace "#statsGender">><<cheatsGender>><</replace>>
+			<</link>>
+		<</if>>
+	<<else>>
+		<span class="gold"><<= $player.gender is "m" ? "Male" : $player.gender is "f" ? "Female" : "Hermaphrodite">></span> | This setting can only be changed when accessing your wardrobe.
 	<</if>>
 <</widget>>
