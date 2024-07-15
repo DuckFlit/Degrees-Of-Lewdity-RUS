@@ -4604,7 +4604,7 @@ function genlayer_clothing_breasts_acc(slot, overrideOptions) {
 			return getClothingPathBreastsAcc(slot, options);
 		},
 		showfn(options) {
-			let breastImg = options[setup].breast_img;
+			let breastImg = options[`${worn}_setup`].breast_img;
 			if (typeof breastImg === 'object' && breastImg[options.breast_size] !== null)
 				breastImg = 1;
 			return options.show_clothes
