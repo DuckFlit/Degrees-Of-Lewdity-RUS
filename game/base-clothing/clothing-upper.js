@@ -3695,6 +3695,7 @@ function initUpper() {
 			accessory_colour_options: [],
 			sleeve_img: 1,
 			breast_img: { 0: 2, 1: 2, 2: 2, 3: 3, 4: 4, 5: 5, 6: 5 },
+			mainImage: 0,
 			cursed: 0,
 			location: 0,
 			iconFile: "open_shoulders_crop_top.png",
