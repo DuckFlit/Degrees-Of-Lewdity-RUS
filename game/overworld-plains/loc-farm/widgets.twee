@@ -3396,3 +3396,65 @@
 
 	<</if>>
 <</widget>>
+
+<<widget "alexRemyTattoosCheck">>
+	<<if $alex_countdown is undefined and $farm_stage gte 7>>
+		<<bodywritingExposureCheck>>
+
+		<<if $alexRemyTattoosKnow is undefined>>
+			<<set $alexRemyTattoosKnow = []>>
+		<</if>>
+
+		<<for _bodypart, _tattoos range $skin>>
+			<<if _tattoos.special is "cattle" and _skin_array.includes(_bodypart) and !$alexRemyTattoosKnow.includes(_bodypart) and !$weekly.alexRemyTattoos and $rng gte 90>>
+				<<set $weekly.alexRemyTattoos to 0>>
+				<<run $alexRemyTattoosKnow.push(_bodypart)>>
+				<<break>>
+			<<elseif _tattoos.special isnot "cattle" and $alexRemyTattoosKnow.includes(_bodypart)>>
+				/* Alex discovers that Remy's tattoo on the PC is missing. */
+				<<set $alexRemyTattoosKnow to $alexRemyTattoosKnow.filter(part => part !== _bodypart)>>
+			<</if>>
+		<</for>>
+
+		<<if $weekly.alexRemyTattoos is 0>>
+			<<set $weekly.alexRemyTattoos to 1>>
+			<<set $phase = _args[0]>>
+			<<switch $phase>>
+				<<case "breakfast">>
+					You approach Alex and start the kettle to help <<him>> with breakfast. <<He>> smiles at you, then stops short.
+				<<case "chores">>
+					You walk up to Alex to help with the farm chores. <<He>> waves, but stops short. <<He>> looks closer at your skin before <<his>> brow furrows.
+				<<case "cuddle">>
+					You approach Alex to cuddle with <<him>>. <<He>> gives you an acknowledging glance before <<he>> hesitates.
+				<<case "cuddleDesk">>
+					You approach Alex to cuddle with <<him>>. <<He>> gives you an acknowledging glance before <<he>> hesitates. <<He>> holds up a finger to you, signalling for you to wait. "Great, thank you. We appreciate your business," <<he>> says into the phone. <<He>> sets it down on the desk, and turns back to you with a frown.
+				<<case "rest">>
+					You approach Alex. <<He>> tips <<his>> hat at you as you sit down. <<He>> looks like <<hes>> going to say something when <<he>> stops.
+			<</switch>>
+			<br><br>
+
+			<<if ["cattle brand", "Remy's cattle", "Remy's cow", "Remy's bull"].includes(_tattoos.writing)>>
+				"What is this?" <<he>> demands. You shift to see what <<he>> is looking at and see that <<he>> is glaring at your <<tattoo _bodypart>>.
+				<<if ["left_shoulder", "right_shoulder"].includes(_bodypart)>>
+					<<He>> grabs your wrist, pulling your arm closer to <<him>>.
+				<<else>>
+					<<He>> places a hand over it, rubbing at your skin.
+				<</if>>
+				<br><br>
+
+				<<link [[Next|Farm Alex Remy Tattoo End]]>><</link>>
+				<br>
+			<<else>>
+				<<Hes>> looking at your <<tattoo _bodypart>>. "Did you write this on yourself?" <<he>> asks.
+				<br><br>
+
+				<<link [[Say yes|Farm Alex Remy Tattoo]]>><<set $phase2 to 0>><</link>>
+				<br>
+				<<link [[Say no|Farm Alex Remy Tattoo]]>><<set $phase2 to 1>><</link>>
+				<br>
+			<</if>>
+
+			<<exitAll>>
+		<</if>>
+	<</if>>
+<</widget>>
