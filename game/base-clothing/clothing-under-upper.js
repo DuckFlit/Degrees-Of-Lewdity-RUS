@@ -1426,7 +1426,7 @@ function initUnderUpper() {
 			accessory_colour: 0,
 			accessory_colour_options: [],
 			sleeve_img: 0,
-			breast_img: 0,
+			breast_img: { 0: 1, 1: 1, 2: 1, 3: 3, 4: 3, 5: 5, 6: 5 },
 			cursed: 0,
 			location: 0,
 			iconFile: "shibari_ropes.png",
