@@ -1637,6 +1637,15 @@ setup.feats = {
 		hint: "Hint: Stolen abroad.",
 		softLockable: true,
 	},
+	"Backroom Deals": {
+		title: "Backroom Deals",
+		desc: "Witnessed a game between high level players.",
+		difficulty: 1,
+		series: "",
+		filter: ["All", "Discoveries"],
+		hint: "Hint: Date your way into the town's upper echelons.",
+		softLockable: true,
+	},
 	"Max Those Shots": {
 		title: "Max Those Shots",
 		desc: "Holding a lot of pepper spray.",
