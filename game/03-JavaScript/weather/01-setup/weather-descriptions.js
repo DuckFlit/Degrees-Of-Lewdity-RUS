@@ -39,7 +39,7 @@ setup.WeatherDescriptions = {
 			dusk: () => Weather.precipitation === "rain" ? "The heavy rain intensifies." : "Snow piles up as evening falls.",
 			night: () => Weather.precipitation === "rain" ? "Heavy rain defines the darkness." : "A heavy snowstorm envelops the night.",
 			bloodMoon: () => Weather.precipitation === "rain" ? "The downpour reflects the red sky." : "Snow reflects the moon's eerie red, blanketing the world in surreal silence.",
-			transition: () => !Weather.isOvercast && !Weather.isFreezing ? "Dark clouds begin to gather. It's going to be rain." : !Weather.isOvercast ? "Clouds are gathering above. It's going to snow soon." : null,
+			transition: () => !Weather.isOvercast && !Weather.isFreezing ? "Dark clouds begin to gather. It's going to rain soon." : !Weather.isOvercast ? "Clouds are gathering above. It's going to snow soon." : null,
 		},
 		thunderStorm: {
 			dawn: "A thunderstorm rages at dawn.",
