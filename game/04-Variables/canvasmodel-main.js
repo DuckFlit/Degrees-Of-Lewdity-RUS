@@ -4208,7 +4208,8 @@ function getClothingPathBreastsAcc(slot, options) {
 	const worn = `worn_${slot}`;
 
 	const breastImg = options[`${worn}_setup`].breast_img;
-	const breastSize = typeof breastImg === 'object' ? breastImg[options.breast_size] : Math.min(options.breast_size, 6);
+	const breastAccImg = options[`${worn}_setup`].breast_acc_img;
+	const breastSize = typeof breastAccImg === 'object' ? breastAccImg[options.breast_size] : typeof breastImg === 'object' ? breastImg[options.breast_size] : Math.min(options.breast_size, 6);
 	const path = `img/clothes/${slot}/${options[`${worn}_setup`].variable}/${breastSize}_acc.png`;
 	return gray_suffix(path, options.filters[`${worn}_acc`]);
 }
@@ -4604,13 +4605,18 @@ function genlayer_clothing_breasts_acc(slot, overrideOptions) {
 			return getClothingPathBreastsAcc(slot, options);
 		},
 		showfn(options) {
-			let breastImg = options[`${worn}_setup`].breast_img;
-			if (typeof breastImg === 'object' && breastImg[options.breast_size] !== null)
-				breastImg = 1;
+			const breastAccImg = options[`${worn}_setup`].breast_acc_img;
+			const breastImg = options[`${worn}_setup`].breast_img;
+			let breastAcc = 0;
+
+			if (breastAccImg === 1 && typeof breastImg === 'object' && breastImg[options.breast_size] !== null)
+				breastAcc = 1;
+			else if (typeof breastAccImg === 'object' && options[`${worn}_setup`].breast_acc_img[options.breast_size] !== null)
+				breastAcc = 1;
+
 			return options.show_clothes
 				&& options[worn] > 0
-				&& options[`${worn}_setup`].breast_acc_img === 1
-				&& breastImg === 1;
+				&& breastAcc === 1
 		},
 	}, overrideOptions));
 }
