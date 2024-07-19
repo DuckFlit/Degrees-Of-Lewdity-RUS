@@ -1109,10 +1109,10 @@ function settingsObjects(type) {
 				},
 				bottomsizemax: {
 					min: 0,
-					max: 9,
+					max: 8,
 					decimals: 0,
 					displayName: "Maximum bottom size:",
-					textMap: { 0: "Slender", 1: "Slim", 2: "Modest", 3: "Cushioned", 4: "Soft", 5: "Round", 6: "Plump", 7: "Large", 8: "Huge", 9: "Huge" },
+					textMap: { 0: "Slender", 1: "Slim", 2: "Modest", 3: "Cushioned", 4: "Soft", 5: "Round", 6: "Plump", 7: "Large", 8: "Huge" },
 				},
 				penissizemin: { min: -2, max: 0, decimals: 0, displayName: "Minimum penis size:", textMap: { "-2": "Micro", "-1": "Mini", 0: "Tiny" } },
 				penissizemax: {
