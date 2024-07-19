@@ -3429,7 +3429,7 @@ Renderer.CanvasModels["main"] = {
 				return options.show_clothes
 					&& !options.belly_hides_lower
 					&& options.worn_lower > 0
-					&& options.worn_lower_setup.penis_img === 1
+					&& options.worn_lower_setup.penis_acc_img === 1
 					&& options.worn_lower_setup.accessory === 1
 					&& calculatePenisBulge() - 6 > 0;
 			},
@@ -3567,7 +3567,7 @@ Renderer.CanvasModels["main"] = {
 				return options.show_clothes
 					&& !options.belly_hides_under_lower
 					&& options.worn_under_lower > 0
-					&& options.worn_under_lower_setup.penis_img === 1
+					&& options.worn_under_lower_setup.penis_acc_img === 1
 					&& options.worn_under_lower_setup.accessory === 1
 					&& calculatePenisBulge() > 0;
 			},
