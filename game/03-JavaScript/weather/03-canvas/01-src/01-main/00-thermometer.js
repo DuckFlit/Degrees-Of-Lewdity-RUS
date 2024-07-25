@@ -11,6 +11,7 @@ Weather.Thermometer = (() => {
 		min: "#000dff",
 		mid: "#00ff91",
 		max: "#ff0000",
+		warn: "#ddff00",
 	};
 	const size = {
 		scaleFactor: 2,
@@ -22,6 +23,7 @@ Weather.Thermometer = (() => {
 		fillImg: { src: Weather.tempSettings.thermometer.fill },
 		upImg: { src: Weather.tempSettings.thermometer.upArrow },
 		downImg: { src: Weather.tempSettings.thermometer.downArrow },
+		constantImg: { src: Weather.tempSettings.thermometer.constant },
 	};
 	const element = $("<div />", { id: "characterTemperature" });
 	const tooltipElement = $("<div />", { id: "characterTemperatureTooltip" });
@@ -98,17 +100,28 @@ Weather.Thermometer = (() => {
 		thermometerCanvas.ctx.restore();
 
 		// Add the up or down arrows
-		if (Weather.BodyTemperature.direction !== 0) {
-			const img = Weather.BodyTemperature.direction > 0 ? images.upImg.img : images.downImg.img;
-			thermometerCanvas.ctx.drawImage(img, 13, 2, img.width, img.height);
+		const img =
+			Weather.BodyTemperature.direction !== 0 && Math.abs(Weather.BodyTemperature.target - Weather.bodyTemperature) > 0.5
+				? Weather.BodyTemperature.direction > 0
+					? images.upImg.img
+					: images.downImg.img
+				: images.constantImg.img;
+		thermometerCanvas.ctx.drawImage(img, 13, 2, img.width, img.height);
+		if (Weather.BodyTemperature.direction !== 0 && Math.abs(Weather.BodyTemperature.target - Weather.bodyTemperature) > 0.5) {
 			if (Weather.BodyTemperature.direction > 0) {
 				thermometerCanvas.ctx.fillStyle = normalisedTemperature > 0.5 ? color.max : color.mid;
 			} else {
 				thermometerCanvas.ctx.fillStyle = normalisedTemperature <= 0.5 ? color.max : color.mid;
 			}
-			thermometerCanvas.ctx.globalCompositeOperation = "source-atop";
-			thermometerCanvas.ctx.fillRect(13, 2, img.width, img.height);
+		} else {
+			thermometerCanvas.ctx.fillStyle =
+				Weather.bodyTemperature > setup.WeatherTemperature.baseBodyTemperature - 1 &&
+				Weather.bodyTemperature < setup.WeatherTemperature.baseBodyTemperature + 1
+					? color.mid
+					: color.warn;
 		}
+		thermometerCanvas.ctx.globalCompositeOperation = "source-atop";
+		thermometerCanvas.ctx.fillRect(13, 2, img.width, img.height);
 
 		Weather.Tooltips.thermometer();
 	}

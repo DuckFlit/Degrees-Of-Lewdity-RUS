@@ -356,6 +356,7 @@ Weather.Renderer.Effects.add({
 			// Make it asyncronous to wait for the image to load before animating without slowing down the main flow
 			return new Promise((resolve, reject) => {
 				let image = new Image();
+				const path = this.fullPath;
 				const imagePath = typeof obj === "object" && obj.image ? obj.image : this.obj;
 
 				const handleLoadedImage = () => {
@@ -421,10 +422,19 @@ Weather.Renderer.Effects.add({
 					handleLoadedImage();
 				} else {
 					image = new Image();
-					image.src = this.fullPath + imagePath;
+					image.src = path + imagePath;
 					image.onload = handleLoadedImage;
 					image.onerror = () => {
-						console.error("Could not load image", image.src);
+						if (this.fullPath !== path) {
+							image.src = this.fullPath + imagePath;
+							image.onload = handleLoadedImage;
+							image.onerror = () => {
+								console.warn("Could not load image", image.src);
+								resolve();
+							};
+							return;
+						}
+						Errors.report("Warning: Missing location image: " + image.src);
 						resolve();
 					};
 				}

@@ -133,7 +133,9 @@ You are in the tailor shop. It has cloth of various colours hanging on racks.
 
 				<<for _i = 0; _i lt _brokenOutfit.length; _i++>>
 					<<set _brokenOutfitTime to 15>><<set _tailorCostMod to .55>>
-					<<set _tailorCostMod += .43 * (1 - $worn[_brokenOutfit[_i].wornHalf].integrity / clothingData(_brokenOutfit[_i].wornHalf,$worn[_brokenOutfit[_i].wornHalf],'integrity_max'))>>
+					<<set _outfitSlot to _brokenOutfit[_i].wornHalf>>
+					<<set _integrityMax to Math.clamp(clothingData(_outfitSlot, $worn[_outfitSlot], 'integrity_max'), 1, 100_000)>>
+					<<set _tailorCostMod += Math.max(.43 * (1 - $worn[_outfitSlot].integrity / _integrityMax), 0)>>
 
 					<<if _brokenOutfit[_i].brokenHalf.includes("under")>>
 						<<set _brokenOutfitTime += 5>><<set _tailorCostMod += .06>>
@@ -200,7 +202,7 @@ You are in the tailor shop. It has cloth of various colours hanging on racks.
 				<br><br>
 			<</if>>
 		<</if>>
-		<<getouticon>><<link [[Покинуть|Shopping Centre Top]]>><<endevent>><<unset $outfitRepair>><</link>>
+		<<getouticon>><<link [[Leave|Shopping Centre Top]]>><<endevent>><<unset $outfitRepair>><</link>>
 	<</if>>
 <</if>>
 
@@ -213,21 +215,21 @@ Your clothes have been fixed.
 	<<set $worn[_equip[_i]].integrity = clothingData(_equip[_i],$worn[_equip[_i]],'integrity_max')>>
 <</for>>
 
-<<link [[Вернуться|Tailor Shop]]>><<endevent>><</link>>
+<<link [[Back|Tailor Shop]]>><<endevent>><</link>>
 
 :: Fix Lower
 
 Your lower clothes have been fixed.
 <br><br>
 <<if $worn.upper.set is $worn.lower.set>>
-	<<set $worn.lower.integrity = clothingData('lower',$worn.lower,'integrity_max')>>
+	<<set $worn.lower.integrity = getSetupClothing('lower', $worn.lower)?.integrity_max>>
 <</if>>
 
 <<if $worn.under_upper.set is $worn.under_lower.set>>
-	<<set $worn.under_lower.integrity = clothingData('under_lower',$worn.under_lower,'integrity_max')>>
+	<<set $worn.under_lower.integrity = getSetupClothing('under_lower', $worn.under_lower)?.integrity_max>>
 <</if>>
 
-<<link [[Вернуться|Tailor Shop]]>><<endevent>><</link>>
+<<link [[Back|Tailor Shop]]>><<endevent>><</link>>
 
 :: Tailor Shop Sneak
 <<set $outside to 0>><<effects>><<set $lock to 0>>
@@ -244,7 +246,7 @@ Your lower clothes have been fixed.
 	<br><br>
 	<</if>>
 
-<<getouticon>><<link [[Покинуть|Shopping Centre Top]]>><<endevent>><</link>>
+<<getouticon>><<link [[Leave|Shopping Centre Top]]>><<endevent>><</link>>
 <br>
 
 :: Tailor Shop Sewing Machine
@@ -336,7 +338,7 @@ currently with the deposit reducing the cost.
 :: Tailor Monthly Driver
 The tailor picks up the crate and carries it into the back of the shop.
 <br><br>
-<<link [[Далее|Tailor Shop]]>><<endevent>><</link>>
+<<link [[Next|Tailor Shop]]>><<endevent>><</link>>
 
 :: Fix Outfit
 	<<if $exposed gte 1>>
@@ -352,4 +354,4 @@ The tailor picks up the crate and carries it into the back of the shop.
 	<<set makeMissingOutfit($outfitRepair)>>
 	<<unset $outfitRepair>>
 
-<<link [[Вернуться|Tailor Shop]]>><<endevent>><</link>>
+<<link [[Back|Tailor Shop]]>><<endevent>><</link>>

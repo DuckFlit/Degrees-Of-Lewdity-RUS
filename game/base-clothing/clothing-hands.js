@@ -16,7 +16,7 @@ function initHands() {
 	setup.clothes.hands = [
 		{
 			index: 0,
-			name: "ничего",
+			name: "naked",
 			name_cap: "Ничего",
 			variable: "naked",
 			integrity: 0,
@@ -46,7 +46,7 @@ function initHands() {
 
 		{
 			index: 1,
-			name: "варежки",
+			name: "fingerless gloves",
 			name_cap: "Варежки",
 			variable: "fingerlessgloves",
 			integrity: 50,
@@ -79,7 +79,7 @@ function initHands() {
 
 		{
 			index: 2,
-			name: "рукавицы",
+			name: "mittens",
 			name_cap: "рукавицы",
 			variable: "mittens",
 			integrity: 200,
@@ -112,7 +112,7 @@ function initHands() {
 
 		{
 			index: 3,
-			name: "митенки",
+			name: "arm warmers",
 			name_cap: "Митенки",
 			variable: "armwarmers",
 			integrity: 100,
@@ -146,7 +146,7 @@ function initHands() {
 
 		{
 			index: 4,
-			name: "кружевные митенки",
+			name: "lace arm warmers",
 			name_cap: "Кружевные митенки",
 			variable: "lacewarmers",
 			integrity: 30,
@@ -180,7 +180,7 @@ function initHands() {
 
 		{
 			index: 5,
-			name: "длинные кожаные перчатки",
+			name: "long leather gloves",
 			name_cap: "Длинные кожаные перчатки",
 			variable: "longleathergloves",
 			integrity: 200,
@@ -231,7 +231,7 @@ function initHands() {
 
 		{
 			index: 6,
-			name: "перчатки черлидерши",
+			name: "cheerleader gloves",
 			name_cap: "Перчатки черлидерши",
 			variable: "pompoms",
 			integrity: 200,
@@ -265,7 +265,7 @@ function initHands() {
 
 		{
 			index: 7,
-			name: "золотые браслеты",
+			name: "gold bracelets",
 			name_cap: "Золотые браслеты",
 			variable: "gold",
 			integrity: 200,
@@ -298,7 +298,7 @@ function initHands() {
 
 		{
 			index: 8,
-			name: "коровьи рукава",
+			name: "cow sleeves",
 			name_cap: "Коровьи рукава",
 			variable: "cow",
 			integrity: 100,
@@ -330,7 +330,7 @@ function initHands() {
 
 		{
 			index: 9,
-			name: "рабочие перчатки",
+			name: "work gloves",
 			name_cap: "Рабочие перчатки",
 			variable: "workgloves",
 			integrity: 200,
@@ -362,7 +362,7 @@ function initHands() {
 		},
 		{
 			index: 10,
-			name: "перчатки сексуальной монашки",
+			name: "sexy nun's gloves",
 			name_cap: "Перчатки сексуальной монашки",
 			variable: "nunlewd",
 			integrity: 100,
@@ -394,7 +394,7 @@ function initHands() {
 		},
 		{
 			index: 11,
-			name: "наручники на запястьях",
+			name: "wrist cuffs",
 			name_cap: "Наручники на запястьях",
 			variable: "wristcuffs",
 			integrity: 100,

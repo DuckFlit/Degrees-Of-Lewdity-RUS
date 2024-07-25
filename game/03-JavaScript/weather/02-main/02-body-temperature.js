@@ -88,12 +88,12 @@ Weather.BodyTemperature = (() => {
 		}
 
 		const scaledMinutes = Math.min(minutes, 60 + Math.sqrt(Math.max(minutes - 60, 0)));
-		V.player.bodyTemperature = calculateTemperatureChange(V.player.bodyTemperature, temperature, scaledMinutes, getTotalWarmth());
+		this.set(calculateTemperatureChange(Weather.BodyTemperature.get(), temperature, scaledMinutes, getTotalWarmth()));
 		resetActivity();
 
-		if (V.player.bodyTemperature < Weather.tempSettings.minTemperature) {
+		if (Weather.BodyTemperature.get() < Weather.tempSettings.minTemperature) {
 			V.passout = "cold";
-		} else if (V.player.bodyTemperature > Weather.tempSettings.maxTemperature) {
+		} else if (Weather.BodyTemperature.get() > Weather.tempSettings.maxTemperature) {
 			V.passout = "heat";
 		} else {
 			delete V.passout;
@@ -101,14 +101,15 @@ Weather.BodyTemperature = (() => {
 	}
 
 	function getRestingPoint(iterations = 6, warmth = undefined, bodyTemperature, outside) {
-		let temperature = outside || V.outside ? Weather.temperature : Weather.insideTemperature;
+		let ambientTemperature = outside || V.outside ? Weather.temperature : Weather.insideTemperature;
+
 		if (T.inWater) {
-			temperature = Weather.waterTemperature;
+			ambientTemperature = Weather.waterTemperature;
 		}
-		let temp = bodyTemperature ?? V.player.bodyTemperature;
+		let temp = bodyTemperature ?? Weather.BodyTemperature.get();
 
 		for (let i = 0; i < iterations; i++) {
-			temp = calculateTemperatureChange(temp, temperature, 15, warmth);
+			temp = calculateTemperatureChange(temp, ambientTemperature, 15, warmth);
 		}
 
 		return temp;
@@ -132,8 +133,8 @@ Weather.BodyTemperature = (() => {
 	function calculateWetness() {
 		if (T.inWater) return 1; // 100% wet if in water
 		if (V.outside && Weather.precipitation === "rain" && T.bottomless && T.topless) return 0.7;
-		const upper = (Math.max(V.overupperwet, V.upperwet, V.underupperwet) / settings.maxWetness) * (settings.maxClothingFactor / 2);
-		const lower = (Math.max(V.overlowerwet, V.lowerwet, V.underlowerwet) / settings.maxWetness) * (settings.maxClothingFactor / 2);
+		const upper = (Math.max(V.overupperwet ?? 0, V.upperwet ?? 0, V.underupperwet ?? 0) / settings.maxWetness) * (settings.maxClothingFactor / 2);
+		const lower = (Math.max(V.overlowerwet ?? 0, V.lowerwet ?? 0, V.underlowerwet ?? 0) / settings.maxWetness) * (settings.maxClothingFactor / 2);
 		return Math.min(upper + lower, settings.maxClothingFactor);
 	}
 
@@ -145,19 +146,18 @@ Weather.BodyTemperature = (() => {
 	 *
 	 * @param {number} outsideTemperature The current air temperature.
 	 * @param temperature
-	 * @param warmth2
+	 * @param warmth
 	 * @returns {number} The adjusted insulation factor.
 	 */
-	function calculateHeatDissipation(temperature, warmth2) {
-		const temperatureDifference = Math.max(0, V.player.bodyTemperature - temperature);
+	function calculateHeatDissipation(temperature, warmth) {
+		const temperatureDifference = Math.max(0, Weather.BodyTemperature.get() - temperature);
 
 		// Base dissipation
 		const dissipation = temperatureDifference * settings.dissipationRate;
 		const totalDissipation = settings.baseDissipation + dissipation;
 
 		// Insulation reduces dissipation
-		const warmth = warmth2 ?? getTotalWarmth();
-		const insulationModifier = Math.exp((-warmth * settings.insulationMultiplier) / settings.insulationCap);
+		const insulationModifier = Math.exp((-(warmth ?? getTotalWarmth()) * settings.insulationMultiplier) / settings.insulationCap);
 
 		// Wetness increases dissipation - but not if inside warm water
 		const wetnessMultiplier = T.inWater && Weather.waterTemperature >= settings.baseBodyTemperature ? 1 : 1 + calculateWetness() * settings.wetnessFactor;
@@ -175,22 +175,22 @@ Weather.BodyTemperature = (() => {
 	 */
 	function calculateHeatGeneration(bodyTemperature, outsideTemperature) {
 		outsideTemperature += settings.sunIntensityBaseModifier * Weather.sunIntensity;
-		const outsideTemperatureDifference = Math.max(0, outsideTemperature - V.player.bodyTemperature);
+		const outsideTemperatureDifference = Math.max(0, outsideTemperature - Weather.BodyTemperature.get());
+
 		const baseGeneration = settings.baseHeatGeneration + outsideTemperatureDifference * (getTotalWarmth() * settings.warmthHeatModifier);
 		// Sun intensity increases heat
 		const activityHeatGeneration = settings.activityRate * activityLevel();
 		const bodyTemperatureDifference = bodyTemperature - settings.baseBodyTemperature;
-
 		return baseGeneration + activityHeatGeneration - 0.01 * bodyTemperatureDifference;
 	}
 
 	function temperatureFactor() {
-		if (V.player.bodyTemperature <= settings.effects.lowerThresholdStart) {
-			return 1 - normalise(V.player.bodyTemperature, settings.effects.lowerThresholdStart, settings.effects.lowerThresholdEnd);
+		if (Weather.BodyTemperature.get() <= settings.effects.lowerThresholdStart) {
+			return 1 - normalise(Weather.BodyTemperature.get(), settings.effects.lowerThresholdStart, settings.effects.lowerThresholdEnd);
 		}
 
-		if (V.player.bodyTemperature >= settings.effects.upperThresholdStart) {
-			return normalise(V.player.bodyTemperature, settings.effects.upperThresholdEnd, settings.effects.upperThresholdStart);
+		if (Weather.BodyTemperature.get() >= settings.effects.upperThresholdStart) {
+			return normalise(Weather.BodyTemperature.get(), settings.effects.upperThresholdEnd, settings.effects.upperThresholdStart);
 		}
 		return 0;
 	}
@@ -200,7 +200,7 @@ Weather.BodyTemperature = (() => {
 		return settings.baseInsulation;
 	}
 
-	function getTotalWarmth() {
+	function getWarmth() {
 		return (
 			baseInsulation() +
 			Object.values(V.worn).reduce((acc, item) => {
@@ -209,15 +209,31 @@ Weather.BodyTemperature = (() => {
 		);
 	}
 
+	function getTotalWarmth() {
+		// Total warmth is warmth, but with added modifiers (like from traits)
+		return getWarmth();
+	}
+
 	return Object.create({
+		get() {
+			if (isNaN(V.player.bodyTemperature)) return 37;
+			return V.player.bodyTemperature;
+		},
+		set(value) {
+			if (isNaN(value)) console.warn("Tried to set temperature to a non-number value", value);
+			V.player.bodyTemperature = Number(value);
+		},
 		isDecreasing() {
 			return Weather.BodyTemperature.direction < 0;
 		},
 		isIncreasing() {
 			return Weather.BodyTemperature.direction > 0;
 		},
+		get current() {
+			return this.get();
+		},
 		get direction() {
-			return Math.sign(Weather.BodyTemperature.target - V.player.bodyTemperature);
+			return Math.sign(Weather.BodyTemperature.target - this.get());
 		},
 		get target() {
 			if (!T.temperatureRestingPoint) {
@@ -230,38 +246,36 @@ Weather.BodyTemperature = (() => {
 		},
 		// For compatibility with /base-combat/ - since I don't want to touch it
 		get state() {
-			if (V.player.bodyTemperature < 35) return "cold";
-			if (V.player.bodyTemperature < 36.5) return "chilly";
-			if (V.player.bodyTemperature < 37.5) return "comfy";
-			if (V.player.bodyTemperature < 39) return "warm";
+			if (this.get() < 35) return "cold";
+			if (this.get() < 36.5) return "chilly";
+			if (this.get() < 37.5) return "comfy";
+			if (this.get() < 39) return "warm";
 			return "hot";
 		},
 		get fatigueModifier() {
 			const factor = temperatureFactor();
-			return V.player.bodyTemperature > settings.baseBodyTemperature ? interpolate(1, settings.effects.maxFatigueGainMultiplier, factor) : 1;
+			return this.get() > settings.baseBodyTemperature ? interpolate(1, settings.effects.maxFatigueGainMultiplier, factor) : 1;
 		},
 		get arousalModifier() {
 			const factor = temperatureFactor();
-			return V.player.bodyTemperature < settings.baseBodyTemperature ? interpolate(1, settings.effects.maxArousalGainMultiplier, factor) : 1;
+			return this.get() < settings.baseBodyTemperature ? interpolate(1, settings.effects.maxArousalGainMultiplier, factor) : 1;
 		},
 		get painModifier() {
 			const factor = temperatureFactor();
-			return V.player.bodyTemperature < settings.baseBodyTemperature ? interpolate(1, settings.effects.maxPainGainMultiplier, factor) : 1;
+			return this.get() < settings.baseBodyTemperature ? interpolate(1, settings.effects.maxPainGainMultiplier, factor) : 1;
 		},
 		get stressModifier() {
 			const factor = temperatureFactor();
-			if (V.player.bodyTemperature > settings.baseBodyTemperature) return interpolate(0, settings.effects.upperMaxStressGain, factor);
+			if (this.get() > settings.baseBodyTemperature) return interpolate(0, settings.effects.upperMaxStressGain, factor);
 			return interpolate(0, settings.effects.lowerMaxStressGain, factor);
 		},
 		addActivity,
-		get current() {
-			return V.player.bodyTemperature;
-		},
 		update,
 		activityLevel,
 		calculateHeatGeneration,
 		calculateHeatDissipation,
 		getTotalWarmth,
+		getWarmth,
 		getRestingPoint,
 	});
 })();

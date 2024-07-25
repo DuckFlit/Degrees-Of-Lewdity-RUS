@@ -1,3 +1,5 @@
+/* global ClothesItem, ClothedSlots */
+
 function mapMove(moveTo) {
 	const currentPassage = V.passage;
 	const destinationTable = [];
@@ -836,7 +838,7 @@ window.DefaultActions = {
 
 function selectWardrobe(targetLocation = V.wardrobe_location, type) {
 	let wardrobe = V.wardrobes[targetLocation];
-	if (type !== "return" && wardrobe.locationRequirement && !wardrobe.locationRequirement.includes(V.location)) {
+	if (type !== "return" && wardrobe?.locationRequirement && !wardrobe.locationRequirement.includes(V.location)) {
 		V.wardrobe_location = "wardrobe";
 		wardrobe = V.wardrobe;
 	}
@@ -869,6 +871,16 @@ function clothingData(slot, item, data) {
 	return setup.clothes[slot][clothesIndex(slot, item)][data];
 }
 window.clothingData = clothingData;
+
+/**
+ * @param {ClothedSlots} slot
+ * @param {ClothesItem} item
+ * @returns {ClothesItem}
+ */
+function getSetupClothing(slot, item) {
+	return setup.clothes[slot][clothesIndex(slot, item)];
+}
+window.getSetupClothing = getSetupClothing;
 
 function clothesDataTrimmerLoop() {
 	if (!V.passage || V.passage === "Start") return;
@@ -2002,3 +2014,45 @@ function earSlimeMakingMundaneRequests() {
 	return true;
 }
 window.earSlimeMakingMundaneRequests = earSlimeMakingMundaneRequests;
+
+function fixIntegrityUpdater() {
+	Object.entries(V.worn).forEach(([slot, item]) => fixIntegrityMax(slot, item));
+	Object.entries(V.store).forEach(([slot, items]) => items.forEach(item => fixIntegrityMax(slot, item)));
+	setup.clothes_all_slots.forEach(slot => {
+		const category = V.wardrobe[slot];
+		if (!Array.isArray(category)) {
+			console.warn("Category:", slot, "doesn't exist in wardrobe.");
+			return;
+		}
+		category.forEach(item => fixIntegrityMax(slot, item));
+	});
+	const wardrobes = Object.entries(V.wardrobes).filter(([name, wardrobe]) => !["shopReturn", "wardrobe"].includes(name));
+	if (Array.isArray(wardrobes)) {
+		wardrobes.forEach(([name, wardrobe]) => {
+			setup.clothes_all_slots.forEach(slot => {
+				const category = wardrobe[slot];
+				if (!Array.isArray(category)) {
+					console.warn("Category:", slot, "doesn't exist in wardrobe:", name);
+					return;
+				}
+				category.forEach(item => fixIntegrityMax(slot, item));
+			});
+		});
+	}
+	Object.entries(V.carried).forEach(([slot, item]) => fixIntegrityMax(slot, item));
+}
+window.fixIntegrityUpdater = fixIntegrityUpdater;
+
+/**
+ * @param {string} slot
+ * @param {ClothesItem} value
+ * @returns {void}
+ */
+function fixIntegrityMax(slot, value) {
+	if (value.integrity_max !== 0) {
+		return; // Integrity is fine
+	}
+	const setupClothing = getSetupClothing(slot, value);
+	value.integrity_max = setupClothing.integrity_max;
+}
+window.fixIntegrityMax = fixIntegrityMax;

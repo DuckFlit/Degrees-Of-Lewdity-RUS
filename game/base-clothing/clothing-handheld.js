@@ -3,7 +3,7 @@ function initHandheld() {
 	setup.clothes.handheld = [
 		{
 			index: 0,
-			name: "ничего",
+			name: "naked",
 			name_cap: "Ничего",
 			variable: "naked",
 			integrity: 0,
@@ -33,7 +33,7 @@ function initHandheld() {
 
 		{
 			index: 1,
-			name: "зонтик",
+			name: "umbrella",
 			name_cap: "Зонтик",
 			variable: "umbrella",
 			integrity: 120,
@@ -82,7 +82,7 @@ function initHandheld() {
 		},
 		{
 			index: 2,
-			name: "зонтик от солнца",
+			name: "parasol",
 			name_cap: "Зонтик от солнца",
 			variable: "parasol",
 			integrity: 120,
@@ -134,7 +134,7 @@ function initHandheld() {
 		},
 		{
 			index: 3,
-			name: "зонтик от солнца в стиле милой лолиты",
+			name: "sweet lolita parasol",
 			name_cap: "Зонтик от солнца в стиле милой лолиты",
 			variable: "parasolsweet",
 			integrity: 120,
@@ -186,7 +186,7 @@ function initHandheld() {
 		},
 		{
 			index: 4,
-			name: "бумажный зонтик",
+			name: "paper parasol",
 			name_cap: "Бумажный зонтик",
 			variable: "parasolpaper",
 			integrity: 120,
@@ -222,7 +222,7 @@ function initHandheld() {
 		},
 		{
 			index: 5,
-			name: "кошелек",
+			name: "purse",
 			name_cap: "Кошелек",
 			variable: "purse",
 			integrity: 120,
@@ -268,7 +268,7 @@ function initHandheld() {
 		},
 		{
 			index: 6,
-			name: "кошелек в форме сердца",
+			name: "heart purse",
 			name_cap: "Кошелек в форме сердца",
 			variable: "heartpurse",
 			integrity: 120,
@@ -314,7 +314,7 @@ function initHandheld() {
 		},
 		{
 			index: 7,
-			name: "сумка для писем",
+			name: "messenger bag",
 			name_cap: "Сумка для писем",
 			variable: "messengerbag",
 			integrity: 120,
@@ -344,7 +344,7 @@ function initHandheld() {
 		},
 		{
 			index: 8,
-			name: "рюкзак",
+			name: "backpack",
 			name_cap: "Рюкзак",
 			variable: "backpack",
 			integrity: 120,
@@ -377,7 +377,7 @@ function initHandheld() {
 		},
 		{
 			index: 9,
-			name: "бумажный веер",
+			name: "paper fan",
 			name_cap: "Бумажный веер",
 			variable: "paperfan",
 			integrity: 120,
@@ -407,7 +407,7 @@ function initHandheld() {
 		},
 		{
 			index: 10,
-			name: "молочный коктейль",
+			name: "milkshake",
 			name_cap: "Молочный коктейль",
 			variable: "milkshake",
 			word: "a",
@@ -426,7 +426,7 @@ function initHandheld() {
 		},
 		{
 			index: 11,
-			name: "сигарета",
+			name: "cigarette",
 			name_cap: "Сигарета",
 			variable: "cigarette",
 			word: "a",
@@ -445,7 +445,7 @@ function initHandheld() {
 		},
 		{
 			index: 12,
-			name: "метелка из перьев",
+			name: "feather duster",
 			name_cap: "Метелка из перьев",
 			variable: "featherduster",
 			integrity: 120,
@@ -475,7 +475,7 @@ function initHandheld() {
 		},
 		{
 			index: 13,
-			name: "помпоны",
+			name: "pom poms",
 			name_cap: "Помпоны",
 			variable: "pompoms",
 			integrity: 200,
@@ -506,7 +506,7 @@ function initHandheld() {
 		},
 		{
 			index: 14,
-			name: "воздушный шарик",
+			name: "balloon",
 			name_cap: "Воздушный шарик",
 			variable: "balloon",
 			integrity: 20,
@@ -534,7 +534,7 @@ function initHandheld() {
 		},
 		{
 			index: 15,
-			name: "воздушный шарик-сердечко",
+			name: "heart balloon",
 			name_cap: "Воздушный шарик-сердечко",
 			variable: "balloonheart",
 			integrity: 20,
@@ -562,7 +562,7 @@ function initHandheld() {
 		},
 		{
 			index: 16,
-			name: "пакет с попкорном",
+			name: "bag of popcorn",
 			name_cap: "Пакет с попкорном",
 			variable: "popcorn",
 			word: "a",
@@ -581,7 +581,7 @@ function initHandheld() {
 		},
 		{
 			index: 17,
-			name: "пряничный человечек",
+			name: "gingerbread man",
 			name_cap: "Пряничный человечек",
 			variable: "gingerbread",
 			word: "a",
@@ -600,7 +600,7 @@ function initHandheld() {
 		},
 		{
 			index: 18,
-			name: "стакан лимонада",
+			name: "cup of lemonade",
 			name_cap: "Стакан лимонада",
 			variable: "lemonade",
 			word: "a",
@@ -618,7 +618,7 @@ function initHandheld() {
 		},
 		{
 			index: 19,
-			name: "горячий напиток",
+			name: "hot drink",
 			name_cap: "Горячий напиток",
 			variable: "cocoa",
 			word: "a",
@@ -637,7 +637,7 @@ function initHandheld() {
 		},
 		{
 			index: 20,
-			name: "кружка",
+			name: "mug",
 			name_cap: "кружка",
 			variable: "mug",
 			word: "a",
@@ -656,7 +656,7 @@ function initHandheld() {
 		},
 		{
 			index: 21,
-			name: "пивная бутылка",
+			name: "beer bottle",
 			name_cap: "Пивная бутылка",
 			variable: "beerbottle",
 			word: "a",
@@ -676,7 +676,7 @@ function initHandheld() {
 		},
 		{
 			index: 22,
-			name: "кружка пива",
+			name: "mug of beer",
 			name_cap: "Кружка пива",
 			variable: "beermug",
 			word: "a",
@@ -696,7 +696,7 @@ function initHandheld() {
 		},
 		{
 			index: 23,
-			name: "рюмка",
+			name: "shot glass",
 			name_cap: "Рюмка",
 			variable: "shotglass",
 			word: "a",
@@ -716,7 +716,7 @@ function initHandheld() {
 		},
 		{
 			index: 24,
-			name: "бокал для вина",
+			name: "wine glass",
 			name_cap: "Бокал для вина",
 			variable: "wine",
 			word: "a",
@@ -736,7 +736,7 @@ function initHandheld() {
 		},
 		{
 			index: 25,
-			name: "факел",
+			name: "torch",
 			name_cap: "Факел",
 			variable: "torch",
 			word: "a",
@@ -756,7 +756,7 @@ function initHandheld() {
 		},
 		{
 			index: 26,
-			name: "спортивная сумка",
+			name: "gym bag",
 			name_cap: "Спортивная сумка",
 			variable: "gymbag",
 			integrity: 120,
@@ -800,7 +800,7 @@ function initHandheld() {
 		},
 		{
 			index: 27,
-			name: "чашка чая",
+			name: "cup of tea",
 			name_cap: "Чашку чая",
 			variable: "tea",
 			word: "a",
@@ -820,7 +820,7 @@ function initHandheld() {
 		},
 		{
 			index: 28,
-			name: "чашка кофе",
+			name: "cup of coffee",
 			name_cap: "Чашка кофе",
 			variable: "coffee",
 			word: "a",
@@ -840,7 +840,7 @@ function initHandheld() {
 		},
 		{
 			index: 29,
-			name: "кусочек салата на вилке",
+			name: "forkful of salad",
 			name_cap: "Кусочек салата на вилке",
 			variable: "salad",
 			word: "a",
@@ -860,7 +860,7 @@ function initHandheld() {
 		},
 		{
 			index: 30,
-			name: "кусочек блинчика на вилке",
+			name: "forkful of pancake",
 			name_cap: "Кусочек блинчика на вилке",
 			variable: "pancake",
 			word: "a",
@@ -880,7 +880,7 @@ function initHandheld() {
 		},
 		{
 			index: 31,
-			name: "вилка с макаронами",
+			name: "forkful of pasta",
 			name_cap: "вилка с макаронами",
 			variable: "pasta",
 			word: "a",
@@ -900,7 +900,7 @@ function initHandheld() {
 		},
 		{
 			index: 32,
-			name: "вилка",
+			name: "fork",
 			name_cap: "Вилка",
 			variable: "fork",
 			word: "a",
@@ -920,7 +920,7 @@ function initHandheld() {
 		},
 		{
 			index: 33,
-			name: "ложка",
+			name: "spoon",
 			name_cap: "Ложка",
 			variable: "spoon",
 			word: "a",
@@ -940,7 +940,7 @@ function initHandheld() {
 		},
 		{
 			index: 34,
-			name: "булочка с кремом",
+			name: "cream bun",
 			name_cap: "Булочка с кремом",
 			variable: "creambun",
 			word: "a",

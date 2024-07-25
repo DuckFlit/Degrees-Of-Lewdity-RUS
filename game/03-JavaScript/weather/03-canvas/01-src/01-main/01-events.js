@@ -31,44 +31,48 @@ $(document).on(":passageend", () => {
 /* Initialize sky canvas on page refresh */
 $(document).on(":passagestart", () => {
 	// Setup banner for start menu
-	if (State.passage === "Start") {
-		// Set temporary weatherObj for Start menu
-		V.weatherObj = {
-			name: "lightClouds",
-			snow: 0,
-			ice: {},
-			fog: 0,
-			overcast: 0,
-			targetOvercast: 0,
-			monthlyTemperatures: [],
-			keypointsArr: [],
-		};
-		Time.set(0);
+	if (["Start", "Clothes Testing", "Renderer Test Page", "Tips"].includes(State.passage)) {
+		if (State.passage === "Start") {
+			// Set temporary weatherObj for Start menu
+			V.weatherObj = {
+				name: "lightClouds",
+				snow: 0,
+				ice: {},
+				fog: 0,
+				overcast: 0,
+				targetOvercast: 0,
+				monthlyTemperatures: [],
+				keypointsArr: [],
+			};
+			Time.set(0);
 
-		// Setup banner canvas
-		if (!Weather.banner?.loaded.value) {
-			Weather.banner = new Weather.Renderer.Sky({
-				id: "canvasBanner",
-				setup: setup.SkySettings.canvas.banner,
-				layers: [
-					"bannerSky",
-					"sun",
-					"bannerSunGlow",
-					"moon",
-					"bannerCirrusClouds",
-					"bannerOvercastClouds",
-					"bannerClouds",
-					"bannerStarField",
-					"bloodGlow",
-					"bannerPrecipitation",
-					"location",
-				],
-				resizable: true,
-			});
+			// Setup banner canvas
+			if (!Weather.banner?.loaded.value) {
+				Weather.banner = new Weather.Renderer.Sky({
+					id: "canvasBanner",
+					setup: setup.SkySettings.canvas.banner,
+					layers: [
+						"bannerSky",
+						"sun",
+						"bannerSunGlow",
+						"moon",
+						"bannerCirrusClouds",
+						"bannerOvercastClouds",
+						"bannerClouds",
+						"bannerStarField",
+						"bloodGlow",
+						"bannerPrecipitation",
+						"location",
+					],
+					resizable: true,
+				});
+			}
+
+			Weather.activeRenderer = Weather.banner;
+			return;
 		}
-
-		Weather.activeRenderer = Weather.banner;
-		return;
+		// Do nothing if still in start menu
+		if (V.location === "banner") return;
 	}
 
 	// Do nothing if still in start menu

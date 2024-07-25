@@ -18,7 +18,7 @@ function initHead() {
 	setup.clothes.head = [
 		{
 			index: 0,
-			name: "ничего",
+			name: "naked",
 			name_cap: "Ничего",
 			variable: "naked",
 			integrity: 0,
@@ -48,7 +48,7 @@ function initHead() {
 
 		{
 			index: 1,
-			name: "заколка",
+			name: "hairpin",
 			name_cap: "Заколка",
 			variable: "hairpin",
 			integrity: 50,
@@ -79,7 +79,7 @@ function initHead() {
 
 		{
 			index: 2,
-			name: "шапочка",
+			name: "beanie",
 			name_cap: "Шапочка",
 			variable: "beanie",
 			integrity: 100,
@@ -111,7 +111,7 @@ function initHead() {
 
 		{
 			index: 3,
-			name: "заячьи ушки",
+			name: "bunny ears",
 			name_cap: "Заячьи ушки",
 			variable: "bunnyears",
 			integrity: 100,
@@ -141,7 +141,7 @@ function initHead() {
 
 		{
 			index: 4,
-			name: "вуаль монахини",
+			name: "nun's veil",
 			name_cap: "Вуаль монахини",
 			variable: "nun",
 			integrity: 100,
@@ -174,7 +174,7 @@ function initHead() {
 
 		{
 			index: 5,
-			name: "бант",
+			name: "bow",
 			name_cap: "Бант",
 			variable: "bow",
 			integrity: 100,
@@ -205,7 +205,7 @@ function initHead() {
 
 		{
 			index: 6,
-			name: "шапка",
+			name: "cap",
 			name_cap: "шапка",
 			variable: "cap",
 			integrity: 100,
@@ -238,7 +238,7 @@ function initHead() {
 
 		{
 			index: 7,
-			name: "шляпа ведьмы",
+			name: "witch hat",
 			name_cap: "Шляпа ведьмы",
 			variable: "witch",
 			integrity: 100,
@@ -271,7 +271,7 @@ function initHead() {
 
 		{
 			index: 8,
-			name: "рождественская шляпа",
+			name: "christmas hat",
 			name_cap: "Рождественская шляпа",
 			variable: "christmas",
 			integrity: 100,
@@ -302,7 +302,7 @@ function initHead() {
 
 		{
 			index: 9,
-			name: "шляпа шеф-повара",
+			name: "chef hat",
 			name_cap: "Шляпа шеф-повара",
 			variable: "chef",
 			integrity: 200,
@@ -333,7 +333,7 @@ function initHead() {
 
 		{
 			index: 10,
-			name: "ковбойская шляпа",
+			name: "cowboy hat",
 			name_cap: "Ковбойская шляпа",
 			variable: "cowboy",
 			integrity: 200,
@@ -367,7 +367,7 @@ function initHead() {
 
 		{
 			index: 11,
-			name: "фетровая шляпа",
+			name: "fedora",
 			name_cap: "Фетровая шляпа",
 			variable: "fedora",
 			integrity: 200,
@@ -399,7 +399,7 @@ function initHead() {
 
 		{
 			index: 12,
-			name: "французский берет",
+			name: "beatnik hat",
 			name_cap: "Французский берет",
 			variable: "beatnik",
 			integrity: 200,
@@ -430,7 +430,7 @@ function initHead() {
 
 		{
 			index: 13,
-			name: "рыбацкая шляпа",
+			name: "sou'wester",
 			name_cap: "Рыбацкая шляпа",
 			variable: "sou",
 			integrity: 200,
@@ -461,7 +461,7 @@ function initHead() {
 
 		{
 			index: 14,
-			name: "цветочная корона",
+			name: "flower crown",
 			name_cap: "цветочная корона",
 			variable: "flower",
 			integrity: 50,
@@ -490,7 +490,7 @@ function initHead() {
 
 		{
 			index: 15,
-			name: "кепка задом наперед",
+			name: "backwards cap",
 			name_cap: "Кепка задом наперед",
 			variable: "backwardscap",
 			integrity: 100,
@@ -522,7 +522,7 @@ function initHead() {
 
 		{
 			index: 16,
-			name: "ободок Алисы",
+			name: "alice band",
 			name_cap: "Ободок Алисы",
 			variable: "alice",
 			integrity: 50,
@@ -553,7 +553,7 @@ function initHead() {
 
 		{
 			index: 17,
-			name: "соломенная шляпа",
+			name: "straw hat",
 			name_cap: "Соломенная шляпа",
 			variable: "straw",
 			integrity: 50,
@@ -589,7 +589,7 @@ function initHead() {
 
 		{
 			index: 18,
-			name: "соломенная шляпа с цветком",
+			name: "straw flower hat",
 			name_cap: "Соломенная шляпа с цветком",
 			variable: "strawflower",
 			integrity: 50,
@@ -625,7 +625,7 @@ function initHead() {
 
 		{
 			index: 19,
-			name: "ободок горничной",
+			name: "maid band",
 			name_cap: "Ободок горничной",
 			variable: "maid",
 			integrity: 50,
@@ -656,7 +656,7 @@ function initHead() {
 
 		{
 			index: 20,
-			name: "крышки для булочек",
+			name: "bun covers",
 			name_cap: "Крышки для булочек",
 			variable: "bun",
 			integrity: 50,
@@ -687,7 +687,7 @@ function initHead() {
 
 		{
 			index: 21,
-			name: "повязка на голову",
+			name: "headband",
 			name_cap: "Повязка на голову",
 			variable: "band",
 			integrity: 50,
@@ -718,7 +718,7 @@ function initHead() {
 
 		{
 			index: 22,
-			name: "шапочка с пером",
+			name: "feathered cap",
 			name_cap: "Шапочка с пером",
 			variable: "feathered",
 			integrity: 50,
@@ -751,7 +751,7 @@ function initHead() {
 
 		{
 			index: 23,
-			name: "большая матросская шляпа",
+			name: "large sailor's hat",
 			name_cap: "Большая матросская шляпа",
 			variable: "sailorbig",
 			integrity: 50,
@@ -784,7 +784,7 @@ function initHead() {
 
 		{
 			index: 24,
-			name: "маленькая матросская шапочка",
+			name: "small sailor's hat",
 			name_cap: "Маленькая матросская шапочка",
 			variable: "sailorsmall",
 			integrity: 50,
@@ -816,7 +816,7 @@ function initHead() {
 
 		{
 			index: 25,
-			name: "иностранный футбольный шлем",
+			name: "foreign football helmet",
 			name_cap: "Иностранный футбольный шлем",
 			variable: "football",
 			integrity: 200,
@@ -850,7 +850,7 @@ function initHead() {
 
 		{
 			index: 26,
-			name: "большой бант",
+			name: "big bow",
 			name_cap: "Большой бант",
 			variable: "bigbow",
 			integrity: 100,
@@ -881,7 +881,7 @@ function initHead() {
 
 		{
 			index: 27,
-			name: "шлем для верховой езды",
+			name: "riding helmet",
 			name_cap: "Шлем для верховой езды",
 			variable: "riding",
 			integrity: 200,
@@ -915,7 +915,7 @@ function initHead() {
 
 		{
 			index: 28,
-			name: "цилиндр",
+			name: "top hat",
 			name_cap: "Цилиндр",
 			variable: "top",
 			integrity: 150,
@@ -949,7 +949,7 @@ function initHead() {
 
 		{
 			index: 29,
-			name: "шляпа-зонтик",
+			name: "umbrella hat",
 			name_cap: "Шляпа-зонтик",
 			variable: "umbrella",
 			integrity: 120,
@@ -982,7 +982,7 @@ function initHead() {
 
 		{
 			index: 30,
-			name: "гоночный шлем",
+			name: "racing helmet",
 			name_cap: "Гоночный шлем",
 			variable: "racing",
 			integrity: 200,
@@ -1017,7 +1017,7 @@ function initHead() {
 
 		{
 			index: 31,
-			name: "заколка для волос с перьями",
+			name: "feathered hair clip",
 			name_cap: "Заколка для волос с перьями",
 			variable: "featheredhairclip",
 			integrity: 200,
@@ -1049,7 +1049,7 @@ function initHead() {
 
 		{
 			index: 32,
-			name: "капющон от худи",
+			name: "hoodie hood",
 			name_cap: "Капющон от худи",
 			variable: "hoodie",
 			integrity: 180,
@@ -1116,7 +1116,7 @@ function initHead() {
 
 		{
 			index: 33,
-			name: "тэм о'шантер",
+			name: "tam o' shanter",
 			name_cap: "Тэм о'шантер",
 			variable: "tam",
 			integrity: 100,
@@ -1150,7 +1150,7 @@ function initHead() {
 
 		{
 			index: 34,
-			name: "кошачья шляпа",
+			name: "cat hat",
 			name_cap: "Кошачья шляпа",
 			variable: "cat",
 			integrity: 100,
@@ -1185,7 +1185,7 @@ function initHead() {
 
 		{
 			index: 35,
-			name: "капюшон монстрика",
+			name: "monster hood",
 			name_cap: "Капюшон монстрика",
 			variable: "monster",
 			integrity: 100,
@@ -1210,7 +1210,8 @@ function initHead() {
 			accessory: 1,
 			accessory_colour: 0,
 			accessory_colour_options: [],
-			back_img: 0,
+			back_img: 1,
+			back_img_colour: "primary",
 			cursed: 0,
 			location: 0,
 			iconFile: "",
@@ -1220,7 +1221,7 @@ function initHead() {
 
 		{
 			index: 36,
-			name: "кошачьи ушки",
+			name: "kitty ears",
 			name_cap: "Кошачьи ушки",
 			variable: "kitty",
 			integrity: 100,
@@ -1252,7 +1253,7 @@ function initHead() {
 
 		{
 			index: 37,
-			name: "мини-снеговик",
+			name: "mini snowman",
 			name_cap: "Мини-снеговик",
 			variable: "minisnowman",
 			integrity: 100,
@@ -1284,7 +1285,7 @@ function initHead() {
 
 		{
 			index: 38,
-			name: "капюшон коровьего комбинезона ",
+			name: "cow onesie hood",
 			name_cap: "Капюшон коровьего комбинезона",
 			variable: "cowonesie",
 			integrity: 200,
@@ -1307,7 +1308,7 @@ function initHead() {
 			accessory: 0,
 			accessory_colour: 0,
 			accessory_colour_options: [],
-			back_img: 0,
+			back_img: 1,
 			cursed: 0,
 			location: 0,
 			iconFile: "",
@@ -1317,7 +1318,7 @@ function initHead() {
 
 		{
 			index: 39,
-			name: "бейсболка",
+			name: "baseball cap",
 			name_cap: "Бейсболка",
 			variable: "baseball",
 			integrity: 100,
@@ -1350,7 +1351,7 @@ function initHead() {
 
 		{
 			index: 40,
-			name: "роза",
+			name: "rose",
 			name_cap: "Роза",
 			variable: "rose",
 			integrity: 50,
@@ -1382,7 +1383,7 @@ function initHead() {
 
 		{
 			index: 41,
-			name: "шляпа-пугало",
+			name: "scarecrow hat",
 			name_cap: "Шляпа-пугало",
 			variable: "scarecrow",
 			integrity: 100,
@@ -1412,7 +1413,7 @@ function initHead() {
 
 		{
 			index: 42,
-			name: "заколка-рыбка",
+			name: "fish hairpin",
 			name_cap: "Заколка-рыбка",
 			variable: "fishhairpin",
 			integrity: 50,
@@ -1443,7 +1444,7 @@ function initHead() {
 
 		{
 			index: 43,
-			name: "розовая шапочка медсестры",
+			name: "pink nurse hat",
 			name_cap: "Розовая шапочка медсестры",
 			variable: "pinknurse",
 			integrity: 50,
@@ -1475,7 +1476,7 @@ function initHead() {
 
 		{
 			index: 44,
-			name: "пластиковая шапочка медсестры",
+			name: "plastic nurse hat",
 			name_cap: "Пластиковая шапочка медсестры",
 			variable: "plasticnurse",
 			integrity: 50,
@@ -1507,7 +1508,7 @@ function initHead() {
 
 		{
 			index: 45,
-			name: "прозрачная шапочка медсестры",
+			name: "transparent nurse hat",
 			name_cap: "Прозрачная шапочка медсестры",
 			variable: "transparentnurse",
 			integrity: 50,
@@ -1538,7 +1539,7 @@ function initHead() {
 
 		{
 			index: 46,
-			name: "зайчий ободок",
+			name: "bunny headband",
 			name_cap: "Зайчий ободок",
 			variable: "bunband",
 			integrity: 100,
@@ -1569,7 +1570,7 @@ function initHead() {
 
 		{
 			index: 47,
-			name: "маргаритка",
+			name: "daisy",
 			name_cap: "Маргаритка",
 			variable: "daisy",
 			integrity: 50,
@@ -1598,7 +1599,7 @@ function initHead() {
 
 		{
 			index: 48,
-			name: "маска духа",
+			name: "spirit mask",
 			name_cap: "Маска духа",
 			variable: "spiritmask",
 			integrity: 200,
@@ -1630,7 +1631,7 @@ function initHead() {
 
 		{
 			index: 49,
-			name: "шапка из енота",
+			name: "raccoon cap",
 			name_cap: "Шапка из енота",
 			variable: "furcap m",
 			integrity: 200,
@@ -1666,7 +1667,7 @@ function initHead() {
 
 		{
 			index: 50,
-			name: "меховая шапка",
+			name: "fur cap",
 			name_cap: "Меховая шапка",
 			variable: "furcap f",
 			integrity: 200,
@@ -1704,7 +1705,7 @@ function initHead() {
 
 		{
 			index: 51,
-			name: "коническая шляпа",
+			name: "conical hat",
 			name_cap: "Коническая шляпа",
 			variable: "conicalhat",
 			integrity: 200,
@@ -1735,7 +1736,7 @@ function initHead() {
 
 		{
 			index: 52,
-			name: "капюшон кошачьего худи",
+			name: "cat hoodie hood",
 			name_cap: "Капюшон кошачьего худи",
 			variable: "cat hoodie",
 			integrity: 180,
@@ -1772,7 +1773,7 @@ function initHead() {
 
 		{
 			index: 53,
-			name: "шапочка-летучая мышь",
+			name: "bat beanie",
 			name_cap: "Шапочка-летучая мышь",
 			variable: "bat beanie",
 			integrity: 100,
@@ -1807,7 +1808,7 @@ function initHead() {
 
 		{
 			index: 54,
-			name: "мини-тыква",
+			name: "mini pumpkin",
 			name_cap: "Мини-тыква",
 			variable: "jackolantern",
 			integrity: 100,
@@ -1839,7 +1840,7 @@ function initHead() {
 
 		{
 			index: 55,
-			name: "заколка бабочка",
+			name: "butterfly hairpin",
 			name_cap: "Заколка бабочка",
 			variable: "butterflyhairpin",
 			integrity: 50,
@@ -1873,7 +1874,7 @@ function initHead() {
 
 		{
 			index: 56,
-			name: "заколка звёздочка",
+			name: "star hairpin",
 			name_cap: "Заколка звёздочка",
 			variable: "starhairpin",
 			integrity: 50,
@@ -1905,7 +1906,7 @@ function initHead() {
 		},
 		{
 			index: 57,
-			name: "бандана",
+			name: "durag",
 			name_cap: "Бандана",
 			variable: "durag",
 			integrity: 50,
@@ -1941,7 +1942,7 @@ function initHead() {
 		},
 		{
 			index: 58,
-			name: "кошачья шапочка",
+			name: "kittycat hat",
 			name_cap: "Кошачья шапочка",
 			variable: "cattail",
 			integrity: 100,
@@ -1975,7 +1976,7 @@ function initHead() {
 		},
 		{
 			index: 59,
-			name: "сексуальная вуаль монахини",
+			name: "sexy nun's veil",
 			name_cap: "Сексуальная вуаль монахини",
 			variable: "nunlewd",
 			integrity: 100,
@@ -2008,7 +2009,7 @@ function initHead() {
 		},
 		{
 			index: 60,
-			name: "богато украшенная вуаль сексуальной монахини",
+			name: "sexy nun's ornate veil",
 			name_cap: "Богато украшенная вуаль сексуальной монахини",
 			variable: "nunlewdornate",
 			integrity: 100,
@@ -2041,7 +2042,7 @@ function initHead() {
 		},
 		{
 			index: 61,
-			name: "кепка газетчика",
+			name: "newsboy cap",
 			name_cap: "Кепка газетчика",
 			variable: "newsboy",
 			integrity: 200,
@@ -2091,7 +2092,7 @@ function initHead() {
 		},
 		{
 			index: 62,
-			name: "козырек",
+			name: "visor",
 			name_cap: "Козырек",
 			variable: "visor",
 			integrity: 200,
@@ -2124,7 +2125,7 @@ function initHead() {
 		},
 		{
 			index: 63,
-			name: "ободок лолиты",
+			name: "lolita headband",
 			name_cap: "Ободок лолиты",
 			variable: "lolita",
 			integrity: 50,

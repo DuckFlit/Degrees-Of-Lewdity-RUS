@@ -3,7 +3,7 @@
 <<widget "wardrobewear">>
 	<!-- Note: Don't use $_ in this widget, because this widget gets <<replace>>'d into the passage body -->
 	<<if $wardrobes[$wardrobe_location] is undefined>>
-		<span class="red">A wardrobe error occurred, please report. The default wardrobe will be shown in place of the intended wardrobe.</span>
+		<span class="red">Произошла ошибка в гардеробе, пожалуйста, сообщите об этом. Вместо предполагаемого гардероба будет показан гардероб по умолчанию.</span>
 		<br>
 		<!--$wardrobe_location should always point to a specific wardrobe inside of $wardrobes-->
 		wardrobe_location: <<print $wardrobe_location>>
@@ -123,9 +123,9 @@
 		/*Prevent equip when preggy*/
 		<<if playerBellySize() gte 12 and _item.type.includes("constricting") and $wardrobeOption is "wear">>
 			<<if _item.type.includes("chest_bind")>>
-				<span class="red">Your pregnant body is too sensitive to wear your _item.name.</span>
+				<span class="red">Ваше беременное тело слишком чувствительно, чтобы носить _item.name.</span>
 			<<else>>
-				<span class="red">Your <<bellyDescription "pc">> is too large to wear your _item.name.</span>
+				<span class="red">Your <<bellyDescription "pc">> слишком большой, что бы надеть _item.name.</span>
 			<</if>>
 			<br>
 			<<continue>>
@@ -139,19 +139,19 @@
 			<<if $earSlime.forcedCommando isnot undefined and (_slot is "under_lower" or (_item.outfitPrimary and _item.outfitPrimary.under_lower and !["broken","split"].includes(_item.outfitPrimary.under_lower)))>>
 				<<if _item.type.includes("naked") or (_earSlimeEnableSwimwear and _item.type.includes("swim")) or (_earSlimeEnableDancewear and _item.type.includes("dance"))>>
 				<<elseif $earSlime.forcedCommando gt 0>>
-					<span class="red">You are unable to equip your _item.name, as the slime in your ear is forcing you to go commando.</span>
+					<span class="red">Вы не в состоянии надеть _item.name, когда слизь в твоем ухе заставляет тебя следовать команде.</span>
 					<br>
 					<<continue>>
 				<<else>>
 					<<run delete $earSlime.forcedCommando>>
 				<</if>>
 			<<elseif ((["prison", "asylum"].includes($location) and _item.reveal lt Math.clamp($daily.corruptionSlimeClothes, 0, 1000)) or (_item.reveal lt Math.clamp($daily.corruptionSlimeClothes, 0, 500)) and !(_item.type.includesAny("school") and Time.schoolDay)) and !_item.type.includesAny("event")>>
-				<span class="red">You were unable to equip your _item.name as the slime in your ear did not permit it.</span>
+				<span class="red">Вы не смогли надеть _item.name, так как слизь в вашем ухе не позволила этого сделать.</span>
 				<br>
 				<<continue>>
 			<<elseif $earSlime.forcedDressing and _item.gender isnot $earSlime.forcedDressing.type and _item.gender isnot "n" and !_item.type.includesAny("event")>>
 				<<if $earSlime.forcedDressing.days gt 0>>
-					<span class="red">You are unable to equip your _item.name, as the slime in your ear is only permitting more <<print $earSlime.forcedDressing.type is "f" ? "feminine" : "masculine">> clothing.</span>
+					<span class="red">Вы не можете надеть _item.name, так как слизь у вас в ухе не разрешает <<print $earSlime.forcedDressing.type is "f" ? "feminine" : "masculine">> одежду.</span>
 					<br>
 					<<continue>>
 				<<else>>
@@ -196,7 +196,7 @@
 			<<for $_outfitSlot, $_outfitId range _outfitPieceIds>>
 				<<set _selectedWardrobe[$_outfitSlot].deleteAt($_outfitId)>>
 			<</for>>
-			You discard the <<print _item.name>>.
+			Вы отбрасываете <<print _item.name>>.
 			<<set _selectedWardrobe[_slot].deleteAt(_wearId)>>
 			<br>
 		<<elseif $wardrobeOption is "repair">>
@@ -217,7 +217,7 @@
 				<<set _item.outfitPrimary[$_outfitSlot] to "split">>
 			<</for>>
 			<<set _item.one_piece to "split">>
-			You cut up the <<print _item.name>>.
+			Вы разрезали <<print _item.name>>.
 			<<pass 10>>
 			<br>
 		<<elseif $wardrobeOption is "transfer" and _wardrobeTransfer isnot $wardrobe_location and _wardrobeTransfer isnot undefined>>
@@ -235,14 +235,14 @@
 			<</for>>
 
 			<<if !_slotsFull>>
-				You transferred the <<print _item.name>> to the <<print $wardrobes[_wardrobeTransfer].name>> storage.
+				Вы перенесли <<print _item.name>> в хранилище <<print $wardrobes[_wardrobeTransfer].name>>.
 				/*Transfer everything*/
 				<<run transferClothing(_slot,_wearId,_wardrobeTransfer)>>
 				<<for $_outfitSlot, $_outfitId range _outfitPieceIds>>
 					<<run transferClothing($_outfitSlot,$_outfitId,_wardrobeTransfer)>>
 				<</for>>
 			<<else>>
-				You were unable to transfer the <<print _item.name>> to the <<print $wardrobes[_wardrobeTransfer].name>> wardrobe due to lack of space there.
+				Вам не удалось перенести в <<print $wardrobes[_wardrobeTransfer].name>> гардероб из-за нехватки места в нем.
 			<</if>>
 		<<elseif $wardrobeOption is "wear">>
 			/*Equip the relating items*/
@@ -295,7 +295,7 @@
 
 <<widget "wardrobe">>
 	<<set _inWardrobe to true>>
-	<div id="action-popup">Don't look here.</div>
+	<div id="action-popup">Не смотри сюда.</div>
 	<<unset $tempDisable>>
 
 	<hr>
@@ -331,7 +331,7 @@
 		<</link>>
 	</div> |
 	<div class="wardrobe-action">
-		<<link "Configure random">><<toggleclass "#randomClothingConfigure" "hidden">><</link>>
+		<<link "Настройка случайности">><<toggleclass "#randomClothingConfigure" "hidden">><</link>>
 	</div> |
 	<<if $options.images and ($uncomfortable.underwear or $uncomfortable.nude)>>
 		<div class="wardrobe-action">
@@ -463,12 +463,12 @@
 		{ id: 'head', label: 'Голова' },
 		{ id: 'face', label: 'Лицо' },
 		{ id: 'neck', label: 'Шея' },
-		{ id: 'upper', label: 'Upper' },
-		{ id: 'lower', label: 'Lower' },
-		{ id: 'under_upper', label: 'Under Upper' },
-		{ id: 'under_lower', label: 'Under Lower' },
+		{ id: 'upper', label: 'Верхняя' },
+		{ id: 'lower', label: 'Нижняя' },
+		{ id: 'under_upper', label: 'Верхнее белье' },
+		{ id: 'under_lower', label: 'Нижнее белье' },
 		{ id: 'hands', label: 'Руки' },
-		{ id: 'handheld', label: 'Ручная кладь' },
+		{ id: 'handheld', label: 'Аксессуары' },
 		{ id: 'legs', label: 'Ноги' },
 		{ id: 'feet', label: 'Обувь' },
 	]>>
@@ -524,7 +524,7 @@
 	<br>
 	Название: <input id="outfitName" type="text" value="Пользовательский" maxlength="30" onfocus="V.tempDisable = true;">
 	<br>
-	Тип: <label>Ежедневный <<radiobutton "$outfit_type" 0 checked>></label> | <label>Sleep<<radiobutton "$outfit_type" "sleep">></label> | <label>Swimming<<radiobutton "$outfit_type" "swim">></label>
+	Тип: <label>Ежедневный <<radiobutton "$outfit_type" 0 checked>></label> | <label>Для сна<<radiobutton "$outfit_type" "sleep">></label> | <label>Для плавания<<radiobutton "$outfit_type" "swim">></label>
 	<br>
 	<label>
 		Сохранять конкретный цвет одежды в наборе
@@ -533,7 +533,7 @@
 	<br>
 	<<if $multipleWardrobes>>
 		<label>
-			Make clothes set unique to this wardrobe
+			Сделайте набор одежды уникальным для этого гардероба
 			<<checkbox "_saveLocation" false true autocheck>>
 		</label>
 		<br>
@@ -616,11 +616,11 @@
 	<<if $_item.integrity gt ($_integrityMax * 9 / 10)>>
 		<<set $_output to "">>
 	<<elseif $_item.integrity gt ($_integrityMax * 5 / 10)>>
-		<<set $_output to "<span>(frayed)</span>">>
+		<<set $_output to "<span>(поношенная)</span>">>
 	<<elseif $_item.integrity gt ($_integrityMax * 2 / 10)>>
-		<<set $_output to "<span>(torn)</span>">>
+		<<set $_output to "<span>(изодранная)</span>">>
 	<<else>>
-		<<set $_output to "<span>(tattered)</span>">>
+		<<set $_output to "<span>(в лохмотья)</span>">>
 	<</if>>
 <</silently>><<print $_output>><</widget>>
 
@@ -700,8 +700,8 @@
 <</widget>>
 
 <<widget "toggleUpperTuck">>
-	<<set _linkOption1 to _args[0] || `Untuck from ${$worn.lower.name}`>>
-	<<set _linkOption2 to _args[1] || `Tuck into ${$worn.lower.name}`>>
+	<<set _linkOption1 to _args[0] || `Отвязать от ${$worn.lower.name}`>>
+	<<set _linkOption2 to _args[1] || `Привязать к ${$worn.lower.name}`>>
 	<div class="toggleUpperTuck">
 		<<link `($upperTucked ? _linkOption1 : _linkOption2)`>>
 			<<set $upperTucked to +!$upperTucked>>
@@ -713,8 +713,8 @@
 <</widget>>
 
 <<widget "toggleLowerTuck">>
-	<<set _linkOption1 to _args[0] || `Untuck from ${$worn.feet.name}`>>
-	<<set _linkOption2 to _args[1] || `Tuck into ${$worn.feet.name}`>>
+	<<set _linkOption1 to _args[0] || `Отвязать от ${$worn.feet.name}`>>
+	<<set _linkOption2 to _args[1] || `Привязать к ${$worn.feet.name}`>>
 	<div class="toggleLowerTuck">
 		<<link `($lowerTucked ? _linkOption1 : _linkOption2)`>>
 			<<set $lowerTucked to +!$lowerTucked>>
@@ -727,13 +727,13 @@
 
 <<widget "toggleLeash">>
 	<<if ["collar", "free use collar", "leather collar", "spiked collar"].includes($worn.neck.name)>>
-		<<link "Attach Leash">>
+		<<link "Прикрепить поводок">>
 			<<attach_leash true true>>
 			<<updatesidebarimg>>
 			<<replace "#wardrobeLeash">><<toggleLeash>><</replace>>
 		<</link>>
 	<<elseif ["collar with leash", "free use collar with leash", "leather collar with leash", "spiked collar with leash"].includes($worn.neck.name)>>
-		<<link "Detach Leash">>
+		<<link "Отстегнуть поводок">>
 			<<detach_leash true true>>
 			<<updatesidebarimg>>
 			<<replace "#wardrobeLeash">><<toggleLeash>><</replace>>
@@ -825,8 +825,8 @@
 <</widget>>
 
 <<widget "toggleAltSleeve">>
-	<<set _inDefaultState to _args[0] || "Roll up sleeves">>
-	<<set _inAltState to _args[1] || "Unroll sleeves">>
+	<<set _inDefaultState to _args[0] || "Закатать рукава">>
+	<<set _inAltState to _args[1] || "Раскатать рукава">>
 	<div class="toggleAltSleeve">
 		<<link `($worn.upper.altsleeve is "none" ? _inDefaultState : _inAltState)`>>
 			<<set $worn.upper.altsleeve to ($worn.upper.altsleeve is "none" ? "alt" : "none")>>
@@ -839,8 +839,8 @@
 
 <<widget "toggleFaceLayer">>
 	/*changes z-index */
-	<<set _linkOption1 to "Move hair in front">>
-	<<set _linkOption2 to "Tuck hair behind">>
+	<<set _linkOption1 to "Уложить волосы спереди">>
+	<<set _linkOption2 to "Уложить волосы сзади">>
 	<div class="toggleFaceLayer">
 		<<link `($facelayer is "front" ? _linkOption2 : _linkOption1)`>>
 			<<set $facelayer to ($facelayer is "front" ? "back" : "front")>>
@@ -859,7 +859,7 @@
 	<<wardrobeClothingOptions>>
 	<<set _wardrobe_list to _args[0]>>
 	<<if !Object.keys($worn).includes(_wardrobe_list)>>
-		An error occurred to 'widget "wardrobeList"', please report if you did not edit the save data manually in any way.
+		Произошла ошибка в 'виджете "wardrobeList"', пожалуйста, сообщите об этом, если вы никак не редактировали данные сохранения вручную.
 	<<else>>
 		<<set _wear to "wear_"+_wardrobe_list>>
 
@@ -1153,13 +1153,13 @@
 	<<if $debug is 1>>
 		<<oldWardrobeList "over_head">>
 	<</if>>
-	<div id="clothingBox-head"><<oldWardrobeList "head">></div>
-	<div id="clothingBox-face"><<oldWardrobeList "face">></div>
-	<div id="clothingBox-neck"><<oldWardrobeList "neck">></div>
-	<div id="clothingBox-hands"><<oldWardrobeList "hands">></div>
-	<div id="clothingBox-handheld"><<oldWardrobeList "handheld">></div>
-	<div id="clothingBox-legs"><<oldWardrobeList "legs">></div>
-	<div id="clothingBox-feet"><<oldWardrobeList "feet">></div>
+	<div id="clothingBox-head"><<oldWardrobeList "голова">></div>
+	<div id="clothingBox-face"><<oldWardrobeList "лицо">></div>
+	<div id="clothingBox-neck"><<oldWardrobeList "шея">></div>
+	<div id="clothingBox-hands"><<oldWardrobeList "руки">></div>
+	<div id="clothingBox-handheld"><<oldWardrobeList "аксессуары">></div>
+	<div id="clothingBox-legs"><<oldWardrobeList "ноги">></div>
+	<div id="clothingBox-feet"><<oldWardrobeList "ступни">></div>
 	<div style="clear:both;"></div>
 	<<wardrobeNewOutfit>>
 <</widget>>
@@ -1483,7 +1483,7 @@
 <<widget "warmth_description">>
 	<<print setup.WeatherDescriptions.shop()>>
 	<br>
-	Your clothing warmth is currently <span class="orange"><<print Weather.BodyTemperature.getTotalWarmth()>></span>.
+	Your clothing warmth is currently <span class="orange"><<print Weather.BodyTemperature.getWarmth()>></span>.
 	<br>
 
 	<<set $_minWarmth to getTargetWarmth(36.4)>>
@@ -1554,55 +1554,55 @@
 			<<if $earSlime.forcedCommando isnot undefined and !$worn.under_lower.type.includes("naked")>>
 				<span class="red">Слизь у тебя в ухе не позволяет тебе уйти в <<underwearTypeText>> на себе.</span>
 			<<elseif $exposed lte 1>>
-				<<getouticon>><<link [[Leave|Sydney Beach Leave]]>><<cleanupOnWardrobeExit>><</link>>
+				<<getouticon>><<link [[Уйти|Sydney Beach Leave]]>><<cleanupOnWardrobeExit>><</link>>
 			<<else>>
-				Ты не можешь уйти в таком виде!
+				Вы не можете выйти в таком виде!
 			<</if>>
 		<<case "Eden Wardrobe">>
 			<<if isLoveInterest("Eden") or $exhibitionism gte 75 or $exposed lte 0 or ($exhibitionism gte 55 and $exposed lte 1)>>
-				<<link [[Done|Eden Cabin]]>><<cleanupOnWardrobeExit>><</link>>
+				<<link [[Сделать|Eden Cabin]]>><<cleanupOnWardrobeExit>><</link>>
 			<<else>>
-				Ты не можешь оставаться в таком виде раздетым!
+				Вы не можете оставаться в таком виде!
 			<</if>>
 		<<case "Eden Night Wardrobe">>
 			<<if isLoveInterest("Eden") or $exhibitionism gte 75 or $exposed lte 0 or ($exhibitionism gte 55 and $exposed lte 1)>>
-				<<link [[Done|Eden Cabin Bed]]>><<cleanupOnWardrobeExit>><</link>>
+				<<link [[Сделать|Eden Cabin Bed]]>><<cleanupOnWardrobeExit>><</link>>
 			<<else>>
-				Ты не можешь оставаться в таком виде раздетым!
+				Вы не можете оставаться в таком виде!
 			<</if>>
 		<<case "Asylum Wardrobe">>
 			<<if $exhibitionism gte 75 or $exposed lte 0 or ($exhibitionism gte 55 and $exposed lte 1)>>
-				<<link [[Done|Asylum Cell]]>><<cleanupOnWardrobeExit>><</link>>
+				<<link [[Сделать|Asylum Cell]]>><<cleanupOnWardrobeExit>><</link>>
 			<<else>>
-				Ты не можешь оставаться в таком виде раздетым!
+				Вы не можете оставаться в таком виде!
 			<</if>>
 		<<case "Farm Wardrobe">>
 			<<if $exhibitionism gte 75 or $exposed lte 0 or ($exhibitionism gte 55 and $exposed lte 1)>>
-				<<link [[Done|Farm Bedroom]]>><<cleanupOnWardrobeExit>><</link>>
+				<<link [[Сделать|Farm Bedroom]]>><<cleanupOnWardrobeExit>><</link>>
 			<<else>>
 				Ты не можешь оставаться в таком виде раздетым!
 			<</if>>
 		<<case "Strip Club Wardrobe">>
 			<<if $exhibitionism gte 55 or $exposed lte 0 or ($exhibitionism gte 15 and $exposed lte 1)>>
-				<<link [[Step away|Strip Club Dressing Room]]>><<cleanupOnWardrobeExit>><</link>>
+				<<link [[Вернуться|Strip Club Dressing Room]]>><<cleanupOnWardrobeExit>><</link>>
 			<<else>>
 				Ты не можешь уйти в таком виде!
 			<</if>>
 		<<case "Brothel Wardrobe">>
 			<<if $exhibitionism gte 55 or $exposed lte 0 or ($exhibitionism gte 15 and $exposed lte 1)>>
-				<<link [[Step away|Brothel Dressing Room]]>><<cleanupOnWardrobeExit>><</link>>
+				<<link [[Вернуться|Brothel Dressing Room]]>><<cleanupOnWardrobeExit>><</link>>
 			<<else>>
 				Ты не можешь уйти в таком виде!
 			<</if>>
 		<<case "School Pool Wardrobe">>
 			<<if $changingRoomGender is "boys">>
-				<<getouticon>><<link [[Leave|School Boy Changing Room]]>><<cleanupOnWardrobeExit>><</link>>
+				<<getouticon>><<link [[Покинуть|School Boy Changing Room]]>><<cleanupOnWardrobeExit>><</link>>
 			<<else>>
-				<<getouticon>><<link [[Leave|School Girl Changing Room]]>><<cleanupOnWardrobeExit>><</link>>
+				<<getouticon>><<link [[Покинуть|School Girl Changing Room]]>><<cleanupOnWardrobeExit>><</link>>
 			<</if>>
 		<<case "Farm Assault Wardrobe">>
 			<<if $exhibitionism gte 75 or $exposed lte 0 or ($exhibitionism gte 55 and $exposed lte 1)>>
-				<<link [[Done|Farm Assault Intro]]>><<cleanupOnWardrobeExit>><</link>>
+				<<link [[Сделать|Farm Assault Intro]]>><<cleanupOnWardrobeExit>><</link>>
 			<<else>>
 				Ты не можешь оставаться в таком виде раздетым!
 			<</if>>
@@ -1614,9 +1614,9 @@
 			<<link [[Закрыть|Pirate Bed]]>><<cleanupOnWardrobeExit>><</link>>
 		<<case "Office Agency Changing Room">>
 			<<if $exposed lte 1>>
-				<<getouticon>><<link [[Leave|Office Agency]]>><<cleanupOnWardrobeExit>><</link>>
+				<<getouticon>><<link [[Покинуть|Office Agency]]>><<cleanupOnWardrobeExit>><</link>>
 			<<elseif $exhibitionism gte 55>>
-				<<sneakicon>><<link [[Sneak outside|Office Agency Streak]]>><<cleanupOnWardrobeExit>><</link>><<exhibitionist4>>
+				<<sneakicon>><<link [[Прокрасться наружу|Office Agency Streak]]>><<cleanupOnWardrobeExit>><</link>><<exhibitionist4>>
 			<<else>>
 				Ты не можешь уйти в таком виде!
 			<</if>>
@@ -1635,7 +1635,7 @@
 	<<else>>
 		<<set $_text_output to "underwear">>
 	<</if>>
-<</silently>><<if $_text_output>><</if>>
+<</silently>><<if $_text_output>><<print $_text_output>><</if>>
 <</widget>>
 
 :: Wardrobe [exitCheckBypass]

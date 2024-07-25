@@ -3,7 +3,7 @@ function initGenitals() {
 	setup.clothes.genitals = [
 		{
 			index: 0,
-			name: "ничего",
+			name: "naked",
 			name_cap: "Ничего",
 			variable: "naked",
 			integrity: 0,
@@ -38,7 +38,7 @@ function initGenitals() {
 		},
 		{
 			index: 1,
-			name: "женский пояс верности",
+			name: "chastity belt",
 			name_cap: "Женский пояс верности",
 			variable: "chastitybelt",
 			integrity: 2000,
@@ -81,7 +81,7 @@ function initGenitals() {
 		},
 		{
 			index: 2,
-			name: "мужской пояс верности",
+			name: "chastity cage",
 			name_cap: "Мужской пояс верности",
 			variable: "chastitycage",
 			integrity: 2000,
@@ -150,7 +150,7 @@ function initGenitals() {
 		},
 		{
 			index: 3,
-			name: "золотой женский пояс верности",
+			name: "gold chastity belt",
 			name_cap: "Золотой женский пояс верности",
 			variable: "goldchastitybelt",
 			integrity: 6000,
@@ -193,7 +193,7 @@ function initGenitals() {
 		},
 		{
 			index: 4,
-			name: "развратный женский пояс верности",
+			name: "fetish chastity belt",
 			name_cap: "Развратный женский пояс верности",
 			variable: "chastitybeltfetish",
 			integrity: 1500,
@@ -237,7 +237,7 @@ function initGenitals() {
 		},
 		{
 			index: 5,
-			name: "развратный мужской пояс верности",
+			name: "fetish chastity cage",
 			name_cap: "Развратный мужской пояс верности",
 			variable: "chastitycagefetish",
 			integrity: 1500,
@@ -305,7 +305,7 @@ function initGenitals() {
 		},
 		{
 			index: 6,
-			name: "маленький мужской пояс верности",
+			name: "small chastity cage",
 			name_cap: "Маленький мужской пояс верности",
 			variable: "smallchastitycage",
 			integrity: 4000,
@@ -374,7 +374,7 @@ function initGenitals() {
 		},
 		{
 			index: 7,
-			name: "плоский мужской пояс верности",
+			name: "flat chastity cage",
 			name_cap: "Плоский мужской пояс верности",
 			variable: "flatchastitycage",
 			integrity: 6000,

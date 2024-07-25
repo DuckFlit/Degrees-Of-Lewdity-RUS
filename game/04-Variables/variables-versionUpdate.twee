@@ -468,24 +468,24 @@
 	<</if>>
 
 	<<if $beastgenderoverride is undefined>>
-	<<set $beastgenderoverride to 0>>
+		<<set $beastgenderoverride to 0>>
 	<</if>>
 
 	<<if $speechcycle is undefined>>
-	<<set $speechcycle to 0>>
+		<<set $speechcycle to 0>>
 	<</if>>
 
 	<<if $npcspeechcycle is undefined>>
-	<<set $npcspeechcycle to 0>>
+		<<set $npcspeechcycle to 0>>
 	<</if>>
 
 	<<if $breastfeedingdisable is undefined>>
-	<<set $breastfeedingdisable to "f">>
+		<<set $breastfeedingdisable to "f">>
 	<</if>>
 
 	<<if $real_gender isnot undefined>>
-	<<set $player.gender to $real_gender>>
-	<<unset $real_gender>>
+		<<set $player.gender to $real_gender>>
+		<<unset $real_gender>>
 	<</if>>
 
 	<<if $physiquesize is undefined>>
@@ -497,17 +497,17 @@
 	<</if>>
 
 	<<if $fringelength is undefined>>
-	<<set $fringelength to 200>>
-	<<set $hairtype to "default">>
-	<<set $fringetype to "default">>
+		<<set $fringelength to 200>>
+		<<set $hairtype to "default">>
+		<<set $fringetype to "default">>
 	<</if>>
 
 	<<if $famescrap is undefined>>
-	<<set $famescrap to 0>>
+		<<set $famescrap to 0>>
 	<</if>>
 
 	<<if $famepimp is undefined>>
-	<<set $famepimp to 0>>
+		<<set $famepimp to 0>>
 	<</if>>
 
 	<<if $spray is undefined>>
@@ -3529,7 +3529,7 @@
 	/* Code that should not be moved into a check like above */
 	<<set $runWardrobeSanityChecker to true>>
 
-	<<if $objectVersion.updateClothes lt 52 or $objectVersion.updateClothes is undefined>>
+	<<if $objectVersion.updateClothes lt 56 or $objectVersion.updateClothes is undefined>>
 		<<updateClothes>>
 		<<if $objectVersion.updateClothes lt 38>>
 			<!-- V0.4.0.7 return items stuck in $store without proper .location -->
@@ -3540,9 +3540,15 @@
 			<!--Should'nt need to re-run that often-->
 			<<run clothesDataTrimmerLoop()>>
 		<</if>>
-		<<set $objectVersion.updateClothes to 52>>
+		
 		<!--If you have added any `colour_combat` or `accessory_colour_combat` to clothes that need their `colour` or `accessory_colour`, this will clear them.
 		Remove `colour_combat` or `accessory_colour_combat` where this is the case, they are independant so `colour_combat` will only clear `colour`-->
+		
+		<!-- integrity_max was zero for a piece of clothing [Skimpy Leotard], this caused an infinity money bug at tailor, update people's clothing here -->
+		<<if $objectVersion.updateClothes lt 56>>
+			<<run fixIntegrityUpdater()>>
+		<</if>>
+		<<set $objectVersion.updateClothes to 56>>
 	<</if>>
 
 	<<if $objectVersion.specialClothes lt 15 or $objectVersion.specialClothes is undefined>>
@@ -5239,5 +5245,11 @@
 	<<if $yearly is undefined>>
 		<<set $yearly = {}>>
 	<</if>>
+	<<if !($popcorn gte 0)>>
+		<<set $popcorn to 0>>
+	<</if>>
 
+	<<if !Number.isFinite($money)>>
+		<<set $money to 0>>
+	<</if>>
 <</widget>>

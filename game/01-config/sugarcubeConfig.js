@@ -7,14 +7,17 @@ Config.history.maxStates = 5;
 /* debug will enable or disable the feature only for new games */
 /* sneaky will enable the Sneaky notice banner on the opening screen and save display */
 /* versionName will be displayed in the top right of the screen, leave as "" to not display anything */
-window.StartConfig = {
+const StartConfig = {
 	debug: false,
 	enableImages: true,
 	enableLinkNumberify: true,
-	version: "0.5.0.3",
-	versionName: "",
+	version: "0.5.0.6",
+	versionName: `Издание "Витая в облаках" (в русском переводе)`,
 	sneaky: false,
+	socialMediaEnabled: true,
+	sourceLinkEnabled: false,
 };
+window.StartConfig = StartConfig;
 
 State.prng.init();
 

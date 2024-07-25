@@ -6,7 +6,7 @@ setup.WeatherDescriptions = {
 			day: "The sky is bright and sunny.",
 			dusk: "Deep orange colors the sky.",
 			night: "The stars shine brightly across the dark horizon.",
-			bloodMoon: "The night sky glows ominously red under the glowing moon.",
+			bloodMoon: "The night sky glows ominously red under the blood moon.",
 			transition: () => Weather.isOvercast ? "The remnants of clouds are clearing, revealing a vivid sky." : null,
 		},
 		lightClouds: {
@@ -78,6 +78,37 @@ setup.WeatherDescriptions = {
 			return `<span class="red">It's extremely hot outside.</span>`;
 		}
 	},
+	extremeTemperature: () => {
+		if (!Weather.Temperature.isExtreme()) return "";
+		const average = Weather.genSettings.months[Time.month - 1].temperatureRange.average;
+		const extreme = Weather.genSettings.months[Time.month - 1].temperatureRange.extreme;
+
+		if (Weather.temperature <= -18) {
+			return `<span class="blue">It's frigid, likely one of the coldest days of the year.</span>`;
+		} else if (Weather.temperature > 30) {
+			return `<span class="red">It's sweltering. There might be a heatwave passing by.</span>`;
+		}
+
+		const warm = Weather.temperature > 20 ? "hot" : "warm";
+		const cool = Weather.temperature < 7 ? "cold" : "cool";
+		const frigid = Weather.temperature < -15 ? "frigid" : "cold";
+
+		// 50% lower than average low
+		if (average[0] + ((extreme[0] - average[0]) * 0.5) > Weather.temperature) {
+			return `<span class="teal">It's unseasonably ${frigid}.</span>`;
+		} else if (average[0] > Weather.temperature) {
+			return `<span class="teal">It's ${cool} for this time of year.</span>`
+		}
+
+		// 50% higher than average high
+		if (average[1] + ((extreme[1] - average[1]) * 0.5) < Weather.temperature) {
+			return `<span class="orange">It's unseasonably ${warm}.</span>`
+		} else if (average[1] < Weather.temperature) {
+			return `<span class="orange">It's ${warm} for this time of year.</span>`
+		}
+
+		return "";
+	},
 	bodyTemperature: () => {
 		if (Weather.bodyTemperature <= 34) {
 			return "You're suffering from severe hypothermia.";
@@ -106,6 +137,8 @@ setup.WeatherDescriptions = {
 		}
 	},
 	bodyTemperatureChanges: () => {
+		if (Math.abs(Weather.BodyTemperature.target - Weather.bodyTemperature) <= 0.5)
+			return "";
 		if (Weather.bodyTemperature < 35) {
 			if (Weather.BodyTemperature.target - Weather.bodyTemperature > 1) {
 				return "You let the warmth take the chill from your bones.";

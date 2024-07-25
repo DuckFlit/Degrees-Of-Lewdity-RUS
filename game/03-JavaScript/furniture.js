@@ -72,7 +72,7 @@ const Furniture = (() => {
 			category: ["chair"],
 			type: [],
 			cost: 460,
-			description: "Набор табуреток. Неудобно, но лучше, чем ничего..",
+			description: "Набор табуреток. Неудобно, но лучше, чем ничего.",
 			iconFile: "stool.png",
 			iconFile2: "stoolDesk.png",
 			tier: 0,

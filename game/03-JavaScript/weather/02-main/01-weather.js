@@ -49,7 +49,7 @@ const Weather = (() => {
 	}
 
 	function getSunIntensity() {
-		const sunIntensity = Weather.genSettings.months[Time.date.month - 1].sunIntensity * Weather.activeRenderer.dayFactor;
+		const sunIntensity = Weather.genSettings.months[Time.date.month - 1].sunIntensity * Weather.activeRenderer?.dayFactor;
 		const weatherModifier = V.outside ? Weather.current.tanningModifier : 0;
 		const locationModifier = V.location === "forest" ? 0.2 : 1;
 		return V.outside ? Math.max(sunIntensity * weatherModifier * locationModifier, 0) : 0;
@@ -57,7 +57,8 @@ const Weather = (() => {
 
 	function setAccumulatedSnow(minutes) {
 		const precipitationIntensity = Weather.type.precipitationIntensity;
-		const temperature = Weather.temperature; // Temperature in Celsius
+		// Don't affect snow if override is set
+		const temperature = Weather.temperature - (T.weatherOverride?.outside ?? 0);
 		const snowfallRate = Weather.tempSettings.snow.snowfallRate;
 		const meltingRate = Weather.tempSettings.snow.meltingRate;
 		const maxSnow = Weather.tempSettings.snow.maxAccumulation;
@@ -78,7 +79,8 @@ const Weather = (() => {
 	}
 
 	function setIceThickness(minutes) {
-		const temperature = Weather.temperature; // Temperature in Celsius
+		// Don't affect ice if override is set
+		const temperature = Weather.temperature - (T.weatherOverride?.outside ?? 0);
 		const freezingRate = Weather.tempSettings.ice.freezingRate;
 		const meltingRate = Weather.tempSettings.ice.meltingRate;
 		const maxThickness = Weather.tempSettings.ice.maxThickness;
@@ -173,19 +175,22 @@ const Weather = (() => {
 			return Weather.Temperature.getWaterTemperature();
 		},
 		get bodyTemperature() {
-			return Weather.BodyTemperature.current;
+			return Weather.BodyTemperature.get();
+		},
+		set bodyTemperature(value) {
+			Weather.BodyTemperature.set(value);
 		},
 		get wetness() {
 			return Weather.BodyTemperature.wetness;
 		},
 		get bloodMoon() {
-			const sunRise = Weather.activeRenderer.orbitals.bloodMoon?.settings.riseTime - 1;
-			const sunSet = Weather.activeRenderer.orbitals.bloodMoon?.settings.setTime + 1;
+			const sunRise = Weather.activeRenderer?.orbitals.bloodMoon?.settings.riseTime - 1;
+			const sunSet = Weather.activeRenderer?.orbitals.bloodMoon?.settings.setTime + 1;
 			return (Time.date.day === Time.date.lastDayOfMonth && Time.date.hour >= sunRise) || (Time.date.day === 1 && Time.date.hour < sunSet);
 		},
 		get dayState() {
-			const sunRise = Weather.activeRenderer.orbitals.sun.settings.riseTime;
-			const sunSet = Weather.activeRenderer.orbitals.sun.settings.setTime;
+			const sunRise = Weather.activeRenderer?.orbitals.sun.settings.riseTime;
+			const sunSet = Weather.activeRenderer?.orbitals.sun.settings.setTime;
 			const hour = Time.hour;
 			return hour < sunRise - 0.75 || hour >= sunSet + 0.75 ? "night" : hour >= sunSet - 0.5 ? "dusk" : hour >= sunRise + 1 ? "day" : "dawn";
 		},
