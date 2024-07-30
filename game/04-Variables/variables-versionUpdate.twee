@@ -5179,6 +5179,39 @@
 		<<unset $pillory_tenant.duration>>
 	<</if>>
 
+	<!-- 5.0.6 -->
+	<<if $pillory is undefined>>
+		<<set $pillory to {}>>
+	<</if>>
+	<<if $pillorytime isnot undefined>>
+		<<set _pilloryStartTime to new DateTime(Time.date)>>
+		<<set _pilloryEndTime to new DateTime(Time.date).addMinutes(60 - Time.date.minute)>>
+		<<if !isNaN($pillorytime) and $pillorytime gte 0>>
+			<<set _pilloryEndTime.addHours($pillortime)>>
+		<</if>>
+		<<set $pillory.time to {
+			start: _pilloryStartTime.timeStamp,
+			end: _pilloryEndTime.timeStamp,
+		}>>
+		<<unset $pillorytime>>
+	<</if>>
+	<<if $pilloryaudience isnot undefined>>
+		<<if !isNaN($pilloryaudience) and $pilloryaudience gte 0>>
+			<<set $pillory.audience to $pilloryaudience>>
+		<</if>>
+		<<unset $pilloryaudience>>
+	<</if>>
+	<<if $pillory_tenant isnot undefined>>
+		<<set $pillory.tenant to $pillory_tenant>>
+		<<unset $pillory_tenant>>
+	<</if>>
+	<<if $options.oldclock isnot undefined>>
+		<<run delete $options.oldclock>>
+	<</if>>
+	<<if $options.newWardrobeStyle isnot undefined>>
+		<<run delete $options.newWardrobeStyle>>
+	<</if>>
+
 	<!-- 0.5 Weather update -->
 	<<if Time.year is 361 and $location is "temple">>
 		<<set $location to "old_temple">>
@@ -5297,5 +5330,13 @@
 	<</if>>
 	<<if $options.newWardrobeStyle isnot undefined>>
 		<<run delete $options.newWardrobeStyle>>
+	<</if>>
+
+	<!-- Fix for not having an island home set, should only be run once -->
+	<<if !$objectVersion.islandHomeFix>>
+		<<if $passage.startsWith("Island") and $island and $island.home is undefined>>
+			<<set $island.home to "rocky_hillock">>
+		<</if>>
+		<<set $objectVersion.islandHomeFix to 1>>
 	<</if>>
 <</widget>>
