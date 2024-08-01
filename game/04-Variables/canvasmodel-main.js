@@ -3782,11 +3782,15 @@ Renderer.CanvasModels["main"] = {
 		"handheld": genlayer_clothing_main('handheld', {
 			srcfn(options) {
 				const torchLevels = [100, 80, 60, 40, 20, 1, 0];
-				const num = torchLevels.findIndex(x => V.catacombs_torch >= x) + 1;
+				const torchNum = torchLevels.findIndex(x => V.catacombs_torch >= x) + 1;
+				const torch = options.worn_handheld_setup.variable === "torch" && V.catacombs_torch >= 0 ? torchNum : '';
+
+				const cardNum = Math.clamp(V.blackjack.playersCards.length, 1, 5);
+				const cards = options.worn_handheld_setup.variable === "cards" ? cardNum : '';
 
 				const cover = options.arm_right === "cover" ? "right_cover" : "right";
-				const torch = options.worn_handheld_setup.name === "torch" && V.catacombs_torch >= 0 ? num : '';
-				const path = `img/clothes/handheld/${options.worn_handheld_setup.variable}/${cover}${torch}.png`;
+				const extra = torch || cards || '';
+				const path = `img/clothes/handheld/${options.worn_handheld_setup.variable}/${cover}${extra}.png`;
 				return gray_suffix(path, options.filters['worn_handheld']);
 			},
 			showfn(options) {
@@ -3802,8 +3806,12 @@ Renderer.CanvasModels["main"] = {
 		}),
 		"handheld_acc": genlayer_clothing_accessory('handheld', {
 			srcfn(options) {
+				const cardNum = Math.clamp(V.blackjack.playersCards.length, 1, 5);
+				const cards = options.worn_handheld_setup.variable === "cards" ? cardNum : '';
+
 				const cover = options.arm_right === "cover" ? "right_cover" : "right";
-				const path = `img/clothes/handheld/${options.worn_handheld_setup.variable}/${cover}_acc.png`;
+				const extra = cards || '';
+				const path = `img/clothes/handheld/${options.worn_handheld_setup.variable}/${cover}${extra}_acc.png`;
 				return gray_suffix(path, options.filters['worn_handheld_acc']);
 			},
 			showfn(options) {
