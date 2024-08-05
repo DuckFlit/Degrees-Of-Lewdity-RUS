@@ -143,6 +143,60 @@ function DefineMacroS(macroName, macroFunction, tags, skipArgs, maintainContext)
 }
 
 /**
+ * Creates and returns a keyword describing the wetness of a clothing article.
+ *
+ * @param {string} slot clothing article slot used
+ * @returns {string} condition key word ("drenched"|"torn|"frayed"|"full")
+ */
+
+function wetnessKeyword(slot) {
+	const i = V[`${slot}wet`];
+	if (i >= 100) {
+		return "drenched";
+	} else if (i >= 80) {
+		return "wet";
+	} else if (i >= 50) {
+		return "damp";
+	} else {
+		return "dry";
+	}
+}
+window.wetnessKeyword = wetnessKeyword;
+
+/**
+ * Returns an optional wetness prefix for the article of clothing.
+ 
+ * @param {string} slot clothing article slot used
+ * @returns {string} printable integrity prefix
+ */
+function wetnessWord(slot) {
+	const kw = wetnessKeyword(slot);
+	let colorClass;
+	switch (kw) {
+		case "dry":
+			colorClass = "green";
+			break;
+		case "damp":
+			colorClass = "teal";
+			break;
+		case "wet":
+			colorClass = "purple";
+			break;
+		case "drenched":
+			colorClass = "red";
+			break;
+		default:
+			colorClass = ""; // default without color
+	}
+	if (kw) {
+		T.text_output = `<span class="${colorClass}">${kw.trim()}</span> `;
+	}
+	return T.text_output;
+}
+window.wetnessWord = wetnessWord;
+DefineMacroS("wetnessWord", wetnessWord);
+
+/**
  * Creates and returns the keyword describing the integrity of a clothing article.
  *
  * @param {object} worn clothing article, State.variables.worn.XXXX
@@ -280,6 +334,26 @@ function faceintegrity() {
 	return integrityWord(V.worn.face, "face");
 }
 DefineMacroS("faceintegrity", faceintegrity);
+
+function cheatsWord(id, slot, worn) {
+	const updateText = () => {
+		let text = worn ? integrityWord(worn, slot) : wetnessWord(slot);
+		if (!T.text_output) text = "<span class='green'>full</span>";
+
+		jQuery("#numberslider-value-" + id)
+			.text("")
+			.append(text);
+	};
+
+	$(() => {
+		updateText();
+		$("#numberslider-input-" + id).on("input change", function (e) {
+			updateText();
+			Wikifier.wikifyEval(" <<updatesidebarimg>>");
+		});
+	});
+}
+window.cheatsWord = cheatsWord;
 
 /**
  * @param {object} worn clothing article, State.variables.worn.XXXX
