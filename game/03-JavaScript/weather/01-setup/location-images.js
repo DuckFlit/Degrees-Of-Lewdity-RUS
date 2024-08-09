@@ -852,15 +852,30 @@ setup.LocationImages = {
 		folder: "farm",
 		base: {
 			default: {
-				condition: () => !Weather.isSnow,
+				condition: () => !Weather.isSnow && Time.season !== "winter",
 				image: "base.png",
-				animation: {
-					frameDelay: 1000,
-				},
+			},
+			winter: {
+				condition: () => !Weather.isSnow && Time.season === "winter",
+				image: "winter.png",
 			},
 			snow: {
 				condition: () => Weather.isSnow,
 				image: "snow.png",
+			},
+			wind_base: {
+				condition: () => !Weather.isSnow && Time.season !== "winter",
+				image: "wind_winter.png",
+				animation: {
+					frameDelay: 1000,
+				},
+			},
+			wind_winter: {
+				condition: () => !Weather.isSnow && Time.season === "winter",
+				image: "wind_winter.png",
+				animation: {
+					frameDelay: 1000,
+				},
 			},
 		},
 	},
