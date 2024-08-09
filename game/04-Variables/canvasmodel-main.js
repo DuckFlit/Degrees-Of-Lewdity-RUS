@@ -3786,7 +3786,7 @@ Renderer.CanvasModels["main"] = {
 				const torchNum = torchLevels.findIndex(x => V.catacombs_torch >= x) + 1;
 				const torch = options.worn_handheld_setup.variable === "torch" && V.catacombs_torch >= 0 ? torchNum : '';
 
-				const cardNum = Math.clamp(V.blackjack.playersCards.length, 1, 5);
+				const cardNum = V.blackjack ? Math.clamp(V.blackjack.playersCards.length, 1, 5) : 0;
 				const cards = options.worn_handheld_setup.variable === "cards" ? cardNum : '';
 
 				const cover = options.arm_right === "cover" ? "right_cover" : "right";
@@ -3807,7 +3807,7 @@ Renderer.CanvasModels["main"] = {
 		}),
 		"handheld_acc": genlayer_clothing_accessory('handheld', {
 			srcfn(options) {
-				const cardNum = Math.clamp(V.blackjack.playersCards.length, 1, 5);
+				const cardNum = V.blackjack ? Math.clamp(V.blackjack.playersCards.length, 1, 5) : 0;
 				const cards = options.worn_handheld_setup.variable === "cards" ? cardNum : '';
 
 				const cover = options.arm_right === "cover" ? "right_cover" : "right";
