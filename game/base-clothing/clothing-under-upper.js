@@ -1208,7 +1208,7 @@ function initUnderUpper() {
 			accessory_colour: 0,
 			accessory_colour_options: [],
 			sleeve_img: 0,
-			breast_img: { 0: 2, 1: 2, 2: 2, 3: 3, 4: 4, 5: 5, 6: 5 },
+			breast_img: { 0: 1, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 5 },
 			mainImage: 0,
 			cursed: 0,
 			location: 0,

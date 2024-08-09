@@ -1581,7 +1581,10 @@ Renderer.CanvasModels["main"] = {
 					"thick ponytail",
 					"all down",
 					"half-up",
-					"messy ponytail"
+					"messy ponytail",
+					"ruffled",
+					"half up twintail",
+					"princess wave",
 				];
 
 				const path = `img/hair/back/${options.hair_sides_type}`;
@@ -1591,8 +1594,6 @@ Renderer.CanvasModels["main"] = {
 					return `${path}/thighs.png`;
 				if (options.hair_sides_length === "navel" && options.hair_sides_type === "messy ponytail")
 					return `${path}/navel.png`;
-				if (options.hair_sides_type === "ruffled")
-					return `${path}/${options.hair_sides_length}.png`;
 				return "";
 			},
 			masksrcfn(options) {
