@@ -3200,7 +3200,8 @@ Renderer.CanvasModels["main"] = {
 			},
 			masksrcfn(options) {
 				return options.belly >= 19 && options.worn_upper_setup.pregType == "split" ?
-					options.shirt_mask_clip_src : options.shirt_fitted_clip_src;
+					options.shirt_mask_clip_src :
+					options.worn_upper_setup.formfitting && options.shirt_fitted_clip_src;
 			},
 		}),
 		"upper_breasts_acc": genlayer_clothing_breasts_acc("upper", {
