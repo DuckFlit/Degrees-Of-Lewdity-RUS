@@ -66,7 +66,7 @@ You are in your cell. There's a bed in one corner, and a cupboard in another. A 
 		<br>
 	<<else>>
 		<<listsleepoutfits "prison bed">>
-		<<bedicon>><<link [[Strip and get in bed|Prison Bed]]>><<undressSleep "prison bed">><</link>>
+		<<prisonicon "bed">><<link [[Strip and get in bed|Prison Bed]]>><<undressSleep "prison bed">><</link>>
 		<br>
 	<</if>>
 	<<roomoptions>>
@@ -74,10 +74,10 @@ You are in your cell. There's a bed in one corner, and a cupboard in another. A 
 		<<prisonicon "plaque">><<link [[Plaque|Prison Plaque]]>><</link>>
 		<br>
 	<</if>>
-	<<wardrobeicon>><<link [[Cupboard|Prison Wardrobe]]>><</link>>
+	<<prisonicon "wardrobe">><<link [[Cupboard|Prison Wardrobe]]>><</link>>
 	<br>
 	<<if $prison.mirror gte 1>>
-		<<mirroricon>><<link [[Mirror|Prison Mirror]]>><<preMirror>><</link>>
+		<<prisonicon "mirror">><<link [[Mirror|Prison Mirror]]>><<preMirror>><</link>>
 		<br>
 	<</if>>
 	<br>
@@ -1355,27 +1355,27 @@ You are in the prison yard. It's spacious, but the surrounding walls are unreaso
 	<<passout_prison>>
 <<elseif $prison_wren_intro is 1 and $prison.schedule is "yard">>
 	<<npc "Wren">><<person1>>
-	<<if $wren_seen>>
-		"I've mixed feelings about meeting you here," says a young <<if $pronoun is "m">>man with short<<else>>woman with shoulder-length<</if>> hair. <span class="gold">It's <<= $wren_seen is "pregnancy" ? "the person who rescued you when you were in labour" : "Wren">>.</span>
+	<<if $wrenSeen.length>>
+		"I've mixed feelings about meeting you here," says a young <<if $pronoun is "m">>man with short<<else>>woman with shoulder-length<</if>> hair. <span class="gold">It's <<= $wrenSeenLast is "pregnancy" ? "the person who rescued you when you were in labour" : "Wren">>.</span>
 		<br><br>
 
-		<<if $wren_seen is "pregnancy">>
+		<<if $wrenSeenLast is "pregnancy">>
 			"Poking around dangerous places caught up to you, huh? <<= playerBellyVisible() ? "And you're knocked up again to boot." : "At least you're not knocked up this time.">>
 			<<set $phase to "intro">>
-		<<elseif $wren_seen is "winter">>
+		<<elseif $wrenSeen.includes("winter")>>
 			"Did old Winter's requests fall outside the law?
 		<<else>>
-			"I'm sorry your <<= $wren_seen is "catsuit" ? "skulking" : "sneaking">> didn't work out.
+			"I'm sorry your <<= $wrenSeen.includes("catsuit") ? "skulking" : "sneaking">> didn't work out.
 		<</if>>
 		Maybe we can be useful to each other."
 		<br><br>
 
-		<<link [[Next|Prison Wren Intro]]>><<unset $prison_wren_intro>><<set $wren_seen to "prison">><</link>>
+		<<link [[Next|Prison Wren Intro]]>><<unset $prison_wren_intro>><<set $wrenSeen.pushUnique("prison")>><<set $wrenSeenLast to "prison">><</link>>
 	<<else>>
 		"Newcomer?" asks a young <<if $pronoun is "m">>man with short<<else>>woman with shoulder-length<</if>> hair. "Just my type." <<He>> wears a prison uniform, but seems apart from the other inmates, freer.
 		<br><br>
 
-		<<link [[Next|Prison Wren Intro]]>><<set $phase to "intro">><<unset $prison_wren_intro>><<set $wren_seen to "prison">><</link>>
+		<<link [[Next|Prison Wren Intro]]>><<set $phase to "intro">><<unset $prison_wren_intro>><<set $wrenSeen.pushUnique("prison")>><<set $wrenSeenLast to "prison">><</link>>
 		<br>
 	<</if>>
 <<else>>
@@ -1442,23 +1442,23 @@ You are in the prison yard. It's spacious, but the surrounding walls are unreaso
 				The wall protrudes, giving rise to a tower far taller than the rest of the prison. There's a metal door at the bottom.
 				<br>
 				<<if $prison.job is "spire">>
-					<<link [[Climb the spire (0:05)|Prison Spire]]>><<tiredness 6>><<pass 5>><</link>><<gtiredness>>
+					<<stairsicon "up" "prison">><<link [[Climb the spire (0:05)|Prison Spire]]>><<tiredness 6>><<pass 5>><</link>><<gtiredness>>
 					<br>
 					<<if $prison.schedule isnot "revolt">>
 						<<if $prison.rope is 1>>
 							<br>
 							You could let your rope down the hole at the bottom of the spire.
 							<br>
-							<<link [[Use rope|Prison Spire Rope]]>><<set $prison.rope to 2>><</link>>
+							<span class="clothes-tan"><<icon "clothes/shibari_ropes.png">></span><<link [[Use rope|Prison Spire Rope]]>><<set $prison.rope to 2>><</link>>
 							<br>
 						<<elseif $prison.rope is 2>>
-							<<link [[Descend the spire (0:05)|Prison Spire Descend]]>><<tiredness 6>><<pass 5>><</link>><<gtiredness>>
+							<<stairsicon "down" "prison">><<link [[Descend the spire (0:05)|Prison Spire Descend]]>><<tiredness 6>><<pass 5>><</link>><<gtiredness>>
 							<br>
 						<<else>>
 							<br>
 							There's a deep hole at the bottom of the spire.
 							<br>
-							<<link [[Look in the hole|Prison Spire Hole]]>><</link>>
+							<<getouticon "hole">><<link [[Look in the hole|Prison Spire Hole]]>><</link>>
 							<br>
 						<</if>>
 					<</if>>
@@ -1523,11 +1523,11 @@ You climb down the spire, into the darkness beneath the prison.
 	Your feet almost slip on the slick rock at the bottom. There's something down here, hidden in the shadows. If you continue, however, it might be hard to find your way back.
 	<br><br>
 
-	<<link [[Explore the rut|Prison Rut]]>><<set $rut to 0>><<set $rut_entry to "rope">><</link>>
+	<<investigateicon>><<link [[Explore the rut|Prison Rut]]>><<set $rut to 0>><<set $rut_entry to "rope">><</link>>
 	<br>
 <</if>>
 
-<<link [[Climb back up|Prison Yard]]>><<location "prison">><</link>>
+<<stairsicon "up" "prison">><<link [[Climb back up|Prison Yard]]>><<location "prison">><</link>>
 <br>
 
 :: Prison Yard Door

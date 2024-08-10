@@ -24,6 +24,8 @@ function updateClothingColours(item, itemRef) {
 		case "round shades":
 		case "witch shoes":
 		case "mesh shirt":
+		case "fishnet stockings":
+		case "fishnet tights":
 			if (item.colour === 0) item.colour = "black";
 			break;
 		case "square shades":

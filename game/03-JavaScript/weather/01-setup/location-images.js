@@ -6,7 +6,7 @@
 	Otherwise locations will match the folder name
 */
 setup.Locations = {
-	alex_farm: () => (V.bus === "woodland" ? "forest" : "alex_farm"),
+	alex_farm: () => (V.bus === "woodland" ? "forest" : V.bus === "farm_fields" ? "fields" : "alex_farm"),
 	alley: () => {
 		if (V.bus === "industrial") return "ind_alley";
 		if (V.bus === "residential") return "res_alley";
@@ -26,6 +26,8 @@ setup.Locations = {
 	hotel: () => {
 		return "town";
 	},
+	estate: () => (V.bus === "estate_cottage" ? "estate_cottage" : "estate"),
+	farm: () => (V.bus === "farm" ? "farm" : "underground_farm"),
 	get() {
 		if (typeof this[V.location] === "function") {
 			return this[V.location]();
@@ -850,13 +852,63 @@ setup.LocationImages = {
 		folder: "farm",
 		base: {
 			default: {
-				condition: () => !Weather.isSnow,
+				condition: () => !Weather.isSnow && Time.season !== "winter",
 				image: "base.png",
+			},
+			winter: {
+				condition: () => !Weather.isSnow && Time.season === "winter",
+				image: "winter.png",
 			},
 			snow: {
 				condition: () => Weather.isSnow,
 				image: "snow.png",
 			},
+			wind_base: {
+				condition: () => !Weather.isSnow && Time.season !== "winter",
+				image: "wind_winter.png",
+				animation: {
+					frameDelay: 1000,
+				},
+			},
+			wind_winter: {
+				condition: () => !Weather.isSnow && Time.season === "winter",
+				image: "wind_winter.png",
+				animation: {
+					frameDelay: 1000,
+				},
+			},
+		},
+	},
+	fields: {
+		folder: "fields",
+		base: {
+			watchtower: {
+				condition: () => V.farm.tower >= 1,
+				image: "watchtower.png",
+			},
+			default: {
+				condition: () => !Weather.isSnow,
+				image: `${Time.season}.png`,
+			},
+			snow: {
+				condition: () => Weather.isSnow,
+				image: "snow.png",
+			},
+			wind: {
+				image: "wind.png",
+				animation: {
+					frameDelay: 100,
+					cycleDelay: () => 4000,
+					startDelay: () => 150,
+				},
+			},
+		},
+		emissive: {
+			condition: () => V.farm.tower >= 1 && Weather.lightsOn,
+			image: "emissive.png",
+			color: "#deae66",
+			blur: 0,
+			intensity: 0.8,
 		},
 	},
 	flats: {
@@ -1516,6 +1568,27 @@ setup.LocationImages = {
 			color: "#deae66a5",
 		},
 	},
+	estate_cottage: {
+		folder: "estate_cottage",
+		base: {
+			default: {
+				condition: () => !Weather.isSnow,
+				image: "base.png",
+			},
+			snow: {
+				condition: () => Weather.isSnow,
+				image: "snow.png",
+				animation: {
+					frameDelay: 300,
+					cycleDelay: () => 1200,
+				},
+			},
+		},
+		emissive: {
+			image: "emissive.png",
+			condition: () => Weather.lightsOn,
+		},
+	},
 	police_station: {
 		folder: "police_station",
 		base: {
@@ -1729,7 +1802,7 @@ setup.LocationImages = {
 			mask: {
 				image: "reflective.png",
 				alpha: 1,
-				compositeOperation: "overlay"
+				compositeOperation: "overlay",
 			},
 			overlay: {
 				image: "water.png",
@@ -2121,6 +2194,19 @@ setup.LocationImages = {
 	},
 	underground: {
 		folder: "underground",
+		base: {
+			default: {
+				condition: () => !Weather.isSnow,
+				image: "base.png",
+			},
+			snow: {
+				condition: () => Weather.isSnow,
+				image: "snow.png",
+			},
+		},
+	},
+	underground_farm: {
+		folder: "underground_farm",
 		base: {
 			default: {
 				condition: () => !Weather.isSnow,
