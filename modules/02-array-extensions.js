@@ -156,3 +156,61 @@ $(() => {
 		},
 	});
 });
+
+/**
+ * Compare two arrays of objects based on a specified property.
+ *
+ * @param {Array} otherArray The array to compare with the calling array.
+ * @param {string} property The property of the objects to compare.
+ * @returns {boolean} Returns true if both arrays are equal in length and their objects have identical properties; otherwise, false.
+ */
+Object.defineProperty(Array.prototype, "isEqualByProperty", {
+	configurable: true,
+	writable: true,
+
+	value(otherArray, property) {
+		if (this == null) {
+			throw new TypeError("Array.prototype.isEqualByProperty called on null or undefined");
+		}
+		if (!Array.isArray(otherArray)) {
+			throw new TypeError("The first argument must be an array");
+		}
+		if (typeof property !== "string") {
+			throw new TypeError("The second argument must be a string");
+		}
+		if (this.length !== otherArray.length) {
+			return false;
+		}
+		for (let i = 0; i < this.length; i++) {
+			if (this[i][property] !== otherArray[i][property]) {
+				return false;
+			}
+		}
+		return true;
+	},
+});
+
+Object.defineProperty(Array.prototype, "isEqual", {
+	configurable: true,
+	writable: true,
+
+	value(otherArray) {
+		if (this == null) {
+			throw new TypeError("Array.prototype.isEqual called on null or undefined");
+		}
+		if (!Array.isArray(otherArray)) {
+			throw new TypeError("The first argument must be an array");
+		}
+
+		if (this.length !== otherArray.length) {
+			return false;
+		}
+
+		for (let i = 0; i < this.length; i++) {
+			if (this[i] !== otherArray[i]) {
+				return false;
+			}
+		}
+		return true;
+	},
+});

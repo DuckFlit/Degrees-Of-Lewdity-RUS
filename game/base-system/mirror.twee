@@ -69,8 +69,6 @@
 			<<mirrorMakeup>>
 		<<case "transformation">>
 			<<mirrorTransformation>>
-		<<case "debug">>
-			<<mirrorDebug>>
 		<<default>>
 			<<mirrorMenu _args[0]>>
 	<</switch>>
@@ -1468,23 +1466,6 @@
 	You have <span class="gold">$hairgelBottles</span> <<print ($hairgelBottles is 1) ? "bottle" : "bottles">> of hair gel remaining.
 <</widget>>
 
-<<widget "mirrormodel">>
-	<<set _modeloptions.skin_type = $skinColor.natural || "light">>
-	<<set _modeloptions.freckles = $player.freckles == true and $makeup.concealer != 1>>
-	<<set _modeloptions.left_eye = $makeup.eyelenses.left != 0 ? $makeup.eyelenses.left : $leftEyeColour>>
-	<<set _modeloptions.right_eye = $makeup.eyelenses.right != 0 ? $makeup.eyelenses.right : $rightEyeColour>>
-	<<set _modeloptions.mouth to 'neutral'>>
-	<<set _modeloptions.hair_colour = $haircolour>>
-	<<set _modeloptions.hair_fringe_colour = $hairfringecolour>>
-	<<set _modeloptions.hair_fringe_colour_gradient = $hairFringeColourGradient>>
-	<<set _modeloptions.hair_fringe_colour_style = $hairFringeColourStyle>>
-	<<set _modeloptions.hair_colour_gradient = $hairColourGradient>>
-	<<set _modeloptions.hair_colour_style = $hairColourStyle>>
-	<<set _modeloptions.hair_sides_length to $hairlengthstage>>
-	<<set _modeloptions.hair_sides_position to $hairposition>>
-	<<set _modeloptions.hair_fringe_length to $fringelengthstage>>
-<</widget>>
-
 <<widget "mirrorhairdisplay">>
 	<<if _hairCategory isnot _args[0]>>
 		<<set _perPage to $showMannequins ? 14 : 100>>
@@ -1627,7 +1608,21 @@
 				<div @id="'hairGrid-' + _hairCategory.replace('$','') + '-' + _hairName.replace(/ /g,'')" @class="'gridItem' + (_hairName is V[_hairCategory.replace('$','')] ? ' selectedHair' : '')" @onclick="`wikifier('mirrorhairdisplayClick', '${T.hairCategory.replace('$','')}', '${T.hairName.replace(/ /g,'_')}');`">
 					<<if $options.images is 1 and $showMannequins is 1>>
 						<<selectmodel "main">>
-						<<mirrormodel>>
+						<<set _modeloptions.tanningEnabled to false>>
+						<<set _modeloptions.skin_type = $player.skin.color>>
+						<<set _modeloptions.freckles = $player.freckles == true and $makeup.concealer != 1>>
+						<<set _modeloptions.left_eye = $makeup.eyelenses.left != 0 ? $makeup.eyelenses.left : $leftEyeColour>>
+						<<set _modeloptions.right_eye = $makeup.eyelenses.right != 0 ? $makeup.eyelenses.right : $rightEyeColour>>
+						<<set _modeloptions.mouth to 'neutral'>>
+						<<set _modeloptions.hair_colour = $haircolour>>
+						<<set _modeloptions.hair_fringe_colour = $hairfringecolour>>
+						<<set _modeloptions.hair_fringe_colour_gradient = $hairFringeColourGradient>>
+						<<set _modeloptions.hair_fringe_colour_style = $hairFringeColourStyle>>
+						<<set _modeloptions.hair_colour_gradient = $hairColourGradient>>
+						<<set _modeloptions.hair_colour_style = $hairColourStyle>>
+						<<set _modeloptions.hair_sides_length to $hairlengthstage>>
+						<<set _modeloptions.hair_sides_position to $hairposition>>
+						<<set _modeloptions.hair_fringe_length to $fringelengthstage>>
 						<<if _hairCategory is "$hairtype">>
 							<<set _modeloptions.hair_sides_type to _hairName>>
 							<<set _modeloptions.hair_fringe_type to $fringetype>>
@@ -2693,40 +2688,4 @@
 		Wikifier.wikifyEval('<<updatesidebarimg>>');
 	});
 	<</script>>
-<</widget>>
-
-<<widget "mirrorDebug">>
-	<<link "Back">><<replace #mirror>><<mirrorMenu>><</replace>><<numberify "#passages > .passage">><<unset $mirrorMenu>><</link>>
-	<br><br>
-	<br>
-	<<link "<<<">><<set $hairlength -= 1000>><<clamp>><<replace "#statshairlength">><<print Math.trunc($hairlength)>><</replace>><</link>> |
-	<<link "<<">><<set $hairlength -= 100>><<clamp>><<replace "#statshairlength">><<print Math.trunc($hairlength)>><</replace>><</link>> |
-	<<link "<">><<set $hairlength -= 10>><<clamp>><<replace "#statshairlength">><<print Math.trunc($hairlength)>><</replace>><</link>> |
-	Hair length: <span id="statshairlength"><<print Math.trunc($hairlength)>></span>
-	| <<link ">">><<set $hairlength += 10>><<clamp>><<replace "#statshairlength">><<print Math.trunc($hairlength)>><</replace>><</link>>
-	| <<link ">>">><<set $hairlength += 100>><<clamp>><<replace "#statshairlength">><<print Math.trunc($hairlength)>><</replace>><</link>>
-	| <<link ">>>">><<set $hairlength += 1000>><<clamp>><<replace "#statshairlength">><<print Math.trunc($hairlength)>><</replace>><</link>>
-	<br>
-	<<link "<<<">><<set $fringelength -= 1000>><<clamp>><<replace "#statsfringelength">><<print Math.trunc($fringelength)>><</replace>><</link>> |
-	<<link "<<">><<set $fringelength -= 100>><<clamp>><<replace "#statsfringelength">><<print Math.trunc($fringelength)>><</replace>><</link>> |
-	<<link "<">><<set $fringelength -= 10>><<clamp>><<replace "#statsfringelength">><<print Math.trunc($fringelength)>><</replace>><</link>> |
-	Fringe length: <span id="statsfringelength"><<print Math.trunc($fringelength)>></span>
-	| <<link ">">><<set $fringelength += 10>><<clamp>><<replace "#statsfringelength">><<print Math.trunc($fringelength)>><</replace>><</link>>
-	| <<link ">>">><<set $fringelength += 100>><<clamp>><<replace "#statsfringelength">><<print Math.trunc($fringelength)>><</replace>><</link>>
-	| <<link ">>>">><<set $fringelength += 1000>><<clamp>><<replace "#statsfringelength">><<print Math.trunc($fringelength)>><</replace>><</link>>
-	<br>
-	Hair Colour (<<print $haircolour>>):
-	<<link "Black">><<set $haircolour to "black">><<goto "Wardrobe">><</link>> |
-	<<link "Brown">><<set $haircolour to "brown">><<goto "Wardrobe">><</link>> |
-	<<link "Red">><<set $haircolour to "red">><<goto "Wardrobe">><</link>> |
-	<<link "Ginger">><<set $haircolour to "ginger">><<goto "Wardrobe">><</link>> |
-	<<link "Blond">><<set $haircolour to "blond">><<goto "Wardrobe">><</link>> |
-	<<link "Green">><<set $haircolour to "green">><<goto "Wardrobe">><</link>> |
-	<<link "Blue">><<set $haircolour to "blue">><<goto "Wardrobe">><</link>> |
-	<<link "Purple">><<set $haircolour to "purple">><<goto "Wardrobe">><</link>>
-
-	<br><br>
-
-	<<link "Skip day">><<pass 23 hours>><<effects>><<goto "Mirror">><</link>>
-	<br>
 <</widget>>

@@ -669,7 +669,6 @@ function updateOptions() {
 
 		if (!State.restore(true)) return; // don't do anything if state couldn't be restored
 		V.options = optionsData;
-		tanned(0, "ignoreCoverage");
 		State.show();
 
 		T.key = tmpKey;

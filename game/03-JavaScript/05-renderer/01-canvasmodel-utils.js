@@ -138,3 +138,14 @@ Renderer.defaultListener = {
 		}
 	},
 };
+
+function refreshModels() {
+	if (Renderer.locateModel("lighting", "sidebar").name !== "empty") {
+		Renderer.invalidateLayerCaches(Renderer.locateModel("lighting", "sidebar").layerList);
+		Renderer.locateModel("lighting", "sidebar").redraw();
+	}
+}
+
+/* Events */
+$(document).on(":onloadsave", refreshModels);
+$(document).on(":oncloseoverlay", refreshModels);

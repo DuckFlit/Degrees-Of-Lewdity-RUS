@@ -91,8 +91,8 @@
 	<<set $condomUseChanceCon to 83>>
 	<<set $multipleWardrobes to "isolated">>
 	<<set $tending_yield_factor to 5>>
-
 	<<set $notifyUpdate = true>>
+	<<set _tan to 0>>
 
 	<<startingPlayerImageReset>>
 <</widget>>
@@ -630,9 +630,6 @@
 <</widget>>
 
 <<widget "settingsExitFunction">>
-	<<if $settingsExitPassage is "Start2">>
-		<<setSkinColorBase>>
-	<</if>>
 	<<if !$ironmanmode>>
 		<<set $cheatdisable to $cheatdisabletoggle>>
 	<</if>>
@@ -654,7 +651,6 @@
 	<<updatePersistentNPCs>>
 	<<hirsuteHideCheck>>
 	<<generateTipsList>>
-	<<tanned 0 "ignoreCoverage">>
 	<<if $player.freckles is "random">>
 		<<set $player.freckles to (random(1, 5) is 1)>>
 	<</if>>
@@ -975,7 +971,6 @@
 	<hr>
 
 	<<sizeLimitsSettings>>
-
 	<hr>
 
 	<div class="settingsGrid">
@@ -984,31 +979,22 @@
 		</div>
 		<div class="settingsToggleItem">
 			<span class="gold">Reddish:</span><br>
-			<label>Light <<radiobutton "$skinColor.natural" "light" autocheck>></label> |
-			<label>Medium <<radiobutton "$skinColor.natural" "medium" autocheck>></label> |
-			<label>Dark <<radiobutton "$skinColor.natural" "dark" autocheck>></label> |
-			<label>Gyaru <<radiobutton "$skinColor.natural" "gyaru" autocheck>></label>
+			<label>Light <<radiobutton "$player.skin.color" "light" autocheck>></label> |
+			<label>Medium <<radiobutton "$player.skin.color" "medium" autocheck>></label> |
+			<label>Dark <<radiobutton "$player.skin.color" "dark" autocheck>></label> |
+			<label>Gyaru <<radiobutton "$player.skin.color" "gyaru" autocheck>></label>
 		</div>
 		<div class="settingsToggleItem">
 			<span class="gold">Yellowish:</span><br>
-			<label>Light <<radiobutton "$skinColor.natural" "ylight" autocheck>></label> |
-			<label>Medium <<radiobutton "$skinColor.natural" "ymedium" autocheck>></label> |
-			<label>Dark <<radiobutton "$skinColor.natural" "ydark" autocheck>></label> |
-			<label>Gyaru <<radiobutton "$skinColor.natural" "ygyaru" autocheck>></label>
+			<label>Light <<radiobutton "$player.skin.color" "ylight" autocheck>></label> |
+			<label>Medium <<radiobutton "$player.skin.color" "ymedium" autocheck>></label> |
+			<label>Dark <<radiobutton "$player.skin.color" "ydark" autocheck>></label> |
+			<label>Gyaru <<radiobutton "$player.skin.color" "ygyaru" autocheck>></label>
 		</div>
-		<div class="settingsToggleItemWide">
+		<div class="settingsToggleItemWide" oninput='Skin.color.setTan(T.tan)'>
 			<div class="numberslider-inline">
-			<label><span class="gold">Initial Tan Value:</span> <<numberslider "$skinColor.range" $skinColor.range 0 100 1>></label>
+			<label><span class="gold">Initial Tan Value:</span> <<numberslider "_tan" _tan 0 100 1>></label>
 			</div>
-			<<if StartConfig.enableImages is true>>
-				<<link "Test Colour">>
-					<<replace #test>>
-						<<print '<div style="height: 30px; width: 50px; background-color: red; filter: '
-						+skinColor(true, $skinColor.range, setup.skinColor[$skinColor.natural])+';"></div>'>>
-					<</replace>>
-				<</link>> (approximate)
-				<div id="test">/*<<print '<div style="height: 30px; width: 50px; background-color: red; filter: '+skinColor($options.tanImgEnabled, $skinColor.range,setup.skinColor[$skinColor.natural])+';"></div>'>>*/</div>
-			<</if>>
 		</div>
 	</div>
 
@@ -2229,7 +2215,6 @@
 			<span class="bold">
 				<<link [[Character Viewer|Clothes Testing]]>>
 					<<set $lastPassage to $passage>>
-					<<set $gameTanImgSetting to clone($options.tanImgEnabled)>>
 				<</link>>
 			</span>
 			- This will allow you to have a play with the character sprites.

@@ -53,6 +53,10 @@ declare interface CompositeLayerParams {
 	 */
 	blend?: BlendSpec;
 	/**
+	 * Blend mode for the whole layer.
+	 */
+	compositeOperation?: GlobalCompositeOperation;
+	/**
 	 * Blend mode.
 	 */
 	blendMode?: GlobalCompositeOperation;
@@ -145,6 +149,7 @@ declare interface SimpleAnimationSpec {
 }
 
 declare interface CompositeLayer extends CompositeLayerSpec {
+	maskBlendMode: GlobalCompositeOperation;
 	/**
 	 * `src` of cached `image` (if `src` changes, `image` will be reloaded)
 	 */
@@ -169,4 +174,8 @@ declare interface CompositeLayer extends CompositeLayerSpec {
 	 * Last displayed composed image
 	 */
 	cachedImage?: CanvasImageSource;
+	/**
+	 * Scale it?
+	 */
+	scale?: boolean;
 }
