@@ -997,17 +997,6 @@
 		<<set $misbehaviour_day to 9999>>
 	<</if>>
 
-
-	<<if $objectVersion.skinColor is undefined>>
-		<<skinColorInitOldSave>>
-	<</if>>
-	<<if $skinColor.tanningEnabled is "t">>
-		<<set $skinColor.tanningEnabled to true>>
-	<</if>>
-	<<if $skinColor.tanningEnabled is "f">>
-		<<set $skinColor.tanningEnabled to false>>
-	<</if>>
-
 	<<if $objectVersion.chastity lt 3 or $objectVersion.chastity is undefined>>
 		<<if $worn.genitals is undefined>>
 			<<set $worn.genitals to clone(setup.clothes.genitals[0])>>
@@ -3240,8 +3229,6 @@
 			combatImages: $combatimages !== undefined && StartConfig.enableImages !== false ? $combatimages : 0,
 			bodywritingImages: $bodywritingImages !== undefined ? $bodywritingImages : true,
 			silhouetteEnabled: $silhouettedisable !== undefined ? $silhouettedisable === "f" : true,
-			tanImgEnabled: $skinColor.tanImgEnabled !== undefined ? $skinColor.tanImgEnabled !== "f" : true,
-			tanningEnabled: $skinColor.tanningEnabled !== undefined ? $skinColor.tanningEnabled === "f" : true,
 			sidebarAnimations: $sidebarAnimations !== undefined ? $sidebarAnimations : true,
 			blinkingEnabled: $blinkingdisable !== undefined ? $blinkingdisable === "f" : true,
 			combatAnimations: $combatAnimations !== undefined ? $combatAnimations : true,
@@ -5152,7 +5139,7 @@
 	<!--Skin colours for nonhuman children -->
     <<if !$objectVersion.missingChildSkinColors>>
         <<run Object.values($children).forEach(child => {
-            if (!child.features.skinColour) child.features.skinColour = V.skinColor.natural;
+            if (!child.features.skinColour) child.features.skinColour = Skin.color.natural;
         })>>
         <<set $objectVersion.missingChildSkinColors to 1>>
     <</if>>
@@ -5177,7 +5164,7 @@
 	<<if $pillory is undefined>>
 		<<set $pillory to {}>>
 	<</if>>
-	<<if $pillorytime isnot undefined>>
+	<<if $pillorytime isnot undefined or $pillory.time is undefined>>
 		<<set _pilloryStartTime to new DateTime(Time.date)>>
 		<<set _pilloryEndTime to new DateTime(Time.date).addMinutes(60 - Time.date.minute)>>
 		<<if !isNaN($pillorytime) and $pillorytime gte 0>>
@@ -5294,36 +5281,43 @@
 	<</if>>
 
 	<!-- 5.0.6 -->
-	<<if $pillory is undefined>>
-		<<set $pillory to {}>>
-	<</if>>
-	<<if $pillorytime isnot undefined>>
-		<<set _pilloryStartTime to new DateTime(Time.date)>>
-		<<set _pilloryEndTime to new DateTime(Time.date).addMinutes(60 - Time.date.minute)>>
-		<<if !isNaN($pillorytime) and $pillorytime gte 0>>
-			<<set _pilloryEndTime.addHours($pillortime)>>
+	<!-- Fix for not having an island home set, should only be run once -->
+	<<if !$objectVersion.islandHomeFix>>
+		<<if $passage.startsWith("Island") and $island and $island.home is undefined>>
+			<<set $island.home to "rocky_hillock">>
 		<</if>>
-		<<set $pillory.time to {
-			start: _pilloryStartTime.timeStamp,
-			end: _pilloryEndTime.timeStamp,
+		<<set $objectVersion.islandHomeFix to 1>>
+	<</if>>
+
+	<!-- 5.2 tanning rework -->
+	<<if $player.skin is undefined>>
+		<<set $player.skin to {
+			color: "light",
+			layers: [],
 		}>>
-		<<unset $pillorytime>>
 	<</if>>
-	<<if $pilloryaudience isnot undefined>>
-		<<if !isNaN($pilloryaudience) and $pilloryaudience gte 0>>
-			<<set $pillory.audience to $pilloryaudience>>
-		<</if>>
-		<<unset $pilloryaudience>>
+	<<if $skinColor isnot undefined>>
+		<<set $player.skin.color to $skinColor.natural>>
+		<<set $player.skin.layers to [
+			{
+				layers: [],
+				slots: {},
+				value: $skinColor.range
+			}
+		]>>
+		<<unset $skinColor>>
 	<</if>>
-	<<if $pillory_tenant isnot undefined>>
-		<<set $pillory.tenant to $pillory_tenant>>
-		<<unset $pillory_tenant>>
+
+	<<if $options.tanningEnabled isnot undefined>>
+		<<set delete $options.tanningEnabled>>
 	<</if>>
-	<<if $options.oldclock isnot undefined>>
-		<<run delete $options.oldclock>>
+
+	<<if $tanned isnot undefined>>
+		<<unset $tanned>>
 	<</if>>
-	<<if $options.newWardrobeStyle isnot undefined>>
-		<<run delete $options.newWardrobeStyle>>
+
+	<<if $gameTanImgSetting isnot undefined>>
+		<<unset $gameTanImgSetting>>
 	<</if>>
 
 	<!-- Fix for not having an island home set, should only be run once -->
@@ -5375,5 +5369,4 @@
 			<<set $nikiSeen.pushUnique("winter")>>
 		<</if>>
 	<</if>>
-
 <</widget>>

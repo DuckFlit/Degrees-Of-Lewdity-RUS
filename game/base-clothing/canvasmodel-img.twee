@@ -5,6 +5,8 @@
 Render full player image.
 -->
 <<widget "canvasimg">>
+	<<selectmodel "lighting" "sidebar">>
+	<<rendermodel "lighting">>
 	<<selectmodel "main" "sidebar">>
 	<<modelprepare-player-body>>
 	<<modelprepare-player-clothes>>
@@ -17,7 +19,7 @@ Render full player image.
 		<<set _modeloptions.crotch_visible to false>>
 		<<set _modeloptions.crotch_exposed to false>>
 		<<if $worn.lower.exposed lte 1 and $lowerwetstage lte 0>>
-			<<set _modeloptions.worn_under_lower to 0>>
+			<<set _modeloptions.worn.under_lower.index to 0>>
 		<</if>>
 	<</if>>
 <</widget>>
@@ -30,36 +32,7 @@ Requires prior <<selectmodel "main">>
 	/*Prep for image checks*/
 	<<set _disabled to ["disabled","hidden"]>>
 
-	<!-- unwrap tanLoc/tanValues array -->
-	<<twinescript>>
-	let tanValByName = {
-		body: 0,
-		breasts: -0.01,
-		penis: -0.01,
-		swimshorts: -0.01,
-		swimsuitTop: -0.01,
-		swimsuitBottom: -0.01,
-		bikiniTop: -0.01,
-		bikiniBottom: -0.01,
-		tshirt: -0.01 /* No sprites yet? */
-	};
-	for (let i = 0; i < setup.skinColor.tanLoc.length; i++) {
-		tanValByName[setup.skinColor.tanLoc[i]] = $skinColor.tanValues[i] / 100;
-	}
-
-	_modeloptions.skin_type = $skinColor.natural || "light";
-	_modeloptions.skin_tone = tanValByName["body"];
-	if ($options.tanningEnabled is true){
-		for (let loc in tanValByName) {
-			if (loc !== 'body') {
-				_modeloptions['skin_tone_'+loc] = tanValByName[loc];
-			}
-		}
-	} else {
-		_modeloptions.show_tanlines = false;
-	}
-	<</twinescript>>
-
+	<<set _modeloptions.skin_type to $player.skin.color>>
 	<<if $makeup.eyeshadow != 0>>
 		<<set _modeloptions.eyeshadow_colour to $makeup.eyeshadow>>
 	<</if>>
@@ -126,11 +99,9 @@ Requires prior <<selectmodel "main">>
 	<</if>>
 
 	<<if $wraithSkin>>
-		<<set _modeloptions.skin_type to 'custom'>>
-		<<set _modeloptions.filters.body to {blend:'#ffffff',blendMode:'multiply',desaturate:true}>>
-		<<set _modeloptions.filters.breasts to _modeloptions.filters.body>>
-		<<set _modeloptions.filters.penis to _modeloptions.filters.body>>
-		<<set _modeloptions.show_tanlines to false>>
+		<<set _modeloptions.skin_type to 'wraith'>>
+		<<set _modeloptions.filters.tan to {blend:'#ffffff',blendMode:'multiply',desaturate:true}>>
+		<<set _modeloptions.tanningEnabled to false>>
 	<</if>>
 
 	<!--
@@ -499,9 +470,9 @@ Requires prior <<selectmodel "main">>
 		<</if>>
 		/* Ensure its always displayed */
 		<<if $worn.genitals.name is "chastity parasite">>
-			<<set _modeloptions['worn_genitals'] = clothesIndex("genitals", $worn.genitals)>>
-			<<set _modeloptions['worn_genitals_integrity'] = integrityKeyword($worn.genitals, "genitals")>>
-			<<set _modeloptions['worn_genitals_colour'] = $worn.genitals.colour>>
+			<<set _modeloptions.worn.genitals.index = clothesIndex("genitals", $worn.genitals)>>
+			<<set _modeloptions.worn.genitals.integrity = integrityKeyword($worn.genitals, "genitals")>>
+			<<set _modeloptions.worn.genitals.colour = $worn.genitals.colour>>
 		<</if>>
 	<</if>>
 
@@ -603,49 +574,7 @@ Set model options & filters for player clothes
 		<<set _modeloptions.lower_tucked to false>>
 	<</if>>
 
-	<<twinescript>>
-		let slots = [
-			["upper", $upperwetstage],
-			["over_upper"],
-			["genitals"],
-			["lower", $lowerwetstage],
-			["over_lower"],
-			["under_lower", $underlowerwetstage],
-			["under_upper", $underupperwetstage],
-			["hands"],
-			["handheld"],
-			["head"],
-			["over_head"],
-			["face"],
-			["neck"],
-			["legs"],
-			["feet"],
-		];
-		for (let slotobj of slots) {
-			let slot = slotobj[0];
-			let worn = $worn[slot];
-			switch (slotobj[1]) {
-				case 1: _modeloptions['worn_'+slot+'_alpha'] = 0.9; break;
-				case 2: _modeloptions['worn_'+slot+'_alpha'] = 0.7; break;
-				case 3: _modeloptions['worn_'+slot+'_alpha'] = 0.5; break;
-				default: _modeloptions['worn_'+slot+'_alpha'] = 1.0; break;
-			}
-			_modeloptions['worn_'+slot] = clothesIndex(slot,worn);
-			_modeloptions['worn_'+slot+'_integrity'] = integrityKeyword(worn,slot);
-			_modeloptions['worn_'+slot+'_colour'] = worn.colour;
-			if (worn.colour === 'custom') {
-				/* TODO @aimozg We recalculate custom colour RGB here; in future versions, we should store custom colours in canvasfilter-friendly way */
-				_modeloptions.filters['worn_'+slot+'_custom'] = worn.colourCanvasFilter || getCustomClothesColourCanvasFilter(worn.colourCustom);
-			}
-			_modeloptions['worn_'+slot+'_acc_colour'] = worn.accessory_colour;
-			if (worn.accessory_colour === 'custom') {
-				_modeloptions.filters['worn_'+slot+'_acc_custom'] = worn.accessory_colourCanvasFilter || getCustomClothesColourCanvasFilter(worn.accessory_colourCustom);
-			}
-			if (worn.accessory_layer_under) {
-				_modeloptions.acc_layer_under = worn.accessory_layer_under;
-			}
-		}
-	<</twinescript>>
+	<<run Object.assign(_modeloptions, getClothingOptions())>>
 
 	<<if Object.keys($modeloptionsOverride).length gte 1>>
 		<<for _m to 0; _m lt Object.keys($modeloptionsOverride).length; _m++>>
@@ -655,6 +584,10 @@ Set model options & filters for player clothes
 <</widget>>
 
 <<widget "canvas-player-base-body">>
+	<<selectmodel "lighting">>
+	<<set _modeloptions.lights.gradient.enabled = false>>
+	<<set _modeloptions.lights.flat.enabled = false>>
+	<<rendermodel "lighting">>
 	<<selectmodel "main">>
 	<<set _chestVisible to !$options.neverNudeMenus>>
 	<<modelprepare-player-body>>
@@ -686,22 +619,20 @@ Set model options & filters for player clothes
 		<<set _modeloptions.crotch_visible to false>>
 		<<set _modeloptions.penis to "">>
 		<<if $player.gender_appearance neq "m" or $player.perceived_breastsize gte 3>>
-			<<set _modeloptions.worn_under_upper to 12>>
-			<<set _modeloptions.worn_under_upper_colour to "pale white">>
+			<<set _modeloptions.worn.under_upper.index to 12>>
+			<<set _modeloptions.worn.under_upper.colour to "pale white">>
 		<</if>>
-		<<set _modeloptions.worn_under_lower_colour to "pale white">>
+		<<set _modeloptions.worn.under_lower.colour to "pale white">>
 		<<if $player.gender_appearance is "m">>
-			<<set _modeloptions.worn_under_lower to 4>>
+			<<set _modeloptions.worn.under_lower.index to 4>>
 		<<else>>
-			<<set _modeloptions.worn_under_lower to 1>>
+			<<set _modeloptions.worn.under_lower.index to 1>>
 		<</if>>
 	<</if>>
 	<<if playerHasStrapon()>>
-		<<set _modeloptions.worn_under_lower to $worn.under_lower.index>>
-		<<set _modeloptions.worn_under_lower_colour to ($worn.under_lower.colourCustom ? $worn.under_lower.colourCustom : $worn.under_lower.colour)>>
+		<<set _modeloptions.worn.under_lower.index to $worn.under_lower.index>>
+		<<set _modeloptions.worn.under_lower.colour to ($worn.under_lower.colourCustom ? $worn.under_lower.colourCustom : $worn.under_lower.colour)>>
 	<</if>>
-	<<set _modeloptions.lights.gradient.enabled = false>>
-	<<set _modeloptions.lights.flat.enabled = false>>
 	<<rendermodel>>
 <</widget>>
 

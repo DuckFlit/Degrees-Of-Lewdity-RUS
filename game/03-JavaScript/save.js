@@ -1169,7 +1169,6 @@ function settingsObjects(type) {
 					bodywritingImages: { bool: true, displayName: "Bodywriting images:" },
 					silhouetteEnabled: { bool: true, displayName: "NPC silhouettes:" },
 					tanImgEnabled: { bool: true, displayName: "Visual representation of skin colours:" },
-					tanningEnabled: { bool: true, displayName: "Tanning due to sun exposure:" },
 					sidebarAnimations: { bool: true, displayName: "Sidebar images:" },
 					blinkingEnabled: { bool: true, displayName: "Animated blinking:" },
 					combatAnimations: { bool: true, displayName: "Combat animations:" },

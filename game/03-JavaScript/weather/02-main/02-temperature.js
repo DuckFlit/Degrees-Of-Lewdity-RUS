@@ -183,7 +183,7 @@ Weather.Temperature = (() => {
 	}
 
 	function calculateDayModifier(date) {
-		const factor = Weather.sky?.orbitals?.sun.getFactor(date) ?? 0;
+		const factor = Weather.activeRenderer?.orbitals?.sun.getFactor(date) ?? 0;
 		return factor * getWeatherModifier();
 	}
 

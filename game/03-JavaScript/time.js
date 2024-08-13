@@ -520,6 +520,9 @@ function dayPassed() {
 
 	Weather.sky.initSun();
 
+	// Lose one day of tanning
+	Skin.applyTanningLoss(1440);
+
 	if (V.statFreeze) return fragment;
 
 	fragment.append(wikifier("seenPassageChecks"));
@@ -956,9 +959,7 @@ function minutePassed(minutes) {
 	}
 
 	// Tanning
-	if (V.outside) {
-		tanned(Weather.getTanningFactor().result, "tanLines");
-	}
+	Skin.applyTanningGain(minutes);
 
 	// Body temperature
 	const temperature = V.outside ? Weather.temperature : Weather.insideTemperature;
@@ -1262,10 +1263,6 @@ function dailyPlayerEffects() {
 		if (V.farm_stage >= 6) V.physique = V.physique - V.physique / 3000;
 		else V.physique = V.physique - V.physique / 2500;
 	}
-
-	/* PC loses 40 minutes of tanning every day */
-	tanned(-40, true);
-	V.skinColor.sunBlock = false;
 
 	V.hairlength += 3;
 	V.fringelength += 3;

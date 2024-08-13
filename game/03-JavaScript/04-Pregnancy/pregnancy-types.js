@@ -47,7 +47,7 @@ function npcPregObject(person, mother) {
 				gender: V.player.gender,
 				type: "human",
 				parentId: Array.isArray(parentId) ? parentId[0] : parentId,
-				skinColour: V.skinColor.natural,
+				skinColour: Skin.color.natural,
 				hairColour: V.naturalhaircolour,
 				eyeColour: V.eyeselect,
 			};
