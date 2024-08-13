@@ -642,10 +642,6 @@ function updatehistorycontrols() {
 	if (V.debug || V.cheatdisable === "f" || V.testing) Links.disableRNGReload = false;
 	else Links.disableRNGReload = true;
 
-	// option to reduce the number of states going into sessionStorage, for better performance
-	if (V.options.maxSessionStates === undefined) V.options.maxSessionStates = Config.history.maxSessionStates;
-	else Config.history.maxSessionStates = V.options.maxSessionStates;
-
 	// option to still record history without showing the controls, for better debugging
 	if (V.options.maxStates === 1 || !V.options.historyControls || V.ironmanmode) {
 		// hide nav panel when it's useless or set to not be displayed

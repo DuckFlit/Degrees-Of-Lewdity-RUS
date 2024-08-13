@@ -1182,7 +1182,6 @@ function settingsObjects(type) {
 					lightCombat: { min: 0, max: 1, decimals: 2, displayName: "Combat light:" },
 					lightTFColor: { min: 0, max: 1, decimals: 2, displayName: "Angel/Devil TF colour components:" },
 					maxStates: { min: 1, max: 20, decimals: 0, displayName: "History depth:" },
-					maxSessionStates: { min: 1, max: 20, decimals: 0, displayName: "Session history depth:" },
 					historyControls: { bool: true, displayName: "Show history controls:" },
 					useNarrowMarket: { bool: true, displayName: "Use 'narrow screen' version of market inventory:" },
 					skipStatisticsConfirmation: { bool: true, displayName: "Skip confirmation when viewing extra stats:" },
