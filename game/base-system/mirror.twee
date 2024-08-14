@@ -824,6 +824,10 @@
 	<<link "Back">><<replace #mirror>><<mirrorMenu>><</replace>><<numberify "#passages > .passage">><<unset $mirrorMenu>><</link>>
 	<br><br>
 
+	<span id="sunscreenLinks">
+		<<sunscreenLinks>>
+	</span>
+
 	<<if $liquidcount gt 0>>
 		__Body liquids__
 		<<mirrorwet "neck" $player.bodyliquid.neck.semen $player.bodyliquid.neck.goo $player.bodyliquid.neck.nectar>>
@@ -873,6 +877,49 @@
 
 	/*Needs to be last*/
 	<<bodywritingMenuLinks>>
+<</widget>>
+
+<<widget "sunscreenLinks">>
+	Your skin is
+	<<if Skin.Sunscreen.isApplied()>>
+		<mouse class = "gold tooltip-small" style="border-bottom-color:white">
+			protected against the sun
+			<span class="black">
+				Sunscreen is keeping your skin from getting tanned.
+				<<if Skin.Sunscreen.usesLeft is 0>>
+					<br>
+					<i class="blue">Sunscreen can be acquired at the shops</i>
+				<</if>>
+			</span>
+		</mouse>
+		<<set $_timeLeft to Math.floor(Skin.Sunscreen.timeLeft / 60)>>
+		(<<print getTimeString($_timeLeft)>> left).
+		<br>
+		<<cosmeticsicon "sunscreen">><<link "Remove sunscreen">>
+			<<run Skin.Sunscreen.remove()>>
+			<<replace #sunscreenLinks>><<sunscreenLinks>><</replace>>
+		<</link>> <<note `Skin.Sunscreen.usesLeft + ' use'+(Skin.Sunscreen.usesLeft > 1 ? 's' : '') + ' left'`>>
+	<<else>>
+		<mouse class = "gold tooltip-small" style="border-bottom-color:white">
+			not protected against the sun.
+			<span class="black">
+				Your skin will tan when exposed to the sun.
+				<<if Skin.Sunscreen.usesLeft is 0>>
+					<br>
+					<i class="blue">Sunscreen can be acquired at the cosmetics shop</i>
+				<</if>>
+			</span>
+		</mouse>
+		<<if Skin.Sunscreen.usesLeft gt 0>>
+			<<set $_applyText += " sunscreen">>
+			<br>
+			<<cosmeticsicon "sunscreen">><<link "Apply sunscreen">>
+				<<run Skin.Sunscreen.apply()>>
+				<<replace #sunscreenLinks>><<sunscreenLinks>><</replace>>
+			<</link>> <<note `Skin.Sunscreen.usesLeft + ' use'+(Skin.Sunscreen.usesLeft > 1 ? 's' : '') + ' left'`>>
+		<</if>>
+	<</if>>
+	<br><br>
 <</widget>>
 
 <<widget "bodywritingOptions">>

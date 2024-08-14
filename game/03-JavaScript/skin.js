@@ -1,5 +1,55 @@
 /* Move to player class later */
 
+const Sunscreen = (() => {
+	function getDuration() {
+		return 24 * TimeConstants.secondsPerHour;
+	}
+
+	function apply() {
+		const { sunscreen } = V.player.skin;
+		if (sunscreen.usesLeft <= 0) return;
+		sunscreen.lastsUntil = V.timeStamp + getDuration();
+		sunscreen.usesLeft = Math.max(0, sunscreen.usesLeft - 1);
+	}
+
+	function isApplied() {
+		const { sunscreen } = V.player.skin;
+		if (sunscreen.lastsUntil && V.timeStamp < sunscreen.lastsUntil) return true;
+		delete sunscreen.lastsUntil;
+		return false;
+	}
+
+	return {
+		/** Total duration of one use of sunscreen, in seconds */
+		get duration() {
+			return getDuration();
+		},
+		get bottle() {
+			return {
+				price: 1500,
+				uses: 15,
+			};
+		},
+		apply,
+		remove() {
+			delete V.player.skin.sunscreen.lastsUntil;
+		},
+		isApplied,
+		get timeLeft() {
+			const { lastsUntil } = V.player.skin.sunscreen;
+			return lastsUntil ? Math.max(0, lastsUntil - V.timeStamp) : 0;
+		},
+		/** @returns {number} */
+		get usesLeft() {
+			return V.player.skin.sunscreen.usesLeft;
+		},
+		/** @param {number} [uses] */
+		addUses(uses) {
+			V.player.skin.sunscreen.usesLeft += uses ?? this.bottle.uses;
+		},
+	};
+})();
+
 /*
 	Skin.tanningBonus: Value between 0 and 1. The bonus exists until time has been passed.
 */
@@ -205,7 +255,7 @@ const Skin = (() => {
 	 * weatherModifier (based on weather)
 	 * locationModifier (based on location)
 	 * clothingModifier (based on clothing)
-	 * sunBlockModifier (based on used sun block)
+	 * sunscreenModifier (based on used sunscreen)
 	 * dayFactor (based on sun position in the sky) - always 0 at night
 	 *
 	 * @param {boolean} ignoreOutside Forces outside check
@@ -214,10 +264,11 @@ const Skin = (() => {
 		const outside = ignoreOutside ? 0 : V.outside;
 		const sunIntensity = (ignoreOutside ? 1 : Weather.getSunIntensity()) * (1 + Skin.tanningBonus);
 		// Reduces tanning effect even with only 1 shading clothing item
-		const clothingModifier = Object.values(V.worn).filter(item => item.type.includes("shade")).length ? 0.1 : 1;
-		const sunBlockModifier = 1; // Not implemented
+		const clothingModifier = Object.values(V.worn).some(item => item.type.includes("shade")) ? 0.1 : 1;
+		// sunscreen prevents tanning gains entirely
+		const sunscreenModifier = Skin.Sunscreen.isApplied() ? 0 : 1;
 
-		const result = round(sunIntensity * clothingModifier * sunBlockModifier, 2);
+		const result = round(sunIntensity * clothingModifier * sunscreenModifier, 2);
 		return {
 			sun: sunIntensity,
 			month: Weather.genSettings.months[Time.date.month - 1].sunIntensity,
@@ -225,7 +276,7 @@ const Skin = (() => {
 			location: V.location === "forest" ? 0.2 : 1,
 			dayFactor: outside ? Time.date.simplifiedDayFactor : 1,
 			clothing: clothingModifier,
-			sunBlock: sunBlockModifier,
+			sunscreen: sunscreenModifier,
 			result,
 		};
 	}
@@ -234,13 +285,17 @@ const Skin = (() => {
 		if (V.statdisable !== "f") return "";
 		const factor = modifier * minutes;
 		if (factor === 0) {
-			return "";
+			return statDisplay.statChange("No tanning effect", 0, "blue");
 		}
 		return statDisplay.statChange("Tan", factor >= 50 ? 3 : factor >= 20 ? 2 : 1, "green");
 	}
 
 	function tanningPenaltiesOutput(modifiers) {
 		const reasons = [];
+
+		if (modifiers.sunscreen === 0) {
+			return `<span class="blue">Sunscreen prevented you from tanning.</span><br>`;
+		}
 
 		if (V.outside) {
 			const month = modifiers.month <= 0.6;
@@ -252,7 +307,6 @@ const Skin = (() => {
 			if (modifiers.weather < 1) reasons.push("Light clouds");
 		}
 		if (modifiers.clothing < 1) reasons.push("Shaded by clothing");
-		if (modifiers.sunBlock < 1) reasons.push("Use of sunblock");
 
 		if (reasons.length === 0) return "";
 		return `<span class="teal">Your tanning gain was reduced due to:</span><br><span class="orange">${reasons.join("<br>")}</span><br>`;
@@ -322,12 +376,13 @@ const Skin = (() => {
 			};
 		},
 		getImageCount() {
-			//return V.player.skin.layers.reduce((count, layerGroup) => count + layerGroup.groups.length, 0);
+			// return V.player.skin.layers.reduce((count, layerGroup) => count + layerGroup.groups.length, 0);
 		},
 		// todo Only for red images. Remove after combat rework
 		cssColorFilter(type) {
 			return setup.colours.getSkinCSSFilter(type ?? Skin.color.natural, Skin.totalTan);
 		},
+		Sunscreen,
 	};
 })();
 window.Skin = Skin;

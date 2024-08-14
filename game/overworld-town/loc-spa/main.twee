@@ -5,16 +5,17 @@
 	<<spa_event_select>>
 <</if>>
 
+<<switch Time.season>>
+	<<case "summer">>
+		<<set _price to 1000>>
+	<<case "winter">>
+		<<set _price to 6000>>
+	<<default>>
+		<<set _price to 2500>>
+<</switch>>
+
 You are in the spa on Danube Street. Large windows open onto a natural spring, and a corridor to the side leads to other facilities.
-A sign reads: "Tanning beds available.
-<<if Time.season is "summer">>
-	<<printmoney 1000>>
-<<elseif Time.season is "winter">>
-	<<printmoney 6000>>
-<<else>>
-	<<printmoney 2500>>
-<</if>>
-per session. Price may change with the season."
+A sign reads: "Tanning beds available. <<printmoney _price>> per session. Price may change with the season."
 <br><br>
 <<if $openinghours is 1>>
 	<<if $daily.spaEvent is "party">>
@@ -59,28 +60,13 @@ per session. Price may change with the season."
 			<<askicon>><<link [[Ask for work|Spa Work Ask]]>><</link>>
 			<br>
 		<</if>>
-		<<if Time.season is "spring" or Time.season is "autumn">>
-			<<if $money gte 2500>>
-				<<ind>><<link [[Tanning salon (£25 1:00)|Spa Tan]]>><<set $money -= 2500>><</link>><<lstress>><<gggtanned>>
-			<<else>>
-				<<ind>><span class="purple">You cannot afford the <<printmoney 2500>> for tanning.</span>
-			<</if>>
-			<br>
-		<<elseif Time.season is "winter">>
-			<<if $money gte 6000>>
-				<<ind>><<link [[Tanning salon (£60 1:00)|Spa Tan]]>><<set $money -= 6000>><</link>><<lstress>><<gggtanned>>
-			<<else>>
-				<<ind>><span class="purple">You cannot afford the <<printmoney 6000>> for tanning.</span>
-			<</if>>
-			<br>
+		<<if $money gte _price>>
+			<<set _tanning to Skin.getTanningFactor(true)>>
+			<<ind>><<link [[Tanning salon (<<printmoney _price>> 1:00)|Spa Tan]]>><<set $money -= _price>><</link>><<lstress>><<tanningGainOutput _tanning.result 60>>
 		<<else>>
-			<<if $money gte 1000>>
-				<<ind>><<link [[Tanning salon (£10 1:00)|Spa Tan]]>><<set $money -= 1000>><</link>><<lstress>><<gggtanned>>
-			<<else>>
-				<<ind>><span class="purple">You cannot afford the <<printmoney 1000>> for tanning.</span>
-			<</if>>
-			<br>
+			<<ind>><span class="purple">You cannot afford the <<printmoney _price>> for tanning.</span>
 		<</if>>
+		<br>
 	<</if>>
 	<<if $openinghours is 0 and Time.hour isnot $closinghour and !$weekly.theft.spa>>
 		<<shopicon "register">><<link [[Examine the cash register|Spa Register]]>><</link>>
@@ -121,9 +107,6 @@ You enter a small room dominated by a tanning bed. There's a large window, but i
 <<feetstrip>>
 <<handsstrip>>
 <<handheldstrip>>
-<<set _tanningModifiers to Skin.getTanningFactor(true)>>
-<<tanningPenaltiesOutput _tanningModifiers>>
-<br>
 <<set Skin.tanningBonus = 1>>
 <<set Skin.tanningBed to true>>
 
@@ -131,7 +114,10 @@ You leave your clothes in a neat pile, and climb onto the tanning bed, closing i
 <br><br>
 
 Surrounded by a blue glow, you close your eyes and relax as the warmth seeps into your skin.
-<br><br>
+<br>
+<<set _tanningModifiers to Skin.getTanningFactor(true)>>
+<<tanningPenaltiesOutput _tanningModifiers>>
+<br>
 
 <<if $rng gte 91>>
 	<<spa_tan_events>>
@@ -157,14 +143,7 @@ Surrounded by a blue glow, you close your eyes and relax as the warmth seeps int
 :: Spa Tan Naked
 <<effects>>
 
-<<clothesstrip>>
-<<legsstrip>>
-<<feetstrip>>
-<<handsstrip>>
-<<handheldstrip>>
-<<set _tanningModifiers to Skin.getTanningFactor(true)>>
-<<tanningPenaltiesOutput _tanningModifiers>>
-<br>
+<<strip>>
 <<set Skin.tanningBonus = 1>>
 <<set Skin.tanningBed to true>>
 You strip naked, and leave your clothes in a neat pile.
@@ -174,7 +153,10 @@ Suitably unburdened, you climb onto the tanning bed, and close it after you.
 <br><br>
 
 Surrounded by a blue glow, you close your eyes and relax as the warmth seeps into your skin.
-<br><br>
+<br>
+<<set _tanningModifiers to Skin.getTanningFactor(true)>>
+<<tanningPenaltiesOutput _tanningModifiers>>
+<br>
 
 <<if $rng gte 91>>
 	<<spa_tan_events>>
@@ -202,12 +184,10 @@ Surrounded by a blue glow, you close your eyes and relax as the warmth seeps int
 <<effects>>
 
 <<generate1>><<person1>>
-<<clothesstrip>>
-<<set _tanningModifiers to Skin.getTanningFactor(true)>>
-<<tanningPenaltiesOutput _tanningModifiers>>
-<br>
+<<strip>>
 <<set Skin.tanningBonus = 1>>
 <<set Skin.tanningBed to true>>
+
 <<if $daily.spaEvent is "party">>
 	You pull open the curtains, revealing the party outside. The partiers are too busy dancing and drinking to pay you any attention. For now.
 	<br><br>
@@ -222,7 +202,10 @@ Surrounded by a blue glow, you close your eyes and relax as the warmth seeps int
 <<exhibitionism5>>
 
 Surrounded by a blue glow, you feel your heart pump as the warmth seeps into your skin.
-<br><br>
+<br>
+<<set _tanningModifiers to Skin.getTanningFactor(true)>>
+<<tanningPenaltiesOutput _tanningModifiers>>
+<br>
 <<endevent>>
 <<if $rng gte 81>>
 	<<spa_tan_events>>

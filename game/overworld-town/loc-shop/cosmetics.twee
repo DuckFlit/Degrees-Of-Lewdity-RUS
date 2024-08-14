@@ -29,6 +29,8 @@ You are in the cosmetics store. Several shelvings stand before you, filled with 
 <<cosmeticsicon "mascara">><<link [[Look at mascaras|Cosmetics Mascara]]>><</link>>
 <br>
 <<cosmeticsicon "dyes">><<link [[Look at hair dyes|Cosmetics Dyes]]>><</link>>
+<br>
+<<cosmeticsicon "sunscreen">><<link [[Look at sunscreen|Cosmetics Sunscreen]]>><</link>>
 <br><br>
 <<getouticon>><<link [[Leave|Shopping Centre Top]]>><</link>>
 
@@ -43,6 +45,50 @@ You are in the cosmetics store. Several shelvings stand before you, filled with 
 
 :: Cosmetics Dyes
 <<CosmeticsGenericDepartment "hairdye" "hair dye" "hair dyes" "hair" "colour-hair" "#FD6064" 4000 "Cosmetics Dyes" "You come to the shelf with hair dyes." false true 1 `setup.colours.hair.filter(c=>c.dye).map(c=>c.variable)`>>
+
+
+:: Cosmetics Sunscreen
+<<set _sunscreen to Skin.Sunscreen.bottle>>
+<<set _sunscreen.durationHours to Math.floor(Skin.Sunscreen.duration / TimeConstants.secondsPerHour)>>
+
+You come to a shelf with many bottles of sunscreen.
+<<if Skin.Sunscreen.usesLeft gt 0>>
+	<<set _ownedBottles to Math.ceil(Skin.Sunscreen.usesLeft / _sunscreen.uses)>>
+	<br>
+	You already own <<print _ownedBottles>> bottle<<if _ownedBottles gt 1>>s<</if>>, with <<print Skin.Sunscreen.usesLeft>> use<<if Skin.Sunscreen.usesLeft gt 1>>s<</if>> left.
+<</if>>
+
+<br><br>
+Each bottle costs <<printmoney _sunscreen.price>> and has <<print _sunscreen.uses>> uses. Each use lasts around <<print _sunscreen.durationHours>> hour<<if _sunscreen.durationHours isnot 1>>s<</if>>.
+<br>
+<<if Time.dayState is "night">>
+	<<link [[Steal a bottle|Cosmetics Sunscreen]]>>
+		<<crimeUp `_sunscreen.price / 100` "thievery">>
+		<<run Skin.Sunscreen.addUses(_sunscreen.uses)>>
+	<</link>><<crime "thievery">>
+	<br>
+	<<link [[Steal a bottle and apply right now|Cosmetics Sunscreen]]>>
+		<<crimeUp `_sunscreen.price / 100` "thievery">>
+		<<run Skin.Sunscreen.addUses(_sunscreen.uses)>>
+		<<run Skin.Sunscreen.apply()>>
+	<</link>><<crime "thievery">>
+<<elseif $money gte _sunscreen.price>>
+	<<link [[Buy a bottle (<<printmoney _sunscreen.price>>)|Cosmetics Sunscreen]]>>
+		<<set $money -= _sunscreen.price>>
+		<<run Skin.Sunscreen.addUses(_sunscreen.uses)>>
+	<</link>>
+	<br>
+	<<link [[Buy a bottle and apply right now (<<printmoney _sunscreen.price>>)|Cosmetics Sunscreen]]>>
+		<<set $money -= _sunscreen.price>>
+		<<run Skin.Sunscreen.addUses(_sunscreen.uses)>>
+		<<run Skin.Sunscreen.apply()>>
+	<</link>>
+<<else>>
+	<span class="purple">You can't afford the purchase.</span>
+<</if>>
+<br><br>
+<<link [[Go back|Cosmetics Store]]>><</link>>
+
 
 :: Cosmetics Store Widgets [widget]
 <<widget "CosmeticsGenericDepartment">>
