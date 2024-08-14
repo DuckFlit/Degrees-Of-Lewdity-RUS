@@ -620,11 +620,11 @@ window.onInputChanged = onInputChanged;
 function closeOverlay() {
 	wikifier("journalNotesTextareaSave");
 	updateOptions();
-	delete T.currentOverlay;
-	delete V.tempDisable;
 	T.buttons.reset();
 	$("#customOverlay").addClass("hidden").parent().addClass("hidden");
-	$.event.trigger(":oncloseoverlay");
+	$.event.trigger(":oncloseoverlay", [T.currentOverlay]);
+	delete T.currentOverlay;
+	delete V.tempDisable;
 }
 window.closeOverlay = closeOverlay;
 

@@ -479,7 +479,7 @@ Macro.add("canvasLayersEditor", {
 });
 Macro.add("canvasModelEditor", {
 	handler() {
-		const model = Renderer.lastModel;
+		const model = Renderer.locateModel("main", "sidebar");
 		if (!model) return;
 		const options = model.options;
 
@@ -488,6 +488,17 @@ Macro.add("canvasModelEditor", {
 			model.reset();
 			model.options = options;
 			model.redraw();
+		}
+
+		function getNestedProperty(obj, path) {
+			return path.split(".").reduce((o, p) => (o && o[p] !== undefined ? o[p] : ""), obj);
+		}
+
+		function setNestedProperty(obj, path, value) {
+			const parts = path.split(".");
+			const last = parts.pop();
+			const target = parts.reduce((o, p) => (o[p] = o[p] || {}), obj);
+			target[last] = value;
 		}
 
 		const optionListeners = []; // list of functions to call when model is imported
@@ -545,26 +556,26 @@ Macro.add("canvasModelEditor", {
 		function numberOption(name, min, max, step, range) {
 			let rangeLabel;
 			if (range) {
-				rangeLabel = element("label", { for: "modeloption-" + name }, "" + options[name]);
+				rangeLabel = element("label", { for: "modeloption-" + name }, "" + getNestedProperty(options, name));
 			} else {
 				rangeLabel = "";
 			}
 			return optionContainer(name, [
 				eInput({
 					id: "modeloption-" + name,
-					value: options[name],
+					value: getNestedProperty(options, name),
 					type: range ? "range" : "number",
 					min,
 					max,
 					step,
 					set(value) {
 						if (rangeLabel) rangeLabel.textContent = value;
-						options[name] = value;
+						setNestedProperty(options, name, value);
 						redraw();
 					},
 					$oncreate(e) {
 						optionListeners.push(() => {
-							e.value = options[name];
+							e.value = getNestedProperty(options, name);
 						});
 					},
 				}),
@@ -572,21 +583,36 @@ Macro.add("canvasModelEditor", {
 			]);
 		}
 
-		function selectOption(name, values, number) {
+		function selectOption(name, values, number, isClothingIndex = false, slot = "") {
 			return optionContainer(
 				name,
 				eSelect({
 					id: "modeloption-" + name,
-					items: values,
-					value: options[name],
+					items: values.map(item => {
+						if (typeof item === "object") {
+							return item;
+						}
+						return { value: item, text: item };
+					}),
+					value: getNestedProperty(options, name),
 					set(value) {
-						if (number) value = +value;
-						options[name] = value;
+						if (number) value = Number(value);
+		
+						setNestedProperty(options, name, value);
+		
+						// If this is a clothing index change, update the setup property
+						if (isClothingIndex && slot) {
+							const selectedItem = setup.clothes[slot][value];
+							if (selectedItem) {
+								setNestedProperty(options, `worn.${slot}.setup`, selectedItem);
+							}
+						}
+		
 						redraw();
 					},
 					$oncreate(e) {
 						optionListeners.push(() => {
-							e.value = options[name];
+							e.value = getNestedProperty(options, name);
 						});
 					},
 				})
@@ -902,17 +928,19 @@ Macro.add("canvasModelEditor", {
 						setup.clothes_all_slots.map(slot => [
 							optionCategory("Clothes: " + slot),
 							selectOption(
-								"worn_" + slot,
+								`worn.${slot}.index`,
 								Object.values(setup.clothes[slot]).map(item => ({
 									value: item.index,
 									text: item.name,
 								})),
-								true
+								true,
+								true,
+								slot
 							),
-							numberOption("worn_" + slot + "_alpha", 0, 1, 0.1, true),
-							selectOption("worn_" + slot + "_integrity", ["tattered", "torn", "frayed", "full"]),
-							selectOption("worn_" + slot + "_colour", clothesColourOptions),
-							selectOption("worn_" + slot + "_acc_colour", clothesColourOptions),
+							numberOption(`worn.${slot}.alpha`, 0, 1, 0.1, true),
+							selectOption(`worn.${slot}.integrity`, ["tattered", "torn", "frayed", "full"]),
+							selectOption(`worn.${slot}.colour`, clothesColourOptions),
+							selectOption(`worn.${slot}.acc_colour`, clothesColourOptions),
 						]),
 					]),
 				]),
