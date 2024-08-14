@@ -3148,8 +3148,8 @@ Renderer.CanvasModels.main = {
 			srcfn(options) {
 				const secondary = options.worn.upper.setup.name === "school blouse" && options.worn.lower.setup.name.includes("pinafore") ? '_under' : '';
 				const suffix = options.worn.lower.setup.accessory_integrity_img ? `_${options.worn.lower.integrity}` : secondary;
-
-				return gray_suffix(`img/clothes/lower/${options.worn.lower.setup.variable}/acc${suffix}.png`, options.filters['worn_lower_acc'])
+				const filter = generateClothingAccFilter(options, "lower", options.worn["lower"])
+				return gray_suffix(`img/clothes/lower/${options.worn.lower.setup.variable}/acc${suffix}.png`, filter)
 			},
 			zfn(options) {
 				if (options.worn.lower.setup.name.includes("ballgown") || options.worn.lower.setup.name.includes("pinafore"))
@@ -3554,9 +3554,8 @@ Renderer.CanvasModels.main = {
 				const torchNum = torchLevels.findIndex(x => V.catacombs_torch >= x) + 1;
 				const torch = options.worn.handheld.setup.variable === "torch" && V.catacombs_torch >= 0 ? torchNum : '';
 
-				const cardNum = Math.clamp(V.blackjack.playersCards.length, 1, 5);
+				const cardNum = V.blackjack ? Math.clamp(V.blackjack.playersCards.length, 1, 5) : 0;
 				const cards = options.worn.handheld.setup.variable === "cards" ? cardNum : '';
-
 				const cover = options.arm_right === "cover" ? "right_cover" : "right";
 				const extra = torch || cards || '';
 				const path = `img/clothes/handheld/${options.worn.handheld.setup.variable}/${cover}${extra}.png`;
@@ -3575,7 +3574,7 @@ Renderer.CanvasModels.main = {
 		}),
 		"handheld_acc": genlayer_clothing_accessory('handheld', {
 			srcfn(options) {
-				const cardNum = Math.clamp(V.blackjack.playersCards.length, 1, 5);
+				const cardNum = V.blackjack ? Math.clamp(V.blackjack.playersCards.length, 1, 5) : 0;
 				const cards = options.worn.handheld.setup.variable === "cards" ? cardNum : '';
 
 				const cover = options.arm_right === "cover" ? "right_cover" : "right";
@@ -4191,7 +4190,7 @@ function genlayer_clothing_fitted_right_acc(slot, overrideOptions) {
 
 function genlayer_clothing_accessory(slot, overrideOptions) {
 	return genlayer_clothing_main(slot, Object.assign({
-		filters: [`worn_${slot}_acc`],
+		filtersfn: [`worn_${slot}_acc`],
 
 		showfn(options) {
 			return options.show_clothes

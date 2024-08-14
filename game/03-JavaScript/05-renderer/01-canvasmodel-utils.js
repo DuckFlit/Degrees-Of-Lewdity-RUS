@@ -139,13 +139,20 @@ Renderer.defaultListener = {
 	},
 };
 
-function refreshModels() {
-	if (Renderer.locateModel("lighting", "sidebar").name !== "empty") {
-		Renderer.invalidateLayerCaches(Renderer.locateModel("lighting", "sidebar").layerList);
-		Renderer.locateModel("lighting", "sidebar").redraw();
+function refreshCanvas(model) {
+	const canvasModel = Renderer.locateModel(model, "sidebar");
+	if (model.canvas) {
+		Renderer.invalidateLayerCaches(canvasModel.layerList);
+		canvasModel.redraw();
+	}
+}
+
+function refreshModels(e, overlay) {
+	if (overlay === "options") {
+		refreshCanvas("lighting");
 	}
 }
 
 /* Events */
-$(document).on(":onloadsave", refreshModels);
+$(document).on(":onloadsave", () => refreshCanvas("lighting"));
 $(document).on(":oncloseoverlay", refreshModels);
