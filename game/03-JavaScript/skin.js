@@ -87,11 +87,6 @@ const Skin = (() => {
 	 * - If no clothes are applied when tanning - an empty layer group (with an empty mask) will be applied instead - causing the whole body to get tanned.
 	 * - If there are multiple layer groups - apply the one with the highest value first. The remaining layers are applied on top, with their respective alpha value.
 	 *
-	 * LIMITATIONS:
-	 * - Since canvas renders after the whole passage has been executed, in order to apply the correct tanning mask if clothes have been changed during a passage,
-	 *   we need to apply the <<pass>> after the canvas has been rendered. (otherwise the clothes from the previous passage will be used for the tanning)
-	 *   For example: doing <<clothesstrip>><<pass 60>> in the same passage, will not apply the tanning mask from the stripped canvas. The <<pass>> needs to be either in the link, or in the next passage.
-	 *
 	 * @param {number} minutes
 	 */
 	function applyTanningGain(minutes) {
