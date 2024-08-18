@@ -178,7 +178,6 @@ replace (?<!["'\w])_(?=\w) with T.
  * "handheld_position":boolean - handheld item uses the hold position arm sprite
  * "handheld_overhead":boolean - $worn.handheld type includes 'rainproof' or $worn.handheld.name includes "balloon"
  * "blink_animation":string - "blink"|"blink-trauma"|null
- * "worn_XXXX_setup":object - whole setup.clothes.XXXX object
  * "zarms":number - Z-index of arms
  * "zupper":number - Z-index of "upper" clothing
  *
@@ -794,21 +793,6 @@ Renderer.CanvasModels.main = {
 			options.hood_damage = true;
 		} else {
 			options.hood_damage = false;
-		}
-
-		if (
-			options.worn.neck.setup.has_collar === 1
-				&& options.worn.upper.setup.has_collar === 1
-				&& !(options.worn.upper.setup.name === "dress shirt" && options.worn.upper.alt === "alt")
-		) {
-			options.nocollar = true;
-			options.serafuku = false
-		} else if (options.worn.neck.setup.name === "sailor ribbon" && options.worn.upper.setup.name === "serafuku") {
-			options.nocollar = false;
-			options.serafuku = true
-		} else {
-			options.nocollar = false;
-			options.serafuku = false
 		}
 
 		if (
@@ -3733,7 +3717,13 @@ Renderer.CanvasModels.main = {
 				const isAltPosition = !options.alt_override
 					&& options.worn.neck.setup.altposition !== undefined
 					&& options.worn.neck.alt === "alt";
-				const collar = options.nocollar ? '_nocollar' : options.serafuku ? '_serafuku' : '';
+				
+				let collar = "";
+				if (options.worn.neck.setup.has_collar === 1 && options.worn.upper.setup.has_collar === 1 && !(options.worn.upper.setup.name === "dress shirt" && options.worn.upper.alt === "alt")) {
+					collar = '_nocollar';
+				} else if (options.worn.neck.setup.name === "sailor ribbon" && options.worn.upper.setup.name === "serafuku") {
+					collar = "_serafuku";
+				}
 				const alt = isAltPosition ? '_alt' : '';
 
 				const setupVar = options.worn.neck.setup.variable;
@@ -3830,7 +3820,7 @@ Renderer.CanvasModels.main = {
 		"feet": genlayer_clothing_main('feet', {
 			zfn(options) {
 				const check = options.lower_tucked
-					&& !options.worn.lower_setup.notuck
+					&& !options.worn.lower.setup.notuck
 					&& !options.worn.feet.setup.notuck;
 
 				if (check) return ZIndices.lower_tucked_feet;
@@ -4304,10 +4294,9 @@ function genlayer_clothing_belly_split(slot, overrideOptions) {
 }
 
 function genlayer_clothing_belly_split_acc(slot, overrideOptions) {
-	const worn = `worn_${slot}`;
 
 	return genlayer_clothing_belly(slot, Object.assign({
-		filters: [`${worn}_acc`],
+		filters: [`worn_${slot}_acc`],
 
 		showfn(options) {
 			return options.belly > 7
@@ -4343,14 +4332,12 @@ function genlayer_clothing_belly_split_acc(slot, overrideOptions) {
 }
 
 function genlayer_clothing_belly_shadow(slot, overrideOptions) {
-	const worn = `worn_${slot}`;
-
 	return genlayer_clothing_main(slot, Object.assign({
 		z: ZIndices.bellyClothesShadow,
 		srcfn(options) {
 			return gray_suffix(
 				`img/clothes/${slot}/${options.worn[slot].setup.variable}/${options.worn[slot].integrity}.png`,
-				options.filters[worn]
+				options.filters[`worn_${slot}`]
 			);
 		},
 		showfn(options) {
@@ -4366,11 +4353,9 @@ function genlayer_clothing_belly_shadow(slot, overrideOptions) {
 }
 
 function genlayer_clothing_belly_acc(slot, overrideOptions) {
-	const worn = `worn_${slot}`;
-
 	return genlayer_clothing_belly(slot, Object.assign({
 		z: ZIndices[slot],
-		filters: [`${worn}_acc`],
+		filters: [`worn_${slot}_acc`],
 
 		showfn(options) {
 			const commonChecks = options.belly > 7
@@ -4408,28 +4393,25 @@ function genlayer_clothing_belly_acc(slot, overrideOptions) {
 }
 
 function genlayer_clothing_breasts_acc(slot, overrideOptions) {
-	const worn = `worn_${slot}`;
-
 	return genlayer_clothing_main(slot, Object.assign({
-		filters: [`${worn}_acc`],
+		filters: [`worn_${slot}_acc`],
 
 		srcfn(options) {
 			return getClothingPathBreastsAcc(slot, options);
 		},
 		showfn(options) {
-			const breastAccImg = options[`${worn}_setup`].breast_acc_img;
-			const breastImg = options[`${worn}_setup`].breast_img;
+			const breastAccImg = options.worn[slot].setup.breast_acc_img;
+			const breastImg = options.worn[slot].setup.breast_img;
 			let breastAcc = 0;
 
 			if (breastAccImg === 1 && typeof breastImg === 'object' && breastImg[options.breast_size] !== null)
 				breastAcc = 1;
-			else if (typeof breastAccImg === 'object' && options[`${worn}_setup`].breast_acc_img[options.breast_size] !== null)
+			else if (typeof breastAccImg === 'object' && options.worn[slot].setup.breast_acc_img[options.breast_size] !== null)
 				breastAcc = 1;
 
 			return options.show_clothes
 				&& options.worn[slot].index > 0
-				&& options.worn[slot].setup.breast_acc_img === 1
-				&& breastImg === 1;
+				&& breastAcc === 1
 		},
 	}, overrideOptions));
 }
