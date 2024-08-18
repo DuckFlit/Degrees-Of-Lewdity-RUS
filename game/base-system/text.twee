@@ -5902,3 +5902,34 @@ Argument 2, where appropriate, determines whether it's the player undressing the
 		<</if>>
 	<</if>>
 <</silently>><<print _text_output>><</widget>>
+
+<<widget "fadeText">>
+	<span class="originalText fade-out">_args[0]</span>
+	<span class="changedText" hidden="">_args[1]</span>
+	<<set _delay to (_delay ? _delay : []).concat(_args[2] ? _args[2] : 1)>>
+
+	<<script>>
+		T.currentPassage = State.passage;
+
+		$(document).one(':passageend', function(ev) {
+			const originalTargets = [...document.getElementsByClassName('originalText')];
+			const changedTargets = [...document.getElementsByClassName('changedText')];
+
+			originalTargets.forEach((ele, index) => {
+				if (ele instanceof HTMLElement) {
+					setTimeout(() => {
+						if (State.passage === T.currentPassage) {
+							ele.remove();
+							changedTargets[index].hidden = false;
+							changedTargets[index].classList.add('fade-in')
+						}
+					}, T.delay[index] * 1000);
+
+					ele.addEventListener('animationend', function() {
+						ele.style.opacity = '0';
+					});
+				}
+			});
+		});
+	<</script>>
+<</widget>>
