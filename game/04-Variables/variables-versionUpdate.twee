@@ -5193,6 +5193,48 @@
 		<<run delete $options.newWardrobeStyle>>
 	<</if>>
 
+	<!-- 5.2 tanning rework -->
+	<!-- Don't move to bottom -->
+	<<if $player.skin is undefined>>
+		<<set $player.skin to {
+			color: "light",
+			layers: [],
+		}>>
+	<</if>>
+	<<if $skinColor isnot undefined>>
+		<<set $player.skin.color to $skinColor.natural>>
+		<<script>>
+			const colorValue = Math.max(...V.skinColor.tanValues);
+			V.player.skin.layers = [
+				{
+					layers: [],
+					slots: {},
+					value: colorValue,
+				}
+			];
+		<</script>>
+		<<unset $skinColor>>
+	<</if>>
+	<<if $player.skin.sunscreen is undefined>>
+		<<set $player.skin.sunscreen to { usesLeft: 0 }>>
+	<</if>>
+
+	<<if $options.tanningEnabled isnot undefined>>
+		<<set delete $options.tanningEnabled>>
+	<</if>>
+
+	<<if $options.tanLines is undefined>>
+		<<set $options.tanLines to true>>
+	<</if>>
+
+	<<if $tanned isnot undefined>>
+		<<unset $tanned>>
+	<</if>>
+
+	<<if $gameTanImgSetting isnot undefined>>
+		<<unset $gameTanImgSetting>>
+	<</if>>
+
 	<!-- 0.5 Weather update -->
 	<<if Time.year is 361 and $location is "temple">>
 		<<set $location to "old_temple">>
@@ -5287,40 +5329,6 @@
 			<<set $island.home to "rocky_hillock">>
 		<</if>>
 		<<set $objectVersion.islandHomeFix to 1>>
-	<</if>>
-
-	<!-- 5.2 tanning rework -->
-	<<if $player.skin is undefined>>
-		<<set $player.skin to {
-			color: "light",
-			layers: [],
-		}>>
-	<</if>>
-	<<if $skinColor isnot undefined>>
-		<<set $player.skin.color to $skinColor.natural>>
-		<<set $player.skin.layers to [
-			{
-				layers: [],
-				slots: {},
-				value: $skinColor.range
-			}
-		]>>
-		<<unset $skinColor>>
-	<</if>>
-	<<if $player.skin.sunscreen is undefined>>
-		<<set $player.skin.sunscreen to { usesLeft: 0 }>>
-	<</if>>
-
-	<<if $options.tanningEnabled isnot undefined>>
-		<<set delete $options.tanningEnabled>>
-	<</if>>
-
-	<<if $tanned isnot undefined>>
-		<<unset $tanned>>
-	<</if>>
-
-	<<if $gameTanImgSetting isnot undefined>>
-		<<unset $gameTanImgSetting>>
 	<</if>>
 
 	<!-- Fix for not having an island home set, should only be run once -->

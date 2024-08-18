@@ -209,6 +209,14 @@ setup.feats = {
 		filter: ["All", "General"],
 		softLockable: true,
 	},
+	"50 Shades of Tan": {
+		title: "50 Shades of Tan",
+		desc: "Achieved 5 distinct tanlines at once.",
+		difficulty: 2,
+		series: "collection",
+		filter: ["All", "General"],
+		hidden: true,
+	},
 	"Most Aware": {
 		title: "Most Aware",
 		desc: "You see things others don't.",
@@ -2079,6 +2087,13 @@ function earnHourlyFeats() {
 
 	// To earn the feat "Curious Attire"
 	fragment.append(wikifier("specialClothesUpdate"));
+
+	if (V.options.tanLines) {
+		const validLayers = Skin.tanningLayers.filter(layer => {
+			return layer.layers.length && layer.value >= 10;
+		});
+		if (validLayers.length >= 5) earnFeat("50 Shades of Tan");
+	}
 
 	// Should be last
 	let currentMax = 0;
