@@ -823,61 +823,64 @@ Renderer.CanvasModels.main = {
 	},
 	postprocess(options) {	
 		options.generatedLayers = {};
-		if (options.tanningEnabled) {
-			const canvasModel = this;
 
-			// Don't modify the original options object
-			const newOptions = canvasModel.options.deepCopy();
+		if (V.options.tanLines){
+			if (options.tanningEnabled) {
+				const canvasModel = this;
 
-			// Highest tanning values are added first
-			const tanningGroups = [...Skin.tanningLayers].sort((a, b) => a.value - b.value);
+				// Don't modify the original options object
+				const newOptions = canvasModel.options.deepCopy();
 
-			for (let i = 0; i < tanningGroups.length; i++) {
-				const layerGroup = tanningGroups[i];
-				if (layerGroup.layers.length === 0) continue;
+				// Highest tanning values are added first
+				const tanningGroups = [...Skin.tanningLayers].sort((a, b) => a.value - b.value);
 
-				// For every item in tanning layers, create a new entry in options.worn, and setup the filters
-				for (const [slot, props] of Object.entries(layerGroup.slots)) {
-					const item = {
-						index: Number(props.index),
-						integrity: props.integrity ?? "full",
-						alt: props.alt,
-						colour: props.colour || "black",
-						accColour: props.accColour || "black",
-						setup: setup.clothes[slot][props.index],
-					};
-					newOptions.worn[slot] = { ...newOptions.worn[slot], ...item };
-					// Set up the filters for the tanning layer in order to choose the correct sprites
-					// Uses default "black" colour since undefined will try to load the incorrect path
-					setClothingFilter(newOptions, slot, item, item.setup, '', 'colour_sidebar', 'colour');
-					setClothingFilter(newOptions, slot, item, item.setup, '_acc', 'accessory_colour_sidebar', 'accColour');
-				}
+				for (let i = 0; i < tanningGroups.length; i++) {
+					const layerGroup = tanningGroups[i];
+					if (layerGroup.layers.length === 0) continue;
 
-				// Get the source paths for the tanning layer
-				const layers = { arms: [], body: [] };
-				for (const layerName of layerGroup.layers) {
-					const layer = canvasModel.layers[layerName];
+					// For every item in tanning layers, create a new entry in options.worn, and setup the filters
+					for (const [slot, props] of Object.entries(layerGroup.slots)) {
+						const item = {
+							index: Number(props.index),
+							integrity: props.integrity ?? "full",
+							alt: props.alt,
+							colour: props.colour || "black",
+							accColour: props.accColour || "black",
+							setup: setup.clothes[slot][props.index],
+						};
+						newOptions.worn[slot] = { ...newOptions.worn[slot], ...item };
+						// Set up the filters for the tanning layer in order to choose the correct sprites
+						// Uses default "black" colour since undefined will try to load the incorrect path
+						setClothingFilter(newOptions, slot, item, item.setup, '', 'colour_sidebar', 'colour');
+						setClothingFilter(newOptions, slot, item, item.setup, '_acc', 'accessory_colour_sidebar', 'accColour');
+					}
 
-					if (!layer.showfn(newOptions)) continue;
-					const src = layer.srcfn(newOptions);
-					const target = layerName.includes("rightarm") || layerName.includes("leftarm") ? layers.arms : layers.body;
-					target.push(src);
-				}
+					// Get the source paths for the tanning layer
+					const layers = { arms: [], body: [] };
+					for (const layerName of layerGroup.layers) {
+						const layer = canvasModel.layers[layerName];
 
-				// Generate final tanning layers
-				// Separate the base with the arms, since they can overlap
-				const alpha = layerGroup.value;
-				if (layers.body.length) {
-					options.generatedLayers[`tan_base${i}`] = (genlayer_tanning("base", i, layers.body, alpha, null));
-					options.generatedLayers[`tan_breasts${i}`] = (genlayer_tanning("breasts", i, layers.body, alpha));
-					options.generatedLayers[`tan_belly${i}`] = (genlayer_tanning("belly", i, layers.body, alpha));
-				}
-				if (layers.arms.length) {
-					options.generatedLayers[`tan_leftarm${i}`] = (genlayer_tanning("leftarm", i, layers.arms, alpha));
-					options.generatedLayers[`tan_rightarm${i}`] = (genlayer_tanning("rightarm", i, layers.arms, alpha));
+						if (!layer.showfn(newOptions)) continue;
+						const src = layer.srcfn(newOptions);
+						const target = layerName.includes("rightarm") || layerName.includes("leftarm") ? layers.arms : layers.body;
+						target.push(src);
+					}
+
+					// Generate final tanning layers
+					// Separate the base with the arms, since they can overlap
+					const alpha = layerGroup.value;
+					if (layers.body.length) {
+						options.generatedLayers[`tan_base${i}`] = (genlayer_tanning("base", i, layers.body, alpha, null));
+						options.generatedLayers[`tan_breasts${i}`] = (genlayer_tanning("breasts", i, layers.body, alpha));
+						options.generatedLayers[`tan_belly${i}`] = (genlayer_tanning("belly", i, layers.body, alpha));
+					}
+					if (layers.arms.length) {
+						options.generatedLayers[`tan_leftarm${i}`] = (genlayer_tanning("leftarm", i, layers.arms, alpha));
+						options.generatedLayers[`tan_rightarm${i}`] = (genlayer_tanning("rightarm", i, layers.arms, alpha));
+					}
 				}
 			}
-			
+
 			// Only use necessary data for tanning layers. Filter out the rest.
 			// Only clothing items that aren't handheld or headwear will be used
 			// Only use the base pregnancy layers
@@ -4665,7 +4668,8 @@ function genlayer_tanning(slot, index, tanningLayer, value, animation = "idle") 
 		blendMode: "multiply",
 		filters: ["body"],
 		showfn(options) {
-			return options.tanningEnabled
+			return V.options.tanLines
+				&& options.tanningEnabled
 				&& !options.mannequin
 				&& options.skin_type !== "custom"
 				&& this.model.layers[slot].show;
