@@ -612,9 +612,10 @@ Renderer.CanvasModels.main = {
 
 		// Show arm and hand just below outermost clothes layer to fully show its main/breasts layer and hide others
 		// -0.1 is to move arms behind sleeves; to display gloves above sleeves they get +0.2 in hand layer decls
-		if (options.worn.over_upper) {
+
+		if (options.worn.over_upper.index) {
 			options.zarms = ZIndices.over_upper_arms - 0.1;
-		} else if (options.worn.upper) {
+		} else if (options.worn.upper.index) {
 			if (options.arm_left === "cover") {
 				if (options.upper_tucked) {
 					options.zarms = ZIndices.upper_arms_tucked - 0.1;
@@ -624,7 +625,7 @@ Renderer.CanvasModels.main = {
 			} else {
 				options.zarms = ZIndices.under_upper_arms - 0.1;
 			}
-		} else if (options.worn.under_upper) {
+		} else if (options.worn.under_upper.index) {
 			options.zarms = ZIndices.under_upper_arms - 0.1;
 		} else {
 			options.zarms = ZIndices.armsidle
@@ -821,63 +822,69 @@ Renderer.CanvasModels.main = {
 			options.alt_sleeve_state = true;
 		}
 	},
-	postprocess(options) {	
+	postprocess(options) {
 		options.generatedLayers = {};
 
-		if (V.options.tanLines){
-			if (options.tanningEnabled) {
-				const canvasModel = this;
-
-				// Don't modify the original options object
-				const newOptions = canvasModel.options.deepCopy();
-
-				// Highest tanning values are added first
-				const tanningGroups = [...Skin.tanningLayers].sort((a, b) => a.value - b.value);
-
-				for (let i = 0; i < tanningGroups.length; i++) {
-					const layerGroup = tanningGroups[i];
-					if (layerGroup.layers.length === 0) continue;
-
-					// For every item in tanning layers, create a new entry in options.worn, and setup the filters
-					for (const [slot, props] of Object.entries(layerGroup.slots)) {
-						const item = {
-							index: Number(props.index),
-							integrity: props.integrity ?? "full",
-							alt: props.alt,
-							colour: props.colour || "black",
-							accColour: props.accColour || "black",
-							setup: setup.clothes[slot][props.index],
-						};
-						newOptions.worn[slot] = { ...newOptions.worn[slot], ...item };
-						// Set up the filters for the tanning layer in order to choose the correct sprites
-						// Uses default "black" colour since undefined will try to load the incorrect path
-						setClothingFilter(newOptions, slot, item, item.setup, '', 'colour_sidebar', 'colour');
-						setClothingFilter(newOptions, slot, item, item.setup, '_acc', 'accessory_colour_sidebar', 'accColour');
+		if (options.tanningEnabled) {
+			if (V.options.tanLines){
+				if (!Skin.cachedLayers) {
+					const canvasModel = this;
+	
+					// Don't modify the original options object
+					const newOptions = canvasModel.options.deepCopy();
+	
+					// Highest tanning values are added first
+					const tanningGroups = [...Skin.tanningLayers].sort((a, b) => a.value - b.value);
+	
+					for (let i = 0; i < tanningGroups.length; i++) {
+						const layerGroup = tanningGroups[i];
+						if (layerGroup.layers.length === 0) continue;
+	
+						// For every item in tanning layers, create a new entry in options.worn, and setup the filters
+						for (const [slot, props] of Object.entries(layerGroup.slots)) {
+							const item = {
+								index: Number(props.index),
+								integrity: props.integrity ?? "full",
+								alt: props.alt,
+								colour: props.colour || "black",
+								accColour: props.accColour || "black",
+								setup: setup.clothes[slot][props.index],
+							};
+							newOptions.worn[slot] = { ...newOptions.worn[slot], ...item };
+							// Set up the filters for the tanning layer in order to choose the correct sprites
+							// Uses default "black" colour since undefined will try to load the incorrect path
+							setClothingFilter(newOptions, slot, item, item.setup, '', 'colour_sidebar', 'colour');
+							setClothingFilter(newOptions, slot, item, item.setup, '_acc', 'accessory_colour_sidebar', 'accColour');
+						}
+	
+						// Get the source paths for the tanning layer
+						const layers = { arms: [], body: [] };
+						for (const layerName of layerGroup.layers) {
+							const layer = canvasModel.layers[layerName];
+	
+							if (!layer.showfn(newOptions)) continue;
+							const src = layer.srcfn(newOptions);
+							const target = layerName.includes("rightarm") || layerName.includes("leftarm") ? layers.arms : layers.body;
+							target.push(src);
+						}
+	
+						// Generate final tanning layers
+						// Separate the base with the arms, since they can overlap
+						// Base layer has disabled animations
+						const alpha = layerGroup.value;
+						if (layers.body.length) {
+							options.generatedLayers[`tan_base${i}`] = (genlayer_tanning("base", i, layers.body, alpha, null));
+							options.generatedLayers[`tan_breasts${i}`] = (genlayer_tanning("breasts", i, layers.body, alpha));
+							options.generatedLayers[`tan_belly${i}`] = (genlayer_tanning("belly", i, layers.body, alpha));
+						}
+						if (layers.arms.length) {
+							options.generatedLayers[`tan_leftarm${i}`] = (genlayer_tanning("leftarm", i, layers.arms, alpha));
+							options.generatedLayers[`tan_rightarm${i}`] = (genlayer_tanning("rightarm", i, layers.arms, alpha));
+						}
 					}
-
-					// Get the source paths for the tanning layer
-					const layers = { arms: [], body: [] };
-					for (const layerName of layerGroup.layers) {
-						const layer = canvasModel.layers[layerName];
-
-						if (!layer.showfn(newOptions)) continue;
-						const src = layer.srcfn(newOptions);
-						const target = layerName.includes("rightarm") || layerName.includes("leftarm") ? layers.arms : layers.body;
-						target.push(src);
-					}
-
-					// Generate final tanning layers
-					// Separate the base with the arms, since they can overlap
-					const alpha = layerGroup.value;
-					if (layers.body.length) {
-						options.generatedLayers[`tan_base${i}`] = (genlayer_tanning("base", i, layers.body, alpha, null));
-						options.generatedLayers[`tan_breasts${i}`] = (genlayer_tanning("breasts", i, layers.body, alpha));
-						options.generatedLayers[`tan_belly${i}`] = (genlayer_tanning("belly", i, layers.body, alpha));
-					}
-					if (layers.arms.length) {
-						options.generatedLayers[`tan_leftarm${i}`] = (genlayer_tanning("leftarm", i, layers.arms, alpha));
-						options.generatedLayers[`tan_rightarm${i}`] = (genlayer_tanning("rightarm", i, layers.arms, alpha));
-					}
+					Skin.cachedLayers = options.generatedLayers;
+				} else {
+					options.generatedLayers = Skin.cachedLayers;
 				}
 			}
 
@@ -4008,20 +4015,6 @@ function getClothingPathBreastsAcc(slot, options) {
 	return gray_suffix(path, options.filters[`worn_${slot}_acc`]);
 }
 
-function filterCondition(state, options, slot, item) {
-	switch (state) {
-		case undefined:
-		case "":
-		case "primary":
-			return generateClothingFilter(options, slot, item);
-		case "secondary":
-			return generateClothingAccFilter(options, slot, item);
-		case "no":
-		default:
-			return "";
-	}
-}
-
 function filterFnArm(state, slot, options) {
 	switch (state) {
 		case undefined:
@@ -4075,8 +4068,7 @@ function genlayer_clothing_main(slot, overrideOptions) {
 
 			const end = isHoodDown ? '_down' : isAltPosition ? '_alt' : '';
 			const path = `img/clothes/${slot}/${setup.variable}/${options.worn[slot].integrity}${end}.png`;
-			const filter = generateClothingFilter(options, slot, options.worn[slot])
-			return gray_suffix(path, filter);
+			return gray_suffix(path, options.filters[`worn_${slot}`]);
 		},
 	}, overrideOptions));
 }
@@ -4129,9 +4121,7 @@ function genlayer_clothing_fitted_left_acc(slot, overrideOptions) {
 			const special = setup.accessory_integrity_img ? `_${options.worn[slot].integrity}` : '';
 			const end = isHoodDown ? '_down' : isAltPosition ? '_alt' : '';
 			const path = `img/clothes/${slot}/${setup.variable}/acc${special}${end}.png`;
-
-			const filter = generateClothingAccFilter(options, slot, options.worn[slot])
-			return gray_suffix(path, filter);
+			return gray_suffix(path, options.filters[`worn_${slot}_acc`]);
 		},
 	}, overrideOptions));
 }
@@ -4160,9 +4150,7 @@ function genlayer_clothing_fitted_right_acc(slot, overrideOptions) {
 			const special = setup.accessory_integrity_img ? `_${options.worn[slot].integrity}` : '';
 			const end = isHoodDown ? '_down' : isAltPosition ? '_alt' : '';
 			const path = `img/clothes/${slot}/${setup.variable}/acc${special}${end}.png`;
-
-			const filter = generateClothingAccFilter(options, slot, options.worn[slot])
-			return gray_suffix(path, filter);
+			return gray_suffix(path, options.filters[`worn_${slot}_acc`]);
 		},
 	}, overrideOptions));
 }
@@ -4191,9 +4179,7 @@ function genlayer_clothing_accessory(slot, overrideOptions) {
 			const special = setup.accessory_integrity_img ? `_${options.worn[slot].integrity}` : '';
 			const end = isHoodDown ? '_down' : isAltPosition ? '_alt' : '';
 			const path = `img/clothes/${slot}/${setup.variable}/acc${special}${end}.png`;
-
-			const filter = generateClothingAccFilter(options, slot, options.worn[slot])
-			return gray_suffix(path, filter);
+			return gray_suffix(path, options.filters[`worn_${slot}_acc`]);
 		},
 	}, overrideOptions));
 }
@@ -4226,8 +4212,7 @@ function genlayer_clothing_breasts(slot, overrideOptions) {
 			const breastSize = typeof breastImg === 'object' ? breastImg[options.breast_size] : Math.min(options.breast_size, 6);
 			const end = isAltPosition ? '_alt' : '';
 			const path = `img/clothes/${slot}/${setup.variable}/${breastSize}${end}.png`;
-			const filter = generateClothingFilter(options, slot, options.worn[slot])
-			return gray_suffix(path, filter);
+			return gray_suffix(path, options.filters[`worn_${slot}`]);
 		},
 	}, overrideOptions));
 }
@@ -4265,8 +4250,7 @@ function genlayer_clothing_belly(slot, overrideOptions) {
 			const integrity = options.worn[slot].integrity;
 			const end = isAltPosition ? '_alt' : '';
 			const path = `img/clothes/${slot}/${setup.variable}/${integrity}${end}.png`;
-			const filter = generateClothingFilter(options, slot, options.worn[slot])
-			return gray_suffix(path, filter);
+			return gray_suffix(path, options.filters[`worn_${slot}`]);
 		},
 	}, overrideOptions));
 }
@@ -4328,8 +4312,7 @@ function genlayer_clothing_belly_split_acc(slot, overrideOptions) {
 			const hoodDown = isHoodDown ? '_down' : end;
 
 			const path = `img/clothes/${slot}/${setup.variable}/acc${integrity}${hoodDown}.png`;
-			const filter = generateClothingFilter(options, slot, options.worn[slot])
-			return gray_suffix(path, filter);
+			return gray_suffix(path, options.filters[`worn_${slot}_acc`]);
 		},
 	}, overrideOptions));
 }
@@ -4389,8 +4372,7 @@ function genlayer_clothing_belly_acc(slot, overrideOptions) {
 			const hoodDown = isHoodDown ? '_down' : end;
 
 			const path = `img/clothes/${slot}/${setup.variable}/acc${integrity}${hoodDown}.png`;
-			const filter = generateClothingAccFilter(options, slot, options.worn[slot])
-			return gray_suffix(path, filter);
+			return gray_suffix(path, options.filters[`worn_${slot}_acc`]);
 		},
 	}, overrideOptions));
 }
@@ -4456,8 +4438,7 @@ function genlayer_clothing_back_img(slot, overrideOptions) {
 			const suffix = options.worn[slot].setup.back_integrity_img ? `_${options.worn[slot].integrity}` : '';
 
 			const path = `img/clothes/${slot}/${options.worn[slot].setup.variable}/${prefix}${suffix}.png`;
-			const filter = filterCondition(options.worn[slot].setup.back_img_colour, options, slot, options.worn[slot])
-			return gray_suffix(path, filter);
+			return gray_suffix(path, options.filters[this.filtersfn(options)[0]]);
 		},
 	}, overrideOptions));
 }
@@ -4494,9 +4475,7 @@ function genlayer_clothing_back_img_acc(slot, overrideOptions) {
 
 			const suffix = isAltPosition ? 'back_alt' : 'back';
 			const path = `img/clothes/${slot}/${options.worn[slot].setup.variable}/${suffix}_acc.png`;
-
-			const filter = filterCondition(options.worn[slot].setup.back_img_acc_colour, options, slot, options.worn[slot])
-			return gray_suffix(path, filter);
+			return gray_suffix(path, options.filters[this.filtersfn(options)[0]]);
 		},
 	}, overrideOptions));
 }
@@ -4535,9 +4514,7 @@ function genlayer_clothing_arm(arm, slot, overrideOptions) {
 			const alt = isAltPosition ? "_alt" : '';
 			const sleeve = isAltSleeve ? '_rolled' : '';
 			const path =  `img/clothes/${slot}/${setup.variable}/${cover}${alt}${sleeve}.png`;
-			const filter = filterCondition(options.worn[slot].setup.sleeve_colour, options, slot, options.worn[slot])
-
-			return gray_suffix(path, filter);
+			return gray_suffix(path, options.filters[this.filtersfn(options)[0]]);
 		},
 	}, overrideOptions));
 }
@@ -4580,8 +4557,7 @@ function genlayer_clothing_arm_fitted(arm, slot, overrideOptions) {
 			const sleeve = isAltSleeve ? '_rolled' : '';
 
 			const path =  `img/clothes/${slot}/${setup.variable}/${cover}${alt}${sleeve}.png`;
-			const filter = filterCondition(options.worn[slot].setup.sleeve_colour, options, slot, options.worn[slot])
-			return gray_suffix(path, filter);
+			return gray_suffix(path, options.filters[this.filtersfn(options)[0]]);
 		},
 	}, overrideOptions));
 }
@@ -4620,8 +4596,7 @@ function genlayer_clothing_arm_acc(arm, slot, overrideOptions) {
 			}
 
 			const path = `img/clothes/${slot}/${setup.variable}/${filename}.png`;
-			const filter = filterCondition(options.worn[slot].setup.accessory_colour_sidebar, options, slot, options.worn[slot])
-			return gray_suffix(path, filter);
+			return gray_suffix(path, options.filters[this.filtersfn(options)[0]]);
 		},
 	}, overrideOptions));
 }
@@ -4653,8 +4628,7 @@ function genlayer_clothing_arm_acc_fitted(arm, slot, overrideOptions) {
 			const cover = options[`arm_${arm}`] === "cover" ? `${arm}_cover` : hold;
 
 			const path = `img/clothes/${slot}/${options.worn[slot].setup.variable}/${cover}_acc.png`;
-			const filter = filterCondition(options.worn[slot].setup.accessory_colour_sidebar, options, slot, options.worn[slot])
-			return gray_suffix(path, filter);
+			return gray_suffix(path, options.filters[this.filtersfn(options)[0]]);
 		},
 	}, overrideOptions))
 }

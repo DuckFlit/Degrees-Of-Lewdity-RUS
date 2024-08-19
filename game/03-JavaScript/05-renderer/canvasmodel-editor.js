@@ -484,6 +484,7 @@ Macro.add("canvasModelEditor", {
 		const options = model.options;
 
 		function redraw() {
+			Skin.recache();
 			const options = model.options;
 			model.reset();
 			model.options = options;
