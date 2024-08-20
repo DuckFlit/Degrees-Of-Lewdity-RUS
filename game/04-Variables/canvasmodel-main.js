@@ -47,6 +47,7 @@ replace (?<!["'\w])_(?=\w) with T.
  * "balls":boolean - has balls
  * "nipples_parasite":""|"urchin"|"slime" - from $parasite.nipples.name
  * "chest_parasite":""|"parasite" - from $parasite.breasts.name
+ * "tummy_parasite":""|"urchin"|"slime" - from $parasite.tummy.name
  * "clit_parasite":""|"urchin"|"slime"|"parasite" - from $parasite.clit.name
  * "arm_left":"none"|"idle"|"cover" - left arm position ("cover" = covering breasts)
  * "arm_right":"none"|"idle"|"cover"|"hold" - right arm position ("cover" = covering crotch, "hold" = handheld item equipped)
@@ -972,6 +973,7 @@ Renderer.CanvasModels.main = {
 			srcfn(options) {
 				switch (options.nipples_parasite) {
 					case "urchin":
+						/* Swap to chestparasitegray for new sprites, make sure to include colour changes to the code */
 						return `img/body/breasts/chestparasite${options.breast_size}.png`;
 					case "slime":
 						return `img/body/breasts/chestslime${options.breast_size}.png`;
@@ -1024,6 +1026,43 @@ Renderer.CanvasModels.main = {
 				if (options.arm_right === "cover") return "img/body/rightarm.png";
 				if (options.handheld_position) return "img/body/rightarmhold.png";
 				return `img/body/rightarmidle-${options.body_type}.png`
+			},
+		},
+		"tummy_parasite": {
+			filters: ["tummy_parasite"],
+			animation: "idle",
+
+			srcfn(options) {
+				switch (options.tummy_parasite) {
+					case "urchin":
+						/* Swap to img/body/tummyurchingray for new sprites, make sure to include colour changes to the code */
+						return 'img/body/tummyurchin.png';
+					case "slime":
+						return 'img/body/tummyslime.png';
+					default:
+						return "";
+				}
+			},
+			showfn(options) {
+				return !!options.tummy_parasite
+			},
+			zfn(options) {
+				if (options.crotch_exposed) return ZIndices.parasite;
+				return ZIndices.underParasite;
+			},
+			dxfn(options) {
+				if (options.belly >= 23) return 10;
+				if (options.belly >= 22) return 8;
+				if (options.belly >= 20) return 6;
+				if (options.belly >= 15) return 4;
+				if (options.belly >= 8) return 2;
+				return 0;
+			},
+			dyfn(options) {
+				if (options.belly >= 24) return 6;
+				if (options.belly >= 8) return 4;
+				if (options.belly >= 2) return 2;
+				return 0;
 			},
 		},
 
@@ -1445,6 +1484,7 @@ Renderer.CanvasModels.main = {
 
 				switch (options.penis_parasite) {
 					case "urchin":
+						/* Swap to penisurchingray for new sprites, make sure to include colour changes to the code */
 						return `img/body/penis/penisurchin${options.penis_size}.png`;
 					case "slime":
 						return `img/body/penis/penisslime${options.penis_size}.png`;
@@ -1470,6 +1510,7 @@ Renderer.CanvasModels.main = {
 			srcfn(options) {
 				switch (options.clit_parasite) {
 					case "urchin":
+						/* Swap to cliturchingray for new sprites, make sure to include colour changes to the code */
 						return 'img/body/cliturchin.png';
 					case "slime":
 						return 'img/body/clitslime.png';
@@ -1483,7 +1524,7 @@ Renderer.CanvasModels.main = {
 			},
 			showfn(options) {
 				if (options.clit_parasite === "parasite") return !options.belly_hides_under_lower;
-				return options.crotch_visible && !!options.clit_parasite && !options.chastity
+				return options.crotch_visible && !!options.clit_parasite && !options.chastity && !options.belly_hides_under_lower
 			},
 			zfn(options) {
 				if (["parasite", "parasitem"].includes(options.clit_parasite))

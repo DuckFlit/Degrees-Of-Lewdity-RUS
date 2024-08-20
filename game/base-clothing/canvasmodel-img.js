@@ -82,6 +82,8 @@ DefineMacro("modelprepare-player-body", function () {
 		T.modeloptions.tanningEnabled = false;
 	}
 
+	T.modeloptions.tummy_parasite = V.parasite.tummy.name;
+
 	/*
 			██   ██  █████  ██ ██████
 			██   ██ ██   ██ ██ ██   ██

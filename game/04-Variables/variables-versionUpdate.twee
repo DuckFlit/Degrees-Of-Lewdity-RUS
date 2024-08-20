@@ -5339,6 +5339,11 @@
 		<<set $objectVersion.islandHomeFix to 1>>
 	<</if>>
 
+	<!-- Fix for older instance of 'cat_tf_stage_' not being cleared, leading to exceeded loop iterations -->
+	<<if $custom_eyecolours.filter(obj => obj.variable.includes("cat_tf_stage_")).length gt 8>>
+		<<run determineCatEyeStages()>>
+	<</if>>
+
 	<!-- 0.5.2.0, converting NPC seen variables to arrays -->
 	<<if $remy_seen isnot undefined>>
 		<<set $remySeen to []>>
@@ -5380,5 +5385,23 @@
 		<<if $winterLakeTalk gte 3>>
 			<<set $nikiSeen.pushUnique("winter")>>
 		<</if>>
+	<</if>>
+
+	<!-- Disabled the npc compressor -->
+	<<if !$objectVersion.npcCompressorDisable>>
+		<<set _storedNPCToDelete to []>>
+		<<run Object.entries($storedNPCs).forEach(([key, npcStore]) => {
+			if (npcStore.npc && (typeof npcStore.npc === 'string' || npcStore.npc instanceof String)) {
+				try {
+					npcStore.npc = npcDecompressor(npcStore.npc);
+				} catch (e) {
+					T.storedNPCToDelete.push(key);
+				}
+			}
+		})>>
+		<<run _storedNPCToDelete.forEach(key => {
+			delete $storedNPCs[key];
+		})>>
+		<<set $objectVersion.npcCompressorDisable to 1>>
 	<</if>>
 <</widget>>
