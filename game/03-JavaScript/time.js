@@ -1901,6 +1901,7 @@ function getArousal(passMinutes) {
 	if (V.parasite.nipples.name) addedArousal += minuteMultiplier * V.breastsensitivity;
 	if (V.parasite.penis.name && V.parasite.penis.name !== "parasite") addedArousal += minuteMultiplier * V.genitalsensitivity;
 	if (V.parasite.clit.name && V.parasite.clit.name !== "parasite") addedArousal += minuteMultiplier * V.genitalsensitivity;
+	if (V.parasite.tummy.name) addedArousal += minuteMultiplier / 4;
 	if (V.parasite.bottom.name) addedArousal += minuteMultiplier * V.bottomsensitivity;
 	if (V.analchastityparasite) addedArousal += minuteMultiplier;
 	if (V.parasite.tummy.name) addedArousal += minuteMultiplier;
