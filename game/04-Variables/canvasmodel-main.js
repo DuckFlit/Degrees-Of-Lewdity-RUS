@@ -669,7 +669,7 @@ Renderer.CanvasModels.main = {
 		) {
 			options.head_mask_src = `img/clothes/head/${options.worn.over_head.setup.variable}/mask.png`;
 		} else if (
-			options.worn.head.setup.mask_img === 1 
+			options.worn.head.setup.mask_img === 1
 				&& !(options.hood_down && options.worn.head.setup.hood && options.worn.head.setup.outfitSecondary !== undefined)
 		) {
 			if (
@@ -797,7 +797,7 @@ Renderer.CanvasModels.main = {
 		}
 
 		if (
-			options.worn.head.setup.mask_img === 1 
+			options.worn.head.setup.mask_img === 1
 				&& !(options.hood_down && options.worn.head.setup.hood && options.worn.head.setup.outfitSecondary !== undefined)
 		) {
 			options.hood_mask = true;
@@ -822,7 +822,7 @@ Renderer.CanvasModels.main = {
 			options.alt_sleeve_state = true;
 		}
 	},
-	postprocess(options) {	
+	postprocess(options) {
 		options.generatedLayers = {};
 
 		if (V.options.tanLines){
@@ -894,7 +894,7 @@ Renderer.CanvasModels.main = {
 					if (!acc.layers.includes(obj.name)) {
 						acc.layers.push(obj.name);
 					}
-					
+
 					acc.slots[obj.worn.slot] = {
 						index: obj.worn.index,
 						...(obj.worn.integrity !== "full" && { integrity: obj.worn.integrity }),
@@ -1363,7 +1363,10 @@ Renderer.CanvasModels.main = {
 					"thick ponytail",
 					"all down",
 					"half-up",
-					"messy ponytail"
+					"messy ponytail",
+					"ruffled",
+					"half up twintail",
+					"princess wave",
 				];
 
 				const path = `img/hair/back/${options.hair_sides_type}`;
@@ -1373,8 +1376,6 @@ Renderer.CanvasModels.main = {
 					return `${path}/thighs.png`;
 				if (options.hair_sides_length === "navel" && options.hair_sides_type === "messy ponytail")
 					return `${path}/navel.png`;
-				if (options.hair_sides_type === "ruffled")
-					return `${path}/${options.hair_sides_length}.png`;
 				return "";
 			},
 			masksrcfn(options) {
@@ -3761,7 +3762,7 @@ Renderer.CanvasModels.main = {
 				const isAltPosition = !options.alt_override
 					&& options.worn.neck.setup.altposition !== undefined
 					&& options.worn.neck.alt === "alt";
-				
+
 				let collar = "";
 				if (options.worn.neck.setup.has_collar === 1 && options.worn.upper.setup.has_collar === 1 && !(options.worn.upper.setup.name === "dress shirt" && options.worn.upper.alt === "alt")) {
 					collar = '_nocollar';
@@ -4017,7 +4018,7 @@ function getWritingImgPathArrow(area_name, writing) {
 
 function generateClothingFilter(options, slot, item) {
 	const filter = (item.setup.colour_sidebar) ? lookupColour(
-		options, 
+		options,
 		setup.colours.clothes_map,
 		item.colour,
 		slot + " clothing",
@@ -4029,7 +4030,7 @@ function generateClothingFilter(options, slot, item) {
 }
 function generateClothingAccFilter(options, slot, item) {
 	const filter = (item.setup.accessory_colour_sidebar) ? lookupColour(
-		options, 
+		options,
 		setup.colours.clothes_map,
 		item.accColour,
 		slot + " accessory",
@@ -4409,8 +4410,8 @@ function genlayer_clothing_belly_acc(slot, overrideOptions) {
 				&& options.show_clothes;
 
 			if (slot.includes("lower")) return commonChecks && !options.belly_hides_lower;
-			if (slot.includes("upper")) return commonChecks 
-				&& options.worn.upper.setup.pregType != "min" 
+			if (slot.includes("upper")) return commonChecks
+				&& options.worn.upper.setup.pregType != "min"
 				&& !options.shirt_mask_clip_src;
 			return commonChecks;
 		},
@@ -4488,7 +4489,7 @@ function genlayer_clothing_back_img(slot, overrideOptions) {
 			return options.worn[slot].index > 0 && options.worn[slot].setup.back_img === 1 && !isHoodDown;
 		},
 		srcfn(options) {
-			const isAltPosition = !options.alt_override 
+			const isAltPosition = !options.alt_override
 				&& options.worn[slot].setup.altposition !== undefined
 				&& options.worn[slot].alt === "alt"
 				&& !options.worn[slot].setup?.altdisabled.includes("back");
@@ -4734,15 +4735,15 @@ function genlayer_tanning(slot, index, tanningLayer, value, animation = "idle") 
 function setClothingFilter(options, slot, clothingObject, setupObj, filterSuffix, colourProp, customProp) {
 	const filterType = `worn_${slot}${filterSuffix}`;
 	const colour = clothingObject[customProp];
-	
-	options.filters[filterType] = (setupObj[colourProp]) 
+
+	options.filters[filterType] = (setupObj[colourProp])
 		? lookupColour(
-			options, 
+			options,
 			setup.colours.clothes_map,
 			colour,
 			`${slot} ${filterSuffix.includes('_acc') ? 'accessory' : 'clothing'}`,
 			`${filterType}_custom`,
 			setupObj.prefilter
-		) 
+		)
 		: Renderer.emptyLayerFilter();
 }
