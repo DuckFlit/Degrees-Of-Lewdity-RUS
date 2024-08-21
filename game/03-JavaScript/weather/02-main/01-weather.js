@@ -19,7 +19,7 @@ const Weather = (() => {
 	}
 
 	function getSunIntensity(time) {
-		time = time ?? Time.date;
+		time ??= Time.date;
 		const sunIntensity = Weather.genSettings.months[time.month - 1].sunIntensity * Weather.activeRenderer?.orbitals.sun.getFactor(time);
 		const weatherModifier = V.outside ? Weather.current.tanningModifier : 0;
 		const locationModifier = V.location === "forest" ? 0.2 : 1;
