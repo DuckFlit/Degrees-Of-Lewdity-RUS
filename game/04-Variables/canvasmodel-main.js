@@ -3160,7 +3160,7 @@ Renderer.CanvasModels.main = {
 				return options.lowerBellyMask;
 			},
 			zfn(options) {
-				return options.worn_lower_setup.high_img ? ZIndices.lower_high : ZIndices.lower_belly;
+				return options.worn.lower.setup.high_img ? ZIndices.lower_high : ZIndices.lower_belly;
 			},
 		}),
 		"lower_breasts": genlayer_clothing_breasts("lower", {
