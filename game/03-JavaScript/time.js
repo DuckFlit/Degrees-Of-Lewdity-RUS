@@ -102,7 +102,7 @@ const Time = (() => {
 	let currentDate = {};
 
 	function set(time = V.timeStamp) {
-		V.startDate = V.startDate ?? new DateTime(2022, 9, 4, 7).timeStamp;
+		V.startDate ??= new DateTime(2022, 9, 4, 7).timeStamp;
 
 		if (time instanceof DateTime) {
 			currentDate = time;
@@ -274,7 +274,7 @@ const Time = (() => {
 	}
 
 	function isBloodMoon(date) {
-		date = date ?? currentDate;
+		date ??= currentDate;
 		return (date.day === date.lastDayOfMonth && date.hour >= 21) || (date.day === 1 && date.hour < 6);
 	}
 

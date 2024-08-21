@@ -239,7 +239,7 @@ const Skin = (() => {
 	}
 
 	function setLayers(savedLayers, currentLayers, index) {
-		index = index ?? currentLayers.index;
+		index ??= currentLayers.index;
 		if (!currentLayers) {
 			console.warn("setTanning: Could not find clothing groups");
 			return null;

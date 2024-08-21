@@ -858,24 +858,34 @@ Renderer.CanvasModels.main = {
 						}
 	
 						// Get the source paths for the tanning layer
+						// Filter out non-unique rows
 						const layers = { arms: [], body: [] };
 						for (const layerName of layerGroup.layers) {
 							const layer = canvasModel.layers[layerName];
 	
-							if (!layer.showfn(newOptions)) continue;
-							const src = layer.srcfn(newOptions);
+							// Set offsets (mostly for preg belly)
+							const srcObject = {
+								path: layer.srcfn(newOptions),
+								offsetX: layer.dxfn ? layer.dxfn(newOptions) : 0,
+								offsetY: layer.dyfn ? layer.dyfn(newOptions) : 0,
+							};
+
 							const target = layerName.includes("rightarm") || layerName.includes("leftarm") ? layers.arms : layers.body;
-							target.push(src);
+							if (!target.some(item => item.path === srcObject.path && item.offsetX === srcObject.offsetX)) {
+								target.push(srcObject);
+							}
 						}
 	
 						// Generate final tanning layers
 						// Separate the base with the arms, since they can overlap
 						// Base layer has disabled animations
 						const alpha = layerGroup.value;
+						console.log("LAYERS BODY", layers.body);
 						if (layers.body.length) {
 							options.generatedLayers[`tan_base${i}`] = (genlayer_tanning("base", i, layers.body, alpha, null));
 							options.generatedLayers[`tan_breasts${i}`] = (genlayer_tanning("breasts", i, layers.body, alpha));
 							options.generatedLayers[`tan_belly${i}`] = (genlayer_tanning("belly", i, layers.body, alpha));
+							//if preg offset belly masks
 						}
 						if (layers.arms.length) {
 							options.generatedLayers[`tan_leftarm${i}`] = (genlayer_tanning("leftarm", i, layers.arms, alpha));
@@ -891,7 +901,7 @@ Renderer.CanvasModels.main = {
 			// Only use necessary data for tanning layers. Filter out the rest.
 			// Only clothing items that aren't handheld or headwear will be used
 			// Only use the base pregnancy layers
-			const skippedSlots = ["handheld", "head", "neck", "face", "upper_belly_", "lower_belly_"];
+			const skippedSlots = ["handheld", "head", "neck", "face", "under_upper_belly_", "upper_belly_", "under_lower_belly_", "lower_belly_"];
 			this.tanningLayers = this.layerList
 				.filter(obj => obj.show === true
 					&& obj.worn
@@ -3372,15 +3382,6 @@ Renderer.CanvasModels.main = {
 				return ZIndices.under_upper_top;
 			},
 		}),
-		/*** Did not work ***/
-		// "under_upper_belly_shadow": genlayer_clothing_belly_highlight("under_upper", {
-		// 	masksrcfn(options) {
-		// 		return options.belly_mask_upper_shadow_src;
-		// 	},
-		// 	zfn() {
-		// 		return ZIndices.under_upper_top_high;
-		// 	},
-		// }),
 		"under_upper_belly_acc": genlayer_clothing_belly_acc("under_upper", {
 			masksrcfn(options) {
 				return options.belly_mask_src;
@@ -4633,7 +4634,7 @@ function genlayer_clothing_arm_acc_fitted(arm, slot, overrideOptions) {
 	}, overrideOptions))
 }
 
-function genlayer_tanning(slot, index, tanningLayer, value, animation = "idle") {
+function genlayer_tanning(slot, index, tanningLayer, value, maskdx, animation = "idle") {
 	return {
 		alphafn() {
 			return value / 100;
