@@ -2499,6 +2499,7 @@ function initUpper() {
 			sleeve_img: 1,
 			sleeve_colour: "no",
 			breast_img: 0,
+			breast_acc_img: { 0: null, 1: null, 2: null, 3: 3, 4: 4, 5: 5, 6: 6 },
 			cursed: 0,
 			location: 0,
 			iconFile: "gothic_gown.png",
