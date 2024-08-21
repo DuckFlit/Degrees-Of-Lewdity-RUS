@@ -615,7 +615,7 @@ var Renderer;
                 });
                 finalMask = combinedCtx.canvas;
             }
-            else if (compositeLayer.maskOffsets[0]?.x || compositeLayer.maskOffsets[0]?.y) { //if contaisn offset
+            else if (compositeLayer.maskOffsets[0]?.x || compositeLayer.maskOffsets[0]?.y) {
                 const offsetCtx = Renderer.createCanvas(image.width, image.height);
                 const offset = compositeLayer.maskOffsets[0] || { x: 0, y: 0 };
                 offsetCtx.drawImage(compositeLayer.mask, offset.x, offset.y);
@@ -886,14 +886,12 @@ var Renderer;
                 layer.masksrc = layer.masksrc
                     .map(item => {
                     if (item?.path) {
-                        // Extract offsets and replace object with string path
                         layer.maskOffsets.push({ x: item.offsetX || 0, y: item.offsetY || 0 });
                         return item.path;
                     }
-                    return item; // Keep string as is
+                    return item;
                 })
-                    .filter(value => value != null); // Remove null or undefined entries
-                // Check if the array is now empty after filtering
+                    .filter(value => value != null);
                 if (layer.masksrc.length === 0 || layer.masksrc.every(value => value == null)) {
                     layer.masksrc = null;
                 }
