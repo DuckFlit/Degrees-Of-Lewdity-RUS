@@ -1367,10 +1367,13 @@ Renderer.CanvasModels.main = {
 					"ruffled",
 					"half up twintail",
 					"princess wave",
+					"space buns",
+					"sleek",
+					"bedhead",
 				];
 
 				const path = `img/hair/back/${options.hair_sides_type}`;
-				if (options.hair_sides_length === "feet" && [...hairs, "space buns", "straight"].includes(options.hair_sides_type))
+				if (options.hair_sides_length === "feet" && [...hairs, "straight"].includes(options.hair_sides_type))
 					return `${path}/feet.png`;
 				if (options.hair_sides_length === "thighs" && hairs.includes(options.hair_sides_type))
 					return `${path}/thighs.png`;
@@ -3157,7 +3160,12 @@ Renderer.CanvasModels.main = {
 				return options.lowerBellyMask;
 			},
 			zfn(options) {
-				return options.worn.lower.setup.high_img ? ZIndices.lower_high : ZIndices.lower_belly;
+				return options.worn_lower_setup.high_img ? ZIndices.lower_high : ZIndices.lower_belly;
+			},
+		}),
+		"lower_breasts": genlayer_clothing_breasts("lower", {
+			zfn(options) {
+				return options.acc_layer_under ? ZIndices.lower_high + 1 : ZIndices.lower_high;
 			},
 		}),
 		"lower_acc": genlayer_clothing_accessory("lower", {
@@ -3175,6 +3183,11 @@ Renderer.CanvasModels.main = {
 			},
 			masksrcfn(options) {
 				return options.lowerMask;
+			},
+		}),
+		"lower_breasts_acc": genlayer_clothing_breasts_acc("lower", {
+			zfn(options) {
+				return options.acc_layer_under ? ZIndices.lower_high + 1 : ZIndices.lower_high;
 			},
 		}),
 		"lower_penis": {
