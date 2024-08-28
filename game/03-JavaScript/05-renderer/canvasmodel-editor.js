@@ -484,7 +484,6 @@ Macro.add("canvasModelEditor", {
 		const options = model.options;
 
 		function redraw() {
-			Skin.recache();
 			const options = model.options;
 			model.reset();
 			model.options = options;
@@ -598,9 +597,9 @@ Macro.add("canvasModelEditor", {
 					value: getNestedProperty(options, name),
 					set(value) {
 						if (number) value = Number(value);
-		
+
 						setNestedProperty(options, name, value);
-		
+
 						// If this is a clothing index change, update the setup property
 						if (isClothingIndex && slot) {
 							const selectedItem = setup.clothes[slot][value];
@@ -608,7 +607,7 @@ Macro.add("canvasModelEditor", {
 								setNestedProperty(options, `worn.${slot}.setup`, selectedItem);
 							}
 						}
-		
+
 						redraw();
 					},
 					$oncreate(e) {
@@ -733,7 +732,7 @@ Macro.add("canvasModelEditor", {
 						selectOption("breasts_parasite", ["", "parasite"]),
 						selectOption("clit_parasite", ["", "urchin", "slime", "parasite"]),
 						selectOption("arm_left", ["none", "idle", "cover"]),
-						selectOption("arm_right", ["none", "idle", "cover"]),
+						selectOption("arm_right", ["none", "idle", "cover", "hold"]),
 
 						optionCategory("Skin"),
 						selectOption("skin_type", ["light", "medium", "dark", "gyaru", "ylight", "ymedium", "ydark", "ygyaru"]),

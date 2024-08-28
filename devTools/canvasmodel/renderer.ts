@@ -791,25 +791,18 @@ namespace Renderer {
 			return !!layer.mask;
 		},
 
-		render(image: HTMLCanvasElement, compositeLayer: CompositeLayer, renderContext: Renderer.RenderPipelineContext): HTMLCanvasElement {
-			const maskCanvas = Renderer.ensureCanvas(image).getContext('2d');
-			let finalMask = compositeLayer.mask;
-
-			if (Array.isArray(compositeLayer.mask)) {
-				const combinedCtx = Renderer.createCanvas(image.width, image.height);
-				compositeLayer.mask.forEach((maskItem, index) => {
-					const offset = compositeLayer.maskOffsets[index] || { x: 0, y: 0 };
-					combinedCtx.drawImage(maskItem, offset.x, offset.y);
-				});
-				finalMask = combinedCtx.canvas;
-			} else if (compositeLayer.maskOffsets[0]?.x || compositeLayer.maskOffsets[0]?.y) {
-				const offsetCtx = Renderer.createCanvas(image.width, image.height);
-				const offset = compositeLayer.maskOffsets[0] || { x: 0, y: 0 };
-				offsetCtx.drawImage(compositeLayer.mask as CanvasImageSource, offset.x, offset.y);
-				finalMask = offsetCtx.canvas;
+		render(image: CanvasImageSource, layer: CompositeLayer, context: Renderer.RenderPipelineContext): HTMLCanvasElement {
+			const maskCanvas = Renderer.ensureCanvas(image).getContext('2d')
+			let mask = layer.mask;
+			if (Array.isArray(layer.mask)) {
+				let combinedCtx = Renderer.createCanvas(image.width, image.height);
+				for (const mask of layer.mask) {
+					combinedCtx.drawImage(mask as CanvasImageSource, 0, 0);
+				}
+				mask = combinedCtx.canvas;
 			}
-			maskCanvas.globalAlpha = compositeLayer.maskAlpha;
-			return Renderer.cutoutFrom(maskCanvas, finalMask as CanvasImageSource, compositeLayer.maskBlendMode as GlobalCompositeOperation).canvas;
+			maskCanvas.globalAlpha = layer.maskAlpha;
+			return Renderer.cutoutFrom(maskCanvas, mask as CanvasImageSource, layer.maskBlendMode as GlobalCompositeOperation).canvas;
 		}
 	}
 
@@ -1093,38 +1086,22 @@ namespace Renderer {
 				}
 			}
 			if (needImage) {
-				if (ImageErrors[layer.src as string]) {
+				if (ImageErrors[layer.src]) {
 					layer.show = false;
 					continue;
-				} else if (layer.src as string in ImageCaches) {
-					layer.image = ImageCaches[layer.src as string];
-					layer.imageSrc = layer.src as string;
+				} else if (layer.src in ImageCaches) {
+					layer.image = ImageCaches[layer.src];
+					layer.imageSrc = layer.src;
 				} else {
 					loadLayerImage(layer);
 				}
 			}
-
-			layer.maskOffsets = [] as MaskObject;
-			
 			if (Array.isArray(layer.masksrc)) {
-				layer.masksrc = layer.masksrc
-					.map(item => {
-						if (item?.path) {
-							layer.maskOffsets.push({ x: item.offsetX || 0, y: item.offsetY || 0 });
-							return item.path;
-						}
-						return item;
-					})
-					.filter(value => value != null);
-		
+				layer.masksrc = layer.masksrc.filter(value => value != null);
 				if (layer.masksrc.length === 0 || layer.masksrc.every(value => value == null)) {
 					layer.masksrc = null;
 				}
-			} else if (layer.masksrc?.path) {
-				layer.maskOffsets.push({ x: layer.masksrc.offsetX || 0, y: layer.masksrc.offsetY || 0 });
-				layer.masksrc = layer.masksrc.path;
 			}
-
 			let needMask = !!layer.masksrc;
 			if (layer.mask) {
 				if (layer.cachedMaskSrc === layer.masksrc || layer.masksrc instanceof HTMLCanvasElement) {
