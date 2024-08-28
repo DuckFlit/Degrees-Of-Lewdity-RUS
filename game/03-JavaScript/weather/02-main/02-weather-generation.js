@@ -72,7 +72,7 @@ Weather.WeatherGeneration = (() => {
 			return currentKeyPoint.value;
 		}
 
-		currentKeyPoint ??= { timestamp: currentTimeStamp, value: nextKeyPoint.value };
+		currentKeyPoint = currentKeyPoint ?? { timestamp: currentTimeStamp, value: nextKeyPoint.value };
 
 		const current = Weather.genSettings.weatherTypes[currentKeyPoint.value];
 		const next = Weather.genSettings.weatherTypes[nextKeyPoint.value];

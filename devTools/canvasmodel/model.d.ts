@@ -75,7 +75,7 @@ declare interface CompositeLayerParams {
 	/**
 	 * Mask, a stencil image to cut out and display only select parts of this layer.
 	 */
-	masksrc?: string | HTMLCanvasElement | MaskObject | (string | HTMLCanvasElement | MaskObject)[];
+	masksrc?: string | HTMLCanvasElement | (string | HTMLCanvasElement)[];
 	/**
 	 * Alpha, 0-1. Default 1
 	 */
@@ -148,12 +148,6 @@ declare interface SimpleAnimationSpec {
 	duration: number;
 }
 
-declare interface MaskObject {
-	path?: string;
-	offsetX?: number;
-	offsetY?: number;
-}
-
 declare interface CompositeLayer extends CompositeLayerSpec {
 	maskBlendMode: GlobalCompositeOperation;
 	/**
@@ -167,15 +161,11 @@ declare interface CompositeLayer extends CompositeLayerSpec {
 	/**
 	 * Loaded/cached mask image
 	 */
-	mask?: CanvasImageSource | MaskObject | (CanvasImageSource | MaskObject)[];
-	/**
-	 * Offset of mask image
-	 */
-	maskOffsets?: MaskObject;
+	mask?: CanvasImageSource;
 	/**
 	 * Value of `masksrc` corresponding to current `mask` (if masksrc changes mask will be reloaded)
 	 */
-	cachedMaskSrc?: string | MaskObject | (string | MaskObject)[];
+	cachedMaskSrc?: string | HTMLCanvasElement | (string | HTMLCanvasElement)[];
 	/**
 	 * Encoded processing options used to display cachedImage
 	 */
@@ -188,8 +178,4 @@ declare interface CompositeLayer extends CompositeLayerSpec {
 	 * Scale it?
 	 */
 	scale?: boolean;
-	/**
-	 * Mask alpha
-	 */
-	maskAlpha?: number;
 }

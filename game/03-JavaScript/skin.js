@@ -2,7 +2,7 @@
 
 const Sunscreen = (() => {
 	function getDuration() {
-		return TimeConstants.secondsPerDay;
+		return 24 * TimeConstants.secondsPerHour;
 	}
 
 	function apply() {
@@ -54,17 +54,12 @@ const Sunscreen = (() => {
 	Skin.tanningBonus: Value between 0 and 1. The bonus exists until time has been passed.
 */
 const Skin = (() => {
-	// Constants
 	const defaultModel = ["main", "sidebar"];
 	const defaultLayer = { layers: [], slots: {} };
 	const tanningMultiplier = 9; // Increase to make the tanning function even out more sharply (as the tan level increases)
 	const scalingFactor = 0.033; // Decrease for slower tanning gain from sun intensity
 	const tanningLossPerMinute = 0.000695; // ~1 per day - ~100 days from 100% to 0%
 	const maxLayerGroups = 6;
-
-	// Properties
-	const cachedLayers = null;
-	let accumulatedValue = 0;
 
 	/**
 	 * Only run this from time.js
@@ -130,7 +125,6 @@ const Skin = (() => {
 				// Apply tanning gain if there's any
 				if (tanningGain > 0) {
 					selectedLayers.value += tanningGain;
-					accumulatedValue += tanningGain;
 				}
 
 				nextTime.addMinutes(chunkMinutes);
@@ -150,10 +144,6 @@ const Skin = (() => {
 			// Reset bonus and other modifiers after time passes
 			Skin.tanningBonus = 0;
 			Skin.tanningBed = false;
-
-			if (accumulatedValue > 0.1) {
-				Skin.recache();
-			}
 		});
 	}
 
@@ -165,7 +155,6 @@ const Skin = (() => {
 		if (savedLayers.length > 0) {
 			lowerTanningInLayers(savedLayers, totalTanningLoss);
 		}
-		if (totalTanningLoss > 0.1) Skin.recache();
 	}
 
 	function lowerTanningInLayers(groups, totalTanningLoss, skipIndex = -1) {
@@ -239,7 +228,7 @@ const Skin = (() => {
 	}
 
 	function setLayers(savedLayers, currentLayers, index) {
-		index ??= currentLayers.index;
+		index = index ?? currentLayers.index;
 		if (!currentLayers) {
 			console.warn("setTanning: Could not find clothing groups");
 			return null;
@@ -318,7 +307,6 @@ const Skin = (() => {
 		return `<span class="teal">Your tanning gain was reduced due to:</span><br><span class="orange">${reasons.join("<br>")}</span><br>`;
 	}
 	return {
-		cachedLayers,
 		applyTanningGain,
 		applyTanningLoss,
 		getTanningFactor,
@@ -359,7 +347,6 @@ const Skin = (() => {
 					Skin.color.setTan(value);
 				},
 				setTan(value, wholeBody = true) {
-					Skin.recache();
 					value = Math.clamp(value, 0, 100);
 					const savedLayers = V.player.skin.layers;
 					const totalTan = getTanningValue(savedLayers);
@@ -382,10 +369,6 @@ const Skin = (() => {
 					}
 				},
 			};
-		},
-		recache() {
-			Skin.cachedLayers = null;
-			accumulatedValue = 0;
 		},
 		getImageCount() {
 			// return V.player.skin.layers.reduce((count, layerGroup) => count + layerGroup.groups.length, 0);
