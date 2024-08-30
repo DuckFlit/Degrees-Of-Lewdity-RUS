@@ -93,6 +93,7 @@ module.exports = {
 		Orbital: "readonly",
 		Fadable: "readonly",
 		Skin: "readonly",
+		Sunscreen: "readonly",
 		// DoL SC2 functions
 		compressionVerifier: "readonly",
 		DefineMacro: "readonly",
@@ -243,7 +244,6 @@ module.exports = {
 		version: "readonly",
 		getClothingCost: "readonly",
 		isLoveInterest: "readonly",
-		skinColor: "readonly",
 		nullable: "readonly",
 	},
 
@@ -261,19 +261,18 @@ module.exports = {
 
 	parserOptions: {
 		// Support back to ES2020 to cover old mobile devices with outdated WebView versions that fail on 2020 and up functions
-		// ecmaVersion: "2020", (taken care of by env es2020)
 		sourceType: "module",
 	},
 
 	env: {
 		browser: true,
-		es2020: true,
+		es2021: true,
 		jquery: true,
 	},
 
 	plugins: ["es-x"],
 
-	extends: ["eslint:recommended", "plugin:jsdoc/recommended", "prettier-standard/prettier-file", "plugin:es-x/restrict-to-es2020"],
+	extends: ["eslint:recommended", "plugin:jsdoc/recommended", "prettier-standard/prettier-file", "plugin:es-x/restrict-to-es2021"],
 
 	settings: {
 		jsdoc: {
@@ -285,15 +284,13 @@ module.exports = {
 	rules: {
 		"object-shorthand": ["error", "always"],
 
-		"es-x/no-object-hasown": "off",
-
 		// SugarCube extends native objects and we follow it
 		"no-extend-native": "off",
 
 		/* hasOwn */
 		// No need for this, since we're overriding hasOwn for older browers (01-compatibility.js)
 		// Warn for the hasOwnProperty instead
-		"es-x/no-object-hasown": "off", // eslint-disable-line
+		"es-x/no-object-hasown": "off",
 		"prefer-object-has-own": "warn",
 
 		/* eslint-plugin-jsdoc */
