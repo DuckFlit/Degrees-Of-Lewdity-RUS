@@ -20,14 +20,11 @@ setup.Locations = {
 	castle: () => {
 		return "tower";
 	},
-	chalets: () => {
-		return "beach";
-	},
 	hotel: () => {
 		return "town";
 	},
 	estate: () => (V.bus === "estate_cottage" ? "estate_cottage" : "estate"),
-	farm: () => (V.bus === "farm" ? "farm" : "underground_farm"),
+	farm: () => (["farmroad6", "farm"].includes(V.bus) ? "farm" : "underground_farm"),
 	get() {
 		if (typeof this[V.location] === "function") {
 			return this[V.location]();
@@ -550,6 +547,25 @@ setup.LocationImages = {
 			},
 		},
 	},
+	chalets: {
+		folder: "chalets",
+		base: {
+			default: {
+				image: "base.png",
+			},
+			snow: {
+				condition: () => Weather.isSnow,
+				image: "snow.png",
+			},
+			water: {
+				image: "water.png",
+				animation: {
+					frameDelay: 250,
+					cycleDelay: 1500,
+				},
+			},
+		},
+	},
 	churchyard: {
 		folder: "churchyard",
 		base: {
@@ -566,6 +582,49 @@ setup.LocationImages = {
 			image: "emissive.png",
 			color: "#a8b5ff",
 			size: 2,
+		},
+	},
+	coastpath: {
+		folder: "coastal_path",
+		base: {
+			default: {
+				image: "base.png",
+				animation: {
+					frameDelay: 200,
+					cycleDelay: () => random(5, 15) * 1000,
+				},
+			},
+			snow: {
+				condition: () => Weather.isSnow,
+				image: "snow.png",
+				animation: {
+					frameDelay: 200,
+					cycleDelay: () => random(5, 15) * 1000,
+				},
+			},
+			flower: {
+				condition: () => !Weather.isSnow,
+				image: "flower.png",
+				animation: {
+					frameDelay: 500,
+					cycleDelay: () => random(5, 30) * 1000,
+				},
+			},
+			water: {
+				image: "water.png",
+				animation: {
+					frameDelay: 250,
+					cycleDelay: () => 0,
+				},
+			},
+			bunny: {
+				condition: () => Time.dayState !== "night",
+				image: "bunny.png",
+				animation: {
+					frameDelay: 175,
+					cycleDelay: () => random(5, 15) * 1000,
+				},
+			},
 		},
 	},
 	com_alley: {
@@ -1330,6 +1389,32 @@ setup.LocationImages = {
 				condition: () => Weather.isSnow,
 				image: "snow.png",
 			},
+		},
+	},
+	townhall: {
+		folder: "town_hall",
+		base: {
+			default: {
+				image: "base.png",
+			},
+			trees: {
+				condition: () => Time.season !== "winter",
+				image: "trees.png",
+			},
+			trees_winter: {
+				condition: () => Time.season === "winter",
+				image: "trees_winter.png",
+			},
+			snow: {
+				condition: () => Weather.isSnow,
+				image: "snow.png",
+			},
+		},
+		emissive: {
+			image: "emissive.png",
+			condition: () => Weather.lightsOn,
+			color: "#deae66",
+			strength: 2,
 		},
 	},
 	meadow: {
