@@ -219,6 +219,7 @@ Renderer.CanvasModels.main = {
 	generatedOptions() {
 		return [
 			"blink_animation",
+			"coinFlip",
 			"genitals_chastity",
 			"handheld_position",
 			"handheld_overhead",
@@ -524,6 +525,7 @@ Renderer.CanvasModels.main = {
 
 		const blink = options.trauma ? "blink-trauma" : "blink";
 		options.blink_animation = options.blink ? blink : "";
+		options.handheld_animation = V.worn.handheld.name.includes("coin") ? "coinFlip" : "idle"
 
 		options.filters.left_eye = lookupColour(options, setup.colours.eyes_map, options.left_eye, "eyes", "eyes_custom", "eyes");
 		options.filters.right_eye = lookupColour(options, setup.colours.eyes_map, options.right_eye, "eyes", "eyes_custom", "eyes");
@@ -780,11 +782,12 @@ Renderer.CanvasModels.main = {
 		}
 
 		if (
-			options.worn.handheld.setup.name != "pom poms"
-				&& options.worn.handheld.setup.name != "naked"
+			!["pom poms", "cane", "forearm crutch", "naked"].includes(options.worn.handheld.setup.name)
 				&& options.arm_right === "hold"
 		) {
-			options.handheld_position = true;
+			options.handheld_position = 'hold';
+		} else if (["cane", "forearm crutch"].includes(options.worn.handheld.setup.name)) {
+			options.handheld_position = 'right_cover';
 		} else {
 			options.handheld_position = null;
 		}
@@ -1023,7 +1026,7 @@ Renderer.CanvasModels.main = {
 			},
 			srcfn(options) {
 				if (options.mannequin) return "img/body/mannequin/leftarmidle.png";
-				if (options.arm_left === "cover") return "img/body/leftarm.png";
+				if (options.arm_left === "cover") return "img/body/leftarmcover.png";
 				return `img/body/leftarmidle-${options.body_type}.png`
 			},
 		},
@@ -1038,10 +1041,10 @@ Renderer.CanvasModels.main = {
 				return options.arm_right !== "none";
 			},
 			srcfn(options) {
-				if (options.mannequin && options.handheld_position) return "img/body/mannequin/rightarmhold.png";
+				if (options.mannequin && options.handheld_position) return `img/body/mannequin/rightarm${options.handheld_position === "hold" ? options.handheld_position : "cover"}.png`;
 				if (options.mannequin) return "img/body/mannequin/rightarmidle.png";
-				if (options.arm_right === "cover") return "img/body/rightarm.png";
-				if (options.handheld_position) return "img/body/rightarmhold.png";
+				if (options.arm_right === "cover") return "img/body/rightarmcover.png";
+				if (options.handheld_position) return `img/body/rightarm${options.handheld_position === "hold" ? options.handheld_position : "cover"}.png`;
 				return `img/body/rightarmidle-${options.body_type}.png`
 			},
 		},
@@ -3537,7 +3540,7 @@ Renderer.CanvasModels.main = {
 			animation: "idle",
 
 			srcfn(options) {
-				const hold = options.handheld_position ? "hold" : "right";
+				const hold = options.handheld_position || "right";
 				const suffix = options.arm_right === "cover" ? "right_cover" : hold;
 				const path = `img/clothes/hands/${options.worn.hands.setup.variable}/${suffix}.png`;
 				return gray_suffix(path, options.filters['worn_hands']);
@@ -3558,7 +3561,7 @@ Renderer.CanvasModels.main = {
 			animation: "idle",
 
 			srcfn(options) {
-				const hold = options.handheld_position ? "hold" : "right";
+				const hold = options.handheld_position || "right";
 				const suffix = options.arm_right === "cover" ? "right_cover" : hold;
 				const path = `img/clothes/hands/${options.worn.hands.setup.variable}/${suffix}_acc.png`;
 				return gray_suffix(path, options.filters['worn_hands_acc']);
@@ -3607,6 +3610,9 @@ Renderer.CanvasModels.main = {
 				const check = options.handheld_overhead || options.worn.handheld.setup.type.includes("prop");
 				return check ? ZIndices.old_over_upper : ZIndices.handheld
 			},
+			animationfn(options) {
+				return options.handheld_animation
+			}
 		}),
 		"handheld_acc": genlayer_clothing_accessory('handheld', {
 			srcfn(options) {
@@ -4565,7 +4571,7 @@ function genlayer_clothing_arm(arm, slot, overrideOptions) {
 				&& options.alt_sleeve_state
 				&& V.worn[slot]?.altsleeve === 'alt';
 
-			const held = options.handheld_position && arm === 'right' ? 'hold' : arm;
+			const held = options.handheld_position && arm === 'right' ? options.handheld_position : arm;
 			const cover = options[`arm_${arm}`] === 'cover' ? `${arm}_cover` : held;
 			const alt = isAltPosition ? "_alt" : '';
 			const sleeve = isAltSleeve ? '_rolled' : '';
@@ -4607,7 +4613,7 @@ function genlayer_clothing_arm_fitted(arm, slot, overrideOptions) {
 				&& options.alt_sleeve_state
 				&& V.worn[slot]?.altsleeve === 'alt';
 
-			const held = options.handheld_position && arm === 'right' ? 'hold' : arm;
+			const held = options.handheld_position && arm === 'right' ? options.handheld_position : arm;
 			const cover = options[`arm_${arm}`] === 'cover' ? `${arm}_cover` : held;
 			const alt = isAltPosition ? "_alt" : '';
 			const sleeve = isAltSleeve ? '_rolled' : '';
@@ -4647,7 +4653,7 @@ function genlayer_clothing_arm_acc(arm, slot, overrideOptions) {
 
 			let filename = `${arm}_cover_acc`;
 			if (options[`arm_${arm}`] !== "cover") {
-				filename = (options.handheld_position && arm === "right") ? 'hold' : arm;
+				filename = (options.handheld_position && arm === "right") ? options.handheld_position : arm;
 				filename += (isAltPosition) ? '_alt_acc' : '_acc';
 			}
 
@@ -4680,7 +4686,7 @@ function genlayer_clothing_arm_acc_fitted(arm, slot, overrideOptions) {
 				&& options[`arm_${arm}`] !== "none";
 		},
 		srcfn(options) {
-			const hold = options.handheld_position && arm === "right" ? "hold" : arm;
+			const hold = options.handheld_position && arm === "right" ? options.handheld_position : arm;
 			const cover = options[`arm_${arm}`] === "cover" ? `${arm}_cover` : hold;
 
 			const path = `img/clothes/${slot}/${options.worn[slot].setup.variable}/${cover}_acc.png`;
