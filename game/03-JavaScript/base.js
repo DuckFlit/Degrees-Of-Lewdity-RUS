@@ -347,10 +347,12 @@ function cheatsWord(id, slot, worn) {
 
 	$(() => {
 		updateText();
-		$("#numberslider-input-" + id).on("input change", function (e) {
-			updateText();
-			Wikifier.wikifyEval(" <<updatesidebarimg>>");
-		});
+		$("#numberslider-input-" + id)
+			.on("input change", function (e) {
+				updateText();
+				wikifier("<<updatesidebarimg>>");
+			})
+			.trigger("change");
 	});
 }
 window.cheatsWord = cheatsWord;

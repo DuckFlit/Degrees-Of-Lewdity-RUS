@@ -2156,3 +2156,17 @@ function fixIntegrityMax(slot, value) {
 	value.integrity_max = setupClothing.integrity_max;
 }
 window.fixIntegrityMax = fixIntegrityMax;
+
+function formatMoney(amount) {
+	const integerPart = Math.floor(amount / 100);
+	let formattedAmount = Math.abs(integerPart).toLocaleString("en-GB");
+	if (Math.abs(integerPart) <= 9999) {
+		const decimalPart = amount % 100;
+		if (decimalPart) {
+			formattedAmount += "." + ("0" + Math.floor(Math.abs(decimalPart))).slice(-2);
+		}
+	}
+	return (amount >= 0 ? "" : "-") + "£" + formattedAmount;
+}
+window.formatMoney = formatMoney;
+DefineMacroS("formatmoney", money => formatMoney(money));

@@ -255,6 +255,7 @@ Renderer.CanvasModels.main = {
 			"body_type": "m",
 			// Skin & tan
 			"skin_type": "light",
+			"skin_tone": 0,
 			"skin_scars":false,
 			// Hair
 			"hair_colour": "red",
@@ -495,7 +496,6 @@ Renderer.CanvasModels.main = {
 			},
 			// misc
 			"tanningEnabled": true,
-			"tanningBody": null,
 			"genitals_chastity": false, // generated option
 			"handheld_overhead": false, // generated option
 			"upper_tucked": false,
@@ -520,7 +520,7 @@ Renderer.CanvasModels.main = {
 		// Generate base skin tones
 		options.filters.body = setup.colours.getSkinFilter(options.skin_type, 0);
 		if (options.skin_type !== "custom") {
-			options.filters.tan = setup.colours.getSkinFilter(options.skin_type, Skin.color.tan);
+			options.filters.tan = setup.colours.getSkinFilter(options.skin_type, options.skin_tone);
 		}
 
 		const blink = options.trauma ? "blink-trauma" : "blink";
@@ -593,6 +593,19 @@ Renderer.CanvasModels.main = {
 		if (options.penis_parasite === "parasite") {
 			options.filters.penis_parasite = lookupColour(options, setup.colours.clothes_map, "red", "penis_parasite");
 		}
+
+		// Calculate blend pattern for demon TF
+		const filterBase = {
+			blendMode: "hard-light",
+			brightness: 0,
+			contrast: 1,
+			desaturate: false,
+		};
+		// eslint-disable-next-line no-undef
+		const demonHsl = ColourUtils.toHslString(Transformations.defaults.demon.colour);
+		options.filters.demon_wings = { ...filterBase, blend: ColourUtils.toHslString(V.transformationParts.demon.wings_colour, demonHsl) };
+		options.filters.demon_tail = { ...filterBase, blend: ColourUtils.toHslString(V.transformationParts.demon.tail_colour, demonHsl) };
+		options.filters.demon_horns = { ...filterBase, blend: ColourUtils.toHslString(V.transformationParts.demon.horns_colour, demonHsl) };
 
 		// Clothing filters and options
 		const clothingObject = this.defaultOptions().worn;
@@ -884,12 +897,10 @@ Renderer.CanvasModels.main = {
 						// Separate the base with the arms, since they can overlap
 						// Base layer has disabled animations
 						const alpha = layerGroup.value;
-						console.log("LAYERS BODY", layers.body);
 						if (layers.body.length) {
 							options.generatedLayers[`tan_base${i}`] = (genlayer_tanning("base", i, layers.body, alpha, null));
 							options.generatedLayers[`tan_breasts${i}`] = (genlayer_tanning("breasts", i, layers.body, alpha));
 							options.generatedLayers[`tan_belly${i}`] = (genlayer_tanning("belly", i, layers.body, alpha));
-							//if preg offset belly masks
 						}
 						if (layers.arms.length) {
 							options.generatedLayers[`tan_leftarm${i}`] = (genlayer_tanning("leftarm", i, layers.arms, alpha));
@@ -4055,6 +4066,8 @@ function generateClothingFilter(options, slot, item) {
 
 	return filter;
 }
+window.generateClothingFilter = generateClothingFilter;
+
 function generateClothingAccFilter(options, slot, item) {
 	const filter = (item.setup.accessory_colour_sidebar) ? lookupColour(
 		options,
@@ -4067,6 +4080,7 @@ function generateClothingAccFilter(options, slot, item) {
 
 	return filter;
 }
+window.generateClothingAccFilter = generateClothingAccFilter;
 
 // Layer generating functions.
 function getClothingPathBreastsAcc(slot, options) {

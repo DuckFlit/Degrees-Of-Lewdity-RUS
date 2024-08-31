@@ -120,12 +120,11 @@
 		<div class="settingsToggleItemWide">
 			<span class="gold">Miscellaneous</span>
 			<br>
-
-			<<cheatStat "Money" "money">>
+			<<numberStepper "Money" $money "money" {activeButtons: ["single", "double", "triple"], step: 1000, max: 100000000, colorArr:["--yellow"], percentage: false, valueFormat: (value) => `<b>${formatMoney(value)}</b>`}>>
 
 			<<if $location is "prison">>
 				<<set $prison.teeth to $prison.teeth or 0>>
-				<<cheatStat "Teeth" "prison.teeth" 1000000>>
+				<<numberStepper "Teeth" $prison.teeth `(value) => {V.prison.teeth = value}` {disableMinMax: true, step: 1, max: 1000000, colorArr:["--yellow"], percentage: false}>>
 			<</if>>
 
 			Infinite spray: <span id="statsinfinitespray"><<= ($infinitespray ? "On" : "Off")>></span> |
@@ -222,16 +221,41 @@
 		</div>
 		<div class="settingsToggleItem">
 			<span class="gold">Fluids:</span>
-			<<link "Refill">><<set $semen_amount to $semen_volume>><<set $milk_amount to $milk_volume>><<replace "#fluids">><<cheatStat "Milk Amount" "milk_amount" $milk_volume>><<if $player.penisExist>><<cheatStat "Semen Amount" "semen_amount" $semen_volume>><</if>><</replace>><</link>> | <<link "Empty">><<set $semen_amount to 0>><<set $milk_amount to 0>><<replace "#fluids">><<cheatStat "Milk Amount" "milk_amount" $milk_volume>><<if $player.penisExist>><<cheatStat "Semen Amount" "semen_amount" $semen_volume>><</if>><</replace>><</link>>
+			<<link "Refill">>
+				<<set $semen_amount to $semen_volume>>
+				<<set $milk_amount to $milk_volume>>
+				<<replace "#fluids">><<cheats-fluids>><</replace>>
+			<</link>> | <<link "Empty">>
+				<<set $semen_amount to 0>>
+				<<set $milk_amount to 0>>
+				<<replace "#fluids">><<cheats-fluids>><</replace>>
+			<</link>>
 			<br>
 			<span class="gold">Lactating:</span> <span id="statslactatingspray"><<= ($lactating is 1 ? "Yes" : "No")>></span> |	<<link "Toggle">><<set $lactating to ($lactating is 1 ? 0 : 1)>><<set $lactation_pressure to $lactating * 100>><<replace "#statslactatingspray">><<= ($lactating is 1 ? "Yes" : "No")>><</replace>><<updatesidebarimg>><</link>>
 			<br><br>
-			<span id="fluids">
-				<<cheatStat "Milk Amount" "milk_amount" $milk_volume>>
-				<<if $player.penisExist>><<cheatStat "Semen Amount" "semen_amount" $semen_volume>><</if>>
-			</span>
-			<<cheatStat "Milk Volume" "milk_volume">>
-			<<if $player.penisExist>><<cheatStat "Semen Volume" "semen_volume">><</if>>
+			<span id="fluids"><<cheats-fluids>></span>
+			<<numberStepper "Milk Volume" $milk_volume
+				`value => {
+					V.milk_volume = value;
+					V.milk_amount = Math.min(V.milk_amount, V.milk_volume);
+					Wikifier.wikifyEval("<<replace '#fluids'>><<cheats-fluids>><</replace>>");
+				}`
+				{
+					valueFormat: value => Math.round(value) + "ml",
+					percentage: false, min: 24, max: 3000
+				}>>
+			<<if $player.penisExist>>
+				<<numberStepper "Semen Volume" $semen_volume
+				`value => {
+					V.semen_volume = value;
+					V.semen_amount = Math.min(V.semen_amount, V.semen_volume);
+					Wikifier.wikifyEval("<<replace '#fluids'>><<cheats-fluids>><</replace>>");
+				}`
+				{
+					valueFormat: value => Math.round(value) + "ml",
+					percentage: false, max: 3000
+				}>>
+			<</if>>
 		</div>
 	</div>
 	<hr>
@@ -256,12 +280,12 @@
 				<span class="gold"><<clothingicon $worn.over_upper "over_upper">><<= $worn.over_upper.name.toUpperFirst()>> integrity:</span>
 
 				<<set _overupperintegritymax to getSetupClothing('over_upper', $worn.over_upper)?.integrity_max || 200>>
-				<<numberslider "$worn.over_upper.integrity" $worn.over_upper.integrity 0 _overupperintegritymax 1>>
+				<<numberslider "$worn.over_upper.integrity" `Math.min($worn.over_upper.integrity, _overupperintegritymax)` 0 _overupperintegritymax 1>>
 				<<run cheatsWord("wornover-upperintegrity", "over_upper", V.worn.over_upper)>>
 			</div>
 			<div class="settingsToggleItem numberslider-inline">
 				<span class="gold"><<clothingicon $worn.over_upper "over_upper">><<= $worn.over_upper.name.toUpperFirst()>> wetness:</span>
-				<<numberslider "$overupperwet" $overupperwet 0 200 1>>
+				<<numberslider "$overupperwet" $overupperwet 0 200 1 `() => `>>
 				<<run cheatsWord("overupperwet", "over_upper")>>
 			</div>
 		<<else>>
@@ -271,7 +295,7 @@
 			<div class="settingsToggleItem numberslider-inline">
 				<<set _overlowerintegritymax to getSetupClothing('over_lower', $worn.over_lower)?.integrity_max || 200>>
 				<span class="gold"><<clothingicon $worn.over_lower "over_lower">><<= $worn.over_lower.name.toUpperFirst()>> integrity:</span>
-				<<numberslider "$worn.over_upper.integrity" $worn.over_lower.integrity 0 _overlowerintegritymax 1>>
+				<<numberslider "$worn.over_lower.integrity" `Math.min($worn.over_lower.integrity, _overlowerintegritymax)`  0 _overlowerintegritymax 1>>
 				<<run cheatsWord("wornover-lowerintegrity", "over_lower", V.worn.over_lower)>>
 			</div>
 			<div class="settingsToggleItem numberslider-inline">
@@ -288,7 +312,7 @@
 				<span class="gold"><<clothingicon $worn.upper "upper">><<= $worn.upper.name.toUpperFirst()>> integrity:</span>
 
 				<<set _upperintegritymax to getSetupClothing('upper', $worn.upper)?.integrity_max || 200>>
-				<<numberslider "$worn.upper.integrity" $worn.upper.integrity 0 _upperintegritymax 1>>
+				<<numberslider "$worn.upper.integrity" `Math.min($worn.upper.integrity, _upperintegritymax)` 0 _upperintegritymax 1>>
 				<<run cheatsWord("wornupperintegrity", "upper", V.worn.upper)>>
 			</div>
 			<div class="settingsToggleItem numberslider-inline">
@@ -305,7 +329,7 @@
 				<span class="gold"><<clothingicon $worn.lower "lower">><<= $worn.lower.name.toUpperFirst()>> integrity:</span>
 
 				<<set _lowerintegritymax to getSetupClothing('lower', $worn.lower)?.integrity_max || 200>>
-				<<numberslider "$worn.lower.integrity" $worn.lower.integrity 0 _lowerintegritymax 1>>
+				<<numberslider "$worn.lower.integrity" `Math.min($worn.lower.integrity, _lowerintegritymax)` 0 _lowerintegritymax 1>>
 				<<run cheatsWord("wornlowerintegrity", "lower", V.worn.lower)>>
 			</div>
 			<div class="settingsToggleItem numberslider-inline">
@@ -322,7 +346,7 @@
 				<span class="gold"><<clothingicon $worn.under_lower "under_lower">><<= $worn.under_lower.name.toUpperFirst()>> integrity:</span>
 
 				<<set _underlowerintegritymax to getSetupClothing('under_lower', $worn.under_lower)?.integrity_max || 200>>
-				<<numberslider "$worn.under_lower.integrity" $worn.under_lower.integrity 0 _underlowerintegritymax 1>>
+				<<numberslider "$worn.under_lower.integrity" `Math.min($worn.under_lower.integrity, _underlowerintegritymax)`  0 _underlowerintegritymax 1>>
 				<<run cheatsWord("wornunder-lowerintegrity", "under_lower", V.worn.under_lower)>>
 				<br>
 			</div>
@@ -340,7 +364,7 @@
 				<span class="gold"><<clothingicon $worn.under_upper "under_upper">><<= $worn.under_upper.name.toUpperFirst()>> integrity:</span>
 
 				<<set _underupperintegritymax to getSetupClothing('under_upper', $worn.under_upper)?.integrity_max || 200>>
-				<<numberslider "$worn.under_upper.integrity" $worn.under_upper.integrity 0 _underupperintegritymax 1>>
+				<<numberslider "$worn.under_upper.integrity" `Math.min($worn.under_upper.integrity, _underupperintegritymax)` 0 _underupperintegritymax 1>>
 				<<run cheatsWord("wornunder-upperintegrity", "under_upper", V.worn.under_upper)>>
 				<br>
 			</div>
@@ -358,7 +382,7 @@
 				<span class="gold"><<clothingicon $worn.genitals "genitals">><<= $worn.genitals.name.toUpperFirst()>> integrity:</span>
 
 				<<set _genitalsintegritymax to getSetupClothing('genitals', $worn.genitals)?.integrity_max || 200>>
-				<<numberslider "$worn.genitals.integrity" $worn.genitals.integrity 0 _genitalsintegritymax 1>>
+				<<numberslider "$worn.genitals.integrity" `Math.min($worn.genitals.integrity, _genitalsintegritymax)`  0 _genitalsintegritymax 1>>
 				<<run cheatsWord("worngenitalsintegrity", "genitals", V.worn.genitals)>>
 				<br>
 			</div>
@@ -371,7 +395,7 @@
 				<span class="gold"><<clothingicon $worn.face "face">><<= $worn.face.name.toUpperFirst()>> integrity:</span>
 
 				<<set _faceintegritymax to getSetupClothing('face', $worn.face)?.integrity_max || 200>>
-				<<numberslider "$worn.face.integrity" $worn.face.integrity 0 _faceintegritymax 1>>
+				<<numberslider "$worn.face.integrity" `Math.min($worn.face.integrity, _faceintegritymax)` 0 _faceintegritymax 1>>
 				<<run cheatsWord("wornfaceintegrity", "face", V.worn.face)>>
 				<br>
 			</div>
@@ -467,7 +491,7 @@
 		</div>
 	</div>
 	<hr>
-	<div class="settingsGrid">
+	<div class="cheatsGrid">
 		<div class="settingsHeader options">Characteristics</div>
 		<div class="settingsToggleItem">
 			<<set _core to ["purity", "beauty", "physique", "willpower", "awareness", "promiscuity", "exhibitionism", "deviancy"]>>
@@ -493,13 +517,12 @@
 			</span>
 			<hr>
 			<span class="gold">Secondary Characteristics</span>
-			<br>
-			<<cheatStat "Submissiveness" "submissive" 2000>>
-			<<cheatStat "Masochism" "masochism" 1000>>
-			<<cheatStat "Sadism" "sadism" 1000>>
+			<<numberStepper "Submissiveness" $submissive "submissive" {max: 2000}>>
+			<<numberStepper "Masochism" $masochism "masochism" {max: 1000}>>
+			<<numberStepper "Sadism" $sadism "sadism" {max: 1000}>>
 
 			<<if $temple_rank is "initiate" or $temple_rank is "monk" or $temple_rank is "priest">>
-				<<cheatStat "Grace" "grace" 100>>
+				<<numberStepper "Grace" $grace "grace">>
 			<</if>>
 		</div>
 		<div class="settingsToggleItem">
@@ -848,6 +871,23 @@
 	</div>
 <</widget>>
 
+<<widget "cheats-fluids">>
+	<<numberStepper "Milk Amount" $milk_amount "milk_amount"
+		{
+			max: $milk_volume,
+			step: 10,
+			valueFormat: (value, percentage) => `<b>${Math.round(percentage)}%</b> (${Math.round(value)}ml)`
+		}>>
+	<<if $player.penisExist>>
+		<<numberStepper "Semen Amount" $semen_amount "semen_amount"
+		{
+			max: $semen_volume,
+			step: 10,
+			valueFormat: (value, percentage) => `<b>${Math.round(percentage)}%</b> (${Math.round(value)}ml)`
+		}>>
+	<</if>>
+<</widget>>
+
 <<widget "cheats-characterVisual">>
 	<div class="settingsGrid">
 		<div class="settingsHeader options">Player</div>
@@ -858,9 +898,8 @@
 				Hair cheats are disabled while at the hairdressers.
 				<br><br>
 			<<else>>
-				<<cheatStat "Hair length" "hairlength" 1000>>
-				<<cheatStat "Fringe length" "fringelength" 1000>>
-				<br>
+				<<numberStepper "Hair length" $hairlength `value => {V.hairlength = value; Wikifier.wikifyEval("<<calchairlengthstage>><<updatesidebarimg>>")}` {max: 1000}>>
+				<<numberStepper "Fringe length" $fringelength `value => {V.fringelength = value; Wikifier.wikifyEval("<<calchairlengthstage>><<updatesidebarimg>>")}` {max: 1000}>>
 
 				<<if $hairtest is 1 or $debug>>
 					<<foldout false "_cheatsFoldoutNatural">>
@@ -951,7 +990,7 @@
 			<<numberslider "$player.breastsize" $player.breastsize 0 _name.length-1 1>>
 			<<run $(() => { $('#numberslider-input-playerbreastsize').on('input change', e => {
 				$('#numberslider-value-playerbreastsize').html(" "+_name[e.currentTarget.value]);
-				wikifier('<<updatesidebarimg>>');
+				wikifier('<<replace "#sidebar-img-container">><<img>><</replace>>');
 			}).trigger('change') })>>
 			<br><br>
 
@@ -986,30 +1025,18 @@
 		</div>
 		<div class="settingsToggleItem">
 			<span class="gold">Sensitivity</span>
-			<br>
-			<<link "<<">><<set $mouthsensitivity -= 1>><<clamp>><<replace "#statsmouthsensitivity">><<= $mouthsensitivity>> <<= $mouthsensitivity gte 1.5 ? "- <<mouthsensitivity>>" : "- normal ">><</replace>><</link>> |
-			<<link "<">><<set $mouthsensitivity -= 0.25>><<clamp>><<replace "#statsmouthsensitivity">><<= $mouthsensitivity>> <<= $mouthsensitivity gte 1.5 ? "- <<mouthsensitivity>>" : "- normal ">><</replace>><</link>> |
-			Mouth sensitivity: <span id="statsmouthsensitivity"><<= $mouthsensitivity>> <<= $mouthsensitivity gte 1.5 ? "- <<mouthsensitivity>>" : "- normal ">></span>
-			| <<link ">">><<set $mouthsensitivity += 0.25>><<clamp>><<replace "#statsmouthsensitivity">><<= $mouthsensitivity>> <<= $mouthsensitivity gte 1.5 ? "- <<mouthsensitivity>>" : "- normal ">><</replace>><</link>>
-			| <<link ">>">><<set $mouthsensitivity += 1>><<clamp>><<replace "#statsmouthsensitivity">><<= $mouthsensitivity>> <<= $mouthsensitivity gte 1.5 ? "- <<mouthsensitivity>>" : "- normal ">><</replace>><</link>>
-			<br>
-			<<link "<<">><<set $breastsensitivity -= 1>><<clamp>><<replace "#statsbreastsensitivity">><<= $breastsensitivity>> <<= $breastsensitivity gte 1.5 ? "- <<breastsensitivity>>" : "- normal ">><</replace>><</link>> |
-			<<link "<">><<set $breastsensitivity -= 0.25>><<clamp>><<replace "#statsbreastsensitivity">><<= $breastsensitivity>> <<= $breastsensitivity gte 1.5 ? "- <<breastsensitivity>>" : "- normal ">><</replace>><</link>> |
-			Breast sensitivity: <span id="statsbreastsensitivity"><<= $breastsensitivity>> <<= $breastsensitivity gte 1.5 ? "- <<breastsensitivity>>" : "- normal ">></span>
-			| <<link ">">><<set $breastsensitivity += 0.25>><<clamp>><<replace "#statsbreastsensitivity">><<= $breastsensitivity>> <<= $breastsensitivity gte 1.5 ? "- <<breastsensitivity>>" : "- normal ">><</replace>><</link>>
-			| <<link ">>">><<set $breastsensitivity += 1>><<clamp>><<replace "#statsbreastsensitivity">><<= $breastsensitivity>> <<= $breastsensitivity gte 1.5 ? "- <<breastsensitivity>>" : "- normal ">><</replace>><</link>>
-			<br>
-			<<link "<<">><<set $genitalsensitivity -= 1>><<clamp>><<replace "#statsgenitalsensitivity">><<= $genitalsensitivity>> <<= $genitalsensitivity gte 1.5 ? "- <<genitalsensitivity>>" : "- normal ">><</replace>><</link>> |
-			<<link "<">><<set $genitalsensitivity -= 0.25>><<clamp>><<replace "#statsgenitalsensitivity">><<= $genitalsensitivity>> <<= $genitalsensitivity gte 1.5 ? "- <<genitalsensitivity>>" : "- normal ">><</replace>><</link>> |
-			Genital sensitivity: <span id="statsgenitalsensitivity"><<= $genitalsensitivity>> <<= $genitalsensitivity gte 1.5 ? "- <<genitalsensitivity>>" : "- normal ">></span>
-			| <<link ">">><<set $genitalsensitivity += 0.25>><<clamp>><<replace "#statsgenitalsensitivity">><<= $genitalsensitivity>> <<= $genitalsensitivity gte 1.5 ? "- <<genitalsensitivity>>" : "- normal ">><</replace>><</link>>
-			| <<link ">>">><<set $genitalsensitivity += 1>><<clamp>><<replace "#statsgenitalsensitivity">><<= $genitalsensitivity>> <<= $genitalsensitivity gte 1.5 ? "- <<genitalsensitivity>>" : "- normal ">><</replace>><</link>>
-			<br>
-			<<link "<<">><<set $bottomsensitivity -= 1>><<clamp>><<replace "#statsbottomsensitivity">><<= $bottomsensitivity>> <<= $bottomsensitivity gte 1.5 ? "- <<bottomsensitivity>>" : "- normal ">><</replace>><</link>> |
-			<<link "<">><<set $bottomsensitivity -= 0.25>><<clamp>><<replace "#statsbottomsensitivity">><<= $bottomsensitivity>> <<= $bottomsensitivity gte 1.5 ? "- <<bottomsensitivity>>" : "- normal ">><</replace>><</link>> |
-			Bottom sensitivity: <span id="statsbottomsensitivity"><<= $bottomsensitivity>> <<= $bottomsensitivity gte 1.5 ? "- <<bottomsensitivity>>" : "- normal ">></span>
-			| <<link ">">><<set $bottomsensitivity += 0.25>><<clamp>><<replace "#statsbottomsensitivity">><<= $bottomsensitivity>> <<= $bottomsensitivity gte 1.5 ? "- <<bottomsensitivity>>" : "- normal ">><</replace>><</link>>
-			| <<link ">>">><<set $bottomsensitivity += 1>><<clamp>><<replace "#statsbottomsensitivity">><<= $bottomsensitivity>> <<= $bottomsensitivity gte 1.5 ? "- <<bottomsensitivity>>" : "- normal ">><</replace>><</link>>
+			<<numberStepper "Mouth sensitivity" $mouthsensitivity "mouthsensitivity" {min: 1, max: 4, step: 0.1, reverse: true,
+				valueFormat: value => `<b>${round(value, 2)}</b> (${sensitivityString(value)})`
+			}>>
+			<<numberStepper "Breast sensitivity" $breastsensitivity "breastsensitivity" {min: 1, max: 4, step: 0.1, reverse: true,
+				valueFormat: value => `<b>${round(value, 2)}</b> (${sensitivityString(value)})`
+			}>>
+			<<numberStepper "Genital sensitivity" $genitalsensitivity "genitalsensitivity" {min: 1, max: 4, step: 0.1, reverse: true,
+				valueFormat: value => `<b>${round(value, 2)}</b> (${sensitivityString(value)})`
+			}>>
+			<<numberStepper "Bottom sensitivity" $bottomsensitivity "bottomsensitivity" {min: 1, max: 4, step: 0.1, reverse: true,
+				valueFormat: value => `<b>${round(value, 2)}</b> (${sensitivityString(value)})`
+			}>>
 		</div>
 	</div>
 	<<if $parasitedisable is "f">>
@@ -1057,21 +1084,15 @@
 		</div>
 	<div class="settingsToggleItem">
 		<span class="gold">Transformation Points</span>
-		<br>
-		<<capture _tf>>
-			<<for _tf range ["angel", "fallen", "demon", "wolf", "cat", "cow", "bird", "fox"]>>
-				<<tficon _tf>> <<= _tf is "fallen" ? "Fallen Angel" : _tf.toUpperFirst()>>:
-
-				<<link "<<">><<set V[`${_tf}build`] -= 50>><<transformationAlteration>><<clamp>><<replace `"#" + _tf + "build"`>><<= Math.trunc(V[`${_tf}build`])>><</replace>> <<updatesidebarimg>><</link>> |
-				<<link "<">><<set V[`${_tf}build`] -= 5>><<transformationAlteration>><<clamp>><<replace `"#" + _tf + "build"`>><<= Math.trunc(V[`${_tf}build`])>><</replace>> <<updatesidebarimg>><</link>> |
-
-				<span @id="_tf + 'build'"><<= Math.trunc(V[`${_tf}build`])>></span>
-
-				| <<link ">">><<set V[`${_tf}build`] += 5>><<transformationAlteration>><<clamp>><<replace `"#" + _tf + "build"`>><<= Math.trunc(V[`${_tf}build`])>><</replace>> <<updatesidebarimg>><</link>>
-				| <<link ">>">><<set V[`${_tf}build`] += 50>><<transformationAlteration>><<clamp>><<replace `"#" + _tf + "build"`>><<= Math.trunc(V[`${_tf}build`])>><</replace>> <<updatesidebarimg>><</link>>
-				<br>
-			<</for>>
-		<</capture>>
+		<<for _tf range ["angel", "fallen", "demon", "wolf", "cat", "cow", "bird", "fox"]>>
+			<<capture _tf>>
+				<<set _name to (_tf is "fallen" ? "Fallen Angel" : _tf)>>
+				<<set _title to `<<tficon _tf>> ${toTitleCase(_name)}`>>
+				<<set _varName to `${_tf}build`>>
+				<<numberStepper _title `V[T.varName]` `(value, arr) => {V[arr[0]] = value; Wikifier.wikifyEval("<<transformationAlteration>><<updatesidebarimg>>");}` {max: 100, percentage: false, colorArr: ["--teal", "--purple"], values: [T.varName]}>>
+			<</capture>>
+		<</for>>
+		<<unset _cr>>
 		<hr>
 		<span class="description">Angel and Cat require 50 points to reach their full transformation, while all others require 30 points. Fallen Angel requires 30 points for Acceptance.</span>
 	</div>
@@ -1111,70 +1132,57 @@
 		<div class="settingsHeader options">Primary Relationships</div>
 		<div class="settingsToggleItem">
 			<span class="gold">Robin</span>
-			<br>
-			<<cheatStat "Robin" "love" 100>>
-			<<cheatStat "Robin" "lust" 100>>
-			<<cheatStat "Robin" "dom" 100>>
-			<<cheatStat "Robin" "trauma" 100>>
+			<<numberStepper "<<symbol love>> Love" `C.npc.Robin.love` `value => { C.npc.Robin.love = value }`>>
+			<<numberStepper "<<symbol lust>> Lust" `C.npc.Robin.lust` `value => { C.npc.Robin.lust = value }`>>
+			<<numberStepper "<<symbol confidence>> Confidence" `C.npc.Robin.dom` `value => { C.npc.Robin.dom = value }`>>
+			<<numberStepper "<<symbol trauma>> Trauma	" `C.npc.Robin.trauma` `value => { C.npc.Robin.trauma = value }` {reverse: true}>>
 		</div>
 		<div class="settingsToggleItem">
 			<span class="gold">Whitney</span>
-			<br>
-			<<cheatStat "Whitney" "love" 30>>
-			<<cheatStat "Whitney" "dom" 20>>
-			<<cheatStat "Whitney" "lust" 100>>
+			<<numberStepper "<<symbol love>> Love" `C.npc.Whitney.love` `value => { C.npc.Whitney.love = value }` {max: 30}>>
+			<<numberStepper "<<symbol lust>> Lust" `C.npc.Whitney.lust` `value => { C.npc.Whitney.lust = value }`>>
+			<<numberStepper "<<symbol dominance>> Dominance" `C.npc.Whitney.dom` `value => { C.npc.Whitney.dom = value }` {max: 20}>>
 		</div>
 		<div class="settingsToggleItem">
 			<span class="gold">Eden</span>
-			<br>
-			<<cheatStat "Eden" "love" 200>>
-			<<cheatStat "Eden" "dom" 150>>
-			<<cheatStat "Eden" "lust" 100>>
+			<<numberStepper "<<symbol love>> Love" `C.npc.Eden.love` `value => { C.npc.Eden.love = value }` {max: 200}>>
+			<<numberStepper "<<symbol lust>> Lust" `C.npc.Eden.lust` `value => { C.npc.Eden.lust = value }`>>
+			<<numberStepper "<<symbol dominance>> Dominance" `C.npc.Eden.dom` `value => { C.npc.Eden.dom = value }` {max: 150}>>
 		</div>
 		<div class="settingsToggleItem">
 			<span class="gold">Kylar</span>
-			<br>
-			<<cheatStat "Kylar" "love" 100>>
-			<<cheatStat "Kylar" "lust" 100>>
-			<<cheatStat "Kylar" "rage" 100>>
+			<<numberStepper "<<symbol love>> Love" `C.npc.Kylar.love` `value => { C.npc.Kylar.love = value }`>>
+			<<numberStepper "<<symbol lust>> Lust" `C.npc.Kylar.lust` `value => { C.npc.Kylar.lust = value }`>>
+			<<numberStepper "<<symbol jealousy>> Jealousy" `C.npc.Kylar.rage` `value => { C.npc.Kylar.rage = value }` {reverse: true}>>
 		</div>
 		<div class="settingsToggleItem">
 			<span class="gold">Avery</span>
-			<br>
-			<<cheatStat "Avery" "love" 100>>
-			<<cheatStat "Avery" "rage" 100>>
+			<<numberStepper "<<symbol love>> Love" `C.npc.Avery.love` `value => { C.npc.Avery.love = value }`>>
+			<<numberStepper "<<symbol rage>> Lust" `C.npc.Avery.rage` `value => { C.npc.Avery.rage = value }` {reverse: true}>>
 		</div>
 
 		<div class="settingsToggleItem">
 			<span class="gold">Alex</span>
-			<br>
-			<<cheatStat "Alex" "love" 100>>
-			<<cheatStat "Alex" "dom" 100>>
-			<<cheatStat "Alex" "lust" 100>>
+			<<numberStepper "<<symbol love>> Love" `C.npc.Alex.love` `value => { C.npc.Alex.love = value }`>>
+			<<numberStepper "<<symbol lust>> Lust" `C.npc.Alex.lust` `value => { C.npc.Alex.lust = value }`>>
+			<<numberStepper "<<symbol dominance>> Dominance" `C.npc.Alex.dom` `value => { C.npc.Alex.dom = value }`>>
 		</div>
 		<div class="settingsToggleItem">
 			<span class="gold">Great Hawk</span>
-			<br>
-			<<cheatStat "Great Hawk" "love" 100>>
-			<<cheatStat "Great Hawk" "dom" 100>>
+			<<numberStepper "<<symbol love>> Love" `C.npc["Great Hawk"].love` `value => { C.npc["Great Hawk"].love = value }`>>
+			<<numberStepper "<<symbol dominance>> Dominance" `C.npc["Great Hawk"].dom` `value => { C.npc["Great Hawk"].dom = value }`>>
 		</div>
 		<div class="settingsToggleItem">
 			<span class="gold">Black Wolf</span>
-			<br>
-			/* Commented out until stat is used.
-			<<cheatStat "Black Wolf" "dom" 150>>
-			<br> */
-			<<cheatStat "Black Wolf" "love" 150>>
-
+			<<numberStepper "<<symbol love>> Love" `C.npc["Black Wolf"].love` `value => { C.npc["Black Wolf"].love = value }` {max: 150}>>
 		</div>
 		<div class="settingsToggleItemWide">
 			<span class="gold">Sydney</span>
-			<br>
 			<<set _purity to C.npc.Sydney.purity gt 0 ? "purity" : "corruption">>
-			<<cheatStat "Sydney" "love" 150>>
-			<<cheatStat "Sydney" "lust" 130>>
+			<<numberStepper "<<symbol love>> Love" `C.npc.Alex.love` `value => { C.npc.Alex.love = value }`>>
+			<<numberStepper "<<symbol lust>> Lust" `C.npc.Alex.lust` `value => { C.npc.Alex.lust = value }`>>
 			<span id="sydneypurity">
-				<<cheatStat "Sydney" _purity 100>>
+				<<sydneyPurity>>
 			</span>
 			<span id="sydneydesc" class="description">
 				(Setting Sydney's <<= _purity is "purity" ? "purity to below 0%" : "corruption to above 0%">> will switch it to <<= _purity is "purity" ? "corruption" : "purity">>.)
@@ -1186,37 +1194,33 @@
 		<div class="settingsHeader options">People of Interest</div>
 		<div class="settingsToggleItem">
 			<span class="gold">Mason</span>
-			<br>
-			<<cheatStat "Mason" "love" 50>>
-			<<cheatStat "Mason" "lust" 50>>
+			<<numberStepper "<<symbol love>> Love" `C.npc.Mason.love` `value => { C.npc.Mason.love = value }` {max: 50}>>
+			<<numberStepper "<<symbol lust>> Lust" `C.npc.Mason.lust` `value => { C.npc.Mason.lust = value }` {max: 50}>>
 		</div>
 		<div class="settingsToggleItem">
 			<span class="gold">Zephyr</span>
-			<br>
-			<<cheatStat "Zephyr" "love" 100>>
-			<<cheatStat "Zephyr" "dom" 50>>
+			<<numberStepper "<<symbol love>> Love" `C.npc.Zephyr.love` `value => { C.npc.Zephyr.love = value }`>>
+			<<numberStepper "<<symbol lust>> Lust" `C.npc.Zephyr.lust` `value => { C.npc.Zephyr.lust = value }` {max: 50}>>
 		</div>
 		<div class="settingsToggleItem">
 			<span class="gold">Teachers</span>
-			<br>
-			<<cheatStat "Sirris" "love" 100>>
-			<<cheatStat "Doren" "love" 100>>
-			<<cheatStat "Leighton" "love" 100>>
-			<<cheatStat "River" "love" 50>>
-			<<cheatStat "Winter" "love" 100>>
+			<<numberStepper "<<symbol love>> Love" `C.npc.Sirris.love` `value => { C.npc.Sirris.love = value }`>>
+			<<numberStepper "<<symbol love>> Love" `C.npc.Doren.love` `value => { C.npc.Doren.love = value }`>>
+			<<numberStepper "<<symbol love>> Love" `C.npc.Leighton.love` `value => { C.npc.Leighton.love = value }`>>
+			<<numberStepper "<<symbol love>> Love" `C.npc.River.love` `value => { C.npc.River.love = value }` {max: 50}>>
+			<<numberStepper "<<symbol love>> Love" `C.npc.Winter.love` `value => { C.npc.Winter.love = value }` {max: 50}>>
 		</div>
 		<div class="settingsToggleItem">
 			<span class="gold">Other Named NPCs</span>
-			<br>
-			<<cheatStat "Briar" "love" 100>>
-			<<cheatStat "Charlie" "love" 50>>
-			<<cheatStat "Darryl" "love" 50>>
-			<<cheatStat "Harper" "love" 100>>
-			<<cheatStat "Morgan" "love" 100>>
-			<<cheatStat "Niki" "love" 100>>
-			<<cheatStat "Remy" "love" 100>>
-			<<cheatStat "Sam" "love" 50>>
-			<<cheatStat "Wren" "love" 50>>
+			<<numberStepper "<<symbol love>> Love" `C.npc.Briar.love` `value => { C.npc.Briar.love = value }`>>
+			<<numberStepper "<<symbol love>> Love" `C.npc.Charlie.love` `value => { C.npc.Charlie.love = value }` {max: 50}>>
+			<<numberStepper "<<symbol love>> Love" `C.npc.Darryl.love` `value => { C.npc.Darryl.love = value }` {max: 50}>>
+			<<numberStepper "<<symbol love>> Love" `C.npc.Harper.love` `value => { C.npc.Harper.love = value }`>>
+			<<numberStepper "<<symbol love>> Love" `C.npc.Morgan.love` `value => { C.npc.Morgan.love = value }`>>
+			<<numberStepper "<<symbol love>> Love" `C.npc.Niki.love` `value => { C.npc.Niki.love = value }`>>
+			<<numberStepper "<<symbol love>> Love" `C.npc.Remy.love` `value => { C.npc.Remy.love = value }`>>
+			<<numberStepper "<<symbol love>> Love" `C.npc.Sam.love` `value => { C.npc.Sam.love = value }` {max: 50}>>
+			<<numberStepper "<<symbol love>> Love" `C.npc.Wren.love` `value => { C.npc.Wren.love = value }` {max: 50}>>
 		</div>
 	</div>
 	<hr>
@@ -1225,11 +1229,10 @@
 		<<if $farm_stage gte 2>>
 			<div class="settingsToggleItem">
 				<<farmicon>><span class="gold">Farm</span>
-				<br>
-				<<cheatStat "Steeds' Respect" "horses" 30>>
-				<<cheatStat "Pigs' Respect" "pigs" 30>>
-				<<cheatStat "Cattle Respect" "cattle" 30>>
-				<<cheatStat "Dogs' Respect" "dogs" 30>>
+				<<numberStepper "Steeds' Respect" `V.farm.beasts.horses` `value => { V.farm.beasts.horses = value }` {min: -30, max: 30}>>
+				<<numberStepper "Pigs' Respect" `V.farm.beasts.pigs` `value => { V.farm.beasts.pigs = value }` {min: -30, max: 30}>>
+				<<numberStepper "Cattle' Respect" `V.farm.beasts.cattle` `value => { V.farm.beasts.cattle = value }` {min: -30, max: 30}>>
+				<<numberStepper "Dogs' Respect" `V.farm.beasts.dogs` `value => { V.farm.beasts.dogs = value }` {min: -30, max: 30}>>
 			</div>
 			<div class="settingsToggleItem">
 				<<farmicon>><span class="gold">Farm Progress</span>
@@ -1241,7 +1244,7 @@
 				<</if>>
 				<<if $farm_stage gte 5>>
 					<hr>
-					<<cheatStat "Remy's Encroachment" "farm.aggro" 100>>
+					<<numberStepper "Remy's Encroachment" `V.farm.aggro` `value => { V.farm.aggro = value; Wikifier.wikifyEval("<<replace #farmAggro>><<cheatsRep aggro>><</replace>>") }`>>
 					<span id="farmAggro"><<cheatsRep "aggro">></span>
 				<</if>>
 			</div>
@@ -1249,26 +1252,24 @@
 		<div class="settingsToggleItem">
 			<<wolfcaveicon "pup">><span class="gold">Wolves</span>
 			<br>
-			<<cheatStat "Trust" "wolfpacktrust" 30>>
-			<<cheatStat "Fear" "wolfpackfear" 30>>
+			<<numberStepper "Trust" $wolfpacktrust "wolfpacktrust" {max: 30}>>
+			<<numberStepper "Fear" $wolfpackfear "wolfpackfear" {max: 30}>>
 			<<if $syndromewolves is 1>>
-				<<cheatStat "Harmony" "wolfpackharmony" 20>>
-				<<cheatStat "Ferocity" "wolfpackferocity" 20>>
-				<br>
+				<<numberStepper "Harmony" $wolfpackharmony "wolfpackharmony" {max: 20}>>
+				<<numberStepper "Ferocity" $wolfpackferocity "wolfpackferocity" {max: 20}>>
 				Rank: <span id="wolfpackleader"><<cheatsRep "wolfpackleader">></span>
 			<</if>>
 		</div>
 		<div class="settingsToggleItem">
 			<<schoolicon "building">><span class="gold">School</span>
-			<br>
-			<<cheatStat "Status" "cool" $coolmax>>
-			<<cheatStat "Delinquency" "delinquency" 1000>>
+			<<numberStepper "Status" $cool "cool" {max: V.coolmax}>>
+			<<numberStepper "Delinquency" $delinquency "delinquency" {max: 1000}>>
 			<hr>
 			<<if $player.penisExist and $player.vaginaExist>>
-				<<cheatStat "Hermaphrodite Fame" "schoolrep.herm">>
+				<<numberStepper "Hermaphrodite Fame" $schoolrep.herm `value => {V.schoolrep.herm = value; Wikifier.wikifyEval("<<replace '#repherm'>><<cheatsRep herm>><</replace>>")}` {max: 5, step: 1, percentage: false, reverse: true, activeButtons: ["single", "minMax"] }>>
 				<span id="repherm"><<cheatsRep "herm">></span>
 			<<else>>
-				<<cheatStat "Crossdresser Fame" "schoolrep.crossdress">>
+				<<numberStepper "Crossdresser Fame" $schoolrep.crossdress `value => {V.schoolrep.crossdress = value; Wikifier.wikifyEval("<<replace '#repcrossdress'>><<cheatsRep crossdress>><</replace>>")}` {max: 5, step: 1, percentage: false, reverse: true, activeButtons: ["single", "minMax"] }>>
 				<span id="repcrossdress"><<cheatsRep "crossdress">></span>
 			<</if>>
 		</div>
@@ -1276,29 +1277,25 @@
 			<div class="settingsToggleItem">
 				<<if $location is "asylum">>
 					<<asylumicon "cell">><span class="gold">Asylum</span>
-					<br>
-					<<cheatStat "Status" "asylumstatus" 100>>
-					<<cheatStat "Suspicion" "asylumsuspicion" 100>>
+					<<numberStepper "Status" $asylumstatus "asylumstatus">>
+					<<numberStepper "Suspicion" $asylumsuspicion "asylumsuspicion">>
 				<<elseif $location is "prison">>
 					<<policeicon>><span class="gold">Prison</span>
-					<br>
-					<<cheatStat "Guards" "prison.guards" 100>>
-					<<cheatStat "Inmates" "prison.inmates" 100>>
+					<<numberStepper "Guards" $prison.guards `value => V.prison.guards = value`>>
+					<<numberStepper "Inmates" $prison.inmates `value => V.prison.inmates = value`>>
 				<</if>>
 			</div>
 		<</if>>
 		<<if $dockwork is 2>>
 			<div class="settingsToggleItem">
 				<<docksicon>><span class="gold">Docks</span>
-				<br>
-				<<cheatStat "Status" "dockstatus" 100>>
+				<<numberStepper "Status" $dockstatus "dockstatus">>
 			</div>
 		<</if>>
 		<<if $pirate_rank gte 0>>
 			<div class="settingsToggleItem">
 				<<mericon>><span class="gold">Pirates</span>
-				<br>
-				<<cheatStat "Status" "pirate_status" 100>>
+				<<numberStepper "Status" $pirate_status "pirate_status">>
 				<br>
 				Rank: <span id="pirate_rank"><<cheatsRep "pirate_rank">></span>
 			</div>
@@ -1306,18 +1303,50 @@
 		<<if $pound>>
 			<div class="settingsToggleItem">
 				<<poundicon>><span class="gold">Pound</span>
-				<br>
-				<<cheatStat "Status" "pound.status" 100>>
-				<<cheatStat "Stray Contentment" "stray_happiness" 100>>
+				<<numberStepper "Status" $pound.status `value => V.pound.status = value`>>
+				<<numberStepper "Stray Contentment" $stray_happiness "stray_happiness">>
 			</div>
 		<</if>>
 		<div class="settingsToggleItem">
 			<<homeicon>><span class="gold">Orphanage</span>
-			<br>
-			<<cheatStat "Hope" "orphan_hope" 50>>
-			<<cheatStat "Rebelliousness" "orphan_reb" 50>>
+			<<numberStepper "Hope" $orphan_hope "orphan_hope" {max: 50}>>
+			<<numberStepper "Rebelliousness" $orphan_reb "orphan_reb" {max: 50}>>
 		</div>
 	</div>
+<</widget>>
+
+<<widget "sydneyPurity">>
+	<<if C.npc.Sydney.purity gt 0>>
+		<<numberStepper "<<symbol purity>> Purity" `C.npc.Sydney.purity`
+			`value => {
+				C.npc.Sydney.purity = value;
+				if (value < 0) {
+					C.npc.Sydney.corruption = Math.abs(value);
+					value = 0;
+					Wikifier.wikifyEval("<<replace '#sydneypurity'>><<sydneyPurity>><</replace>>");
+				}
+			}`
+			{
+				min: -100, max: 100, step: 1, percentage: false,
+				valueFormat: value => `<b>${value}%</b>`
+			}
+		>>
+	<<else>>
+		<<numberStepper "<<symbol corruption>> Corruption" `C.npc.Sydney.corruption`
+			`value => {
+				C.npc.Sydney.corruption = value;
+				if (value < 0) {
+					C.npc.Sydney.purity = Math.abs(value);
+					value = 0;
+					Wikifier.wikifyEval("<<replace '#sydneypurity'>><<sydneyPurity>><</replace>>");
+				}
+			}`
+			{
+				min: -100, max: 100, step: 1, percentage: false, reverse: true, reverseButtons: true,
+				valueFormat: value => `<b>${value}%</b>`
+			}
+		>>
+	<</if>>
 <</widget>>
 
 <<widget "cheatsRep">>
@@ -1549,29 +1578,22 @@
 		</div>
 		<div class="settingsToggleItemWide">
 			<span class="gold">Temperature</span>
-			<<set _symbol to $options.fahrenheit ? "°F" : "°C">>
-			<<set _temp to Weather.toSelected(Weather.temperature)>>
-			<br>
-			Current outside temperature: <<= _temp + _symbol>>
 			<br>
 			<span class="description">Will increase or decrease the base temperature until the next day - then go back to the proper temperature over time.<br>
 			The base temperature will still be modified by other factors such as time of day - and will not be constant throughout the day.</span>
-			<br>
-			<<link "<">>
-				<<set _temp to Math.round(_temp - 1)>>
-				<<set Weather.Temperature.set($options.fahrenheit ? Weather.Temperature.toCelsius(_temp) : _temp)>>
-				<<set Weather.Temperature.set($options.fahrenheit ? Weather.Temperature.toCelsius(_temp) : _temp, new DateTime(Time.date).addDays(1))>>
-				<<replace "#temperatureCheatDisplay">><<= _temp + _symbol>><</replace>>
-			<</link>> |
-			Change temperature: <span id="temperatureCheatDisplay"><<= _temp + _symbol>></span>
-			| <<link ">">>
-				<<set _temp to Math.round(_temp + 1)>>
-				<<set Weather.Temperature.set($options.fahrenheit ? Weather.Temperature.toCelsius(_temp) : _temp)>>
-				<<set Weather.Temperature.set($options.fahrenheit ? Weather.Temperature.toCelsius(_temp) : _temp, new DateTime(Time.date).addDays(1))>>
-				<<replace "#temperatureCheatDisplay">><<= _temp + _symbol>><</replace>>
-			<</link>>
-			<br>
-			<span class="description">Changes will be visible after at least 1 minute of time passes.</span>
+			<<numberStepper "Outside Temperature" `Weather.toSelected(Weather.temperature)`
+				`value => {
+					Weather.Temperature.set(V.options.fahrenheit ? Weather.Temperature.toCelsius(value) : value);
+					Weather.Temperature.set(V.options.fahrenheit ? Weather.Temperature.toCelsius(value) : value, new DateTime(Time.date).addDays(1));
+				}`
+				{
+					min: -60, max: 60, step: 0.1, colorArr: ["--blue", "--teal", "--yellow", "--orange", "--red"], percentage: false,
+					valueFormat: value => round(value, 1) + (V.options.fahrenheit ? "°F" : "°C"),
+					activeButtons: ["single", "double", "triple"]
+				}
+			
+			>>
+			<span class="description">Changes will be visible after at least 1 minute of game time passes.</span>
 		</div>
 	</div>
 
@@ -1581,14 +1603,7 @@
 			<div class="settingsHeader options">Default Action Sets</div>
 			<div class="settingsToggleItemWide">
 			Too many action sets may reduce combat performance. Without cheats, the max number of default action sets is 7.
-			<br>
-			<<link "<<<">><<set $maxDefaultActionSets to Math.clamp($maxDefaultActionSets -= 10, 1, 10)>><<replace "#statsDefaultSets">><<= $maxDefaultActionSets>><</replace>><</link>> |
-			<<link "<<">><<set $maxDefaultActionSets to Math.clamp($maxDefaultActionSets -= 5, 1, 10)>><<replace "#statsDefaultSets">><<= $maxDefaultActionSets>><</replace>><</link>> |
-			<<link "<">><<set $maxDefaultActionSets to Math.clamp($maxDefaultActionSets -= 1, 1, 10)>><<replace "#statsDefaultSets">><<= $maxDefaultActionSets>><</replace>><</link>> |
-			Sets: <span id="statsDefaultSets"><<= $maxDefaultActionSets>></span>
-			| <<link ">">><<set $maxDefaultActionSets to Math.clamp($maxDefaultActionSets += 1, 1, 10)>><<replace "#statsDefaultSets">><<= $maxDefaultActionSets>><</replace>><</link>>
-			| <<link ">>">><<set $maxDefaultActionSets to Math.clamp($maxDefaultActionSets += 5, 1, 10)>><<replace "#statsDefaultSets">><<= $maxDefaultActionSets>><</replace>><</link>>
-			| <<link ">>>">><<set $maxDefaultActionSets to Math.clamp($maxDefaultActionSets += 10, 1, 10)>><<replace "#statsDefaultSets">><<= $maxDefaultActionSets>><</replace>><</link>>
+			<<numberStepper "Sets" $maxDefaultActionSets "maxDefaultActionSets" {min: 1, max: 10, step: 1, colorArr: ["--teal", "--teal"], percentage: false, activeButtons: ["single", "minMax"]}>>
 		</div>
 	<</if>>
 	<hr>
@@ -1766,32 +1781,8 @@
 		<</if>>
 		<<if playerIsPregnant()>>
 			You are pregnant.
-			<br>
-			<<link "<<">>
-				<<set _pregnancyTimer to getPregnancyObject()>>
-				<<set _pregnancyTimer.timer to Math.clamp(_pregnancyTimer.timer - _pregnancyTimer.timerEnd * 0.05, 0, _pregnancyTimer.timerEnd)>>
-				<<replace "#cheatPregnancyProgress">><<= Math.round(Math.clamp(_pregnancyTimer.timer / _pregnancyTimer.timerEnd * 100, 0, 100))>>%<</replace>>
-				<<updatesidebarimg>>
-			<</link>> |
-			<<link "<">>
-				<<set _pregnancyTimer to getPregnancyObject()>>
-				<<set _pregnancyTimer.timer to Math.clamp(_pregnancyTimer.timer - _pregnancyTimer.timerEnd * 0.01, 0, _pregnancyTimer.timerEnd)>>
-				<<replace "#cheatPregnancyProgress">><<= Math.round(Math.clamp(_pregnancyTimer.timer / _pregnancyTimer.timerEnd * 100, 0, 100))>>%<</replace>>
-				<<updatesidebarimg>>
-			<</link>> |
-			Pregnancy progress: <span id="cheatPregnancyProgress"><<= Math.round(Math.clamp($_pregnancy.timer / $_pregnancy.timerEnd * 100, 0, 100))>>%</span>
-			| <<link ">">>
-				<<set _pregnancyTimer to getPregnancyObject()>>
-				<<set _pregnancyTimer.timer to Math.clamp(_pregnancyTimer.timer + _pregnancyTimer.timerEnd * 0.01, 0, _pregnancyTimer.timerEnd * .99)>>
-				<<replace "#cheatPregnancyProgress">><<= Math.round(Math.clamp(_pregnancyTimer.timer / _pregnancyTimer.timerEnd * 100, 0, 100))>>%<</replace>>
-				<<updatesidebarimg>>
-			<</link>>
-			| <<link ">>">>
-				<<set _pregnancyTimer to getPregnancyObject()>>
-				<<set _pregnancyTimer.timer to Math.clamp(_pregnancyTimer.timer + _pregnancyTimer.timerEnd * 0.05, 0, _pregnancyTimer.timerEnd * .99)>>
-				<<replace "#cheatPregnancyProgress">><<= Math.round(Math.clamp(_pregnancyTimer.timer / _pregnancyTimer.timerEnd * 100, 0, 100))>>%<</replace>>
-				<<updatesidebarimg>>
-			<</link>>
+			<<set _pregnancyTimer to getPregnancyObject()>>
+			<<numberStepper "Pregnancy progress" $maxDefaultActionSets `value => {getPregnancyObject().timer = value; Wikifier.wikifyEval("<<updatesidebarimg>>")}` {min: 0, max: getPregnancyObject().timerEnd - 0.5, colorArr: ["--teal", "--pink"], activeButtons: ["single", "double"]}>>
 			<br><br>
 			<<link [[Clear current pregnancy|$passage]]>>
 				<<set _pregnancyClear to getPregnancyObject()>>
@@ -2063,42 +2054,6 @@
 	<</link>>
 <</widget>>
 
-<<widget "statColours">>
-	<<set _statName to _args[0]>>
-	<<set _statPercent to _args[1]>>
-	<<switch _statName>>
-		<<case "crossdress" "herm">>
-			<<switch _statPercent>>
-				<<case 5>><<set _statColour to "red">>
-				<<case 4>><<set _statColour to "pink">>
-				<<case 3>><<set _statColour to "purple">>
-				<<case 2>><<set _statColour to "blue">>
-				<<case 1>><<set _statColour to "lblue">>
-				<<default>><<set _statColour to "green">>
-			<</switch>>
-		<<case "aggro">>
-			<<if $farm.aggro gte 100>><<set _statColour to "red">>
-			<<elseif $farm.aggro gte 60>><<set _statColour to "pink">>
-			<<elseif $farm.aggro gte 40>><<set _statColour to "purple">>
-			<<elseif $farm.aggro gte 20>><<set _statColour to "blue">>
-			<<elseif $farm.aggro gte 10>><<set _statColour to "lblue">>
-			<<elseif $farm.aggro gte 1>><<set _statColour to "teal">>
-			<<else>><<set _statColour to "green">><</if>>
-		<<case "submissive">>
-			<<set _statColour to getColourClassFromPercentage($submissive/20, _statName)>>
-		<<case "pain">>
-			<<if _statPercent gte 100 and $willpowerpain is 0>><<set _statColour to "red">>
-			<<else>><<set _statColour to getColourClassFromPercentage(_statPercent, _statName)>>
-			<</if>>
-		<<case "drunk">>
-			<<set _statColour to getColourClassFromPercentage((_statPercent / 480), _statName)>>
-		<<case "drugged" "hallucinogen">>
-			<<set _statColour to getColourClassFromPercentage((_statPercent / 5), _statName)>>
-		<<default>>
-			<<set _statColour to getColourClassFromPercentage((_statPercent), _statName)>>
-	<</switch>>
-<</widget>>
-
 <<widget "changeCheatClass">>
 	<<for _class range ["red", "pink", "purple", "blue", "lblue", "teal", "green", "gold"]>>
 		<<removeclass _args[0] _class>>
@@ -2248,272 +2203,77 @@
 
 <<widget "cheatSection">>
 	<<switch _args[0]>>
+		<<case "state">>
+			<<numberStepper "Pain" $pain `value => {V.pain = value; Wikifier.wikifyEval("<<updatesidebarimg>>")}` {max: 200, reverse: true}>>
+			<<numberStepper "Arousal" $arousal `value => {V.arousal = value; Wikifier.wikifyEval("<<updatesidebarimg>>")}` {max: 10000, reverse: true}>>
+			<<numberStepper "Fatigue" $tiredness `value => {V.tiredness = value; Wikifier.wikifyEval("<<updatesidebarimg>>")}` {max: 2000, reverse: true}>>
+			<<numberStepper "Stress" $stress `value => {V.stress = value; Wikifier.wikifyEval("<<updatesidebarimg>>")}` {max: 10000, reverse: true}>>
+			<<numberStepper "Trauma" $trauma `value => {V.trauma = value; Wikifier.wikifyEval("<<updatesidebarimg>>")}` {max: 5000, reverse: true}>>
+			<<numberStepper "Control" $control `value => {V.control = value; Wikifier.wikifyEval("<<updatesidebarimg>>")}` {max: 1000}>>
+			<<numberStepper "Alcohol" $drunk `value => {V.drunk = value; Wikifier.wikifyEval("<<updatesidebarimg>>")}` {max: 1000, reverse: true}>>
+			<<numberStepper "Drugs" $drugged `value => {V.drugged = value; Wikifier.wikifyEval("<<updatesidebarimg>>")}` {max: 1000, reverse: true}>>
+			<<numberStepper "Hallucinogens" $hallucinogen `value => {V.hallucinogen = value; Wikifier.wikifyEval("<<updatesidebarimg>>")}` {max: 1000, reverse: true}>>
 		<<case "crime">>
 			<<for _cr range Object.keys(setup.crimeNames)>>
 				<<capture _cr>>
-					<<link "<<<">><<set C.crime[_cr] -= 10000>><<replace `"#statscrime-"+_cr`>><<set _percent to Math.trunc(C.crime[_cr])>><<= _percent>><<statColours "crime" _percent>><<changeCheatClass `"#statscrime-"+_cr` _percent>><</replace>><</link>> |
-					<<link "<<">><<set C.crime[_cr] -= 1000>><<replace `"#statscrime-"+_cr`>><<set _percent to Math.trunc(C.crime[_cr])>>><<= _percent + "%">><<statColours "crime" _percent>><<changeCheatClass `"#statscrime-"+_cr` _percent>><</replace>><</link>> |
-					<<link "<">><<set C.crime[_cr] -= 100>><<replace `"#statscrime-"+_cr`>><<set _percent to Math.trunc(C.crime[_cr])>><<= _percent>><<statColours "crime" _percent>><<changeCheatClass `"#statscrime-"+_cr` _percent>><</replace>><</link>> |
-					<<set _percent to Math.trunc(C.crime[_cr])>>
-					<<statColours "crime" _percent>>
-					<<= toTitleCase(setup.crimeNames[_cr])>>: <span @id="'statscrime-'+_cr" @class="_statColour"><<= _percent>></span> |
-					<<link ">">><<set C.crime[_cr] += 100>><<replace `"#statscrime-"+_cr`>><<set _percent to Math.trunc(C.crime[_cr])>><<= _percent>><<statColours "crime" _percent>><<changeCheatClass `"#statscrime-"+_cr` _percent>><</replace>><</link>> |
-					<<link ">>">><<set C.crime[_cr] += 1000>><<replace `"#statscrime-"+_cr`>><<set _percent to Math.trunc(C.crime[_cr])>><<= _percent>><<statColours "crime" _percent>><<changeCheatClass `"#statscrime-"+_cr` _percent>><</replace>><</link>> |
-					<<link ">>>">><<set C.crime[_cr] += 10000>><<replace `"#statscrime-"+_cr`>><<set _percent to Math.trunc(C.crime[_cr])>><<= _percent>><<statColours "crime" _percent>><<changeCheatClass `"#statscrime-"+_cr` _percent>><</replace>><</link>>
-					<br>
+					<<numberStepper toTitleCase(setup.crimeNames[_cr]) $crime[_cr].current `(value, arr) => {V.crime[arr[0]].current = value}` {max: 10000, step: 10, reverse: true, percentage: false, values: [_cr]}>>
 				<</capture>>
 			<</for>>
 			<<unset _cr>>
 		<<case "negative">>
-			<<cheatStat "Sex" "fame.sex" 2000>>
-			<<cheatStat "Prostitution" "fame.prostitution" 2000>>
-			<<cheatStat "Rape" "fame.rape" 2000>>
-			<<cheatStat "Bestiality" "fame.bestiality" 2000>>
-			<<cheatStat "Pregnancy" "fame.pregnancy" 2000>>
-			<<cheatStat "Impregnation" "fame.impreg" 2000>>
-			<<cheatStat "Exhibitionism" "fame.exhibitionism" 2000>>
+			<<numberStepper "Sex" $fame.sex `value => V.fame.sex = value` {max: 2000, reverse: true}>>
+			<<numberStepper "Prostitution" $fame.prostitution `value => V.fame.prostitution = value` {max: 2000, reverse: true}>>
+			<<numberStepper "Rape" $fame.rape `value => V.fame.rape = value` {max: 2000, reverse: true}>>
+			<<numberStepper "Bestiality" $fame.bestiality `value => V.fame.bestiality = value` {max: 2000, reverse: true}>>
+			<<numberStepper "Pregnancy" $fame.pregnancy `value => V.fame.pregnancy = value` {max: Math.clamp(playerNormalPregnancyTotal(),1,8) * 250, step: 2000 / 100,  percentage: false, reverse: true, valueFormat: (value) => `<b>${Math.round(((value - 0) / (2000 - 0)) * 100)}%</b>`}>>
+			<<numberStepper "Impregnation" $fame.impreg `value => V.fame.impreg = value` {max: 2000, reverse: true}>>
+			<<numberStepper "Exhibitionism" $fame.exhibitionism `value => V.fame.exhibitionism = value` {max: 2000, reverse: true}>>
 			<<if playerNormalPregnancyTotal() lt 8>>
 				<span class="description"><<set _pregsNeeded to Math.trunc(8-playerNormalPregnancyTotal())>>
 				Your pregnancy fame is capped by the amount of pregnancies you've had. You need to get pregnant <span class="gold"><<number _pregsNeeded>></span> more <<= _pregsNeeded is 1 ? "time" : "times">> to reach maximum pregnancy fame.</span>
 			<</if>>
 		<<case "positive">>
-			<<cheatStat "Combat" "fame.scrap" 2000>>
-			<<cheatStat "Kindness" "fame.good" 2000>>
-			<<cheatStat "Business" "fame.business" 2000>>
-			<<cheatStat "Socialite" "fame.social" 2000>>
-			<<cheatStat "Model" "fame.model" 2000>>
-		<<case "state">>
-			<<cheatStat "Pain" "pain" 200>>
-			<<cheatStat "Arousal" "arousal" 10000>>
-			<<cheatStat "Fatigue" "tiredness" 2000>>
-			<<cheatStat "Stress" "stress" 10000>>
-			<<cheatStat "Trauma" "trauma" 5000>>
-			<<cheatStat "Control" "control" 1000>>
-			<<cheatStat "Alcohol" "drunk" 1000>>
-			<<cheatStat "Drugs" "drugged" 1000>>
-			<<cheatStat "Hallucinogens" "hallucinogen" 1000>>
+			<<numberStepper "Combat" $fame.scrap `value => V.fame.scrap = value` {max: 2000}>>
+			<<numberStepper "Kindness" $fame.good `value => V.fame.good = value` {max: 2000}>>
+			<<numberStepper "Business" $fame.business `value => V.fame.business = value` {max: 2000}>>
+			<<numberStepper "Socialite" $fame.social `value => V.fame.social = value` {max: 2000}>>
+			<<numberStepper "Model" $fame.model `value => V.fame.model = value` {max: 2000}>>
 		<<case "skills">>
-			<<cheatStat "Skulduggery" "skulduggery" 1000>>
-			<<cheatStat "Dance" "danceskill" 1000>>
-			<<cheatStat "Swimming" "swimmingskill" 1000>>
-			<<cheatStat "Athletics" "athletics" 1000>>
-			<<cheatStat "Tending" "tending" 1000>>
-			<<cheatStat "Housekeeping" "housekeeping" 1000>>
+			<<numberStepper "Skulduggery" $skulduggery "skulduggery" {max: 1000}>>
+			<<numberStepper "Dance" $danceskill "danceskill" {max: 1000}>>
+			<<numberStepper "Swimming" $swimmingskill "swimmingskill" {max: 1000}>>
+			<<numberStepper "Athletics" $athletics "athletics" {max: 1000}>>
+			<<numberStepper "Tending" $tending "tending" {max: 1000}>>
+			<<numberStepper "Housekeeping" $housekeeping "housekeeping" {max: 1000}>>
 		<<case "school">>
-			<<cheatStat "Science" "science" 1000>>
-			<<cheatStat "Maths" "maths" 1000>>
-			<<cheatStat "English" "english" 1000>>
-			<<cheatStat "History" "history" 1000>>
+			<<numberStepper "Science" $science "science" {max: 1000}>>
+			<<numberStepper "Maths" $maths "maths" {max: 1000}>>
+			<<numberStepper "English" $english "english" {max: 1000}>>
+			<<numberStepper "History" $history "history" {max: 1000}>>
 		<<case "characteristics">>
-			<<cheatStat "Purity" "purity" 1000>>
-			<<cheatStat "Beauty" "beauty" 10000>>
-			<<cheatStat "Physique" "physique" $physiquesize>>
-			<<cheatStat "Willpower" "willpower" 1000>>
-			<<cheatStat "Awareness" "awareness" 1000>>
-			<<cheatStat "Promiscuity" "promiscuity" 100>>
-			<<cheatStat "Exhibitionism" "exhibitionism" 100>>
-			<<cheatStat "Deviancy" "deviancy" 100>>
+			<<numberStepper "<<tficon angel>> Purity" $purity "purity" {max: 1000}>>
+			<<numberStepper "<<symbol beauty>> Beauty" $beauty "beauty" {max: 10000}>>
+			<<numberStepper "<<symbol physique>> Physique" $physique "physique" {max: $physiquesize}>>
+			<<numberStepper "<<symbol willpower>> Willpower" $willpower "willpower" {max: 1000}>>
+			<<numberStepper "<<symbol awareness>> Awareness" $awareness "awareness" {max: 1000, reverse: true}>>
+			<<numberStepper "<<symbol promiscuity>> Promiscuity" $promiscuity "promiscuity" {reverse: true}>>
+			<<numberStepper "<<symbol exhibitionism>> Exhibitionism" $exhibitionism "exhibitionism" {reverse: true}>>
+			<<numberStepper "<<symbol deviancy>> Deviancy" $deviancy "deviancy" {reverse: true}>>
 			<<if numberOfEarSlime()>>
-				<<cheatStat "Corruption" "earSlime.corruption" 100>>
+				<<numberStepper "<<symbol corruption>> Corruption" $earSlime.corruption `(value) => {V.earSlime.corruption = value; Wikifier.wikifyEval("<<updatesidebarimg>>")}` {reverse: true}>>
 			<</if>>
 		<<case "sex">>
-			<<cheatStat "Seduction" "seductionskill" 1000>>
-			<<cheatStat "Chest" "chestskill" 1000>>
-			<<cheatStat "Buttocks" "bottomskill" 1000>>
-			<<if $player.vaginaExist>><<cheatStat "Vaginal" "vaginalskill" 1000>><</if>>
-			<<if $player.penisExist>><<cheatStat "Penile" "penileskill" 1000>><</if>>
-			<<cheatStat "Thighs" "thighskill" 1000>>
-			<<cheatStat "Oral" "oralskill" 1000>>
-			<<cheatStat "Hands" "handskill" 1000>>
-			<<cheatStat "Anal" "analskill" 1000>>
-			<<cheatStat "Feet" "feetskill" 1000>>
+			<<numberStepper "Seduction" $seductionskill "seductionskill" {max: 1000}>>
+			<<numberStepper "Chest" $chestskill "chestskill" {max: 1000}>>
+			<<numberStepper "Buttocks" $bottomskill "bottomskill" {max: 1000}>>
+			<<if $player.vaginaExist>><<numberStepper "Vaginal" $vaginalskill "vaginalskill" {max: 1000}>><</if>>
+			<<if $player.penisExist>><<numberStepper "Penile" $penileskill "penileskill" {max: 1000}>><</if>>
+			<<numberStepper "Thighs" $thighskill "thighskill" {max: 1000}>>
+			<<numberStepper "Oral" $oralskill "oralskill" {max: 1000}>>
+			<<numberStepper "Hands" $handskill "handskill" {max: 1000}>>
+			<<numberStepper "Anal" $analskill "analskill" {max: 1000}>>
+			<<numberStepper "Feet" $feetskill "feetskill" {max: 1000}>>
 		<<default>>
 			ERROR: Skill issue.
 	<</switch>>
-<</widget>>
-
-<<widget "cheatStat">>
-	<<set _name to _args[0]>>
-	<<set _stat to _args[1]>>
-	<<set _parts to _args[1].split(".")>>
-	<<set _stat to _parts.length > 1 ? _parts[1] : _args[1]>>
-	<<set _loc to _parts.length > 1 ? _parts[0] : null>>
-	<<set _link to _loc is "schoolrep" ? ["<", ">"] : ["<<<", "<<", "<", ">", ">>", ">>>"]>>
-	<<set _maxStat to _args[2]>>
-	<<if _loc is "fame">>
-		<<set _steps to [-1000, -100, -10, 10, 100, 1000]>>
-	<<elseif setup.NPCNameList.includes(_name) or _loc is "pound">>
-		<<set _steps to [-100, -10, -1, 1, 10, 100]>>
-	<<else>>
-		<<switch _stat>>
-			<<case "herm" "crossdress">><<set _steps to [-1, 1]>>
-			<<case "wolfpackharmony" "wolfpackferocity" "wolfpacktrust" "wolfpackfear" "horses" "cattle" "pigs" "dogs">><<set _steps to [-10, -5, -1, 1, 5, 10]>>
-			<<case "money">><<set _steps to [-100000, -10000, -1000, 1000, 10000, 100000]>>
-			<<case "beauty" "physique">><<set _steps to [-5000, -500, -50, 50, 500, 5000]>>
-			<<case "teeth" "pain" "promiscuity" "exhibitionism" "deviancy" "corruption" "stray_happiness" "pirate_status" "dockstatus" "grace">><<set _steps to [-100, -10, -1, 1, 10, 100]>>
-			<<case "aggro" "orphan_hope" "orphan_reb">><<set _steps to [-100, -15, -5, 5, 15, 100]>>
-			<<case "arousal" "stress" "trauma">><<set _steps to [-10000, -1000, -100, 100, 1000, 10000]>>
-			<<default>><<set _steps to [-1000, -100, -10, 10, 100, 1000]>>
-		<</switch>>
-	<</if>>
-	<<set _farm to ["horses", "pigs", "cattle", "dogs"].includes(_stat)>>
-	<<set _id to `stats${_farm || _stat is "aggro" ? _stat : _name.replace(" ", "")}${_loc ? _loc : _stat}`>>
-
-	<<capture _name, _stat, _value, _maxValue>>
-		<<if setup.NPCNameList.includes(_name)>>
-			<<set _percent to Math.floor((C.npc[_name][_stat]/_maxStat)*100)>>
-		<<elseif _stat is "submissive">>
-			<<set _percent to Math.floor((V[_stat]-1000)/10)>>
-		<<elseif _maxStat>>
-			<<set _percent to Math.floor((_farm ? $farm.beasts[_stat]/_maxStat : _loc ? V[_loc][_stat]/_maxStat : V[_stat]/_maxStat)*100)>>
-		<<else>>
-			<<set _percent to Math.trunc(_loc ? V[_loc][_stat] : V[_stat])>>
-		<</if>>
-		<<statColours _stat _percent>>
-	<</capture>>
-
-	<<capture _step, _link, _id, _name, _loc, _stat, _maxStat, _farm>>
-		<<cheatStatLinks "left">>
-
-		<span @id="'label' + _id"><<statName _name _stat>></span>
-		<span @id="_id" @class="_statColour">
-			<<= _stat is "money" ? "<<printmoney _percent>>" : _maxStat ? _percent + "%" : _percent>>
-		</span> |
-
-		<<cheatStatLinks "right">>
-	<</capture>>
-	<br>
-<</widget>>
-
-<<widget "cheatStatLinks">>
-	<<for _i, _step range _steps>>
-		<<if _args[0] is "left" ? _step lt 0 : _step gt 0>>
-			<<link _link[_i]>>
-				<<if setup.NPCNameList.includes(_name)>>
-					<<set _realStat to _stat is "corruption" ? "purity" : _stat>>
-					<<npcincr _name _realStat _step>>
-				<<elseif _stat is "arousal">>
-					<<arousal _step>>
-				<<elseif _stat is "pirate_status">>
-					<<pirate_status _step>>
-				<<elseif !_stat.includes("fame")>>
-					<<set _farm ? $farm.beasts[_stat] += _step : _loc ? V[_loc][_stat] += _step : V[_stat] += _step>>
-				<</if>>
-				<<clamp>>
-				<<if _loc is "fame">>
-					<<switch _stat>>
-						<<case "sex">><<famesex _step "none" true>>
-						<<case "prostitution">><<fameprostitution _step "none" true>>
-						<<case "rape">><<famerape _step "none" true>>
-						<<case "bestiality">><<famebestiality _step "none" true>>
-						<<case "pregnancy">><<famepregnancy _step "none" true>>
-						<<case "impreg">><<fameimpreg _step "none" true>>
-						<<case "exhibitionism">><<fameexhibitionism _step "none" true>>
-						<<case "scrap">><<famescrap _step "none" true>>
-						<<case "good">><<famegood _step "none" true>>
-						<<case "business">><<famebusiness _step "none" true>>
-						<<case "social">><<famesocial _step "none" true>>
-						<<case "model">><<famemodel _step "none" true>>
-					<</switch>>
-					<<fameclamp>>
-				<<else>>
-					<<switch _stat>>
-						<<case "horses" "pigs" "dogs" "cattle">>
-							<<set V.farm.beasts[_stat] = Math.clamp(V.farm.beasts[_stat], -30, 30)>>
-						<<case "crossdress" "herm">>
-							<<set V[_loc][_stat] = Math.clamp(V[_loc][_stat], 0, 5)>>
-							<<replace `"#rep" + _stat`>><<cheatsRep _stat>><</replace>>
-						<<case "guards" "inmates" "status" "aggro" "teeth">>
-							<<set V[_loc][_stat] = Math.clamp(V[_loc][_stat], 0, _maxStat)>>
-							<<if _stat is "aggro">><<replace "#farmAggro">><<cheatsRep "aggro">><</replace>><</if>>
-						<<case "asylumstatus" "suspicion" "dockstatus" "stray_happiness" "wolfpackharmony" "wolfpackferocity" "wolfpacktrust" "wolfpackfear">>
-							<<set V[_stat] to Math.clamp(V[_stat], 0, _maxStat)>>
-						<<case "science" "maths" "english" "history">>
-							<<set $school += (_step * 4)>><<adjust_school_traits>>
-						<<case "pain" "arousal" "tiredness" "stress" "trauma" "control" "drunk" "drugged" "hallucinogen" "corruption">>
-							<<updatesidebarimg>>
-						<<case "grace">>
-							<<set $grace = Math.clamp($grace, -100, 100)>>
-						<<case "hairlength" "fringelength">>
-							<<calchairlengthstage>><<updatesidebarimg>>
-					<</switch>>
-				<</if>>
-				<<set _double to _name is "Alex" and ["love", "dom"].includes(_stat) and C.npc.Alex[_stat] lt 0 || _stat is "corruption">>
-				<<if setup.NPCNameList.includes(_name)>>
-					<<set _percent to Math.floor((C.npc[_name][_stat]/_maxStat) * (_double ? 200 : 100))>>
-				<<elseif _stat is "submissive">>
-					<<set _percent to Math.floor((V[_stat]-1000)/10)>>
-				<<elseif _maxStat>>
-					<<set _percent to Math.floor((_farm ? $farm.beasts[_stat]/_maxStat : _loc ? V[_loc][_stat]/_maxStat : V[_stat]/_maxStat)*100)>>
-				<<else>>
-					<<set _percent to Math.trunc(_loc ? V[_loc][_stat] : V[_stat])>>
-				<</if>>
-				<<if setup.NPCNameList.includes(_name)>>
-					<<if ["purity", "corruption"].includes(_stat)>>
-						<<set $purityEvent to 1>><<set $corruptionEvent to 1>>
-						<<set _stat to C.npc[_name].purity gt 0 ? "purity" : "corruption">>
-						<<replace `"#" + _name.toLowerCase() + "desc"`>>
-							/* Use of _name just in case any other NPCs get purity as a stat besides Sydney */
-							(Setting <<= _name>>'s <<= C.npc[_name].purity gt 0 ? "purity to below 0%" : "corruption to above 0%">> will switch it to <<= C.npc[_name].purity gt 0 ? "corruption" : "purity">>.)
-						<</replace>>
-					<</if>>
-					<<statColours _stat _percent>>
-					<<replace `"#label" + _id`>><<statName  _name _stat>><</replace>>
-					<<replace `"#" + _id`>><<= _percent + "%">><<changeCheatClass `"#" + _id` _statColour>><</replace>>
-				<<else>>
-					<<statColours _stat _percent>>
-					<<replace `"#" + _id`>><<= _stat is "money" ? "<<printmoney _percent>>" : _maxStat ? _percent + "%" : _percent>><<changeCheatClass `"#" + _id` _statColour>><</replace>>
-				<</if>>
-			<</link>>
-			<<= _step lt _steps[5] ? "|" : "">>
-		<</if>>
-	<</for>>
-<</widget>>
-
-<<widget "statName">>
-	<<set _statName to _stat.toUpperFirst()>>
-	<<switch _name>>
-		<<case "Trust">><<symbol "love">>
-		<<case "Fear">><<symbol "fear">>
-		<<case "Harmony">><<wolfcaveicon "harmony">>
-		<<case "Ferocity">><<wolfcaveicon "ferocity">>
-		<<case "Steeds' Respect" "Pigs' Respect" "Dogs' Respect" "Cattle Respect">>
-			<<switch _stat>>
-				<<case "horses">><<animalicon "horse">>
-				<<case "pigs">><<animalicon "pig">>
-				<<case "cattle">><<animalicon "cow">>
-				<<case "dogs">><<animalicon "dog">>
-			<</switch>>
-		<<case "Beauty" "Physique" "Awareness" "Promiscuity" "Exhibitionism" "Deviancy" "Willpower" "Purity" "Corruption">><<if _loc isnot "fame">><<symbol _name.toLowerCase()>><</if>>
-		<<case "Science">><<scienceicon>>
-		<<case "Maths">><<mathicon>>
-		<<case "English">><<englishicon>>
-		<<case "History">><<historyicon>>
-		<<default>>/* No icon */
-	<</switch>>
-
-	<<if setup.NPCNameList.includes(_name)>>
-		<<if ["Robin", "Whitney", "Eden", "Kylar", "Sydney", "Avery", "Great Hawk", "Black Wolf", "Alex", "Mason", "Zephyr"].includes(_name)>>
-			<<switch _stat>>
-				<<case "dom">>
-					<<set _statName to _name is "Robin" ? "Confidence" : "Dominance">>
-					<<set _src to _name is "Robin" ? "confidence" : "dominance">>
-					<<symbol _src>>
-				<<case "rage">>
-					<<set _statName to _name is "Kylar" ? "Jealousy" : "Rage">>
-					<<set _src to _name is "Kylar" ? "jealousy" : "rage">>
-					<<symbol _src>>
-				<<case "purity" "corruption">>
-					<<set _src to C.npc[_name].purity gt 0 ? "angel" : "demon">>
-					<<tficon _src>>
-				<<default>>
-					<<symbol _stat>>
-			<</switch>>
-		<<else>>
-			<<= _name>>
-		<</if>>
-		<<= _statName>>:
-	<<else>>
-		<<= _name>>:
-	<</if>>
 <</widget>>

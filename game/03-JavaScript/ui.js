@@ -798,3 +798,13 @@ function returnTimeFormat() {
 	return V.options.dateFormat;
 }
 window.returnTimeFormat = returnTimeFormat;
+
+/* Temporary until npc rework */
+function sensitivityString(value) {
+	if (value >= 3.5) return "sensitive";
+	if (value >= 2.5) return "tender";
+	if (value >= 1.5) return "receptive";
+	return "normal";
+};
+
+window.sensitivityString = sensitivityString;

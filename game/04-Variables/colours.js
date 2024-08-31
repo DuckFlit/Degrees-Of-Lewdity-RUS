@@ -183,7 +183,7 @@ setup.colours = {
 	 */
 	getSkinCSSFilter(type, tan = 0) {
 		const slidersValues = setup.skinColor[type];
-		const ranges = window.ensureIsArray(slidersValues || setup.skinColor.default);
+		const ranges = window.ensureIsArray(slidersValues || setup.skinColor.light);
 
 		const totalProgress = tan / 100;
 
