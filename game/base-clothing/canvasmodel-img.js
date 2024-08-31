@@ -3,6 +3,7 @@
 DefineMacro("modelprepare-player-body", function () {
 	T.disabled = ["disabled", "hidden"];
 	T.modeloptions.skin_type = Skin.color.natural;
+	T.modeloptions.skin_tone = Skin.color.tan;
 
 	if (V.makeup.eyeshadow != 0) {
 		T.modeloptions.eyeshadow_colour = V.makeup.eyeshadow;
@@ -338,13 +339,6 @@ DefineMacro("modelprepare-player-body", function () {
 			██    ██      ███████
 		*/
 
-	const filterBase = {
-		blendMode: "hard-light",
-		brightness: 0,
-		contrast: 1,
-		desaturate: false,
-	};
-
 	// Wing and tail idle/cover/flaunt state is configured in the arms section above
 
 	T.modeloptions.angel_wings_type = V.transformationParts.angel.wings;
@@ -361,13 +355,6 @@ DefineMacro("modelprepare-player-body", function () {
 	T.modeloptions.demon_tail_layer = V.taillayer;
 	T.modeloptions.demon_horns_type = V.transformationParts.demon.horns;
 	T.modeloptions.demon_horns_layer = V.hornslayer;
-
-	// Calculate blend pattern for demon TF
-	const demonHsl = ColourUtils.toHslString(Transformations.defaults.demon.colour);
-
-	T.modeloptions.filters.demon_wings = { ...filterBase, blend: ColourUtils.toHslString(V.transformationParts.demon.wings_colour, demonHsl) };
-	T.modeloptions.filters.demon_tail = { ...filterBase, blend: ColourUtils.toHslString(V.transformationParts.demon.tail_colour, demonHsl) };
-	T.modeloptions.filters.demon_horns = { ...filterBase, blend: ColourUtils.toHslString(V.transformationParts.demon.horns_colour, demonHsl) };
 
 	T.modeloptions.wolf_tail_type = V.transformationParts.wolf.tail;
 	T.modeloptions.wolf_tail_layer = V.taillayer;

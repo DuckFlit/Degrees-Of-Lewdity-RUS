@@ -714,7 +714,6 @@ Macro.add("canvasModelEditor", {
 						optionCategory("Group toggles"),
 						booleanOption("show_face"),
 						booleanOption("show_hair"),
-						booleanOption("show_tanlines"),
 						booleanOption("show_writings"),
 						booleanOption("show_tf"),
 						booleanOption("show_clothes"),
@@ -737,14 +736,7 @@ Macro.add("canvasModelEditor", {
 
 						optionCategory("Skin"),
 						selectOption("skin_type", ["light", "medium", "dark", "gyaru", "ylight", "ymedium", "ydark", "ygyaru"]),
-						numberOption("skin_tone", 0, 1, 0.01, true),
-						numberOption("skin_tone_breasts", -0.01, 1, 0.01, true),
-						numberOption("skin_tone_penis", -0.01, 1, 0.01, true),
-						numberOption("skin_tone_swimshorts", -0.01, 1, 0.01, true),
-						numberOption("skin_tone_swimsuitTop", -0.01, 1, 0.01, true),
-						numberOption("skin_tone_swimsuitBottom", -0.01, 1, 0.01, true),
-						numberOption("skin_tone_bikiniTop", -0.01, 1, 0.01, true),
-						numberOption("skin_tone_bikiniBottom", -0.01, 1, 0.01, true),
+						numberOption("skin_tone", 0, 100, 1, true),
 
 						optionCategory("Hair"),
 						selectOption("hair_colour", hairColourOptions),
