@@ -5404,4 +5404,36 @@
 		})>>
 		<<set $objectVersion.npcCompressorDisable to 1>>
 	<</if>>
+	<<if $objectVersion.npcCompressorDisable lt 2>>
+		<<script>>
+			const decompress = (parent) => {
+				let result = parent;
+				try {
+					result = npcDecompressor(parent);
+				} catch (e) {
+					result = null;
+				}
+				return result;
+			};
+			V.parentList.fathers.forEach(parent => {
+				if (parent.compressed && parent.compressed !== "none") {
+					parent.npc = decompress(parent.compressed);
+					delete parent.compressed;
+				} else {
+					parent.npc = false;
+					delete parent.compressed;
+				}
+			});
+			V.parentList.mothers.forEach(parent => {
+				if (parent.compressed && parent.compressed !== "none") {
+					parent.npc = decompress(parent.compressed);
+					delete parent.compressed;
+				} else {
+					parent.npc = false;
+					delete parent.compressed;
+				}
+			});
+		<</script>>
+		<<set $objectVersion.npcCompressorDisable to 2>>
+	<</if>>
 <</widget>>
