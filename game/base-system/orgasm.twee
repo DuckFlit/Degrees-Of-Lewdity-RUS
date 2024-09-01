@@ -217,7 +217,7 @@
 		<</if>>
 	<</if>>
 
-	<<if $arousalmasochism/$arousal gte 0.70 and !_deniedOrgasm>>
+	<<if $arousalmasochism/$arousal gte 0.70>>
 		<!-- If over 70% arousal is from pain, PC has added reaction NG v2.7 -->
 		<span class="green"> Your body writhes and yearns for more pain.</span>
 		<<masochism 5>>
@@ -293,7 +293,7 @@
 			<</for>>
 		<<else>>
 			<<if $milk_amount gte (($milk_volume / 3) * 2) and $milk_amount gte 2500>>
-				<span class="pink">Milk sprays from your <<breasts>>.</span>
+				<span class="pink">Milk sprays from your <<breasts>><<if $lactating and $bugsinside>>, launching some of the insects into the air<</if>>.</span>
 				<<set _milkEscaped to true>>
 				<<breastfeed 4>>
 			<<else>>
@@ -867,50 +867,51 @@
 <</widget>>
 
 <<widget "breastfeed">>
-	<<set $_milk_released to random(10, 50)>>
+	<<set _milk_released to random(10, 50)>>
 	<<if $cow gte 6>>
-		<<set $_milk_released *= 2>>
+		<<set _milk_released *= 2>>
 	<</if>>
-	<<set $_milk_released /= 10>>
-	<<set $_milk_released to parseFloat($_milk_released.toFixed(1))>>
+	<<set _milk_released /= 10>>
+	<<set _milk_released to parseFloat(_milk_released.toFixed(1))>>
 
-	<<if _args[0]>><<set $_milk_released *= _args[0]>><</if>>
+	<<if _args[0]>><<set _milk_released *= _args[0]>><</if>>
 
-	/* if the player doesn't have enough milk, set $_milk_released to whatever they have left */
-	<<if $milk_amount lt $_milk_released>>
-		<<set $_milk_released to $milk_amount>>
+	/* if the player doesn't have enough milk, set _milk_released to whatever they have left */
+	<<if $milk_amount lt _milk_released>>
+		<<set _milk_released to $milk_amount>>
 	<</if>>
-	<<set $milk_produced_stat += Math.trunc($_milk_released)>>
+	<<set $milk_produced_stat += Math.trunc(_milk_released)>>
 
 	<<milkvolume 1>>
 
-	<<if $worn.over_upper.exposed is 0 and $worn.upper.exposed is 0 and $worn.under_upper.exposed is 0>>
+	<<if ($worn.over_upper.exposed is 0 and $worn.upper.exposed is 0 and $worn.under_upper.exposed is 0) or _args[1] is "drunk">>
 	<<else>>
+		<<set $_milkEscaped to _milkEscaped and _args[1] isnot "pump">>
 		<<if $masturbating>>
-			<<if $masturbation_bowl is 1 and _milkEscaped>>
-				/* Milk sprays everywhere and isn't collected */
+			<<if $masturbation_bowl is 1 and $_milkEscaped>>
+				/* Either Milk sprays everywhere or is drunk, so isn't collected */
 			<<else>>
-				<<set $masturbation_milk += $_milk_released>>
+				<<set $masturbation_milk += _milk_released>>
 			<</if>>
 		<</if>>
 		<<if _args[1] is "pump">>
-			<<set $bottledMilk to ($bottledMilk or 0) + $_milk_released>>
+			<<set $bottledMilk to ($bottledMilk or 0) + _milk_released>>
 		<</if>>
 		<<if $masturbation_bowl is 1>>
-			<<if _milkEscaped>>
+			<<if $_milkEscaped>>
 				<span class="red">The force of your orgasm makes your milk spray out wildly, missing the bowl entirely.</span> <<gsuspicion>><<set $chef_sus += 5>><br>
 			<<else>>
 				<!-- If the player is using both hands, only print this text the second time, and report the total milk released this turn -->
-				<<set _milk_this_turn to (_milk_this_turn is undefined ? $_milk_released : _milk_this_turn + $_milk_released)>>
+				<<set _milk_this_turn to (_milk_this_turn is undefined ? _milk_released : _milk_this_turn + _milk_released)>>
 				<!-- _args[0] is how many times this widget has been called this turn -->
 				<span class="gold">You gather <<print (_milk_this_turn).toFixed(1)>> mL of your breast milk.</span>
 			<</if>>
 		<<elseif $leftaction is "mbreastpumppump" or $rightaction is "mbreastpumppump">>
-			<span class="gold">You store <<print ($_milk_released).toFixed(1)>> mL of your breast milk.</span>
+			<span class="gold">You store <<print (_milk_released).toFixed(1)>> mL of your breast milk.</span>
 		<</if>>
 	<</if>>
 
-	<<milk_amount `-$_milk_released`>>
+	<<milk_amount `-_milk_released`>>
 <</widget>>
 
 <<widget "orgasmHourlyRecovery">>
@@ -972,11 +973,11 @@
 <</widget>>
 
 <<widget "semenOrgasm">>
-	<<set $_semen_released to calculateSemenReleased()>>
+	<<set _semen_released to calculateSemenReleased()>>
 
 	<<if $semen_amount gte 1 and $worn.under_lower.vagina_exposed is 1 and $worn.lower.vagina_exposed is 1 and $mouth isnot "mpenis" and $worn.genitals.name isnot "chastity parasite">>
 		<<if $masturbating>>
-			<<set $masturbation_semen += $_semen_released>>
+			<<set $masturbation_semen += _semen_released>>
 		<</if>>
 		<<if $masturbation_bowl is 1>>
 			<<set _liquid_collection_text.push($masturbation_semen.toFixed(1) + " mL of <<semen>>")>>
@@ -987,9 +988,8 @@
 		<<semenvolume 1>>
 	<</if>>
 
-	<<set $semen_produced_stat += $_semen_released>>
-	<<semen_amount `-$_semen_released`>>
-	<<set _semen_released to $_semen_released>>
+	<<set $semen_produced_stat += _semen_released>>
+	<<semen_amount `-_semen_released`>>
 <</widget>>
 
 <<widget "wetnessCalculate">>
