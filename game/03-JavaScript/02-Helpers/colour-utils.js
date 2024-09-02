@@ -247,7 +247,7 @@ const ColourUtils = (() => {
 		factor = Math.max(0, Math.min(factor, 1));
 
 		if (colors.length === 1) {
-			return colors[0];
+			return cssColorToHex(colors[0]);
 		}
 
 		const numSegments = colors.length - 1;
