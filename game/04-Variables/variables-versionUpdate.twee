@@ -5136,12 +5136,28 @@
 		<<set $dateCount.GreatHawkCasual to 0>>
 	<</if>>
 
-	<!--Skin colours for nonhuman children -->
-    <<if !$objectVersion.missingChildSkinColors>>
-        <<run Object.values($children).forEach(child => {
-            if (!child.features.skinColour) child.features.skinColour = Skin.color.natural;
-        })>>
-        <<set $objectVersion.missingChildSkinColors to 1>>
+	<!--Skin colours for nonhuman children and inconsistency npc skin colour fix -->
+    <<if !$objectVersion.missingChildSkinColors or $objectVersion.missingChildSkinColors lt 2>>
+		<<script>>
+			const fixChild = (child) => {
+				if (!child.features.skinColour) child.features.skinColour = Skin.color.natural;
+				if (child.features.skinColour === "black") child.features.skinColour = "dark";
+				if (child.features.skinColour === "white") child.features.skinColour = "light";
+			};
+			Object.values(V.children).forEach(child => fixChild(child));
+			getPregnancyObject().fetus.forEach(child => fixChild(child));
+			Object.values(V.NPCName).forEach(npc => {
+				if (npc.pregnancy.fetus) {
+					npc.pregnancy.fetus.forEach(child => child => fixChild(child));
+				}
+			});
+			Object.values(V.storedNPCs).forEach(npc => {
+				if (npc?.pregnancy.fetus) {
+					npc.pregnancy.fetus.forEach(child => fixChild(child));
+				}
+			})
+		<</script>>
+		<<set $objectVersion.missingChildSkinColors to 2>>
     <</if>>
 
 	<!-- Pillory time fixes -->
