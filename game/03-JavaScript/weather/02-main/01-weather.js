@@ -2,11 +2,11 @@ const Weather = (() => {
 	/* Helper functions */
 
 	function generateKeyPoints({ date, minKeys, maxKeys, timeApart, rangeValue, totalSteps }) {
-		const numberOfKeyPoints = random(minKeys - 1, maxKeys - 1);
+		const numberOfKeyPoints = Weather.activeRenderer.rng.randomInt(minKeys - 1, maxKeys - 1);
 		const keyPoints = new Map();
 
 		while (keyPoints.size < numberOfKeyPoints) {
-			const randomUnit = random(timeApart + 1, totalSteps - timeApart);
+			const randomUnit = Weather.activeRenderer.rng.randomInt(timeApart + 1, totalSteps - timeApart);
 
 			const isFarEnough = Array.from(keyPoints.keys()).every(kp => Math.abs(kp - randomUnit) >= timeApart);
 			if (isFarEnough) {
@@ -177,6 +177,15 @@ const Weather = (() => {
 		},
 		get lightsOn() {
 			return !Weather.bloodMoon && (Time.hour >= setup.SkySettings.lightsTime.on || Time.hour < setup.SkySettings.lightsTime.off);
+		},
+		get starSeed() {
+			if (!V.weatherObj.starSeed) {
+				V.weatherObj.starSeed = btoa(Math.round(Math.random() * 10000) + 1000);
+			}
+			return V.weatherObj.starSeed;
+		},
+		set starSeed(value) {
+			V.weatherObj.starSeed = value;
 		},
 		get activeRenderer() {
 			return this._activeRenderer;

@@ -1,13 +1,10 @@
 /* Arguments
  *
  * 0: title (string) - The title to be displayed in the titlebox
- * 1: initialValue (number) - The initial value to display when the stepper is rendered. It will be clamped
- *                            between minValue and maxValue.
- * 2: setter (string | function) - Determines how the current value should be set:
+ * 1: initialValue (number, optional) - The initial value to display when the stepper is rendered. It will be clamped
+ *                            between minValue and maxValue. If not provided, options will be the 2nd parameter.
+ * 2: setter (string, optional) - Determines how the current value should be set:
  *    - If a string is provided (e.g., "purity"), it is treated as a reference to the state variable ($purity).
- *    - If a callback is provided (e.g., (value) => { V.variable = value }), this callback will be called
- *      whenever the value changes, with the new value passed as an argument.
- * 		Useful if we want to do additional logic, or set a variable which isn't state or temp.
  * 3: options (object, optional) - An object containing additional optional settings:
  *    - max (number, optional): The max allowed value. Defaults to 100.
  *    - min (number, optional): The min allowed value. Defaults to 0.
@@ -20,25 +17,43 @@
  *		(e.g., (value, percentage) => { return "$" + value }).
  *	  - tooltip (object, optional) => Defaults to null. Must be a tooltip object.
  *		Example: tooltip: { message: () => V.physique, delay: 200 }
- *	  - values (Array, optional): An array of any values that can be used in the above functions.
+ *	  - values (Array, optional): Captures an array of any values that can be used in the above functions.
  *    - reverseButtons (boolean, optional): Defaults to false. If true, reverses the function of the buttons.
  *	  - activeButtons (Array, optional): Defaults to ["single", "double", "minMax"]. Specify which buttons should be active.
+ *    - css (string, optional): Defaults to null. If provided, overrides the default container css.
+ *    - callback (function, optional): A callback for whenever the value changes.
  */
-Macro.add("numberStepper", {
+ Macro.add("numberStepper", {
 	handler() {
 		DOL.Perflog.logWidgetStart("numberStepper");
-		const [title, initialValue, setter, options] = this.args;
 
+		// Determine arguments and options
+		let [title, initialValue, setter, options] = this.args;
+
+		// Adjust parameters if initialValue is not provided
+		if (typeof initialValue === 'object' && initialValue !== null) {
+			options = initialValue;
+			initialValue = undefined;
+			setter = undefined;
+		} else if (typeof setter === 'object' && setter !== null) {
+			options = setter;
+			setter = undefined;
+		}
+
+		// Set defaults if options were not provided
+		options = options || {};
+
+		// Check for missing or invalid mandatory parameters
 		if (typeof title !== "string" || !title.trim()) {
 			$(this.output).append($("<div>", { class: "red", text: "Error: Title is missing or invalid." }));
 			return;
 		}
-		if (isNaN(initialValue)) {
+		if (initialValue !== undefined && isNaN(initialValue)) {
 			$(this.output).append($("<div>", { class: "red", text: "Error: Initial value is not a valid number." }));
 			return;
 		}
-		if (typeof setter !== "string" && typeof setter !== "function") {
-			$(this.output).append($("<div>", { class: "red", text: "Error: Setter must be a valid string or function." }));
+		if (setter !== undefined && typeof setter !== "string") {
+			$(this.output).append($("<div>", { class: "red", text: "Error: Setter must be a valid string." }));
 			return;
 		}
 
@@ -55,7 +70,9 @@ Macro.add("numberStepper", {
 			values = null,
 			reverseButtons = false,
 			activeButtons = ["single", "double", "minMax"],
-		} = options || {};
+			css = {},
+			callback = null,
+		} = options;
 
 		// Validations
 		if (isNaN(min) || isNaN(max)) {
@@ -86,8 +103,12 @@ Macro.add("numberStepper", {
 			$(this.output).append($("<div>", { class: "red", text: "Error: tooltip must be an object." }));
 			return;
 		}
+		if (callback !== null && typeof callback !== "function") {
+			$(this.output).append($("<div>", { class: "red", text: "Error: callback must be a function." }));
+			return;
+		}
 
-		let currentValue = Math.min(Math.max(initialValue, min), max);
+		let currentValue = initialValue !== undefined ? Math.min(Math.max(initialValue, min), max) : min;
 
 		const convertToPercentage = value => ((value - min) / (max - min)) * 100;
 
@@ -131,10 +152,11 @@ Macro.add("numberStepper", {
 		const setValue = value => {
 			currentValue = Math.min(Math.max(value, min), max);
 			updateDisplay();
-			if (typeof setter === "string") {
+			if (setter) {
 				V[setter] = currentValue;
-			} else if (typeof setter === "function") {
-				setter(currentValue, values);
+			}
+			if (callback) {
+				callback(currentValue, values);
 			}
 			updateButtonStates();
 		};
@@ -211,6 +233,9 @@ Macro.add("numberStepper", {
 
 		// Draw the elements
 		const container = $("<div>", { class: "numberStepperContainer" }).appendTo(this.output);
+		if (css && typeof css === "object") {
+			container.css(css);
+		}
 
 		// Correctly append the title
 		const titleContainer = $("<div>", { class: "titleRow" }).appendTo(container);
@@ -239,7 +264,8 @@ Macro.add("numberStepper", {
 		// Title
 		const numberText = $("<span>", { class: "red" });
 		const titleInline = $("<span>", { class: "titleInline" }).append(Wikifier.wikifyEval(title));
-		const titleText = $("<div>", { class: "titlePercentage" }).append(titleInline).append(":").append(numberText).appendTo(group);
+		const divider = $("<span>", { class: "numberStepperDivider" }).append(":");
+		const titleText = $("<div>", { class: "titlePercentage" }).append(titleInline).append(divider).append(numberText).appendTo(group);
 
 		// Tooltip
 		if (tooltip) {
