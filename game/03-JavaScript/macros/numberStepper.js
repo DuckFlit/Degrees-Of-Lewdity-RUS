@@ -23,7 +23,7 @@
  *    - css (string, optional): Defaults to null. If provided, overrides the default container css.
  *    - callback (function, optional): A callback for whenever the value changes.
  */
- Macro.add("numberStepper", {
+Macro.add("numberStepper", {
 	handler() {
 		DOL.Perflog.logWidgetStart("numberStepper");
 
@@ -31,11 +31,11 @@
 		let [title, initialValue, setter, options] = this.args;
 
 		// Adjust parameters if initialValue is not provided
-		if (typeof initialValue === 'object' && initialValue !== null) {
+		if (typeof initialValue === "object" && initialValue !== null) {
 			options = initialValue;
 			initialValue = undefined;
 			setter = undefined;
-		} else if (typeof setter === 'object' && setter !== null) {
+		} else if (typeof setter === "object" && setter !== null) {
 			options = setter;
 			setter = undefined;
 		}
@@ -79,7 +79,8 @@
 			$(this.output).append($("<div>", { class: "red", text: "Error: Min or Max value is not a valid number." }));
 			return;
 		}
-		if (min >= max) {
+		if (min > max) {
+			console.log("min", min, "max", max);
 			$(this.output).append($("<div>", { class: "red", text: "Error: Min value must be less than max value." }));
 			return;
 		}
@@ -110,7 +111,7 @@
 
 		let currentValue = initialValue !== undefined ? Math.min(Math.max(initialValue, min), max) : min;
 
-		const convertToPercentage = value => ((value - min) / (max - min)) * 100;
+		const convertToPercentage = value => (min === max ? 0 : ((value - min) / (max - min)) * 100);
 
 		// Actual color hex is cached to prevent multiple calls per passage
 		const getColor = factor => {
@@ -127,6 +128,10 @@
 
 			if (reverse) {
 				colors = [...colors].reverse();
+			}
+
+			if (min === max) {
+				return colors[0];
 			}
 
 			return ColourUtils.interpolateMultiple(colors, factor);
@@ -251,7 +256,10 @@
 		const group = $("<div>", { class: `numberStepperGroup ${groupClass}` }).appendTo(container);
 
 		// Left buttons
-		if (activeButtons.includes("extreme") || activeButtons.includes("minMax") || activeButtons.includes("triple")) {
+		if (activeButtons.includes("minMax")) {
+			extremeLeft.on("click", () => setValue(min)).appendTo(group);
+		}
+		if (activeButtons.includes("triple")) {
 			extremeLeft.on("click", () => setValue(currentValue + increment100)).appendTo(group);
 		}
 		if (activeButtons.includes("double")) {
@@ -279,8 +287,11 @@
 		if (activeButtons.includes("double")) {
 			doubleRight.on("click", () => setValue(currentValue - increment10)).appendTo(group);
 		}
-		if (activeButtons.includes("extreme") || activeButtons.includes("minMax") || activeButtons.includes("triple")) {
+		if (activeButtons.includes("triple")) {
 			extremeRight.on("click", () => setValue(currentValue - increment100)).appendTo(group);
+		}
+		if (activeButtons.includes("minMax")) {
+			extremeRight.on("click", () => setValue(max)).appendTo(group);
 		}
 
 		updateDisplay();
