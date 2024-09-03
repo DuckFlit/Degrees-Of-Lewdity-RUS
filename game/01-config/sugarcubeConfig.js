@@ -11,9 +11,9 @@ const StartConfig = {
 	debug: false,
 	enableImages: true,
 	enableLinkNumberify: true,
-	version: "0.5.1.3",
+	version: "0.5.2.0",
 	versionName: `"Head in the Clouds" edition`,
-	sneaky: false,
+	sneaky: true,
 	socialMediaEnabled: true,
 	sourceLinkEnabled: false,
 };
