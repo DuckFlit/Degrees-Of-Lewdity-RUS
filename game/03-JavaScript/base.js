@@ -150,7 +150,7 @@ function DefineMacroS(macroName, macroFunction, tags, skipArgs, maintainContext)
  */
 
 function wetnessKeyword(slot) {
-	const i = V[`${slot}wet`];
+	const i = V[`${slot.replace("_", "")}wet`];
 	if (i >= 100) {
 		return "drenched";
 	} else if (i >= 80) {
@@ -356,6 +356,39 @@ function cheatsWord(id, slot, worn) {
 	});
 }
 window.cheatsWord = cheatsWord;
+
+/**
+ * @param {number} wetnessValue
+ */
+function getWetStage(wetnessValue) {
+	if (wetnessValue >= 100) return 3;
+	if (wetnessValue >= 80) return 2;
+	if (wetnessValue >= 40) return 1;
+	return 0;
+}
+
+/**
+ * Updates the wetstage for the given "wet" variable and the sidebar image to reflect the changes
+ *
+ * @param {string} wetVar
+ * @param {number} wetnessValue
+ */
+function cheatsShowWetness(wetVar, wetnessValue) {
+	V[wetVar + "stage"] = getWetStage(wetnessValue);
+	wikifier("<<updatesidebarimg>>");
+}
+window.cheatsShowWetness = cheatsShowWetness;
+
+/**
+ * @param {string} id the slider's full id
+ * @param {number} value
+ */
+function cheatsUpdateSlider(id, value) {
+	const slider = $(id);
+	if (!slider.length) return;
+	slider.val(value).trigger("change");
+}
+window.cheatsUpdateSlider = cheatsUpdateSlider;
 
 /**
  * @param {object} worn clothing article, State.variables.worn.XXXX

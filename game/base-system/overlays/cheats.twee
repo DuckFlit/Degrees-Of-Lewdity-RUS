@@ -302,7 +302,7 @@
 			</div>
 			<div class="settingsToggleItem numberslider-inline">
 				<span class="gold"><<clothingicon $worn.over_upper "over_upper">><<= $worn.over_upper.name.toUpperFirst()>> wetness:</span>
-				<<numberslider "$overupperwet" $overupperwet 0 200 1 `() => `>>
+				<<numberslider "$overupperwet" $overupperwet 0 200 1 `{onInputChange: (value) => cheatsShowWetness('overupperwet', value)}`>>
 				<<run cheatsWord("overupperwet", "over_upper")>>
 			</div>
 		<<else>>
@@ -317,7 +317,7 @@
 			</div>
 			<div class="settingsToggleItem numberslider-inline">
 				<span class="gold"><<clothingicon $worn.over_lower "over_lower">><<= $worn.over_lower.name.toUpperFirst()>> wetness:</span>
-				<<numberslider "$overlowerwet" $overlowerwet 0 200 1>>
+				<<numberslider "$overlowerwet" $overlowerwet 0 200 1 `{onInputChange: (value) => cheatsShowWetness('overlowerwet', value)}`>>
 				<<run cheatsWord("overlowerwet", "over_lower")>>
 			</div>
 		<<else>>
@@ -334,7 +334,7 @@
 			</div>
 			<div class="settingsToggleItem numberslider-inline">
 				<span class="gold"><<clothingicon $worn.upper "upper">><<= $worn.upper.name.toUpperFirst()>> wetness:</span>
-				<<numberslider "$upperwet" $upperwet 0 200 1>>
+				<<numberslider "$upperwet" $upperwet 0 200 1 `{onInputChange: (value) => cheatsShowWetness('upperwet', value)}`>>
 				<<run cheatsWord("upperwet", "upper")>>
 			</div>
 		<<else>>
@@ -351,7 +351,7 @@
 			</div>
 			<div class="settingsToggleItem numberslider-inline">
 				<span class="gold"><<clothingicon $worn.lower "lower">><<= $worn.lower.name.toUpperFirst()>> wetness:</span>
-				<<numberslider "$lowerwet" $lowerwet 0 200 1>>
+				<<numberslider "$lowerwet" $lowerwet 0 200 1 `{onInputChange: (value) => cheatsShowWetness('lowerwet', value)}`>>
 				<<run cheatsWord("lowerwet", "lower")>>
 			</div>
 		<<else>>
@@ -369,7 +369,7 @@
 			</div>
 			<div class="settingsToggleItem numberslider-inline">
 				<span class="gold"><<clothingicon $worn.under_lower "under_lower">><<= $worn.under_lower.name.toUpperFirst()>> wetness:</span>
-				<<numberslider "$underlowerwet" $underlowerwet 0 200 1>>
+				<<numberslider "$underlowerwet" $underlowerwet 0 200 1 `{onInputChange: (value) => cheatsShowWetness('underlowerwet', value)}`>>
 				<<run cheatsWord("underlowerwet", "under_lower")>>
 			</div>
 		<<else>>
@@ -387,7 +387,7 @@
 			</div>
 			<div class="settingsToggleItem numberslider-inline">
 				<span class="gold"><<clothingicon $worn.under_upper "under_upper">><<= $worn.under_upper.name.toUpperFirst()>> wetness:</span>
-				<<numberslider "$underupperwet" $underupperwet 0 200 1>>
+				<<numberslider "$underupperwet" $underupperwet 0 200 1 `{onInputChange: (value) => cheatsShowWetness('underupperwet', value)}`>>
 				<<run cheatsWord("underupperwet", "under_upper")>>
 			</div>
 		<<else>>
@@ -426,50 +426,49 @@
 			<<if $_clothes.length lt 8>>
 				<br>
 				<<link "Fix all">>
-					<<for _cl range _cl_slots>>
-						<<if $worn[_cl].name isnot 'naked'>>
-							<<set _cl_max to clothingData(_cl, $worn[_cl], 'integrity_max')>>
-							<<set $worn[_cl].integrity to _cl_max>>
-							<<unset _cl_max>>
-						<</if>>
-					<</for>>
-					<<unset _cl>>
+					<<run _cl_slots.forEach((slot) => {
+						if (V.worn[slot].name === "naked") return;
+						V.worn[slot].integrity = clothingData(slot, V.worn[slot], "integrity_max");
+						cheatsUpdateSlider(
+							`#numberslider-input-worn${slot.replace('_', '-')}integrity`,
+							V.worn[slot].integrity
+						);
+					})>>
 					<<updatesidebarimg>>
 				<</link>> |
 				<<link "Destroy all">>
 					/* not using ruined widgets to avoid side effects until confirmation */
-					<<for _cl range _cl_slots>>
-						<<if $worn[_cl].name isnot 'naked'>>
-							<<set $worn[_cl].integrity to 0>>
-						<</if>>
-					<</for>>
-					<<unset _cl>>
+					<<run _cl_slots.forEach((slot) => {
+						if (V.worn[slot].name === "naked") return;
+						V.worn[slot].integrity = 0;
+						cheatsUpdateSlider(
+							`#numberslider-input-worn${slot.replace('_', '-')}integrity`,
+							V.worn[slot].integrity
+						);
+					})>>
 					<<updatesidebarimg>>
 				<</link>>
 			<</if>>
 			/* Don't show unless the player is wearing clothes that can be drenched or dried */
-			<<if !$_clothes.includesAny("an overtop", "an overbottom", "a top", "a bottom", "underbottoms", "an undertop")>>
+			<<if !$_clothes.includesAll("an overtop", "an overbottom", "a top", "a bottom", "underbottoms", "an undertop")>>
 				| <<link "Dry all">>
 					<<dry_full>>
-					<<for _cl range _cl_slots.slice(0, 4)>>
-						<<if $worn[_cl].name isnot 'naked'>>
-							<<set _cl_wet to _cl.replace('_','') + "wet">>
-							<<unset _cl_wet>>
-						<</if>>
-					<</for>>
-					<<unset _cl>>
+					<<run _cl_slots.slice(0, 4).forEach((slot) => {
+						if (V.worn[slot].name === 'naked') return;
+						const wetnessProp = slot.replace('_', '') + 'wet';
+						V[wetnessProp + 'stage'] = 0;
+						cheatsUpdateSlider(`#numberslider-input-${wetnessProp}`, V[wetnessProp]);
+					})>>
 					<<updatesidebarimg>>
 				<</link>> |
 				<<link "Drench all">>
-					<<for _cl range _cl_slots.slice(0, 4)>>
-						<<if $worn[_cl].name isnot 'naked'>>
-							<<set _cl_wet to _cl.replace('_','') + "wet">>
-							<<set V[_cl_wet] to 200>>
-							<<unset _cl_wet>>
-						<</if>>
-					<</for>>
-					<<unset _cl>>
-					<<clamp>>
+					<<run _cl_slots.slice(0, 4).forEach((slot) => {
+						if (V.worn[slot].name === 'naked') return;
+						const wetnessProp = slot.replace('_', '') + 'wet';
+						V[wetnessProp] = 200;
+						V[wetnessProp + 'stage'] = 3;
+						cheatsUpdateSlider(`#numberslider-input-${wetnessProp}`, V[wetnessProp]);
+					})>>
 					<<updatesidebarimg>>
 				<</link>>
 			<</if>>
@@ -1007,7 +1006,7 @@
 			<<numberslider "$player.breastsize" $player.breastsize 0 _name.length-1 1>>
 			<<run $(() => { $('#numberslider-input-playerbreastsize').on('input change', e => {
 				$('#numberslider-value-playerbreastsize').html(" "+_name[e.currentTarget.value]);
-				wikifier('<<replace "#sidebar-img-container">><<img>><</replace>>');
+				wikifier('<<updatesidebarimg>>');
 			}).trigger('change') })>>
 			<br><br>
 
@@ -1616,7 +1615,7 @@
 					valueFormat: value => round(value, 1) + (V.options.fahrenheit ? "°F" : "°C"),
 					activeButtons: ["single", "double", "triple"]
 				}
-			
+
 			>>
 			<span class="description">Changes will be visible after at least 1 minute of game time passes.</span>
 		</div>
