@@ -171,6 +171,7 @@ window.wetnessKeyword = wetnessKeyword;
  */
 function wetnessWord(slot) {
 	const kw = wetnessKeyword(slot);
+	if (!kw) return "";
 	let colorClass;
 	switch (kw) {
 		case "dry":
@@ -188,10 +189,7 @@ function wetnessWord(slot) {
 		default:
 			colorClass = ""; // default without color
 	}
-	if (kw) {
-		T.text_output = `<span class="${colorClass}">${kw.trim()}</span> `;
-	}
-	return T.text_output;
+	return `<span class="${colorClass}">${kw.trim()}</span> `;
 }
 window.wetnessWord = wetnessWord;
 DefineMacroS("wetnessWord", wetnessWord);
@@ -334,28 +332,6 @@ function faceintegrity() {
 	return integrityWord(V.worn.face, "face");
 }
 DefineMacroS("faceintegrity", faceintegrity);
-
-function cheatsWord(id, slot, worn) {
-	const updateText = () => {
-		let text = worn ? integrityWord(worn, slot) : wetnessWord(slot);
-		if (!T.text_output) text = "<span class='green'>full</span>";
-
-		jQuery("#numberslider-value-" + id)
-			.text("")
-			.append(text);
-	};
-
-	$(() => {
-		updateText();
-		$("#numberslider-input-" + id)
-			.on("input change", function (e) {
-				updateText();
-				wikifier("<<updatesidebarimg>>");
-			})
-			.trigger("change");
-	});
-}
-window.cheatsWord = cheatsWord;
 
 /**
  * @param {number} wetnessValue

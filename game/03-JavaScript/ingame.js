@@ -405,7 +405,7 @@ function featsPointsMenuReset() {
 DefineMacroS("featsPointsMenuReset", featsPointsMenuReset);
 
 function startingPlayerImageReset() {
-	jQuery(document).on("change", "#settingsDiv .macro-radiobutton,#settingsDiv .macro-numberslider,#settingsDiv .macro-checkbox", () => {
+	jQuery(document).on("change", "#settingsDiv .macro-radiobutton,#settingsDiv ,#settingsDiv .macro-checkbox", () => {
 		Wikifier.wikifyEval("<<startingPlayerImageUpdate>>");
 	});
 	return "";
