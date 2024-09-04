@@ -257,7 +257,7 @@ Macro.add("numberStepper", {
 
 		// Left buttons
 		if (activeButtons.includes("minMax")) {
-			extremeLeft.on("click", () => setValue(min)).appendTo(group);
+			extremeLeft.on("click", () => setValue(reverseButtons ? max : min)).appendTo(group);
 		}
 		if (activeButtons.includes("triple")) {
 			extremeLeft.on("click", () => setValue(currentValue + increment100)).appendTo(group);
@@ -291,7 +291,7 @@ Macro.add("numberStepper", {
 			extremeRight.on("click", () => setValue(currentValue - increment100)).appendTo(group);
 		}
 		if (activeButtons.includes("minMax")) {
-			extremeRight.on("click", () => setValue(max)).appendTo(group);
+			extremeRight.on("click", () => setValue(reverseButtons ? min : max)).appendTo(group);
 		}
 
 		updateDisplay();
