@@ -5136,30 +5136,6 @@
 		<<set $dateCount.GreatHawkCasual to 0>>
 	<</if>>
 
-	<!--Skin colours for nonhuman children and inconsistency npc skin colour fix -->
-    <<if !$objectVersion.missingChildSkinColors or $objectVersion.missingChildSkinColors lt 2>>
-		<<script>>
-			const fixChild = (child) => {
-				if (!child.features.skinColour) child.features.skinColour = Skin.color.natural;
-				if (child.features.skinColour === "black") child.features.skinColour = "dark";
-				if (child.features.skinColour === "white") child.features.skinColour = "light";
-			};
-			Object.values(V.children).forEach(child => fixChild(child));
-			getPregnancyObject().fetus.forEach(child => fixChild(child));
-			Object.values(V.NPCName).forEach(npc => {
-				if (npc.pregnancy.fetus) {
-					npc.pregnancy.fetus.forEach(child => child => fixChild(child));
-				}
-			});
-			Object.values(V.storedNPCs).forEach(npc => {
-				if (npc?.pregnancy.fetus) {
-					npc.pregnancy.fetus.forEach(child => fixChild(child));
-				}
-			})
-		<</script>>
-		<<set $objectVersion.missingChildSkinColors to 2>>
-    <</if>>
-
 	<!-- Pillory time fixes -->
 	<<if $pillory_tenant isnot undefined and ($pillory_tenant.starthour isnot undefined or $pillory_tenant.startday isnot undefined)>>
 		<!-- The start day / hour are broken anyways - so resetting the starttime to current time -->
@@ -5250,6 +5226,30 @@
 	<<if $gameTanImgSetting isnot undefined>>
 		<<unset $gameTanImgSetting>>
 	<</if>>
+
+	<!--Skin colours for nonhuman children and inconsistency npc skin colour fix -->
+    <<if !$objectVersion.missingChildSkinColors or $objectVersion.missingChildSkinColors lt 3>>
+		<<script>>
+			const fixChild = (child) => {
+				if (!child.features.skinColour) child.features.skinColour = Skin.color.natural;
+				if (child.features.skinColour === "black") child.features.skinColour = "dark";
+				if (child.features.skinColour === "white") child.features.skinColour = "light";
+			};
+			Object.values(V.children).forEach(child => fixChild(child));
+			getPregnancyObject().fetus.forEach(child => fixChild(child));
+			Object.values(V.NPCName).forEach(npc => {
+				if (npc.pregnancy.fetus) {
+					npc.pregnancy.fetus.forEach(child => child => fixChild(child));
+				}
+			});
+			Object.values(V.storedNPCs).forEach(npc => {
+				if (npc?.pregnancy.fetus) {
+					npc.pregnancy.fetus.forEach(child => fixChild(child));
+				}
+			})
+		<</script>>
+		<<set $objectVersion.missingChildSkinColors to 3>>
+    <</if>>
 
 	<!-- 0.5 Weather update -->
 	<<if Time.year is 361 and $location is "temple">>
