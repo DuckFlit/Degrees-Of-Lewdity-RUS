@@ -2166,8 +2166,7 @@ function formatMoney(amount) {
 			formattedAmount += "." + ("0" + Math.floor(Math.abs(decimalPart))).slice(-2);
 		}
 	}
-	T.printMoney = (amount >= 0 ? "" : "-") + "£" + formattedAmount;
-	return T.printMoney;
+	T.printmoney = (amount >= 0 ? "" : "-") + "£" + formattedAmount;
 }
 window.formatMoney = formatMoney;
 DefineMacroS("formatmoney", money => formatMoney(money));
