@@ -311,7 +311,7 @@ Weather.Temperature = (() => {
 			const exceptionDate = exception.date();
 			return exception.temperature && exceptionDate.year === date.year && exceptionDate.month === date.month;
 		}).forEach(exception => {
-			const temperature = boundedRandom(exception.temperature, 1, Weather.activeRenderer.rng);
+			const temperature = boundedRandom(exception.temperature, 1, 1, Weather.activeRenderer.rng);
 			keyPoints.set(exception.date().day - 1, temperature);
 		});
 
