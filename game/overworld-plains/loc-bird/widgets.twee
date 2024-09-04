@@ -1097,48 +1097,50 @@
 			<<set _fatigueMod to 0.5>>
 			<<if _args[1] isnot "silent">><span class="gold">The strong winds will make flight easy and fast.</span><</if>>
 		<<case "lightPrecipitation" "heavyPrecipitation" "thunderStorm">>
-			<<set _flightTime += 1>>
-			<<for _active_clothes range Object.keys($worn)>>
-				<<if !$worn[_active_clothes].type.includes("naked") and !$worn[_active_clothes].type.includes("swim")>>
-					<<switch _active_clothes>>
-						<<case "over_upper" "over_lower">>
-							<<set _flightTime += Math.floor(_flightTimeBase / 6)>><<set _slowText to true>>
-						<<case "upper" "lower">>
-							<<set _flightTime += Math.floor(_flightTimeBase / 9)>><<set _slowText to true>>
-						<<case "under_upper" "under_lower" "feet">>
-							<<set _flightTime += Math.floor(_flightTimeBase / 18)>><<set _slowText to true>>
-						<<default>>
-					<</switch>>
-				<</if>>
-			<</for>>
-			<<if _slowText>>
-				<<if _flightTime gte Math.floor(_flightTimeBase + (_flightTimeBase * 0.5))>>
-					<<set _fatigueText to "<<gggtiredness>>">>
-					<<set _fatigueMod to 3>>
-					<<if _args[1] isnot "silent">><span class="red">Flying in the rain will soak your clothes, heavily slowing you down and exposing you.</span><</if>>
-				<<elseif _flightTime gte Math.floor(_flightTimeBase + (_flightTimeBase * 0.25))>>
-					<<set _fatigueText to "<<gggtiredness>>">>
-					<<set _fatigueMod to 3>>
-					<<if _args[1] isnot "silent">><span class="pink">Flying in the rain will soak your clothes, slowing you down and exposing you.</span><</if>>
-				<<elseif _flightTime gt _flightTimeBase>>
-					<<set _fatigueText to "<<ggtiredness>>">>
-					<<set _fatigueMod to 2>>
-					<<if _args[1] isnot "silent">><span class="blue">Flying in the rain will soak your clothes, slightly slowing you down and exposing you.</span><</if>>
+			<<if Weather.precipitation is "snow">>
+				<<set _flightTime += Math.floor(_flightTimeBase / 6)>>
+				<<set _fatigueText to "<<ggtiredness>>">>
+				<<set _fatigueMod to 2>>
+				<<if _args[1] isnot "silent">><span class="blue">Flying in the snow will obscure your vision and slow you down.</span><</if>>
+			<<else>>
+				<<set _flightTime += 1>>
+				<<for _active_clothes range Object.keys($worn)>>
+					<<if !$worn[_active_clothes].type.includes("naked") and !$worn[_active_clothes].type.includes("swim")>>
+						<<switch _active_clothes>>
+							<<case "over_upper" "over_lower">>
+								<<set _flightTime += Math.floor(_flightTimeBase / 6)>><<set _slowText to true>>
+							<<case "upper" "lower">>
+								<<set _flightTime += Math.floor(_flightTimeBase / 9)>><<set _slowText to true>>
+							<<case "under_upper" "under_lower" "feet">>
+								<<set _flightTime += Math.floor(_flightTimeBase / 18)>><<set _slowText to true>>
+							<<default>>
+						<</switch>>
+					<</if>>
+				<</for>>
+				<<if _slowText>>
+					<<if _flightTime gte Math.floor(_flightTimeBase + (_flightTimeBase * 0.5))>>
+						<<set _fatigueText to "<<gggtiredness>>">>
+						<<set _fatigueMod to 3>>
+						<<if _args[1] isnot "silent">><span class="red">Flying in the rain will soak your clothes, heavily slowing you down and exposing you.</span><</if>>
+					<<elseif _flightTime gte Math.floor(_flightTimeBase + (_flightTimeBase * 0.25))>>
+						<<set _fatigueText to "<<gggtiredness>>">>
+						<<set _fatigueMod to 3>>
+						<<if _args[1] isnot "silent">><span class="pink">Flying in the rain will soak your clothes, slowing you down and exposing you.</span><</if>>
+					<<elseif _flightTime gt _flightTimeBase>>
+						<<set _fatigueText to "<<ggtiredness>>">>
+						<<set _fatigueMod to 2>>
+						<<if _args[1] isnot "silent">><span class="blue">Flying in the rain will soak your clothes, slightly slowing you down and exposing you.</span><</if>>
+					<<else>>
+						<<set _fatigueText to "<<gtiredness>>">>
+						<<set _fatigueMod to 2>>
+						<<if _args[1] isnot "silent">><span class="green">Flying in the rain won't slow you down at all in your current state of dress.</span><</if>>
+					<</if>>
 				<<else>>
 					<<set _fatigueText to "<<gtiredness>>">>
 					<<set _fatigueMod to 2>>
 					<<if _args[1] isnot "silent">><span class="green">Flying in the rain won't slow you down at all in your current state of dress.</span><</if>>
 				<</if>>
-			<<else>>
-				<<set _fatigueText to "<<gtiredness>>">>
-				<<set _fatigueMod to 2>>
-				<<if _args[1] isnot "silent">><span class="green">Flying in the rain won't slow you down at all in your current state of dress.</span><</if>>
 			<</if>>
-		<<case "snow">>
-			<<set _flightTime += Math.floor(_flightTimeBase / 6)>>
-			<<set _fatigueText to "<<ggtiredness>>">>
-			<<set _fatigueMod to 2>>
-			<<if _args[1] isnot "silent">><span class="blue">Flying in the snow will obscure your vision and slow you down.</span><</if>>
 		<<default>>
 			<<set _fatigueText to "<<gtiredness>>">>
 			<<set _fatigueMod to 1>>
