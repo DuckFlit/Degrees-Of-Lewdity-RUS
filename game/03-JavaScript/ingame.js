@@ -2167,6 +2167,7 @@ function formatMoney(amount) {
 		}
 	}
 	T.printmoney = (amount >= 0 ? "" : "-") + "£" + formattedAmount;
+	return T.printmoney;
 }
 window.formatMoney = formatMoney;
-DefineMacroS("formatmoney", money => formatMoney(money));
+DefineMacro("formatmoney", money => formatMoney(money));
