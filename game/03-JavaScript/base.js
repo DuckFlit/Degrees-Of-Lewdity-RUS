@@ -351,7 +351,7 @@ function getWetStage(wetnessValue) {
  */
 function cheatsShowWetness(wetVar, wetnessValue) {
 	V[wetVar + "stage"] = getWetStage(wetnessValue);
-	wikifier("<<updatesidebarimg>>");
+	wikifier("<<updatesidebarimg false>>");
 }
 window.cheatsShowWetness = cheatsShowWetness;
 

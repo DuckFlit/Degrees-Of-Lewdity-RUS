@@ -924,7 +924,7 @@ setup.LocationImages = {
 			},
 			wind_base: {
 				condition: () => !Weather.isSnow && Time.season !== "winter",
-				image: "wind_winter.png",
+				image: "wind.png",
 				animation: {
 					frameDelay: 1000,
 				},
