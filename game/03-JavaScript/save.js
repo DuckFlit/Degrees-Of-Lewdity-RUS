@@ -653,6 +653,10 @@ const importSettingsData = function (data) {
 						} else if (validateValue(listObject[listKey[j]], S.npc[V.NPCNameList[i]][listKey[j]])) {
 							V.NPCName[i][listKey[j]] = S.npc[V.NPCNameList[i]][listKey[j]];
 						}
+						// Prevent the changing of gender with pregnant npc's
+						if (V.NPCName[i].pregnancy.type) {
+							V.NPCName[i].gender = "f";
+						}
 					}
 				}
 			}
