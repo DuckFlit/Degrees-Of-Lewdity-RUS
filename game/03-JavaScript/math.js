@@ -217,8 +217,8 @@ window.categorise = categorise;
  * @returns {number} A random number between `num - min` and `num + max`.
  */
 function boundedRandom(num, min, max = min, rngInstance) {
-	const randomFunc = rngInstance ? rngInstance.randomFloat : randomFloat;
-	return round(randomFunc(num - min, num + max), 2);
+	const result = rngInstance ? rngInstance.randomFloat(num - min, num + max) : randomFloat(num - min, num + max);
+	return round(result, 2);
 }
 window.boundedRandom = boundedRandom;
 
