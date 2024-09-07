@@ -236,7 +236,7 @@ Weather.WeatherGeneration = (() => {
 			return [index, weight];
 		});
 
-		return weightedRandom(...options);
+		return weightedRandom(...options, Weather.activeRenderer.rng);
 	}
 
 	return Object.create({
