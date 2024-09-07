@@ -314,7 +314,7 @@
 				<br>
 			<<case "temple">>
 				Sydney stands up, yawning.
-				<<if $detention gte 1 and $daily.school.detentionAttended isnot 1 and $headnodetention isnot 1 and $pillory_tenant.special.name isnot "Leighton">>
+				<<if $detention gte 1 and $daily.school.detentionAttended isnot 1 and $headnodetention isnot 1 and $pillory.tenant.special.name isnot "Leighton">>
 					"It's closing time. The <<nnpc_title "Leighton">> said you're not allowed to leave the premises until you serve your detention at the end of the day. Sorry."
 					<br><br>
 				<<elseif $sydneySeen.includes("mass") or $sydneySeen.includes("initiate")>>
@@ -634,7 +634,7 @@
 			<br>
 		<</if>>
 	<</if>>
-	<<if $location is "temple" and $temple_spear_mission is 1 and !$sydneySeen.includes("spearMission") and $sydneyromance is 1>>
+	<<if $location is "temple" and $temple_spear_mission is 1 and !$sydneySeen.includes("spearMission") and $sydneyromance is 1 and !$spear_vessel>>
 		<<askicon>><<link [["Ask " + $NPCList[0].pronouns.him + " what's on " + $NPCList[0].pronouns.his + " mind"|Sydney Temple Spear]]>><<handheldon 1>><</link>>
 		<br>
 	<</if>>
@@ -667,29 +667,49 @@
 			<<foodicon "milkshake">><<link [[Share milkshake (0:15)|Sydney Share Milkshake]]>><<pass 15>><<set $milkshake -= 1>><<npcincr Sydney love 2>><<stress -10>><<handheldon 1>><</link>><<lstress>><<gglove>>
 			<br>
 		<</if>>
-		<<if $promiscuity gte 55 and $sydneyromance is 1 and !$daily.sydney.crawl>>
+		<<if hasSexStat("promiscuity", 4) and $sydneyromance is 1 and !$daily.sydney.crawl>>
 			<<schoolicon "library desk">><<link [[Crawl under the counter|Sydney Crawl]]>><<set $daily.sydney.crawl to true>><<handheldon 1>><</link>><<promiscuous4>><<llspurity>><<sydneyWarning corrupt>>
 			<br>
 		<</if>>
 		<<set _tf to checkTFparts()>>
 		<<if !($daily.sydney.tf gte 3)>>
 			<<if C.npc.Sydney.love gte 10 and $fox gte 6 and _tf.foxTail>>
-				<<ind>><<link [[Swish tail (0:10)|Sydney Library Transformation]]>><<pass 10>><<trauma -2>><<npcincr Sydney love 2>><<handheldon 1>><<set $phase to 0>><</link>><<fox>><<ltrauma>><<glove>>
+				<<tficon "fox">><<link [[Swish tail (0:10)|Sydney Library Transformation]]>><<pass 10>><<trauma -2>><<npcincr Sydney love 2>><<handheldon 1>><<set $phase to 0>><</link>><<fox>><<ltrauma>><<glove>>
 				<br>
 			<<elseif C.npc.Sydney.love gte 10 and $wolfgirl gte 6>>
-				<<ind>><<link [[Nudge (0:10)|Sydney Library Transformation]]>><<pass 10>><<stress -2>><<npcincr Sydney love 2>><<handheldon 1>><<set $phase to 1>><</link>><<wolfgirl>><<lstress>><<glove>>
+				<<tficon "wolf">><<link [[Nudge (0:10)|Sydney Library Transformation]]>><<pass 10>><<stress -2>><<npcincr Sydney love 2>><<handheldon 1>><<set $phase to 1>><</link>><<wolfgirl>><<lstress>><<glove>>
 				<br>
-			<<elseif C.npc.Sydney.love gte 10 and $cat gte 6>>
-				<<ind>><<link [[Nuzzle (0:10)|Sydney Library Transformation]]>><<pass 10>><<tiredness -2>><<npcincr Sydney love 2>><<handheldon 1>><<set $phase to 2>><</link>><<cat>><<ltiredness>><<glove>>
+			<<elseif C.npc.Sydney.love gte 10 and $cat gte 6 and _tf.catEars>>
+				<<tficon "cat">><<link [[Nuzzle (0:10)|Sydney Library Transformation]]>><<pass 10>><<tiredness -2>><<npcincr Sydney love 2>><<handheldon 1>><<set $phase to 2>><</link>><<cat>><<ltiredness>><<glove>>
 				<br>
 			<<elseif C.npc.Sydney.love gte 10 and $harpy gte 6>>
 				<<birdicon "sing">><<link [[Sing (0:10)|Sydney Library Transformation]]>><<pass 10>><<tiredness -1>><<npcincr Sydney love 2>><<handheldon 1>><<set $phase to 3>><</link>><<harpy>><<ltiredness>><<glove>>
 				<br>
-			<<elseif C.npc.Sydney.love gte 10 and $cow gte 6>>
-				<<ind>><<link [[Gently headbutt (0:10)|Sydney Library Transformation]]>><<pass 10>><<trauma -2>><<npcincr Sydney love 2>><<handheldon 1>><<set $phase to 4>><</link>><<cow>><<ltrauma>><<glove>>
+			<<elseif C.npc.Sydney.love gte 10 and $cow gte 6 and _tf.cowEars and _tf.cowHorns>>
+				<<tficon "cow">><<link [[Gently headbutt (0:10)|Sydney Library Transformation]]>><<pass 10>><<trauma -2>><<npcincr Sydney love 2>><<handheldon 1>><<set $phase to 4>><</link>><<cow>><<ltrauma>><<glove>>
 				<br>
 			<</if>>
 		<</if>>
+	<<elseif $location is "temple">>
+		<<set _tf to checkTFparts()>>
+		<<if !($daily.sydney.tf gte 3)>>
+			<<if C.npc.Sydney.love gte 10 and $fox gte 6 and _tf.foxTail>>
+				<<tficon "fox">><<link [[Swish tail (0:10)|Sydney Temple Transformation]]>><<pass 10>><<trauma -2>><<npcincr Sydney love 2>><<handheldon 1>><<set $phase to 0>><</link>><<fox>><<ltrauma>><<glove>>
+				<br>
+			<<elseif C.npc.Sydney.love gte 10 and $wolfgirl gte 6>>
+				<<tficon "wolf">><<link [[Nudge (0:10)|Sydney Temple Transformation]]>><<pass 10>><<stress -2>><<npcincr Sydney love 2>><<handheldon 1>><<set $phase to 1>><</link>><<wolfgirl>><<lstress>><<glove>>
+				<br>
+			<<elseif C.npc.Sydney.love gte 10 and $cat gte 6>>
+				<<tficon "cat">><<link [[Nuzzle (0:10)|Sydney Temple Transformation]]>><<pass 10>><<tiredness -2>><<npcincr Sydney love 2>><<handheldon 1>><<set $phase to 2>><</link>><<cat>><<ltiredness>><<glove>>
+				<br>
+			<<elseif C.npc.Sydney.love gte 10 and $harpy gte 6>>
+				<<birdicon "sing">><<link [[Sing (0:10)|Sydney Temple Transformation]]>><<pass 10>><<tiredness -1>><<npcincr Sydney love 2>><<handheldon 1>><<set $phase to 3>><</link>><<harpy>><<ltiredness>><<glove>>
+				<br>
+			<<elseif C.npc.Sydney.love gte 10 and $cow gte 6>>
+				<<tficon "cow">><<link [[Gently headbutt (0:10)|Sydney Temple Transformation]]>><<pass 10>><<trauma -2>><<npcincr Sydney love 2>><<handheldon 1>><<set $phase to 4>><</link>><<cow>><<ltrauma>><<glove>>
+				<br>
+			<</if>>
+		<</if>>	
 	<</if>>
 	<<if ($sydney.glasses is "broken" or $sydney.glasses is "playerbroken") and $money gte 1500 and ($sydneyChatState gte 3 or $sydneyromance is 1)>>
 		<<highicon>><<link [["Offer to replace " + $NPCList[0].pronouns.his + " glasses (£15 0:30)"|Sydney Walk]]>><<npcincr Sydney love 3>><<handheldon 1>><</link>><<gglove>>
@@ -796,7 +816,9 @@
 <<print _text_output>><</widget>>
 
 <<widget "sydneySchedule">>
-	<<if $daily.sydney.punish is 1>>
+	<<if $sydney_location_override and $replayScene>>
+		<<set _sydney_location to $sydney_location_override>>
+	<<elseif $daily.sydney.punish is 1>>
 		<<set _sydney_location to "home">>
 		<<set _sydney_location_message to "home">>
 	<<elseif $englishPlay is "ongoing" and $englishPlayDays is 0 and Time.hour gte 17 and Time.hour lt 21>>
@@ -1533,22 +1555,22 @@
 				<<link [[Grope Sydney|Sydney Temple Punish Touch]]>><<set $sydneyTouch += 1>><<arousal 1500>><<set $sydneyPain -= 4>><</link>><<garousal>><<gsarousal>><<lllspain>><<promiscuous1>>
 				<br>
 			<<case 1>>
-				<<if $promiscuity gte 15>>
+				<<if hasSexStat("promiscuity", 2)>>
 					<<link [[Grope Sydney|Sydney Temple Punish Touch]]>><<set $sydneyTouch += 1>><<arousal 1500>><<set $sydneyPain -= 4>><</link>><<garousal>><<gsarousal>><<lllspain>><<promiscuous2>>
 					<br>
 				<</if>>
 			<<case 2>>
-				<<if $promiscuity gte 35>>
+				<<if hasSexStat("promiscuity", 3)>>
 					<<link [[Grope Sydney|Sydney Temple Punish Touch]]>><<set $sydneyTouch += 1>><<arousal 1500>><<set $sydneyPain -= 4>><</link>><<garousal>><<gsarousal>><<lllspain>><<promiscuous3>>
 					<br>
 				<</if>>
 			<<case 3>>
-				<<if $promiscuity gte 55>>
+				<<if hasSexStat("promiscuity", 4)>>
 					<<link [[Grope Sydney|Sydney Temple Punish Touch]]>><<set $sydneyTouch += 1>><<arousal 1500>><<set $sydneyPain -= 4>><</link>><<garousal>><<gsarousal>><<lllspain>><<promiscuous4>>
 					<br>
 				<</if>>
 			<<case 4>>
-				<<if $promiscuity gte 75>>
+				<<if hasSexStat("promiscuity", 5)>>
 					<<link [[Grope Sydney|Sydney Temple Punish Touch]]>><<set $sydneyTouch += 1>><<arousal 1500>><<set $sydneyPain -= 4>><</link>><<garousal>><<gsarousal>><<lllspain>><<promiscuous5>>
 					<br>
 				<</if>>

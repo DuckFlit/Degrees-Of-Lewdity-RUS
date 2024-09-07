@@ -620,10 +620,11 @@ window.onInputChanged = onInputChanged;
 function closeOverlay() {
 	wikifier("journalNotesTextareaSave");
 	updateOptions();
-	delete T.currentOverlay;
-	delete V.tempDisable;
 	T.buttons.reset();
 	$("#customOverlay").addClass("hidden").parent().addClass("hidden");
+	$.event.trigger(":oncloseoverlay", [T.currentOverlay]);
+	delete T.currentOverlay;
+	delete V.tempDisable;
 }
 window.closeOverlay = closeOverlay;
 
@@ -640,10 +641,6 @@ function updatehistorycontrols() {
 	// enable fast rng re-roll on "keypad *" for debug and testing
 	if (V.debug || V.cheatdisable === "f" || V.testing) Links.disableRNGReload = false;
 	else Links.disableRNGReload = true;
-
-	// option to reduce the number of states going into sessionStorage, for better performance
-	if (V.options.maxSessionStates === undefined) V.options.maxSessionStates = Config.history.maxSessionStates;
-	else Config.history.maxSessionStates = V.options.maxSessionStates;
 
 	// option to still record history without showing the controls, for better debugging
 	if (V.options.maxStates === 1 || !V.options.historyControls || V.ironmanmode) {
@@ -672,7 +669,6 @@ function updateOptions() {
 
 		if (!State.restore(true)) return; // don't do anything if state couldn't be restored
 		V.options = optionsData;
-		tanned(0, "ignoreCoverage");
 		State.show();
 
 		T.key = tmpKey;
@@ -802,3 +798,13 @@ function returnTimeFormat() {
 	return V.options.dateFormat;
 }
 window.returnTimeFormat = returnTimeFormat;
+
+/* Temporary until npc rework */
+function sensitivityString(value) {
+	if (value >= 3.5) return "sensitive";
+	if (value >= 2.5) return "tender";
+	if (value >= 1.5) return "receptive";
+	return "normal";
+};
+
+window.sensitivityString = sensitivityString;

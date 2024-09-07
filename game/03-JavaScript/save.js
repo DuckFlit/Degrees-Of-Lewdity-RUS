@@ -576,7 +576,7 @@ const importSettingsData = function (data) {
 		if (V.passage === "Start" && S.starting != null) {
 			const listObject = settingsObjects("starting");
 			const listKey = Object.keys(listObject);
-			const namedObjects = ["player", "skinColor"];
+			const namedObjects = ["player"];
 
 			for (let i = 0; i < listKey.length; i++) {
 				if (namedObjects.includes(listKey[i]) && S.starting[listKey[i]] != null) {
@@ -601,7 +601,7 @@ const importSettingsData = function (data) {
 		if (S.general != null) {
 			const listObject = settingsObjects("general");
 			const listKey = Object.keys(listObject);
-			const namedObjects = ["map", "skinColor", "shopDefaults", "options"];
+			const namedObjects = ["map", "shopDefaults", "options"];
 			// correct swapped min/max values
 			if (S.general.breastsizemin > S.general.breastsizemax) {
 				const temp = S.general.breastsizemin;
@@ -653,6 +653,10 @@ const importSettingsData = function (data) {
 						} else if (validateValue(listObject[listKey[j]], S.npc[V.NPCNameList[i]][listKey[j]])) {
 							V.NPCName[i][listKey[j]] = S.npc[V.NPCNameList[i]][listKey[j]];
 						}
+						// Prevent the changing of gender with pregnant npc's
+						if (V.NPCName[i].pregnancy.type) {
+							V.NPCName[i].gender = "f";
+						}
 					}
 				}
 			}
@@ -701,7 +705,6 @@ function exportSettings(data, type) {
 	const S = {
 		general: {
 			map: {},
-			skinColor: {},
 			shopDefaults: {},
 			options: {},
 		},
@@ -713,11 +716,10 @@ function exportSettings(data, type) {
 	if (V.passage === "Start") {
 		S.starting = {
 			player: {},
-			skinColor: {},
 		};
 		listObject = settingsObjects("starting");
 		listKey = Object.keys(listObject);
-		namedObjects = ["player", "skinColor"];
+		namedObjects = ["player"];
 
 		for (let i = 0; i < listKey.length; i++) {
 			if (namedObjects.includes(listKey[i]) && V[listKey[i]] != null) {
@@ -741,7 +743,7 @@ function exportSettings(data, type) {
 
 	listObject = settingsObjects("general");
 	listKey = Object.keys(listObject);
-	namedObjects = ["map", "skinColor", "shopDefaults", "options"];
+	namedObjects = ["map", "shopDefaults", "options"];
 
 	for (let i = 0; i < listKey.length; i++) {
 		if (namedObjects.includes(listKey[i]) && V[listKey[i]] != null) {
@@ -933,14 +935,13 @@ function settingsObjects(type) {
 						textMap: { 0: "Slender", 1: "Slim", 2: "Modest", 3: "Cushioned" },
 						randomize: "characterAppearance",
 					},
-				},
-				skinColor: {
-					natural: {
-						strings: ["light", "medium", "dark", "gyaru", "ylight", "ymedium", "ydark", "ygyaru"],
-						randomize: "characterAppearance",
-						displayName: "Natural Skintone:",
+					skin: {
+						color: {
+							strings: ["light", "medium", "dark", "gyaru", "ylight", "ymedium", "ydark", "ygyaru"],
+							randomize: "characterAppearance",
+							displayName: "Natural Skintone:",
+						},
 					},
-					range: { min: 0, max: 100, decimals: 0, randomize: "characterAppearance", displayName: "Initial Tan Value:" },
 				},
 			};
 			break;
@@ -1109,10 +1110,10 @@ function settingsObjects(type) {
 				},
 				bottomsizemax: {
 					min: 0,
-					max: 9,
+					max: 8,
 					decimals: 0,
 					displayName: "Maximum bottom size:",
-					textMap: { 0: "Slender", 1: "Slim", 2: "Modest", 3: "Cushioned", 4: "Soft", 5: "Round", 6: "Plump", 7: "Large", 8: "Huge", 9: "Huge" },
+					textMap: { 0: "Slender", 1: "Slim", 2: "Modest", 3: "Cushioned", 4: "Soft", 5: "Round", 6: "Plump", 7: "Large", 8: "Huge" },
 				},
 				penissizemin: { min: -2, max: 0, decimals: 0, displayName: "Minimum penis size:", textMap: { "-2": "Micro", "-1": "Mini", 0: "Tiny" } },
 				penissizemax: {
@@ -1169,7 +1170,6 @@ function settingsObjects(type) {
 					bodywritingImages: { bool: true, displayName: "Bodywriting images:" },
 					silhouetteEnabled: { bool: true, displayName: "NPC silhouettes:" },
 					tanImgEnabled: { bool: true, displayName: "Visual representation of skin colours:" },
-					tanningEnabled: { bool: true, displayName: "Tanning due to sun exposure:" },
 					sidebarAnimations: { bool: true, displayName: "Sidebar images:" },
 					blinkingEnabled: { bool: true, displayName: "Animated blinking:" },
 					combatAnimations: { bool: true, displayName: "Combat animations:" },
@@ -1182,9 +1182,7 @@ function settingsObjects(type) {
 					lightCombat: { min: 0, max: 1, decimals: 2, displayName: "Combat light:" },
 					lightTFColor: { min: 0, max: 1, decimals: 2, displayName: "Angel/Devil TF colour components:" },
 					maxStates: { min: 1, max: 20, decimals: 0, displayName: "History depth:" },
-					maxSessionStates: { min: 1, max: 20, decimals: 0, displayName: "Session history depth:" },
 					historyControls: { bool: true, displayName: "Show history controls:" },
-					newWardrobeStyle: { bool: true, displayName: "Use the new wardrobe style:" },
 					useNarrowMarket: { bool: true, displayName: "Use 'narrow screen' version of market inventory:" },
 					skipStatisticsConfirmation: { bool: true, displayName: "Skip confirmation when viewing extra stats:" },
 					passageCount: { strings: ["disabled", "changes", "total"], displayName: "Display passage count:" },
@@ -1195,7 +1193,6 @@ function settingsObjects(type) {
 					pepperSprayDisplay: { strings: ["none", "sprays", "compact"], displayName: "Pepper spray display:" },
 					condomsDisplay: { strings: ["none", "standard"], displayName: "Condom display:" },
 					closeButtonMobile: { bool: true, displayName: "Items per page:" },
-					oldclock: { bool: true, displayName: "Use old clock style:" },
 					showDebugRenderer: { bool: true, displayName: "Enable renderer debugger:" },
 					numpad: { bool: true, displayName: "Enable numpad:" },
 					traitOverlayFormat: { strings: ["table", "reducedTable", "list"], displayName: "Display traits:" },
@@ -1278,7 +1275,7 @@ function settingsConvert(exportType, type, settings) {
 	const keys = Object.keys(listObject);
 	for (let i = 0; i < keys.length; i++) {
 		if (result[keys[i]] === undefined) continue;
-		if (["map", "skinColor", "player", "shopDefaults", "options"].includes(keys[i])) {
+		if (["map", "player", "shopDefaults", "options"].includes(keys[i])) {
 			const itemKey = Object.keys(listObject[keys[i]]);
 			for (let j = 0; j < itemKey.length; j++) {
 				if (result[keys[i]][itemKey[j]] === undefined) continue;
@@ -1341,7 +1338,7 @@ window.loadExternalExportFile = function () {
 
 window.randomizeSettings = function (filter) {
 	const settingsResult = {};
-	const settingContainers = ["player", "skinColor"];
+	const settingContainers = ["player"];
 	const randomizeSettingLoop = function (settingsObject, mainObject, subObject) {
 		if (mainObject && !settingsResult[mainObject]) {
 			settingsResult[mainObject] = {};

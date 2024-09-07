@@ -23,7 +23,7 @@ You are on the beach of a strange island. The sand here is firm, but wet, and yo
 <<effects>>
 
 <<if $phase is 1>>
-	You drop to all-fours and crawl up the beach, feeling the consistency of the sand with your hands before pushing your full weight onto it. You hear the tide creep closer.
+	You drop to all fours and crawl up the beach, feeling the consistency of the sand with your hands before pushing your full weight onto it. You hear the tide creep closer.
 	<br><br>
 <<elseif $phase is 2>>
 	You walk up the beach, feeling the consistency of the sand with each foot before committing to a step.
@@ -90,6 +90,7 @@ You are on the beach of a strange island. The sand here is firm, but wet, and yo
 				<br><br>
 				<<if $leftarm is "bound" and $rightarm is "bound">>
 					<span class="blue">With your arms bound, you have trouble defending yourself.</span>
+					<br>
 				<<else>>
 					<<link [[Bat them away with your arms|Island Beach Slug Bat]]>><</link>>
 					<br>
@@ -233,7 +234,13 @@ More tentacles emerge, and drag you beneath the waves.
 		<<underupperruined>>
 	<</if>>
 	<<endcombat>>
-	<<link [[Next|Passout Beach]]>><</link>>
+	<<if isPregnancyEnding()>>
+		When you come to, the giant lurker is nowhere to be seen. You try to stand, but your contractions overwhelm you.
+		<<pregnancyPassout "island">>
+	<<else>>
+		<<link [[Next|Island Passout]]>><<trauma 6>><<passout>><<island_pass 60>><</link>>
+		<br>
+	<</if>>
 	<br>
 <<else>>
 	<<tearful>> you haul yourself back onto the sand.
@@ -350,7 +357,7 @@ A small stream trickles from a rock wall, beneath a sheltered overhang. You're n
 <<if $stress gte $stressmax>>
 	It's too much for you. You pass out.
 	<br><br>
-	<<if isPlayerNonparasitePregnancyEnding()>>
+	<<if isPregnancyEnding()>>
 		<<pregnancyPassout "island">>
 	<<else>>
 		<<link [[Next|Island Passout]]>><<trauma 6>><<passout>><<island_pass 60>><</link>>
@@ -392,7 +399,7 @@ Where do you want to explore?
 	<<else>>
 		<<number `$island.walnut + $island.walnut_dried`>> handfuls
 	<</if>>
-	of walnuts stashed away. <<Number $island.walnut_dried>> <<print $island.walnut_dried is 1 ? 'handful is' : 'handfuls are'>> dried and all the more nutritious for it.
+	of walnuts stashed away. <<if $island.walnut_dried gte 1>><<Number $island.walnut_dried>> <<print $island.walnut_dried is 1 ? 'handful is' : 'handfuls are'>> dried and all the more nutritious for it.<</if>>
 	<br>
 	<<if $island.walnut gte 1>>
 		<<islandicon "nuts">><<link [[Eat a handful of raw walnuts|Island Walnut Eat]]>><<set $island.walnut-->><<hunger -200>><</link>><<lhunger>>
@@ -459,12 +466,12 @@ Where do you want to explore?
 	<<if $drugged gte 1>>
 		<span class="pink">You feel a lewd haze within you.</span>
 		<br>
-		<<ind>><<link [[Masturbate|Island Masturbation]]>><<set $masturbationstart to 1>><</link>>
+		<<skinicon "masturbate">><<link [[Masturbate|Island Masturbation]]>><<set $masturbationstart to 1>><</link>>
 		<br>
 	<<elseif $arousal gte ($arousalmax / 2)>>
 		You feel aroused.
 		<br>
-		<<ind>><<link [[Masturbate|Island Masturbation]]>><<set $masturbationstart to 1>><</link>>
+		<<skinicon "masturbate">><<link [[Masturbate|Island Masturbation]]>><<set $masturbationstart to 1>><</link>>
 		<br>
 	<</if>>
 	<<skinicon "wash">><<link [[Wash (0:10)|Island]]>><<island_pass 10>><<wash>><</link>>
@@ -1479,7 +1486,7 @@ A courtyard echoes with the rumble of unseen drums. The islanders smacks their t
 			<br><br>
 			<<He>> takes what remains of the fibre, and turns away, leaving your skin marked with a <<tattoo forehead>>.
 		<<else>>
-			<<He>> pulls you to your feet, examining the myriad tattoos covering your body. <<if $uncomfortable.nude is true>><<covered>><</if>>
+			forehead. <<He>> pauses, before pulling you to your feet, examining the myriad tattoos covering your body. <<if $uncomfortable.nude is true>><<covered>><</if>>
 		<</if>>
 		<br><br>
 		<<link [[Next|Island Defeat Tattoo End]]>><</link>>
@@ -1550,8 +1557,11 @@ You raise your head above the surface and gasp for air, as water boils around yo
 
 At last, the whim of the water leaves you washed up on the shore. Trees tower overhead.
 <br><br>
-
-<<link [[Next|Island]]>><</link>>
+<<if !$island.home>>
+	<<link [[Next|Island Treeline Search]]>><</link>>
+<<else>>
+	<<link [[Next|Island]]>><</link>>
+<</if>>
 <br>
 
 :: Island Defeat End
@@ -1575,10 +1585,11 @@ The floor carries you with it, until you're pressed against the wall. It continu
 	<<unbind>>
 	<<leg_unbind>>
 	<<person1>>
+	<<wearProp "tea">>
 	You awaken beneath a stony ceiling, lit by flickering firelight. "Ah," says an elderly voice. "Wasn't expecting you back so soon." The <<person>> passes you a cup of weak tea. "When you're feeling ready, I'll show you to my boat."
 	<br><br>
 
-	<<link [[Next|Islander Return Held]]>><</link>>
+	<<link [[Next|Islander Return Held]]>><<handheldon>><</link>>
 	<br>
 <<elseif $spear_vessel is "sea">>
 	<<loadNPC 0 "old_islander">>
@@ -1587,12 +1598,13 @@ The floor carries you with it, until you're pressed against the wall. It continu
 	<<unbind>>
 	<<leg_unbind>>
 	<<person1>>
+	<<wearProp "tea">>
 	You awaken beneath a stony ceiling, lit by flickering firelight. "Ah," says an elderly voice. "Wasn't expecting you back so soon." The <<person>> passes you a cup of weak tea. "When you're feeling ready, I'll show you to my boat."
 	<br><br>
 
-	<<link [[Tell them where the spear is|Islander Return Sea]]>><</link>>
+	<<link [[Tell them where the spear is|Islander Return Sea]]>><<handheldon>><</link>>
 	<br>
-	<<link [[Don't tell them|Islander Return Refrain]]>><</link>>
+	<<link [[Don't tell them|Islander Return Refrain]]>><<handheldon>><</link>>
 	<br>
 
 <<elseif $spear_vessel is "Zephyr">>
@@ -1602,12 +1614,13 @@ The floor carries you with it, until you're pressed against the wall. It continu
 	<<unbind>>
 	<<leg_unbind>>
 	<<person1>>
+	<<wearProp "tea">>
 	You awaken beneath a stony ceiling, lit by flickering firelight. "Ah," says an elderly voice. "Wasn't expecting you back so soon." The <<person>> passes you a cup of weak tea. "When you're feeling ready, I'll show you to my boat."
 	<br><br>
 
-	<<link [[Tell them where the spear is|Islander Return Zephyr]]>><</link>>
+	<<link [[Tell them where the spear is|Islander Return Zephyr]]>><<handheldon>><</link>>
 	<br>
-	<<link [[Don't tell them|Islander Return Refrain]]>><</link>>
+	<<link [[Don't tell them|Islander Return Refrain]]>><<handheldon>><</link>>
 	<br>
 <<elseif $spear_vessel is "temple">>
 	<<loadNPC 0 "old_islander">>
@@ -1616,12 +1629,13 @@ The floor carries you with it, until you're pressed against the wall. It continu
 	<<unbind>>
 	<<leg_unbind>>
 	<<person1>>
+	<<wearProp "tea">>
 	You awaken beneath a stony ceiling, lit by flickering firelight. "Ah," says an elderly voice. "Wasn't expecting you back so soon." The <<person>> passes you a cup of weak tea. "When you're feeling ready, I'll show you to my boat."
 	<br><br>
 
-	<<link [[Tell them where the spear is|Islander Return Temple]]>><</link>>
+	<<link [[Tell them where the spear is|Islander Return Temple]]>><<handheldon>><</link>>
 	<br>
-	<<link [[Don't tell them|Islander Return Refrain]]>><</link>>
+	<<link [[Don't tell them|Islander Return Refrain]]>><<handheldon>><</link>>
 	<br>
 <<elseif $spear_vessel>>
 	 <<loadNPC 0 "old_islander">>
@@ -1630,10 +1644,11 @@ The floor carries you with it, until you're pressed against the wall. It continu
 	<<unbind>>
 	<<leg_unbind>>
 	<<person1>>
+	<<wearProp "tea">>
 	You awaken beneath a stony ceiling, lit by flickering firelight. "Ah," says an elderly voice. "Wasn't expecting you back so soon." The <<person>> passes you a cup of weak tea. "When you're feeling ready, I'll show you to my boat."
 	<br><br>
 
-	<<link [[Next|Islander Return Refrain]]>><</link>>
+	<<link [[Next|Islander Return Refrain]]>><<handheldon>><</link>>
 	<br>
 <<else>>
 	<<generateRole 0 0 "old islander">><<person1>>
@@ -2737,7 +2752,7 @@ You turn and run. "Guards! A ne'er do well!"
 The <<person5>><<person>> tries to tackle you, and fails, but more islanders emerge at the other end of the corridor, fresh from the battlements. You're surrounded.
 <br><br>
 
-The step on the <<persons>> back as <<he>> tries to stand, using the high to jump through a high window, tumbling onto grass outside. The young islanders are too focused on their game to notice. You weave between them and the legs of the scaffold, around wooden homes, and dash back into the castle.
+You step on the <<persons>> back as <<he>> tries to stand, using the height advantage to jump through a high window, tumbling onto the grass outside. The young islanders are too focused on their game to notice. You weave between them and the legs of the scaffold, around wooden homes, and dash back into the castle.
 <br><br>
 
 You turn left, but more islanders march through a set of double-doors. One hurls a spear, almost striking you in the leg. You escape through another set of doors, then another, then down a smooth slope and into a strange chamber.

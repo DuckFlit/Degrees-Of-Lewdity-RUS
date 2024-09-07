@@ -47,7 +47,7 @@
 		"You look like you could use a break and some fresh air," you say.
 	<</if>>
 	<br><br>
-	<<if $location is "school" and $detention gte 1 and $daily.school.detentionAttended isnot 1 and $headnodetention isnot 1 and $pillory_tenant.special.name isnot "Leighton">>
+	<<if $location is "school" and $detention gte 1 and $daily.school.detentionAttended isnot 1 and $headnodetention isnot 1 and $pillory.tenant.special.name isnot "Leighton">>
 		<<He>> perks up for a moment, but <<he>> frowns at you. "The <<nnpc_title "Leighton">> said you're not allowed to leave the premises until you serve your detention at the end of the day. Sorry."
 		<br>
 	<<else>>
@@ -843,7 +843,7 @@ You approach the shelves of folded up swimwear. You can't help but think that so
 	<br>
 	<<link [[Peek in on Sydney (0:05)|Sydney Shopping Swim Peek]]>><<npcincr Sydney lust 1>><<pass 5>><</link>><<glust>><<promiscuous1>>
 	<br>
-	<<if $promiscuity gte 35>>
+	<<if hasSexStat("promiscuity", 3)>>
 		<<link [[Walk in on Sydney|Sydney Shopping Swim Enter]]>><<npcincr Sydney lust 1>><</link>><<glust>><<promiscuous3>><<sydneyWarning corrupt>>
 		<br>
 	<</if>>
@@ -875,7 +875,7 @@ You cross your arms. "I'd really like to see you wear this. You'd look really cu
 	<br>
 	<<link [[Peek in on Sydney (0:05)|Sydney Shopping Swim Peek]]>><<npcincr Sydney lust 1>><<pass 5>><</link>><<glust>><<promiscuous1>>
 	<br>
-	<<if $promiscuity gte 35>>
+	<<if hasSexStat("promiscuity", 3)>>
 		<<link [[Walk in on Sydney|Sydney Shopping Swim Enter]]>><</link>><<glust>><<promiscuous3>><<sydneyWarning corrupt>>
 		<br>
 	<</if>>
@@ -1340,7 +1340,7 @@ You shake your head, and Sydney frowns. "Suit yourself, I guess." <<He>> turns o
 <<set $dateCount.Total++>><<set $dateCount.Sydney++>>
 You arrive at the beach with Sydney.
 <<if Weather.precipitation isnot "none">>
-	The beach itself is mostly deserted due to the Weather.precipitation, but the violent waves have attracted surfers. You decide to stick to the promenade overlooking the ocean.
+	The beach itself is mostly deserted due to the <<print Weather.precipitation>>, but the violent waves have attracted surfers. You decide to stick to the promenade overlooking the ocean.
 	<br><br>
 	<<print $worn.handheld.type.includes("rainproof") ? "You and Sydney stand side-by-side under your respective umbrellas" : "Sydney makes sure to keep you under <<his>> umbrella">> as you watch the waves roll in. The sound of the<<if Weather.precipitation is "rain">> rain and<</if>> waves is relaxing. <<stress -12>><<llstress>>
 	<br><br>
@@ -1350,7 +1350,7 @@ You arrive at the beach with Sydney.
 	<br>
 	<<link [[Move and let it soak Sydney|Sydney Beach Promenade Soak]]>><<npcincr Sydney lust 1>><</link>><<glust>>
 	<br>
-	<<if $exhibitionism gte 35 and ((!$worn.upper.type.includes("swim") and !$worn.upper.type.includes("naked") and !$worn.under_upper.type.includes("swim") and !$worn.under_upper.type.includes("naked")) or (!$worn.lower.type.includes("swim") and !$worn.lower.type.includes("naked") and !$worn.under_lower.type.includes("swim") and !$worn.under_lower.type.includes("naked")))>>
+	<<if hasSexStat("exhibitionism", 3) and ((!$worn.upper.type.includes("swim") and !$worn.upper.type.includes("naked") and !$worn.under_upper.type.includes("swim") and !$worn.under_upper.type.includes("naked")) or (!$worn.lower.type.includes("swim") and !$worn.lower.type.includes("naked") and !$worn.under_lower.type.includes("swim") and !$worn.under_lower.type.includes("naked")))>>
 		<<link [[Let it soak both of you|Sydney Beach Promenade Soak Both]]>><<npcincr Sydney lust 3>><<npcincr Sydney purity -2>><</link>><<ggslust>><<lspurity>><<exhibitionist3>>
 		<br>
 	<</if>>
@@ -1647,7 +1647,7 @@ You are on the beach with Sydney.
 	<<if getVisibleClothesList().some(item => item.type.includes("swim"))>>
 		<<link [[Go for a swim (0:20)|Sydney Beach Swim]]>><<pass 20>><</link>>
 		<br>
-		<<link [[Tan on the beach (1:00)|Sydney Beach Tanning]]>><<npcincr Sydney love 1>><</link>><<llstress>><<glove>>
+		<<link [[<<print (Skin.Sunscreen.isApplied() ? 'Relax' : 'Tan')>> on the beach (1:00)|Sydney Beach Tanning]]>><<npcincr Sydney love 1>><</link>><<llstress>><<glove>>
 		<br>
 	<<else>>
 		<span class="pink">You aren't wearing the proper attire to swim or tan.</span>
@@ -1660,7 +1660,7 @@ You are on the beach with Sydney.
 		<br>
 	<</if>>
 	<br>
-	<<link [[Change clothes and leave the beach|Sydney Beach Changing Room Leave]]>><<pass 25>><</link>>
+	<<link [[Change clothes and leave the beach (0:25)|Sydney Beach Changing Room Leave]]>><<pass 25>><</link>>
 	<br>
 <</if>>
 
@@ -1748,7 +1748,6 @@ You are on the beach with Sydney.
 	<br><br>
 	You feel warm.
 	<<stress -12>><<llstress>>
-	<br><br>
 <<elseif Time.season is "winter">>
 	<<switch random(1, 3)>>
 	<<case 1>>
@@ -1761,7 +1760,6 @@ You are on the beach with Sydney.
 	<br><br>
 	Sydney helps keep the chill away.
 	<<stress 3>><<gstress>>
-	<br><br>
 <<else>>
 	<<switch random(1, 3)>>
 	<<case 1>>
@@ -1774,21 +1772,18 @@ You are on the beach with Sydney.
 	<br><br>
 	You feel refreshed.
 	<<stress -12>><<llstress>>
-	<br><br>
 <</if>>
-<<set _tanningModifiers to Weather.getTanningFactor()>>
+<<set _tanningModifiers to Skin.getTanningFactor(true)>>
 <<tanningGainOutput _tanningModifiers.result 90>>
-<br>
+<br><br>
 <<tanningPenaltiesOutput _tanningModifiers>>
-<<pass 60>>
-/* Add 30 additional tanning due to sunbathing properly */
-<<run tanned(T.tanningModifiers.result * 30, "tanLines")>>
+<<set Skin.tanningBonus = 0.5>>
 <br>
 You have a <<skincolourtext>>
 <br><br>
 
 <<endevent>><<npc "Sydney">><<person1>>
-<<link [[Next|Sydney Beach]]>><</link>>
+<<link [[Next|Sydney Beach]]>><<pass 60>><</link>>
 
 :: Sydney Robin's Lemonade
 <<location "beach">><<effects>>

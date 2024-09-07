@@ -13,16 +13,20 @@ IMPORTANT:
 		window.Theme.initControl();
 		onInputChanged(() => {
 			if(!T.optionsRefresh) T.optionsRefresh = true;
-			Wikifier.wikifyEval("<<setFont true>>");
+			if(T.globalThemeDefaults) Wikifier.wikifyEval("<<setFont true>>");
 		});
 	<</script>>
 <</widget>>
 
 <<widget "optionsgeneral">>
 	<<setupOptions>>
-	<span class="gold">Основные настройки</span>
-	<br>
-
+	<<set _globalGeneralDefaults to JSON.parse(localStorage.getItem("dolDefaultGeneralSettings"))>>
+	<<if !_globalGeneralDefaults>>
+		<<set _globalGeneralDefaults to {}>>
+	<</if>>
+	<<if !_globalThemeDefaults>>
+		<<set _globalThemeDefaults to {}>>
+	<</if>>
 	<<if $debug is 1>>
 		/*<label><<checkbox "$notifyUpdate" false true autocheck>> Notify when there's a new game update available</label>
 		<br>*/
@@ -31,30 +35,103 @@ IMPORTANT:
 		<</link>>
 		<br><br>*/
 	<</if>>
-	<div>
-		<div class="settingsToggle">
+	<div class="settingsGrid">
+		<div>
+			<<button "Save Current As Default">>
+				<<set _toSaveDefaults to {}>>
+				<<if $options.general>><<set _toSaveDefaults.general to $options.general>><</if>>
+				<<if $options.dateFormat>><<set _toSaveDefaults.dateFormat to $options.dateFormat>><</if>>
+				<<if $options.fahrenheit>><<set _toSaveDefaults.fahrenheit to $options.fahrenheit>><</if>>
+				<<if $options.timestyle>><<set _toSaveDefaults.timestyle to $options.timestyle>><</if>>
+				<<if $options.mapMovement>><<set _toSaveDefaults.mapMovement to $options.mapMovement>><</if>>
+				<<if $options.mapLegacy>><<set _toSaveDefaults.mapLegacy to $options.mapLegacy>><</if>>
+				<<if $options.mapMarkers>><<set _toSaveDefaults.mapMarkers to $options.mapMarkers>><</if>>
+				<<if $options.mapTop>><<set _toSaveDefaults.mapTop to $options.mapTop>><</if>>
+				<<if $options.closeButtonMobile>><<set _toSaveDefaults.closeButtonMobile to $options.closeButtonMobile>><</if>>
+				<<if $options.passageCount>><<set _toSaveDefaults.passageCount to $options.passageCount>><</if>>
+				<<if $options.playtime>><<set _toSaveDefaults.playtime to $options.playtime>><</if>>
+				<<if $options.neverNudeMenus>><<set _toSaveDefaults.neverNudeMenus to $options.neverNudeMenus>><</if>>
+				<<if $options.autosaveDisabled>><<set _toSaveDefaults.autosaveDisabled to $options.autosaveDisabled>><</if>>
+				<<if $options.numberify_enabled>><<set _toSaveDefaults.numberify_enabled to $options.numberify_enabled>><</if>>
+				<<run localStorage.setItem("dolDefaultGeneralSettings",JSON.stringify(_toSaveDefaults))>>
+				<<replace #customOverlayContent>><<optionsgeneral>><</replace>>
+			<</button>>
+			<<button "Reset Defaults">>
+				<<run localStorage.removeItem("dolDefaultGeneralSettings")>>
+			<</button>>
+		</div>
+	</div>
+	<div class="settingsGrid">
+		<div class="settingsHeader options"><span class="gold">General</span></div>
+		<div class="settingsToggleItem">
 			<label>
 				<<checkbox "$options.neverNudeMenus" false true autocheck>>
 				Скрыть наготу игрока в меню
 			</label>
 		</div>
-		<div class="settingsToggle">
+		<div class="settingsToggleItem">
 			<label data-disabledif="V.ironmanmode===true">
 				<<checkbox "$options.autosaveDisabled" false true autocheck>> Отключить автосохранение во время сна
 			</label>
 		</div>
-		<div class="settingsToggle">
+		<div class="settingsToggleItem">
+			<span class="gold">Date Format:</span><<optionsThemeDefault "dateFormat">>
+			<br>
+			<label class="en-GB"><<radiobutton "$options.dateFormat" "en-GB" autocheck>> dd/mm/yyyy</label> |
+			<label class="en-US"><<radiobutton "$options.dateFormat" "en-US" autocheck>> mm/dd/yyyy</label> |
+			<label class="zh-CN"><<radiobutton "$options.dateFormat" "zh-CN" autocheck>> yyyy/mm/dd</label>
+		</div>
+		<div class="settingsToggleItem">
+			<span class="gold">Temperature Format:</span><<optionsThemeDefault "fahrenheit">>
+			<br>
+			<label><<checkbox "$options.fahrenheit" false true autocheck>> Use Fahrenheit for temperatures</label>
+		</div>
+		<div class="settingsToggleItemWide">
 			<label data-disabledif="!StartConfig.enableLinkNumberify">
 				<<checkbox "$options.numberify_enabled" 0 1 autocheck>> Включить навигацию по пронумерованным ссылкам
 			</label>
-			<span class="tooltip-anchor linkBlue" tooltip="Allows navigation with keyboard">(?)</span>
+			<mouse class="tooltip-small linkBlue">(?)<span>Allows navigation with keyboard.</span></mouse>
 		</div>
-		<div style="clear:both;">/*Keep at end of toggles*/</div>
 	</div>
-	<br>
-	<span class="gold">Боковая панель</span>
-	<div>
-		<div class="settingsToggle">
+	<hr>
+	<div class="settingsGrid">
+		<div class="settingsHeader options">Боковая панель</div>
+		<div class="settingsToggleItem">
+			<span class="gold">Формат времени:</span>
+			<br>
+			<label><<radiobutton "$options.timestyle" "military" autocheck>> 24-часовой</label> |
+			<label><<radiobutton "$options.timestyle" "ampm" autocheck>> 12-часовой</label>
+		</div>
+		<div class="settingsToggleItem">
+			<span class="gold">Body shape:</span>
+			<mouse class="tooltip-small linkBlue">(?)<span>Separate from body type. This is a cosmetic change that does not count towards femininity.</span></mouse>
+			<br>
+			<<if !$options.genderBody>><<set $options.genderBody to "default">><</if>>
+			<label><<radiobutton "$options.genderBody" "default" autocheck>> Default</label> |
+			<label><<radiobutton "$options.genderBody" "m" autocheck>> Masculine</label> |
+			<label><<radiobutton "$options.genderBody" "a" autocheck>> Androgynous</label> |
+			<label><<radiobutton "$options.genderBody" "f" autocheck>> Feminine</label>
+		</div>
+		<div class="settingsToggleItem">
+			<span class="gold">Отображение презервативов:</span>
+			<br>
+			<label><<radiovar "$options.condomsDisplay" "standard">><<updatesidebarimg>><</radiovar>> По умолчанию</label> |
+			<label><<radiovar "$options.condomsDisplay" "none">><<updatesidebarimg>><</radiovar>> Не отображать</label>
+		</div>
+		<div class="settingsToggleItem">
+			<span class="gold">Отображение перцовых баллончиков:</span>
+			<br>
+			<label><<radiovar "$options.pepperSprayDisplay" "sprays">><<updatesidebarimg>><</radiovar>> По умолчанию</label> |
+			<label><<radiovar "$options.pepperSprayDisplay" "compact">><<updatesidebarimg>><</radiovar>> Компактно (точки)</label>
+			<label><<radiovar "$options.pepperSprayDisplay" "none">><<updatesidebarimg>><</radiovar>> Не отображать</label>
+		</div>
+		<div class="settingsToggleItem">
+			<label><<checkbox "$options.tipdisable" "t" "f" autocheck>> Enable sidebar hints and tips</label>
+		</div>
+		<div class="settingsToggleItem">
+			<label><<checkbox "$options.debugdisable" "t" "f" autocheck>> Enable additional error messages</label>
+		</div>
+		<div class="settingsToggleItem">
 			Отображать статистику на закрытой боковой панели:
 			<<listbox "$options.sidebarStats" autoselect>>
 				<<option "Отключить" "disabled">>
@@ -63,8 +140,8 @@ IMPORTANT:
 			<</listbox>>
 			<div class="mobile-rec gold">Это хорошая идея - включить эту функцию на мобильных!</div>
 		</div>
-		<div class="settingsToggle">
-			Отображать часы на закрытой боковой панели:
+		<div class="settingsToggleItem">
+			Отображать часы на свёрнутой боковой панели:
 			<<listbox "$options.sidebarTime" autoselect>>
 				<<option "Отключить" "disabled">>
 				<<option "Вверху" "top">>
@@ -72,63 +149,29 @@ IMPORTANT:
 			<</listbox>>
 			<div class="mobile-rec gold">Это хорошая идея - включить эту функцию на мобильных!</div>
 		</div>
-		<div class="settingsToggle">
-			Формат времени:
-			<label><<radiobutton "$options.timestyle" "military" autocheck>> 24-часовой</label> |
-			<label><<radiobutton "$options.timestyle" "ampm" autocheck>> 12-часовой</label>
+		<div class="settingsToggleItem">
+			<label><<checkbox "$options.clothingCaption" false true autocheck>> Show clothing descriptions in sidebar</label>
+			<span class="tooltip-anchor linkBlue" tooltip="Still displays the description as a tooltip when hovering over the avatar when disabled.">(?)</span>
 		</div>
-		<div class="settingsToggle">
-			<label><<checkbox "$options.oldclock" false true autocheck>> Использовать старый стиль часов на боковой панели</label>
+		<div class="settingsToggleItem">
+			<label><<checkbox "$options.showCaptionText" false true autocheck>> Show caption text in sidebar</label>
 		</div>
-		<div class="settingsToggle">
-			<label><<checkbox "$options.showCaptionText" false true autocheck>> Показывать подпись к тексту в боковой панели</label>
-		</div>
-		<div class="settingsToggle">
-			Отображение презервативов:
-			<label><<radiovar "$options.condomsDisplay" "standard">><<updatesidebarimg>><</radiovar>> Стандартное</label> |
-			<label><<radiovar "$options.condomsDisplay" "none">><<updatesidebarimg>><</radiovar>> Скрытое</label>
-		</div>
-		<div class="settingsToggle">
-			<<if !$options.genderBody>><<set $options.genderBody to "default">><</if>>
-			<label><<radiobutton "$options.genderBody" "default" autocheck>> Default</label> |
-			<label><<radiobutton "$options.genderBody" "m" autocheck>> Masculine</label> |
-			<label><<radiobutton "$options.genderBody" "a" autocheck>> Androgynous</label> |
-			<label><<radiobutton "$options.genderBody" "f" autocheck>> Feminine</label>
-		</div>
-		<div class="settingsToggle">
-			<label><<checkbox "$options.tipdisable" "t" "f" autocheck>> Включить подсказки на боковой панели</label>
-		</div>
-		<div class="settingsToggle">
-			<label><<checkbox "$options.debugdisable" "t" "f" autocheck>> Включить дополнительные сообщения об ошибках</label>
-		</div>
-		<div class="settingsToggle">
-			<label><<checkbox "$options.clothingCaption" false true autocheck>> Показывать описания одежды на боковой панели <span class="tooltip-anchor linkBlue" tooltip="Still displays the description as a tooltip when hovering over the avatar when disabled.">(?)</span></label>
-		</div>
-		<div class="settingsToggle">
-			Отображение перцовых баллончиков:
-			<<listbox "$options.pepperSprayDisplay" autoselect>>
-				<<option "Спрей" "sprays">>
-				<<option "Компактно (точки)" "compact">>
-				<<option "Не отображать" "none">>
-			<</listbox>>
-		</div>
-		<div style="clear:both;">/*Keep at end of toggles*/</div>
 	</div>
-	<br>
-	<span class="gold">Бой</span>
-	<div>
-		<div class="settingsToggle">
+	<hr>
+	<div class="settingsGrid">
+		<div class="settingsHeader options">Бой</div>
+		<div class="settingsToggleItem">
 			"Ваш персонаж" в качестве цели:
 			<label><<radiobutton "$options.targetYourself" false autocheck>> Включено</label> |
 			<label><<radiobutton "$options.targetYourself" true autocheck>> Выключено</label>
 		</div>
-		<div class="settingsToggle">
+		<div class="settingsToggleItem">
 			<label>
 				<<checkbox "$options.scrollRemember" false true autocheck>>
 				Восстановить позицию прокрутки во время боя
 			</label>
 		</div>
-		<div class="settingsToggle">
+		<div class="settingsToggleItemWide">
 			Управление в бою:
 			<<listbox "$options.combatControls" autoselect>>
 				<<option "Переключатели" "radio">>
@@ -137,62 +180,59 @@ IMPORTANT:
 				<<option "Списки (ограничение по ширине)" "limitedLists">>
 			<</listbox>>
 		</div>
-		<div style="clear:both;">/*Keep at end of toggles*/</div>
 	</div>
 
 	<<if $map isnot undefined>>
-		<br>
-		<span class="gold">Карта</span>
-		<div>
-			<div class="settingsToggle">
+		<hr>
+		<div class="settingsGrid">
+			<div class="settingsHeader options">Карта</div>
+			<div class="settingsToggleItem">
 				<label data-target="images" data-disabledif="V.options.images===0"><<checkbox "$options.mapMovement" false true autocheck>> Включить перемещение по карте, нажав/прикоснувшись к значкам карты</label>
 			</div>
-			<div class="settingsToggle">
+			<div class="settingsToggleItem">
 				<label data-target="images" data-disabledif="V.options.images===0"><<checkbox "$options.mapLegacy" false true autocheck>> Выключить SVG-карту. Включите, если карта города не видна.</label>
 			</div>
-			<div class="settingsToggle">
+			<div class="settingsToggleItem">
 				<label data-target="['images', 'maplegacy]" data-disabledif="V.options.images===0||V.options.mapLegacy"><<checkbox "$options.mapMarkers" false true autocheck>> Показать интерактивную область на карте</label>
 			</div>
-			<div class="settingsToggle">
+			<div class="settingsToggleItem">
 				<label data-target="images" data-disabledif="V.options.images===0"><<checkbox "$options.mapTop" false true autocheck>> Переместить карту над ссылками на карту</label>
 			</div>
-			<div style="clear:both;">/*Keep at end of toggles*/</div>
 		</div>
 	<</if>>
-	<br>
-	<span class="gold">Наложения</span>
-	<div>
-		<div class="settingsToggle">
-			Положение кнопки закрытия для наложенных меню
-			<mouse class="tooltip linkBlue">(?)<span>Updated next time overlay is opened</span></mouse><br>
+	<hr>
+	<div class="settingsGrid">
+		<div class="settingsHeader options">Наложения</div>
+		<div class="settingsToggleItemWide">
+			<span class="gold">Положение кнопки закрытия для наложенных меню:</span>
+			<span class="tooltip-anchor linkBlue" tooltip="Updated next time overlay is opened">(?)</span>
+			<br>
 			<label><<radiobutton "$options.closeButtonMobile" false autocheck>> Нормальное</label> |
 			<label><<radiobutton "$options.closeButtonMobile" true autocheck>> Мобильное (левая сторона)</label>
 		</div>
-		<div style="clear:both;">/*Keep at end of toggles*/</div>
 	</div>
-	<br>
-	<span class="gold">Дополнительная информация</span>
-	<div>
-		<div class="settingsToggle">
-			Отображение количества прохождений в правом верхнем углу экрана
+	<hr>
+	<div class="settingsGrid">
+		<div class="settingsHeader options">Дополнительная информация</div>
+		<div class="settingsToggleItem">
+			<span class="gold">Отображение количества прохождений в правом верхнем углу экрана:</span>
 			<br>
 			<label><<radiobutton "$options.passageCount" "disabled" autocheck>> Отключить</label>
 			<br>
 			<label><<radiobutton "$options.passageCount" "changes" autocheck>> Количество Измененных Отрывков</label>
-			<mouse class="tooltip linkBlue">(?)<span>Total number of times a new passage has changed (Clicking on links in most cases). Passages such as the settings are excluded. Not tracked in versions '0.3.12.X' and older</span></mouse>
+			<span class="tooltip-anchor linkBlue" tooltip="Total number of times a new passage has changed (Clicking on links in most cases). Passages such as the settings are excluded. Not tracked in versions '0.3.12.X' and older">(?)</span>
 			<br>
 			<label><<radiobutton "$options.passageCount" "total" autocheck>> Количество Отрывков</label>
-			<mouse class="tooltip linkBlue">(?)<span>Total number of times a new passage has been loaded (Clicking on links in most cases). Passages such as the settings are excluded. Not tracked in versions '0.3.12.X' and older</span></mouse>
+			<span class="tooltip-anchor linkBlue" tooltip="Total number of times a new passage has been loaded (Clicking on links in most cases). Passages such as the settings are excluded. Not tracked in versions '0.3.12.X' and older">(?)</span>
 		</div>
-		<div class="settingsToggle">
-			Отображение времени игры в правом верхнем углу экрана
-			<mouse class="tooltip linkBlue">(?)<span>Форматируется в 'ч:мм:сс'. Имейте в виду, что если оставить игру на несколько часов, а затем сохранить, то время будет отслежено. Чтобы избежать этого, сохраните игру перед завершением игры, а затем загрузите сохранение при возобновлении игры. Не отслеживается в версиях '0.3.13.X' и старше</span></mouse>
+		<div class="settingsToggleItem">
+			<span class="gold">Отображение времени игры в правом верхнем углу экрана:</span>
+			<span class="tooltip-anchor linkBlue" tooltip="Форматируется в 'ч:мм:сс'. Имейте в виду, что если оставить игру на несколько часов, а затем сохранить, то время будет отслежено. Чтобы избежать этого, сохраните игру перед завершением игры, а затем загрузите сохранение при возобновлении игры. Не отслеживается в версиях '0.3.13.X' и старше">(?)</span>
 			<br>
 			<label><<radiobutton "$options.playtime" false autocheck>> Отключить</label>
 			<br>
 			<label><<radiobutton "$options.playtime" true autocheck>> Включить</label>
 		</div>
-		<div style="clear:both;">/*Keep at end of toggles*/</div>
 	</div>
 
 	<<if $passage isnot "Start">>
@@ -207,85 +247,54 @@ IMPORTANT:
 
 <<widget "optionstheme">>
 	<<setupOptions>>
-
 	<<set _globalThemeDefaults to JSON.parse(localStorage.getItem("dolDefaultThemeSettings"))>>
 	<<if !_globalThemeDefaults>>
 		<<set _globalThemeDefaults to {}>>
 	<</if>>
-
-	<<button "Save Current As Default">>
-		<<set _toSaveDefaults to {}>>
-		<<if $options.theme>><<set _toSaveDefaults.theme to $options.theme>><</if>>
-		<<if $options.dateFormat>><<set _toSaveDefaults.dateFormat to $options.dateFormat>><</if>>
-		<<if $options.passageMaxWidth>><<set _toSaveDefaults.passageMaxWidth to $options.passageMaxWidth>><</if>>
-		<<if $options.passageLineHeight>><<set _toSaveDefaults.passageLineHeight to $options.passageLineHeight>><</if>>
-		<<if $options.overlayLineHeight>><<set _toSaveDefaults.overlayLineHeight to $options.overlayLineHeight>><</if>>
-		<<if $options.sidebarLineHeight>><<set _toSaveDefaults.sidebarLineHeight to $options.sidebarLineHeight>><</if>>
-		<<if $options.passageFontSize>><<set _toSaveDefaults.passageFontSize to $options.passageFontSize>><</if>>
-		<<if $options.overlayFontSize>><<set _toSaveDefaults.overlayFontSize to $options.overlayFontSize>><</if>>
-		<<if $options.sidebarFontSize>><<set _toSaveDefaults.sidebarFontSize to $options.sidebarFontSize>><</if>>
-		<<if $options.font>><<set _toSaveDefaults.font to $options.font>><</if>>
-		<<run localStorage.setItem("dolDefaultThemeSettings",JSON.stringify(_toSaveDefaults))>>
-		<<replace #customOverlayContent>><<optionstheme>><</replace>>
-	<</button>>
-	<<button "Reset Defaults">>
-		<<run localStorage.removeItem("dolDefaultThemeSettings")>>
-	<</button>>
-	<br><br>
-	<span class="gold">Theme</span><<optionsThemeDefault "theme">><mouse class="tooltip linkBlue">(!)<span>В настоящее время невозможно сохранить по умолчанию.</span></mouse>
-	<br>
-	Тема:
-	<label><input type="radio" name="theme" value="system-default" /> Default</label> |
-	<label><input type="radio" name="theme" value="dark" /> Dark</label> |
-	<label><input type="radio" name="theme" value="arctic" /> Nord</label> |
-	<label><input type="radio" name="theme" value="zen" /> Zenburn</label> |
-	<label><input type="radio" name="theme" value="monokai" /> Monokai</label> |
-	<label><input type="radio" name="theme" value="storm" /> Storm</label> |
-	<label><input type="radio" name="theme" value="latte" /> Catppuccin Latte</label> |
-	<label><input type="radio" name="theme" value="frappe" /> Catppuccin Frappé</label> |
-	<label><input type="radio" name="theme" value="macchiato" /> Catppuccin Macchiato</label> |
-	<label><input type="radio" name="theme" value="mocha" /> Catppuccin Mocha</label> |
-	<br><br>
-
-	<span class="gold">Формат даты</span><<optionsThemeDefault "dateFormat">>
-	<br>
-	<label><<radiobutton "$options.dateFormat" "en-GB" autocheck>> dd/mm/yyyy</label> |
-	<label><<radiobutton "$options.dateFormat" "en-US" autocheck>> mm/dd/yyyy</label> |
-	<label><<radiobutton "$options.dateFormat" "zh-CN" autocheck>> yyyy/mm/dd</label>
-	<br><br>
-
-	<span class="gold">Формат температуры</span><<optionsThemeDefault "dateFormat">>
-	<br>
-	<div class="settingsToggle">
-		<<checkbox "$options.fahrenheit" false true autocheck>> Использовать фаренгейт для измерения температуры
-	</div>
-	<br><br>
-
-	<<if $debug is 1>>
-		<!-- Known issues in the start menu, might cause other issues elsewhere -->
-		<span class="gold">Passage Max Width</span> <mouse class="tooltip linkBlue">(!)<span>Могут возникнуть проблемы с некоторыми элементами пользовательского интерфейса.</span></mouse>
+	<div class="settingsGrid">
 		<div>
-			<div class="settingsToggle">
-				<<listbox "$options.passageMaxWidth" autoselect>>
-					<<option "Default" undefined>>
-					<<option "50em" 50>>
-					<<option "60em" 60>>
-					<<option "65em" 65>>
-					<<option "70em" 70>>
-					<<option "75em" 75>>
-					<<option "80em" 80>>
-				<</listbox>>
-				<<optionsThemeDefault "passageMaxWidth">>
-			</div>
-			<div style="clear:both;">/*Keep at end of toggles*/</div>
+			<<button "Save Current As Default">>
+				<<set _toSaveDefaults to {}>>
+				<<if $options.theme>><<set _toSaveDefaults.theme to $options.theme>><</if>>
+				<<if $options.passageMaxWidth>><<set _toSaveDefaults.passageMaxWidth to $options.passageMaxWidth>><</if>>
+				<<if $options.passageLineHeight>><<set _toSaveDefaults.passageLineHeight to $options.passageLineHeight>><</if>>
+				<<if $options.overlayLineHeight>><<set _toSaveDefaults.overlayLineHeight to $options.overlayLineHeight>><</if>>
+				<<if $options.sidebarLineHeight>><<set _toSaveDefaults.sidebarLineHeight to $options.sidebarLineHeight>><</if>>
+				<<if $options.passageFontSize>><<set _toSaveDefaults.passageFontSize to $options.passageFontSize>><</if>>
+				<<if $options.overlayFontSize>><<set _toSaveDefaults.overlayFontSize to $options.overlayFontSize>><</if>>
+				<<if $options.sidebarFontSize>><<set _toSaveDefaults.sidebarFontSize to $options.sidebarFontSize>><</if>>
+				<<if $options.font>><<set _toSaveDefaults.font to $options.font>><</if>>
+				<<run localStorage.setItem("dolDefaultThemeSettings",JSON.stringify(_toSaveDefaults))>>
+				<<replace #customOverlayContent>><<optionstheme>><</replace>>
+			<</button>>
+			<<button "Reset Defaults">>
+				<<run localStorage.removeItem("dolDefaultThemeSettings")>>
+			<</button>>
 		</div>
-		<br>
-	<</if>>
+	</div>
+	<div class="settingsGrid">
+		<div class="settingsHeader options">Theme<<optionsThemeDefault "theme">></div>
+		<div class="settingsToggleItemWide">
+			<span class="gold">Тема:</span>
+			<label><input type="radio" name="theme" value="system-default" /> Default</label> |
+			<label><input type="radio" name="theme" value="dark" /> Dark</label> |
+			<label><input type="radio" name="theme" value="arctic" /> Nord</label> |
+			<label><input type="radio" name="theme" value="zen" /> Zenburn</label> |
+			<label><input type="radio" name="theme" value="monokai" /> Monokai</label> |
+			<label><input type="radio" name="theme" value="storm" /> Storm</label> |
+			<label><input type="radio" name="theme" value="latte" /> Catppuccin Latte</label> |
+			<label><input type="radio" name="theme" value="frappe" /> Catppuccin Frappé</label> |
+			<label><input type="radio" name="theme" value="macchiato" /> Catppuccin Macchiato</label> |
+			<label><input type="radio" name="theme" value="mocha" /> Catppuccin Mocha</label>
+			<div class="small-description">Selected styles cannot currently be saved as the 'default' option, though they will carry over to new saves.</div>
+		</div>
+	</div>
+	<hr>
 
-	<span class="gold">Высота строки</span>
-	<div>
-		<div class="settingsToggle">
-			Отрывок
+	<div class="settingsGrid">
+		<div class="settingsHeader options">Высота строки</div>
+		<div class="settingsToggleItem">
+			Отрывок:
 			<<listbox "$options.passageLineHeight" autoselect>>
 				<<option "Default" undefined>>
 				<<option "1" 1>>
@@ -296,7 +305,7 @@ IMPORTANT:
 			<</listbox>>
 			<<optionsThemeDefault "passageLineHeight">>
 		</div>
-		<div class="settingsToggle">
+		<div class="settingsToggleItem">
 			Наложение:
 			<<listbox "$options.overlayLineHeight" autoselect>>
 				<<option "Default" undefined>>
@@ -308,7 +317,7 @@ IMPORTANT:
 			<</listbox>>
 			<<optionsThemeDefault "overlayLineHeight">>
 		</div>
-		<div class="settingsToggle">
+		<div class="settingsToggleItemWide">
 			Боковая панель:
 			<<listbox "$options.sidebarLineHeight" autoselect>>
 				<<option "Default" undefined>>
@@ -320,12 +329,12 @@ IMPORTANT:
 			<</listbox>>
 			<<optionsThemeDefault "sidebarLineHeight">>
 		</div>
-		<div style="clear:both;">/*Keep at end of toggles*/</div>
 	</div>
-	<br>
-	<span class="gold">Размер шрифта</span>
-	<div>
-		<div class="settingsToggle">
+	<hr>
+
+	<div class="settingsGrid">
+		<div class="settingsHeader options">Размер шрифта</div>
+		<div class="settingsToggleItem">
 			Отрывок:
 			<<listbox "$options.passageFontSize" autoselect>>
 				<<option "Default" undefined>>
@@ -338,8 +347,9 @@ IMPORTANT:
 			<</listbox>>
 			<<optionsThemeDefault "passageFontSize">>
 		</div>
-		<div class="settingsToggle">
-			Наложение <mouse class="tooltip linkBlue">(?)<span>По умолчанию равен размеру шрифта перехода.</span></mouse>:
+		<div class="settingsToggleItem">
+			Наложение
+			<span class="tooltip-anchor linkBlue" tooltip="По умолчанию равен размеру шрифта перехода.">(?)</span>:
 			<<listbox "$options.overlayFontSize" autoselect>>
 				<<option "Default" undefined>>
 				<<option "10px" 10>>
@@ -351,7 +361,7 @@ IMPORTANT:
 			<</listbox>>
 			<<optionsThemeDefault "overlayFontSize">>
 		</div>
-		<div class="settingsToggle">
+		<div class="settingsToggleItemWide">
 			Боковая панель:
 			<<listbox "$options.sidebarFontSize" autoselect>>
 				<<option "Default" undefined>>
@@ -363,40 +373,42 @@ IMPORTANT:
 			<</listbox>>
 			<<optionsThemeDefault "sidebarFontSize">>
 		</div>
-		<div style="clear:both;">/*Keep at end of toggles*/</div>
 	</div>
-	<br>
+	<hr>
 
-	<span class="gold">Стиль шрифта</span> <<optionsThemeDefault "font">>
-	<br>
-	<label><<radiobutton "$options.font" "" `$options.font is undefined ? 'checked' : 'autocheck'`>> Использовать системное значение по умолчанию</label>
-	<br>
-	Sans-serif:
-	<label class="Arial"><<radiobutton "$options.font" "Arial" autocheck>> Arial</label> |
-	<label class="Verdana"><<radiobutton "$options.font" "Verdana" autocheck>> Verdana</label>
-	<br>
-	Serif:
-	<label class="TimesNewRoman"><<radiobutton "$options.font" "TimesNewRoman" autocheck>> Times New Roman</label> |
-	<label class="Georgia"><<radiobutton "$options.font" "Georgia" autocheck>> Georgia</label> |
-	<label class="Garamond"><<radiobutton "$options.font" "Garamond" autocheck>> Garamond</label>
-	<br>
-	Monospace:
-	<label class="CourierNew"><<radiobutton "$options.font" "CourierNew" autocheck>> Courier New</label> |
-	<label class="LucidaConsole"><<radiobutton "$options.font" "LucidaConsole" autocheck>> Lucida Console</label> |
-	<label class="Monaco"><<radiobutton "$options.font" "Monaco" autocheck>> Monaco</label>
-	<br>
-	Accessibility:
-	<label class="OpenDyslexicMono"><<radiobutton "$options.font" "OpenDyslexicMono" autocheck>> OpenDyslexic Mono</label> |
-	<label class="ComicSans"><<radiobutton "$options.font" "ComicSans" autocheck>> Comic Sans</label>
-
-
-	<br><br>
+	<div class="settingsGrid">
+		<div class="settingsHeader options">Стиль шрифта</div>
+		<div class="settingsToggleItemWide">
+			<<optionsThemeDefault "font">>
+			<label><<radiobutton "$options.font" "" `$options.font is undefined ? 'checked' : 'autocheck'`>> Use system default</label>
+			<br>
+			<span class="gold">Sans-serif:</span>
+			<label class="Arial"><<radiobutton "$options.font" "Arial" autocheck>> Arial</label> |
+			<label class="Verdana"><<radiobutton "$options.font" "Verdana" autocheck>> Verdana</label>
+			<br>
+			<span class="gold">Serif:</span>
+			<label class="TimesNewRoman"><<radiobutton "$options.font" "TimesNewRoman" autocheck>> Times New Roman</label> |
+			<label class="Georgia"><<radiobutton "$options.font" "Georgia" autocheck>> Georgia</label> |
+			<label class="Garamond"><<radiobutton "$options.font" "Garamond" autocheck>> Garamond</label>
+			<br>
+			<span class="gold">Monospace:</span>
+			<label class="CourierNew"><<radiobutton "$options.font" "CourierNew" autocheck>> Courier New</label> |
+			<label class="LucidaConsole"><<radiobutton "$options.font" "LucidaConsole" autocheck>> Lucida Console</label> |
+			<label class="Monaco"><<radiobutton "$options.font" "Monaco" autocheck>> Monaco</label>
+			<br>
+			<span class="gold">Accessibility:</span>
+			<label class="OpenDyslexicMono"><<radiobutton "$options.font" "OpenDyslexicMono" autocheck>> OpenDyslexic Mono</label> |
+			<label class="ComicSans"><<radiobutton "$options.font" "ComicSans" autocheck>> Comic Sans</label>
+		</div>
+	</div>
 <</widget>>
 
 <<widget "optionsThemeDefault">>
 	<<if _args[0]>>
 		<span @id="'optionsThemeDefault-' + _args[0]">
-			<<if _globalThemeDefaults[_args[0]]>> Default: (<<print _globalThemeDefaults[_args[0]]>>)<</if>>
+			<<if _globalThemeDefaults[_args[0]]>> Default: (<<print _globalThemeDefaults[_args[0]]>>)
+			<<elseif _globalGeneralDefaults[_args[0]]>> Default: (<<print _globalGeneralDefaults[_args[0]]>>)
+			<</if>>
 		</span>
 	<</if>>
 <</widget>>
@@ -404,205 +416,196 @@ IMPORTANT:
 <<widget "optionsperformance">>
 	<<setupOptions>>
 	<<if StartConfig.enableImages is true>>
-		<span class="gold">Изображения</span>
-		<br>
-		<div>
-			<div class="settingsToggle">
+		<div class="settingsGrid">
+			<div class="settingsHeader options">Изображения</div>
+			<div class="settingsToggleItem">
 				<label><<checkbox "$options.images" 0 1 autocheck>> Включить картинки</label>
-				<mouse class="tooltip-small linkBlue">(?)<span>Images may not load properly on older Androids</span></mouse>
+				<span class="tooltip-anchor linkBlue" tooltip="Images may not load properly on older Androids.">(?)</span>
 			</div>
-			<div class="settingsToggle">
+			<div class="settingsToggleItem">
 				<label data-target="options.images" data-disabledif="V.options.images===0"><<checkbox "$options.combatImages" 0 1 autocheck>> Включить боевые изображения</label>
 			</div>
 
-			<div class="settingsToggle">
+			<div class="settingsToggleItem">
 				<label data-target="options.images" data-disabledif="V.options.images===0">
 					<<checkbox "$options.bodywritingImages" false true autocheck>> Включить изображения с надписями на теле
-					<mouse class="tooltip-small linkBlue">(?)<span>Отключение может повысить производительность и потенциально предотвратить некорректную загрузку изображений</span></mouse>
 				</label>
+				<span class="tooltip-anchor linkBlue" tooltip="Отключение может повысить производительность и потенциально предотвратить некорректную загрузку изображений.">(?)</span>
 			</div>
-			<div class="settingsToggle">
+			<div class="settingsToggleItem">
 				<label data-target="options.images" data-disabledif="V.options.images===0"><<checkbox "$options.silhouetteEnabled" false true autocheck>> Включить силуэты NPC</label>
 			</div>
-			<div class="settingsToggle">
+			<div class="settingsToggleItem">
 				<label data-target="options.images" data-disabledif="V.options.images===0">
 					<<checkbox "$options.tanImgEnabled" false true autocheck>> Визуальное представление цвета кожи игрока и NPC
-					<mouse class="tooltip-small linkBlue">(?)<span>Может снижать производительность на некоторых устройствах</span></mouse>
 				</label>
+				<span class="tooltip-anchor linkBlue" tooltip="Only for combat. Option may be removed in the future.">(?)</span>
 			</div>
-			<div class="settingsToggle">
-				<label data-target='["options.images", "tanimgenabled"]' data-disabledif="V.options.images===0||V.options.tanImgEnabled===false">
-					<<checkbox "$options.tanningEnabled" false true autocheck>> Изменения загара под воздействием солнца
-					<mouse class="tooltip-small linkBlue">(?)<span>Возможность отключения может быть удалена позднее</span></mouse>
+			<div class="settingsToggleItem">
+				<label data-target="options.images" data-disabledif="V.options.images===0">
+					<<checkbox "$options.tanLines" false true autocheck>> Enable tanning lines from clothing
 				</label>
+				<span class="tooltip-anchor linkBlue" tooltip="Disables the visual aspect of tanning lines. Only for sidebar.">(?)</span>
 			</div>
-			<div style="clear:both;">/*Keep at end of toggles*/</div>
 		</div>
-		<br>
-		<span class="gold">Визуализация</span>
-		<br>
-		<div class="description">Закройте меню параметров, чтобы применить изменения.</div>
-		<div>
-			<div class="settingsToggle">
+		<hr>
+		<div class="settingsGrid">
+			<div class="settingsHeader options">Визуализация</div>
+			<div class="settingsToggleItem">
 				<label data-target="options.images" data-disabledif="V.options.images===0"><<checkbox "$options.weatherUpdate" false true autocheck>> Использовать новый визуализатор погоды для боковой панели</label>
 			</div>
-		</div>
-		<div>
-			<div class="settingsToggle">
+			<div class="settingsToggleItem">
 				<label data-target='["options.images", "weatherupdate"]' data-disabledif="V.options.images===0||V.options.weatherUpdate===false"><<checkbox "$options.reflections" false true autocheck>> Визуализация отражений воды
-					<span class="linkBlue" tooltip="Could cause performance issues on old devices.">(?)</span>
 				</label>
+				<span class="tooltip-anchor linkBlue" tooltip="Could cause performance issues on old devices.">(?)</span>
 			</div>
+			<div class="description">Close the options menu for the change to apply.</div>
 		</div>
-		<br><br><br>
-		<span class="gold">Анимации</span>
-		<div>
-			<div class="settingsToggle">
+		<hr>
+		<div class="settingsGrid">
+			<div class="settingsHeader options">Анимации</div>
+			<div class="settingsToggleItem">
 				<label data-target="options.images" data-disabledif="V.options.images===0"><<checkbox "$options.sidebarAnimations" false true autocheck>> Анимация персонажа на боковой панели</label>
 			</div>
-			<div class="settingsToggle">
+			<div class="settingsToggleItem">
 				<label data-target='["options.images", "sidebaranimations"]' data-disabledif="V.options.images===0||V.options.sidebarAnimations===false"><<checkbox "$options.blinkingEnabled" false true autocheck>> Анимация моргания глаз</label>
 			</div>
-			<div class="settingsToggle">
+			<div class="settingsToggleItemWide">
 				<label data-target="images" data-disabledif="V.options.images===0||V.options.combatImages===0">
 					<<checkbox "$options.combatAnimations" false true autocheck>> Боевые анимации
-					<mouse class="tooltip-small linkBlue">(?)<span>Отключение поможет повысить производительность и предотвратить некорректную загрузку изображений. Gif-изображения не будут затронуты. Попробуйте сначала отключить изображения боковой панели</span></mouse>
 				</label>
+				<span class="tooltip-anchor linkBlue" tooltip="Отключение поможет повысить производительность и предотвратить некорректную загрузку изображений. Gif-изображения не будут затронуты. Попробуйте сначала отключить изображения боковой панели.">(?)</span>
+				<<if Browser.isMobile.any() is true and $options.zoom gt 75>>
+					<br>
+					<span class="description red">Animations will break if zoom is above 75%.</span>
+				<</if>>
 			</div>
 			<<if $eyelidTEST is true>>
-				<div class="settingsToggle">
+				<div class="settingsToggleItem">
 					<label data-target='["options.images", "sidebaranimations"]' data-disabledif="V.options.images===0||V.options.sidebarAnimations===false"><<checkbox "$options.halfClosedEnabled" false true autocheck>> Включить графику полузакрытых глаз</label></div>
 					<div class="description">Рисовать веки в боковом углу как полузакрытые при сильном возбуждении.
 				</div>
 			<</if>>
-			<div style="clear:both;">/*Keep at end of toggles*/</div>
 		</div>
-		<br>
-		<span class="gold">Подсветка персонажа</span>
+		<hr>
 		<div>
-			<div class="settingsToggle" onchange="new Wikifier(null, '<<updatesidebarimg>>')">
-				<label data-target="options.images" data-disabledif="V.options.images===0">
-					<<checkbox "$options.characterLightEnabled" false true autocheck>> Включить подсветку персонажа
-				</label>
-			</div>
-			<div style="clear:both;">/*Keep at end of toggles*/</div>
-			<div data-target='["images", "characterLightEnabled"]' data-disabledif="V.options.images===0||V.options.characterLightEnabled===false" oninput="new Wikifier(null, '<<updatesidebarimg>>')">
-				<div class="settingsToggle">
+			<div class="settingsGrid" data-target='["images", "characterLightEnabled"]' data-disabledif="V.options.images===0||V.options.characterLightEnabled===false" oninput='Renderer.refresh(Renderer.locateModel("lighting", "sidebar"));'>
+				<div class="settingsHeader options">Подсветка персонажа</div>
+				<div class="settingsToggleItem">
 					<label>
 						Прожектор<br>
 						<<numberslider "$options.lightSpotlight" $options.lightSpotlight 0 1 0.05>>
 					</label>
 				</div>
-				<div class="settingsToggle">
+				<div class="settingsToggleItem">
 					<label>
 						Градиент<br>
 						<<numberslider "$options.lightGradient" $options.lightGradient 0 1 0.05>>
 					</label>
 				</div>
-				<div class="settingsToggle">
+				<div class="settingsToggleItem">
 					<label>
 						Блеск<br>
 						<<numberslider "$options.lightGlow" $options.lightGlow 0 1 0.05>>
 					</label>
 				</div>
-				<div class="settingsToggle">
+				<div class="settingsToggleItem">
 					<label>
 						Ровный<br>
 						<<numberslider "$options.lightFlat" $options.lightFlat 0 1 0.05>>
 					</label>
 				</div>
-				<div class="settingsToggle">
+				<div class="settingsToggleItem">
 					<label data-target="images" data-disabledif="V.options.images===0||V.options.combatImages===0">
 						Боевой свет<br>
 						<<numberslider "$options.lightCombat" $options.lightCombat 0 1 0.05>>
 					</label>
 				</div>
-				<div class="settingsToggle">
+				<div class="settingsToggleItem">
 					<label>
-						Цветовая составляющая Angel/Devil TF<br>
+						Цветовая составляющая<br>
 						<<numberslider "$options.lightTFColor" $options.lightTFColor 0 1 0.05>>
+						<span class="description">Необходима ангельская/дъявольская трансформация</span>
 					</label>
 				</div>
 			</div>
-			<div style="clear:both;">/*Keep at end of toggles*/</div>
+			<div style="margin-left: 10px" onchange="new Wikifier(null, '<<updatesidebarimg>>')">
+				<label data-target="options.images" data-disabledif="V.options.images===0">
+					<<checkbox "$options.characterLightEnabled" false true autocheck>> Enable character lighting
+				</label>
+			</div>
 		</div>
 	<<else>>
 		<br>
 		Изображения отключены
 	<</if>>
-	<br>
-	<span class="gold">Глубина истории</span>
-	<br>
-	<div class="description">Позволяет вернуться в прошлое на N-1 отрывок.</div>
-	<div class="settingsToggle">
-		Состояния, сохраненные в памяти:
-		<<numberslider "$options.maxStates" `$options.maxStates gt 20 ? 20 : $options.maxStates` 1 20 1 $ironmanmode>>
-
-		Состояния, сохраненные в хранилище сеанса <mouse class="tooltip-small linkBlue">(?)<span>Большее значение = худшая производительность. Полезно только для восстановления состояния игры после F5 или перезагрузки сессии. Не сохраняет больше состояний, чем позволяет ползунок выше.</span></mouse>
-		<<numberslider "$options.maxSessionStates" `$options.maxSessionStates gt 20 ? 20 : $options.maxSessionStates` 0 20 1 $ironmanmode>>
-
-		<label>
-			<<ind>><<checkbox "$options.historyControls" false true autocheck>> Отображение элементов управления историей на боковой панели
-		</label>
+	<hr>
+	<div class="settingsGrid">
+		<div class="settingsHeader options">Глубина истории</div>
+		<div class="settingsToggleItem">
+			Позволяет вернуться в прошлое на N-1 отрывок. Useful for reporting bugs or undoing decisions.
+			<hr>
+			<label>
+				<<checkbox "$options.historyControls" false true autocheck>> Отображение элементов управления историей на боковой панели
+			</label>
+		</div>
+		<div class="settingsToggleItem">
+			<span class="gold">Состояния, сохраненные в памяти:</span>
+			<<numberslider "$options.maxStates" `$options.maxStates gt 20 ? 20 : $options.maxStates` 1 20 1 $ironmanmode>>
+			<br><br>
+		</div>
 	</div>
-	<br><br>
 <</widget>>
 
 <<widget "optionsadvanced">>
 	<<setupOptions>>
-	<span class="gold">Дополнительные настройки</span>
-	<div>
-		<div class="settingsToggle">
+	<div class="settingsGrid">
+		<div class="settingsHeader options">Дополнительные настройки</div>
+		<div class="settingsToggleItem">
 			<label>
 				<<checkbox "$options.numpad" false true autocheck>>
 				Включить нумпад
-				<mouse class="tooltip-small linkBlue">(?)<span>Полезно на смартфонах, если ссылки не работают из-за программ-переводчиков</span></mouse>
 			</label>
+			<span class="tooltip-anchor linkBlue" tooltip="Полезно на смартфонах, если ссылки не работают из-за программ-переводчиков.">(?)</span>
 		</div>
-		<div class="settingsToggle">
-			<label>
-				<<checkbox "$options.newWardrobeStyle" true false autocheck>>
-				Использовать старый стиль гардероба
-			</label>
-		</div>
-		<div class="settingsToggle">
+		<div class="settingsToggleItem">
 			<label>
 				<<checkbox "$options.useNarrowMarket" false true autocheck>>
 				Использовать "узкоэкранную" версию инвентаризации рынка
 			</label>
 		</div>
-		<div class="settingsToggle">
-			<label>
-				<<checkbox "$options.skipStatisticsConfirmation" false true autocheck>>
-				Пропустить запрос на подтверждение при просмотре Extra Stats
-			</label>
+		<div class="settingsToggleItem">
+			<label><<checkbox "$options.showDebugRenderer" false true autocheck>> Enable renderer debugger</label>
 		</div>
-		<div class="settingsToggle">
-			<label><<checkbox "$options.showDebugRenderer" false true autocheck>> Включить отладчик рендеринга</label>
-		</div>
-		<div class="settingsToggle">
+		<div class="settingsToggleItem">
 			<label onclick="setTimeout(() => {toggleConfirmDialogUponTabClose();}, 100)">
 				<<checkbox "$options.confirmDialogUponTabClose" false true autocheck>>
 				Диалог подтверждения при закрытии вкладки
 			</label>
 		</div>
-		<div style="clear:both;">/*Keep at end of toggles*/</div>
 	</div>
-	<br>
-	<span class="gold">Игровой масштаб</span>
-	<mouse class="tooltip linkBlue">(?)<span>Will allow you to adjust the size of game elements and text.
-	<span class="red">
-		Пожалуйста, будьте осторожны с этой настройкой! Сохраняйтесь только в том случае, если вы довольны внесенными изменениями, так как при перезагрузке игры значение будет возвращено к последнему значению, использованному в этом сохранении.
-		В зависимости от устройства и браузера настройка может быть полностью нарушена, что может привести к неожиданным последствиям.
-	</span></span></mouse>
-	<br>
-	<span class="red">Не поддерживается во всех браузерах</span>
-	<br>
-	<br>
-
-	<<numberslider "$options.zoom" $options.zoom 50 200 1>>
-	<input type="button" value="Установить" onclick='zoom()'/>
-	<input type="button" value="Сбросить" onclick='zoom(100)'/>
+	<hr>
+	<div class="settingsGrid">
+		<div class="settingsHeader options">Игровой масштаб</div>
+		<div class="settingsToggleItemWide">
+				<span class="gold">Zoom Size:</span>
+				<span class="tooltip-anchor linkBlue" tooltip-width="460" tooltip="Will allow you to adjust the size of game elements and text.<br><br><span class='red'>
+							Пожалуйста, будьте осторожны с этой настройкой! Сохраняйтесь только в том случае, если вы довольны внесенными изменениями, так как при перезагрузке игры значение будет возвращено к последнему значению, использованному в этом сохранении.
+							В зависимости от устройства и браузера настройка может быть полностью нарушена, что может привести к неожиданным последствиям.
+						</span>">(?)</span>
+				<br>
+				<span class="description red">Поддерживается не во всех браузерах</span>
+				<br>
+				<<if Browser.isMobile.any() is true and $options.combatAnimations is true>>
+					<span class="description red">Animations will break above 75% in mobile.</span>
+					<br>
+				<</if>>
+				<<numberslider "$options.zoom" $options.zoom 50 200 1>>
+				<br><br>
+				<input type="button" value="Установить" onclick='zoom()'/>
+				<input type="button" value="Сбросить" onclick='zoom(100)'/>
+		</div>
+	</div>
 <</widget>>
 
 <<widget "optionsinformation">>
