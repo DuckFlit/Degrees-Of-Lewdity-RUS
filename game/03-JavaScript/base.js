@@ -569,14 +569,22 @@ window.mobBtnShow = mobBtnShow;
  * Options with a higher weight have a higher chance of being chosen.
  *
  * @param {Array} options Each option is an array where the first item is a value, and the second item is its weight.
+ * @param {Object} [rngInstance] Optional rngInstance. Otherwise it uses State.random.
  * @returns {*} The selected item
  * @example
  *     console.log(weightedRandom(["apple", 1], ["banana", 2], ["cherry", 3]));  // Relative probability for these will be: apple: 16.67%, banana: 33.33%, cherry: 50%
+ *     console.log(weightedRandom(["apple", 1], ["banana", 2], ["cherry", 3], rngInstance));  // Optional rngInstance
  */
 function weightedRandom(...options) {
 	if (!Array.isArray(options) || options.length === 0) {
 		throw new Error("Options must be a non-empty array.");
 	}
+
+	let rngInstance;
+	if (options[options.length - 1] instanceof PRNG) {
+		rngInstance = options.pop();
+	}
+
 	let totalWeight = 0;
 	const processedOptions = options.map(([value, weight]) => {
 		if (typeof weight !== "number") {
@@ -586,7 +594,7 @@ function weightedRandom(...options) {
 		return [value, totalWeight];
 	});
 
-	const random = State.random() * totalWeight;
+	const random = (rngInstance ? rngInstance.random() : State.random()) * totalWeight;
 	for (const [value, cumulativeWeight] of processedOptions) {
 		if (cumulativeWeight >= random) {
 			return value;
