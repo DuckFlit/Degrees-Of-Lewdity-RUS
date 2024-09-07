@@ -8,11 +8,9 @@
  * @returns {object}
  */
 function traverse(source, key, parents, callback) {
-	console.debug("Traversing: Source", source, "Key", key, "Parents", parents);
 	// Ensure node is setup correctly for later travesal or configuration
 	const output = {};
 	if (source == null) {
-		console.debug(`Source node ${key} is empty`);
 		return null;
 	}
 	Object.entries(source).forEach(([key, value]) => {
@@ -22,7 +20,6 @@ function traverse(source, key, parents, callback) {
 			if (result == null) {
 				return;
 			}
-			console.debug(`Adding branch to output at ${key}:`, result);
 			output[key] = result;
 			return;
 		}
@@ -30,10 +27,8 @@ function traverse(source, key, parents, callback) {
 		if (result == null) {
 			return;
 		}
-		console.debug(`Adding value to output at ${key}:`, result);
 		output[key] = result;
 	});
-	console.debug(`Output for node ${key}:`, output);
 	return output;
 }
 window.traverse = traverse;
@@ -47,15 +42,12 @@ window.traverse = traverse;
  * @returns {object}
  */
 function traversePair(source, target, key, parents, callback) {
-	console.debug("Traversing: Source", source, "Target", target, "Key", key, "Parents", parents);
 	// Ensure node is setup correctly for later travesal or configuration
 	const output = {};
 	if (source == null) {
-		console.debug(`Source node ${key} is empty`);
 		return null;
 	}
 	if (target == null) {
-		console.debug(`Target node ${key} is empty`);
 		return null;
 	}
 	Object.entries(source).forEach(([key, value]) => {
@@ -65,7 +57,6 @@ function traversePair(source, target, key, parents, callback) {
 			if (result == null) {
 				return;
 			}
-			console.debug(`Adding branch to output at ${key}:`, result);
 			output[key] = result;
 			return;
 		}
@@ -73,10 +64,8 @@ function traversePair(source, target, key, parents, callback) {
 		if (result == null) {
 			return;
 		}
-		console.debug(`Adding value to output at ${key}:`, result);
 		output[key] = result;
 	});
-	console.debug(`Output for node ${key}:`, output);
 	return output;
 }
 window.traversePair = traversePair;
