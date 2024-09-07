@@ -12,7 +12,7 @@
 	<<link [[Next|Lake Shore]]>><<endevent>><</link>>
 	<br>
 <<elseif $earSlime.corruption gte (currentSkillValue('willpower') / 10)>>
-	<<if $deviancy gte 55 and $earSlime.growth lt 100>>
+	<<if hasSexStat("deviancy", 4) and $earSlime.growth lt 100>>
 		<<set $earSlime.defyCooldown += 4>>
 	<<else>>
 		<<set $earSlime.defyCooldown += 8>>
@@ -114,28 +114,37 @@
 	<<if $player.bodyliquid.vagina.semen gte 2>>
 		A bit of semen drips from your <<pussy>> onto the ground as you walk.
 	<</if>>
-
-	<<if $rng gte 80 and $deviancy gte 15 and $player.vaginaExist and $swarmdisable is "f">>
+	<<if $rng gte 80 and hasSexStat("deviancy", 2) and ($player.vaginaExist or ($lactating and $milk_amount gte 250 and $breastfeedingdisable is "f")) and $swarmdisable is "f">>
 
 		After a few minutes you find a nice glade. The soft wind feels nice. You decide to lie down.
 		<br><br>
 
 		You close your eyes and listen to the sound of the forest.
 		<br><br>
-
-		Your crotch tickles. You look down
-		<<if $arousal gte ($arousalmax / 5) * 2>>
-			and see a few bugs and insects crawling around your <<genitals>>, mesmerised by the leaking fluid.
+		<<if ($player.vaginaExist and ($lactating and $milk_amount gte 250 and $breastfeedingdisable is "f"))>>
+			<<set _part1 to "crotch and breasts tickle">>
+			<<set _part2 to "<<genitals>> and nipples">>
+		<<elseif $player.vaginaExist>>
+			<<set _part1 to "crotch tickles">>
+			<<set _part2 to "<<genitals>>">>
 		<<else>>
-			and see a few bugs and insects crawling on your <<genitals>>.
+			<<set _part1 to "breasts tickle">>
+			<<set _part2 to "nipples">>
+		<</if>>
+
+		Your <<print _part1>>. You look down
+		<<if $arousal gte ($arousalmax / 5) * 2>>
+			and see a few bugs and insects crawling around your <<print _part2>>, mesmerised by the leaking fluid.
+		<<else>>
+			and see a few bugs and insects crawling on your <<print _part2>>.
 		<</if>>
 		<br><br>
 
-		<<if $deviancy gte 35>>
+		<<if hasSexStat("deviancy", 3)>>
 			<<link [[Let them explore|Lake Insect]]>><<set $phase to 1>><</link>><<deviant3>>
 			<br>
 		<</if>>
-		<<if $deviancy gte 55>>
+		<<if hasSexStat("deviancy", 4)>>
 		<<link [[Masturbate|Lake Insect]]>><<set $phase to 2>><</link>><<deviant4>>
 		<br>
 		<</if>>
@@ -156,6 +165,13 @@
 :: Lake Insect
 <<set $outside to 1>><<set $location to "lake">><<effects>><<lakeeffects>>
 <<set $forest to 40>><<set $bus to "lakewaterfall">>
+<<if ($player.vaginaExist and ($lactating and $milk_amount gte 250))>>
+	<<set _part to "<<genitals>> and nipples">>
+<<elseif $player.vaginaExist>>
+	<<set _part to "<<genitals>>">>
+<<else>>
+	<<set _part to "nipples">>
+<</if>>
 <<if $phase is 1>>
 	You lie back and let them explore you.
 	<<deviancy3>>
@@ -165,7 +181,7 @@
 	<<else>>
 		The bugs and insects explore your every inch.
 	<</if>>
-	It tingles. A warm feeling spreads through your <<genitals>>.
+	It tingles. A warm feeling spreads through your <<print _part>>.
 	<br><br>
 
 	After a few minutes you brush them off. You rise to your feet and finish your walk. You feel refreshed.
@@ -185,7 +201,12 @@
 		The bugs and insects explore your every inch.
 	<</if>>
 
-	It tingles. A warm feeling spreads through your <<genitals>>. You start touching yourself as you feel them crawl inside.
+	It tingles. A warm feeling spreads through your <<print _part>>.
+	<<if $player.vaginaExist>>
+		You start touching yourself as you feel them crawl inside.
+	<<else>>
+		You start touching yourself as you feel them drain you of milk.
+	<</if>>
 	<<deviancy4>>
 
 	<<link [[Next|Lake Masturbation]]>><<set $bugsinside to 1>><<set $masturbationstart to 1>><</link>>
@@ -521,11 +542,11 @@ You kiss them back. One after the other, while the other kisses your cheek. Some
 <<person1>>"It's getting late," the <<person>> says. "The tent is waiting."
 <br><br>
 
-<<if $promiscuity gte 15>>
+<<if hasSexStat("promiscuity", 2)>>
 	<<link [[Join them|Lake Couple 5]]>><</link>><<promiscuous2>>
 	<br>
 <</if>>
-<<if $exhibitionism gte 35>>
+<<if hasSexStat("exhibitionism", 3)>>
 	<<link [[Strip and join them|Lake Couple 5]]>><<strip>><<set $phase to 1>><</link>><<exhibitionist3>>
 	<br>
 <</if>>
@@ -546,7 +567,7 @@ The <<person1>><<person>> holds your hand as you approach the tent. <<takeHandho
 
 <<link [[Cuddle (0:30)|Lake Couple Cuddle]]>><<trauma -3>><<stress -6>><</link>><<ltrauma>><<lstress>>
 <br>
-<<if $promiscuity gte 35>>
+<<if hasSexStat("promiscuity", 3)>>
 	<<link [[Embrace and kiss|Lake Couple Sex]]>><<set $sexstart to 1>><</link>><<promiscuous3>>
 	<br>
 <</if>>
@@ -826,7 +847,7 @@ You join the others in sprinting the rest of the way to the lake. You don't know
 		A <<generatey1>><<person1>><<person>> tackles you behind a rock and gropes you.
 		<br><br>
 
-		<<if $promiscuity gte 15>>
+		<<if hasSexStat("promiscuity", 2)>>
 			<<link [[Grope back|Lake Hang Sex]]>><<set $sexstart to 1>><</link>><<promiscuous2>>
 			<br>
 		<</if>>
@@ -893,7 +914,7 @@ You burst into laughter. The bullies on the rock follow suit. The <<person>> loo
 	<br><br>
 
 	<<endevent>>
-	<<link [[Hang out (0:30)|Lake Hang]]>><<pass 30>><<stress -6>><<status 1>><</link>><<gcool>><<lstress>>
+	<<link [[Hang out (0:30)|Lake Hang]]>><<stress -6>><<status 1>><</link>><<gcool>><<lstress>>
 	<br>
 	<<link [[Stop|Lake Shore]]>><</link>>
 	<br>
@@ -1339,7 +1360,7 @@ You sprint away from the <<beasttype>>. You hear <<bhis>> paws breaking the dirt
 
 :: Lake Masturbation
 
-<<effects>><<set _enableSexToys to true>>
+<<effects>>
 <<if $masturbationstart is 1>>
 	<<set $masturbationstart to 0>>
 	<<set $masturbationstat += 1>>

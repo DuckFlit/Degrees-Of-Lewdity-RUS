@@ -29,7 +29,7 @@ There is a thermometer outside the window. It reads <span class="teal"><<print W
 <<print setup.WeatherDescriptions.extremeTemperature()>>
 <br><br>
 
-<<if isPlayerNonparasitePregnancyEnding() and !$possessed>>
+<<if isPregnancyEnding() and !$possessed>>
 	<<pregnancyPassout "edencabin">>
 <<elseif $stress gte $stressmax and !$possessed>>
 	<br><br>
@@ -109,7 +109,7 @@ There is a thermometer outside the window. It reads <span class="teal"><<print W
 	<<link [[Next|Eden Wardrobe]]>><<endevent>><</link>>
 	<br><br>
 <<else>>
-	<<if $exposed is 1 and $exhibitionism gte 55 or $exposed is 2 and $exhibitionism gte 75>>
+	<<if $exposed is 1 and hasSexStat("exhibitionism", 4) or $exposed is 2 and hasSexStat("exhibitionism", 5)>>
 		<span class="lewd">You feel a primal thrill from your displayed <<lewdness>>.</span>
 	<<elseif $exposed is 1 or $exposed is 2>>
 		<span class="lewd">Your <<lewdness>> embarrasses you, though no one but Eden can see you here.</span>
@@ -364,7 +364,15 @@ There is a thermometer outside the window. It reads <span class="teal"><<print W
 		<br>
 
 	<<else>>
-		<<if Time.days % 2 is 0>>
+		<<if $rng gte 11 and $syndromeeden is 1 and C.npc.Eden.love gte 100 and C.npc.Eden.dom gte 75 and Weather.dayState is "night" and (Weather.precipitation is "rain" or Weather.name is "thunderStorm") and !$weekly.edenStory>>
+            <<set $weekly.edenStory to true>>
+            The weather's getting harsher, beating down against the roof. Bolts of lightning periodically illuminate the cabin. You find Eden at the kitchen table, cleaning <<his>> gun.
+            <br><br>
+            A clap of thunder rings out, causing you to flinch involuntarily.
+            <br><br>
+            <<link [[Next|Eden Story]]>><</link>>
+
+		<<elseif Time.days % 2 is 0>>
 			Eden is cleaning <<his>> gun beside the fire. <span class="blue"> <<He>> looks a bit lonely.</span>
 			<br><br>
 
@@ -1171,7 +1179,7 @@ You are in the clearing outside Eden's cabin. The surrounding trees are so huge 
 	<<link [[Just say you removed it|Eden Collar Remove]]>><</link>>
 
 <<elseif $stress gte $stressmax>>
-	<<if isPlayerNonparasitePregnancyEnding()>>
+	<<if isPregnancyEnding()>>
 		<<pregnancyPassout "edencabin">>
 	<<else>>
 		<<link [[Everything fades to black...|Eden Cabin Passout]]>><</link>>
@@ -1192,7 +1200,7 @@ You are in the clearing outside Eden's cabin. The surrounding trees are so huge 
 	<<link [[Next|Eden Wardrobe]]>><<endevent>><</link>>
 
 <<else>>
-	<<if $exposed is 1 and $exhibitionism gte 55 or $exposed is 2 and $exhibitionism gte 75>>
+	<<if $exposed is 1 and hasSexStat("exhibitionism", 4) or $exposed is 2 and hasSexStat("exhibitionism", 5)>>
 		<span class="lewd">With your <<lewdness>> on display, you can't help but feel a primal thrill.</span>
 		<br><br>
 	<<elseif $exposed gte 1>>
@@ -2356,7 +2364,7 @@ Using the broom and dustpan, you sweep the cabin floor until it's clean.
 <<link [[Next|Cabin House Actions]]>><<endevent>><</link>>
 
 :: Eden Salve
-<<effects>>
+<<effects>><<wearProp "salve">>
 <!-- <<npc Eden>><<person1>> -->
 You gather the ingredients for your salve and melt the mixture on the stove. When you're done, you leave your salve on the table to cool and dry.
 <br><br>
@@ -2371,7 +2379,7 @@ You gather the ingredients for your salve and melt the mixture on the stove. Whe
 <<link [[Next|Cabin House Actions]]>><<endevent>><</link>>
 
 :: Eden Soap
-<<effects>>
+<<effects>><<wearProp "soap">>
 <!-- <<npc Eden>><<person1>> -->
 You gather the ingredients for your soap and melt the mixture on the stove. When you're done, you leave your soap on the table to cool and set.
 <br><br>
@@ -2396,7 +2404,7 @@ You take stock of Eden's supplies, noting what needs to be replenished and how m
 :: Eden Mirror
 
 <<effects>>
-<<link [[Step away|Eden Cabin]]>><<unset $mirrorMenu>><<unset $bodywritingSet>><<postMirror>><</link>>
+<<edenicon>><<link [[Step away|Eden Cabin]]>><<handheldon>><<unset $mirrorMenu>><<unset $bodywritingSet>><<postMirror>><</link>>
 <br>
 <<mirror>>
 <br><br>
@@ -2413,7 +2421,7 @@ You take stock of Eden's supplies, noting what needs to be replenished and how m
 <<display_plot eden>>
 
 <<if !$plants_known.includes("poppy")>>
-	<<icon "tending/poppy.png">> <<link [[Search for seeds (0:30)|Eden Plots Seeds]]>><<set $plants_known.push("poppy")>><<pass 30>><</link>>
+	<<icon "tending/poppy.png">> <<link [[Search for seeds (0:30)|Eden Plots Seeds]]>><<set $plants_known.push("poppy")>><<pass 30>><<handheldon>><</link>>
 	<br>
 <</if>>
 <br>
@@ -2593,17 +2601,22 @@ You slip in and out of consciousness. You feel something carry you, and hear the
 You wake up some time later on a bed. It feels familiar. You look around, and realise that you are in the cabin in the forest. Eden sits beside you, drinking from a mug. <<He>> glances at you, and puts down <<his>> drink.
 <br><br>
 
-"You're awake. I was worried," <<he>> says, looking relieved as <<he>> reaches for you, and folds you in a firm hug. You hug <<him>> back, though you're still weak.
-<br><br>
+"You're awake. I was worried," <<he>> says, looking relieved as <<he>> reaches for you, and folds you in a firm hug. 
 
-<<if $speech_attitude is "meek">>
-	"Thank you!" you say. "I don't know what would've happened to me if you didn't rescue me."
-<<elseif $speech_attitude is "bratty">>
-	"Thanks for the help," you say. "I owe you one."
+<<if isLoveInterest("Eden")>>
+	You hug <<him>> back, though you're still weak.
+	<br><br>
+	<<if $speech_attitude is "meek">>
+		"Thank you!" you say. "I don't know what would've happened to me if you didn't rescue me."
+	<<elseif $speech_attitude is "bratty">>
+		"Thanks for the help," you say. "I owe you one."
+	<<else>>
+		"Thank you!" you say. "I appreciate you bringing me back."
+	<</if>>
+	<br><br>
 <<else>>
-	"Thank you!" you say. "I appreciate you bringing me back."
+	<br><br>
 <</if>>
-<br><br>
 
 "You're safe here now. You're home. It's alright." Eden holds you for a few more moments, before releasing you and looking you over. "No harm done. I think you'll live." <<He>> smiles as <<he>> stands up and stretches.
 <br><br>
@@ -2638,8 +2651,10 @@ You awaken on the cabin bed. Turning your head to the side, you see Eden sitting
 You feel yourself being lifted into the air and someone wrapping an arm around your waist.
 <br><br>
 
-You bury your face into your rescuer's chest. They smell familiar and comforting.
-<br><br>
+<<if isLoveInterest("Eden")>>
+	You bury your face into your rescuer's chest. They smell familiar and comforting.
+	<br><br>
+<</if>>
 
 You pass out again.
 <br><br>

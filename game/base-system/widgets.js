@@ -164,8 +164,8 @@ function genderappearancecheck() {
 	addfemininityfromfactor(Math.trunc(((V.physique + V.physiquesize / 2) / V.physiquesize) * -100), "Toned muscles");
 	/* Behaviour */
 	setfemininitymultiplierfromgender(V.player.gender_posture);
-	T.acting_multiplier = V.englishtrait + 1;
-	addfemininityfromfactor(T.femininity_multiplier * 100 * T.acting_multiplier, "Posture (x" + T.acting_multiplier + " effectiveness due to English skill)");
+	const actingMultiplier = V.englishtrait + 1;
+	addfemininityfromfactor(T.femininity_multiplier * 100 * actingMultiplier, "Posture (x" + actingMultiplier + " effectiveness due to English skill)");
 	/* Special handling for calculating topless gender */
 	T.over_lower_protected = V.worn.over_lower.exposed < 2;
 	T.lower_protected = V.worn.lower.exposed < 2;

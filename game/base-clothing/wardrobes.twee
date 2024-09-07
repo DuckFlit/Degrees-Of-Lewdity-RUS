@@ -421,14 +421,8 @@
 	__Одежда__
 	<br>
 
-	<<if $options.newWardrobeStyle>>
-		<<dynamic "wardrobeLinks" "wardrobeLinks">>
-		<<dynamic "wardrobeContents" "wardrobeList">>
-	<<else>>
-		<div id="oldWardrobeListDisplay">
-			<<oldWardrobeListDisplay>>
-		</div>
-	<</if>>
+	<<dynamic "wardrobeLinks" "wardrobeLinks">>
+	<<dynamic "wardrobeContents" "wardrobeList">>
 
 	<br>
 
@@ -748,7 +742,8 @@
 				<<case "schoolcardigan">><<set _altLink to ["Tie cardigan around waist", "Wear cardigan normally"]>>
 				<<case "brownleather" "blackleather" "leathercropjacket" "winterjacket">><<set _altLink to ["Zip jacket", "Unzip jacket"]>>
 				<<case "waistcoat" "waistcoatlapel" "blazershirt">><<set _altLink to ["Tuck in", "Untuck"]>>
-				<<case "dress">><<set _altLink to ["Unbutton shirt", "Button up shirt"]>>
+				<<case "dress" "buttondown" "oversizedbuttondown">><<set _altLink to ["Unbutton shirt", "Button up shirt"]>>
+				<<case "catsuit">><<set _altLink to ["Unzip", "Zip"]>>
 				<<case "kimono" "kimonomini">><<set _altLink to ["Loosen", "Tighten"]>>
 				<<default>><<exit>>
 			<</switch>>
@@ -960,7 +955,6 @@
 			<<if isConnectedToHood(_wardrobe_list)>>
 				<!-- If selected item is a hood or selected item has a secondary hood piece -->
 				<div class="no-numberify"><<toggleHoodLink>></div>
-				<br>
 			<</if>>
 			<<if _wardrobe_list is "upper" and $worn.lower.name isnot "naked" and !_wornItemData.notuck and V.worn.upper.outfitPrimary is undefined>>
 				<div class="no-numberify"><<toggleUpperTuck>></div>
@@ -1536,9 +1530,9 @@
 			<<link [[Закрыть шкаф|Bedroom]]>><<cleanupOnWardrobeExit>><</link>>
 		<<case "Changing Room">>
 			<<if $exposed lte 1>>
-				<<getouticon>><<link [[Покинуть|Beach]]>><<cleanupOnWardrobeExit>><</link>>
-			<<elseif $exhibitionism gte 75>>
-				<<sneakicon>><<link [[Прокрасться наружу|Beach Changing Room Sneak]]>><<cleanupOnWardrobeExit>><</link>><<exhibitionist5>>
+				<<getouticon>><<link [[Leave|Beach]]>><<cleanupOnWardrobeExit>><</link>>
+			<<elseif hasSexStat("exhibitionism", 5)>>
+				<<sneakicon>><<link [[Sneak outside|Beach Changing Room Sneak]]>><<cleanupOnWardrobeExit>><</link>><<exhibitionist5>>
 			<<else>>
 				Ты не можешь уйти в таком виде!
 			<</if>>
@@ -1559,40 +1553,40 @@
 				Вы не можете выйти в таком виде!
 			<</if>>
 		<<case "Eden Wardrobe">>
-			<<if isLoveInterest("Eden") or $exhibitionism gte 75 or $exposed lte 0 or ($exhibitionism gte 55 and $exposed lte 1)>>
-				<<link [[Сделать|Eden Cabin]]>><<cleanupOnWardrobeExit>><</link>>
+			<<if isLoveInterest("Eden") or hasSexStat("exhibitionism", 5) or $exposed lte 0 or (hasSexStat("exhibitionism", 4) and $exposed lte 1)>>
+				<<link [[Done|Eden Cabin]]>><<cleanupOnWardrobeExit>><</link>>
 			<<else>>
-				Вы не можете оставаться в таком виде!
+				Вы не можете оставаться в обнажённом виде!
 			<</if>>
 		<<case "Eden Night Wardrobe">>
-			<<if isLoveInterest("Eden") or $exhibitionism gte 75 or $exposed lte 0 or ($exhibitionism gte 55 and $exposed lte 1)>>
-				<<link [[Сделать|Eden Cabin Bed]]>><<cleanupOnWardrobeExit>><</link>>
+			<<if isLoveInterest("Eden") or hasSexStat("exhibitionism", 5) or $exposed lte 0 or (hasSexStat("exhibitionism", 4) and $exposed lte 1)>>
+				<<link [[Done|Eden Cabin Bed]]>><<cleanupOnWardrobeExit>><</link>>
 			<<else>>
-				Вы не можете оставаться в таком виде!
+				Вы не можете оставаться в обнажённом виде!
 			<</if>>
 		<<case "Asylum Wardrobe">>
-			<<if $exhibitionism gte 75 or $exposed lte 0 or ($exhibitionism gte 55 and $exposed lte 1)>>
-				<<link [[Сделать|Asylum Cell]]>><<cleanupOnWardrobeExit>><</link>>
+			<<if hasSexStat("exhibitionism", 5) or $exposed lte 0 or (hasSexStat("exhibitionism", 4) and $exposed lte 1)>>
+				<<link [[Done|Asylum Cell]]>><<cleanupOnWardrobeExit>><</link>>
 			<<else>>
-				Вы не можете оставаться в таком виде!
+				Вы не можете оставаться в обнажённом виде!
 			<</if>>
 		<<case "Farm Wardrobe">>
-			<<if $exhibitionism gte 75 or $exposed lte 0 or ($exhibitionism gte 55 and $exposed lte 1)>>
-				<<link [[Сделать|Farm Bedroom]]>><<cleanupOnWardrobeExit>><</link>>
+			<<if hasSexStat("exhibitionism", 5) or $exposed lte 0 or (hasSexStat("exhibitionism", 4) and $exposed lte 1)>>
+				<<link [[Done|Farm Bedroom]]>><<cleanupOnWardrobeExit>><</link>>
 			<<else>>
-				Ты не можешь оставаться в таком виде раздетым!
+				Вы не можете оставаться в обнажённом виде!
 			<</if>>
 		<<case "Strip Club Wardrobe">>
-			<<if $exhibitionism gte 55 or $exposed lte 0 or ($exhibitionism gte 15 and $exposed lte 1)>>
-				<<link [[Вернуться|Strip Club Dressing Room]]>><<cleanupOnWardrobeExit>><</link>>
+			<<if hasSexStat("exhibitionism", 4) or $exposed lte 0 or (hasSexStat("exhibitionism", 2) and $exposed lte 1)>>
+				<<link [[Step away|Strip Club Dressing Room]]>><<cleanupOnWardrobeExit>><</link>>
 			<<else>>
-				Ты не можешь уйти в таком виде!
+				Вы не можете выйти в таком виде!
 			<</if>>
 		<<case "Brothel Wardrobe">>
-			<<if $exhibitionism gte 55 or $exposed lte 0 or ($exhibitionism gte 15 and $exposed lte 1)>>
-				<<link [[Вернуться|Brothel Dressing Room]]>><<cleanupOnWardrobeExit>><</link>>
+			<<if hasSexStat("exhibitionism", 4) or $exposed lte 0 or (hasSexStat("exhibitionism", 2) and $exposed lte 1)>>
+				<<link [[Step away|Brothel Dressing Room]]>><<cleanupOnWardrobeExit>><</link>>
 			<<else>>
-				Ты не можешь уйти в таком виде!
+				Вы не можете выйти в таком виде!
 			<</if>>
 		<<case "School Pool Wardrobe">>
 			<<if $changingRoomGender is "boys">>
@@ -1601,10 +1595,10 @@
 				<<getouticon>><<link [[Покинуть|School Girl Changing Room]]>><<cleanupOnWardrobeExit>><</link>>
 			<</if>>
 		<<case "Farm Assault Wardrobe">>
-			<<if $exhibitionism gte 75 or $exposed lte 0 or ($exhibitionism gte 55 and $exposed lte 1)>>
-				<<link [[Сделать|Farm Assault Intro]]>><<cleanupOnWardrobeExit>><</link>>
+			<<if hasSexStat("exhibitionism", 5) or $exposed lte 0 or (hasSexStat("exhibitionism", 4) and $exposed lte 1)>>
+				<<link [[Done|Farm Assault Intro]]>><<cleanupOnWardrobeExit>><</link>>
 			<<else>>
-				Ты не можешь оставаться в таком виде раздетым!
+				Вы не можете оставаться в обнажённом виде!
 			<</if>>
 		<<case "Prison Wardrobe">>
 			<<link [[Закрыть|Prison Cell]]>><<cleanupOnWardrobeExit>><</link>>
@@ -1615,10 +1609,10 @@
 		<<case "Office Agency Changing Room">>
 			<<if $exposed lte 1>>
 				<<getouticon>><<link [[Покинуть|Office Agency]]>><<cleanupOnWardrobeExit>><</link>>
-			<<elseif $exhibitionism gte 55>>
+			<<elseif hasSexStat("exhibitionism", 4)>>
 				<<sneakicon>><<link [[Прокрасться наружу|Office Agency Streak]]>><<cleanupOnWardrobeExit>><</link>><<exhibitionist4>>
 			<<else>>
-				Ты не можешь уйти в таком виде!
+				Вы не можете выйти в таком виде!
 			<</if>>
 		<<case "Bird Tower Wardrobe">>
 			<<link [[Закрыть|Bird Tower]]>><<cleanupOnWardrobeExit>><</link>>
