@@ -664,7 +664,7 @@ Renderer.CanvasModels.main = {
 
 		options.zupper = (options.upper_tucked) ? ZIndices.upper_tucked : ZIndices.upper;
 		options.zupperleft = (options.upper_tucked) ? ZIndices.upper_arms_tucked : ZIndices.upper_arms;
-		options.zupperright = (options.upper_tucked) ? ZIndices.upper_arms_tucked : ZIndices.upper_arms_tucked;
+		options.zupperright = (options.upper_tucked) ? ZIndices.upper_arms_tucked : ZIndices.upper_arms;
 
 		if (options.arm_right === "cover" || options.arm_right === "hold" ) options.zupperright = ZIndices.upper_arms_cover;
 		if (options.arm_left === "cover") options.zupperleft = ZIndices.upper_arms_cover;
@@ -1693,7 +1693,7 @@ Renderer.CanvasModels.main = {
 			animation: "idle",
 
 			srcfn(options) {
-				return `img/transformations/angel/leftwing/${options.angel_wings_type}.png`;
+				return `img/transformations/angel/leftwing/${options.angel_wings_type}_front.png`;
 			},
 			showfn(options) {
 				return options.show_tf
@@ -2535,6 +2535,10 @@ Renderer.CanvasModels.main = {
 			showfn(options) {
 				return options.show_writings && !!options.writing_right_shoulder;
 			},
+			dxfn(options) {
+				if (options.arm_right === "cover") return 4;
+				return 0;
+			},			
 			zfn(options) {
 				return ["cover", "hold"].includes(options.arm_right) ? ZIndices.arms_cover + 0.1 : ZIndices.armsidle + 0.1;
 			},
