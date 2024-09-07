@@ -16,7 +16,7 @@ function initFace() {
 	setup.clothes.face = [
 		{
 			index: 0,
-			name: "ничего",
+			name: "naked",
 			name_cap: "Ничего",
 			variable: "naked",
 			integrity: 10,
@@ -44,7 +44,7 @@ function initFace() {
 		},
 		{
 			index: 1,
-			name: "очки",
+			name: "glasses",
 			name_cap: "Очки",
 			variable: "glasses",
 			integrity: 20,
@@ -75,7 +75,7 @@ function initFace() {
 		},
 		{
 			index: 2,
-			name: "крутые солнцезащитные очки",
+			name: "cool shades",
 			name_cap: "Крутые солнцещитные очки",
 			variable: "coolshades",
 			integrity: 30,
@@ -106,7 +106,7 @@ function initFace() {
 		},
 		{
 			index: 3,
-			name: "хирургическая маска",
+			name: "surgical mask",
 			name_cap: "Хирургическая маска",
 			variable: "surgicalmask",
 			integrity: 20,
@@ -134,7 +134,7 @@ function initFace() {
 		},
 		{
 			index: 4,
-			name: "кляп",
+			name: "gag",
 			name_cap: "Кляп",
 			variable: "gag",
 			integrity: 20,
@@ -162,7 +162,7 @@ function initFace() {
 		},
 		{
 			index: 5,
-			name: "повязка на глаза",
+			name: "blindfold",
 			name_cap: "Повязка на глаза",
 			variable: "blindfold",
 			integrity: 20,
@@ -190,7 +190,7 @@ function initFace() {
 		},
 		{
 			index: 6,
-			name: "кляп и повязка на глаза",
+			name: "gag and blindfold",
 			name_cap: "Кляп и повязка на глаза",
 			variable: "gagblindfold",
 			integrity: 30,
@@ -218,7 +218,7 @@ function initFace() {
 		},
 		{
 			index: 7,
-			name: "Маска для жульничества",
+			name: "skulduggery mask",
 			name_cap: "Маска для жульничества",
 			variable: "skulmask",
 			integrity: 30,
@@ -246,7 +246,7 @@ function initFace() {
 		},
 		{
 			index: 8,
-			name: "очки с низкой оправой",
+			name: "low frame glasses",
 			name_cap: "Очки с низкой оправой",
 			variable: "lowframe",
 			integrity: 20,
@@ -276,7 +276,7 @@ function initFace() {
 		},
 		{
 			index: 9,
-			name: "очки в форме полумесяца",
+			name: "half moon glasses",
 			name_cap: "Очки в форме полумесяца",
 			variable: "halfmoon",
 			integrity: 20,
@@ -306,7 +306,7 @@ function initFace() {
 		},
 		{
 			index: 10,
-			name: "очки с широкой оправой",
+			name: "deep frame glasses",
 			name_cap: "Очки с широкой оправой",
 			variable: "deepframe",
 			integrity: 20,
@@ -336,7 +336,7 @@ function initFace() {
 		},
 		{
 			index: 11,
-			name: "квадратные солнцещитные очки",
+			name: "square shades",
 			name_cap: "Квадратные солнцещитные очки",
 			variable: "square",
 			integrity: 30,
@@ -368,7 +368,7 @@ function initFace() {
 		},
 		{
 			index: 12,
-			name: "круглые солнцещитные очки",
+			name: "round shades",
 			name_cap: "Круглые солнцещитные очки",
 			variable: "round",
 			integrity: 30,
@@ -399,7 +399,7 @@ function initFace() {
 		},
 		{
 			index: 13,
-			name: "защитные солнцещитные очки",
+			name: "shield shades",
 			name_cap: "Защитные солнцещитные очки",
 			variable: "shield",
 			integrity: 30,
@@ -431,7 +431,7 @@ function initFace() {
 		},
 		{
 			index: 14,
-			name: "очки «кошачий глаз»",
+			name: "cat eye shades",
 			name_cap: "Очки «кошачий глаз»",
 			variable: "cateye",
 			integrity: 30,
@@ -462,7 +462,7 @@ function initFace() {
 		},
 		{
 			index: 15,
-			name: "авиаторы",
+			name: "aviators",
 			name_cap: "Авиаторы",
 			variable: "aviator",
 			integrity: 30,
@@ -494,7 +494,7 @@ function initFace() {
 		},
 		{
 			index: 16,
-			name: "очки настоящего панка",
+			name: "punk shades",
 			name_cap: "Очки настоящего панка",
 			variable: "punk",
 			integrity: 30,
@@ -526,7 +526,7 @@ function initFace() {
 		},
 		{
 			index: 17,
-			name: "намордник",
+			name: "muzzle",
 			name_cap: "Намордник",
 			variable: "muzzle",
 			integrity: 30,
@@ -554,7 +554,7 @@ function initFace() {
 		},
 		{
 			index: 18,
-			name: "бинты мумии на лицо",
+			name: "mummy facewrap",
 			name_cap: "Бинты мумии на лицо",
 			variable: "mummy",
 			integrity: 10,
@@ -582,7 +582,7 @@ function initFace() {
 		},
 		{
 			index: 19,
-			name: "очки для плавания",
+			name: "swimming goggles",
 			name_cap: "Очки для плавания",
 			variable: "swimgoggles",
 			integrity: 70,
@@ -613,7 +613,7 @@ function initFace() {
 		},
 		{
 			index: 20,
-			name: "вуаль танцовщицы",
+			name: "belly dancer's veil",
 			name_cap: "Вуаль танцовщицы",
 			variable: "belly",
 			integrity: 20,
@@ -642,7 +642,7 @@ function initFace() {
 		},
 		{
 			index: 21,
-			name: "намордник",
+			name: "muzzle",
 			name_cap: "Намордник",
 			variable: "muzzlefetish",
 			integrity: 30,
@@ -671,7 +671,7 @@ function initFace() {
 		},
 		{
 			index: 22,
-			name: "кляп",
+			name: "gag",
 			name_cap: "Кляп",
 			variable: "gagfetish",
 			integrity: 20,
@@ -700,7 +700,7 @@ function initFace() {
 		},
 		{
 			index: 23,
-			name: "маленький кляп",
+			name: "bit gag",
 			name_cap: "Маленький кляп",
 			variable: "bitgag",
 			integrity: 20,
@@ -728,7 +728,7 @@ function initFace() {
 		},
 		{
 			index: 24,
-			name: "волчий намордник",
+			name: "wolf muzzle",
 			name_cap: "Волчий намордник",
 			variable: "wolfmuzzle",
 			integrity: 20,
@@ -757,7 +757,7 @@ function initFace() {
 		},
 		{
 			index: 25,
-			name: "кошачий намордник",
+			name: "kitty muzzle",
 			name_cap: "Кошачий намордник",
 			variable: "kittymuzzle",
 			integrity: 20,
@@ -786,7 +786,7 @@ function initFace() {
 		},
 		{
 			index: 26,
-			name: "тканевой кляп",
+			name: "cloth gag",
 			name_cap: "Тканевой кляп",
 			variable: "clothgag",
 			integrity: 20,
@@ -815,7 +815,7 @@ function initFace() {
 		},
 		{
 			index: 27,
-			name: "кляп из трусиков",
+			name: "panty gag",
 			name_cap: "Кляп из трусиков",
 			variable: "pantygag",
 			integrity: 20,
@@ -844,7 +844,7 @@ function initFace() {
 		},
 		{
 			index: 28,
-			name: "изолента",
+			name: "tape gag",
 			name_cap: "Изолента",
 			variable: "tapegag",
 			integrity: 20,
@@ -872,7 +872,7 @@ function initFace() {
 		},
 		{
 			index: 29,
-			name: "кляп с дилдо",
+			name: "penis gag",
 			name_cap: "Кляп с дилдо",
 			variable: "penisgag",
 			integrity: 20,
@@ -900,7 +900,7 @@ function initFace() {
 		},
 		{
 			index: 30,
-			name: "маска скелета",
+			name: "skeleton mask",
 			name_cap: "Маска скелета",
 			variable: "skele",
 			integrity: 20,
@@ -956,7 +956,7 @@ function initFace() {
 		},
 		{
 			index: 32,
-			name: "противогаз",
+			name: "gas mask",
 			name_cap: "Противогаз",
 			variable: "gasmask",
 			integrity: 300,
@@ -986,7 +986,7 @@ function initFace() {
 		},
 		{
 			index: 33,
-			name: "повязка на глаз",
+			name: "eyepatch",
 			name_cap: "Повязка на глаз",
 			variable: "eyepatch",
 			integrity: 20,
@@ -1017,7 +1017,7 @@ function initFace() {
 		},
 		{
 			index: 34,
-			name: "медицинская повязка на глаз",
+			name: "medical eyepatch",
 			name_cap: "Медицинская повязка на глаз",
 			variable: "medical eyepatch",
 			integrity: 20,
@@ -1048,7 +1048,7 @@ function initFace() {
 		},
 		{
 			index: 35,
-			name: "Собачий намордник",
+			name: "doggy muzzle",
 			name_cap: "Собачий намордник",
 			variable: "doggymuzzle",
 			integrity: 30,
@@ -1078,7 +1078,7 @@ function initFace() {
 
 		{
 			index: 36,
-			name: "бамбуковый кляп",
+			name: "bamboo muzzle",
 			name_cap: "Бамбуковый кляп",
 			variable: "bamboomuzzle",
 			integrity: 30,
@@ -1107,7 +1107,7 @@ function initFace() {
 		},
 		{
 			index: 37,
-			name: "монокль",
+			name: "monocle",
 			name_cap: "Монокль",
 			variable: "monocle",
 			integrity: 20,
@@ -1138,7 +1138,7 @@ function initFace() {
 		},
 		{
 			index: 38,
-			name: "маска туземца",
+			name: "islander mask",
 			name_cap: "Маска туземца",
 			variable: "islandermask",
 			integrity: 50,
@@ -1166,7 +1166,7 @@ function initFace() {
 		},
 		{
 			index: 39,
-			name: "очки для чтения",
+			name: "reading glasses",
 			name_cap: "Очки для чтения",
 			variable: "reading",
 			integrity: 20,
@@ -1197,7 +1197,7 @@ function initFace() {
 		},
 		{
 			index: 40,
-			name: "бандана",
+			name: "bandanna",
 			name_cap: "Бандана",
 			variable: "bandanna",
 			integrity: 20,
@@ -1226,7 +1226,7 @@ function initFace() {
 		},
 		{
 			index: 41,
-			name: "солнцезащитные очки в форме сердечкек",
+			name: "heart sunglasses",
 			name_cap: "Солнцезащитные в форме очки сердечкек",
 			variable: "heartsunglasses",
 			integrity: 30,

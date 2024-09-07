@@ -313,16 +313,15 @@
 		<<set _args[0].pronouns to {}>>
 		<<switch _args[0].pronoun>>
 			<<case "m">>
-				<<set _args[0].pronouns.he = "he">>
-				<<set _args[0].pronouns.his = "his">>
+				<<set _args[0].pronouns.he = "он">>
+				<<set _args[0].pronouns.his = "его">>
 				<<set _args[0].pronouns.hers = "his">>
-				<<set _args[0].pronouns.him = "him">>
+				<<set _args[0].pronouns.him = "него">>
 				<<set _args[0].pronouns.himself = "himself">>
+				<<set _args[0].pronouns.end = "">>
 				<<set _args[0].pronouns.man = "man">>
 				<<set _args[0].pronouns.boy = "boy">>
 				<<set _args[0].pronouns.men = "men">>
-				<<set _args[0].pronouns.itwsays = "сказал">>
-				<<set _args[0].pronouns.itwcute = "милый">>
 				<<set _args[0].pronouns.itwmadesound = "издал">>
 				<<set _args[0].pronouns.itwcan = "мог">>
 				<<set _args[0].pronouns.itwfather = "дедушка">>
@@ -334,11 +333,10 @@
 				<<set _args[0].pronouns.hers = "hers">>
 				<<set _args[0].pronouns.him = "неё">>
 				<<set _args[0].pronouns.himself = "herself">>
+				<<set _args[0].pronouns.end = "а">>
 				<<set _args[0].pronouns.man = "woman">>
 				<<set _args[0].pronouns.boy = "girl">>
 				<<set _args[0].pronouns.men = "women">>
-				<<set _args[0].pronouns.itwsays = "сказала">>
-				<<set _args[0].pronouns.itwcute = "милая">>
 				<<set _args[0].pronouns.itwmadesound = "издала">>
 				<<set _args[0].pronouns.itwcan = "могла">>
 				<<set _args[0].pronouns.itwfather = "бабушка">>
@@ -350,11 +348,10 @@
 				<<set _args[0].pronouns.hers = "its">>
 				<<set _args[0].pronouns.him = "it">>
 				<<set _args[0].pronouns.himself = "itself">>
+				<<set _args[0].pronouns.end = "о">>
 				<<set _args[0].pronouns.man = "man">>
 				<<set _args[0].pronouns.boy = "boy">>
 				<<set _args[0].pronouns.men = "men">>
-				<<set _args[0].pronouns.itwsays = "сказало">>
-				<<set _args[0].pronouns.itwcute = "милое">>
 				<<set _args[0].pronouns.itwmadesound = "издало">>
 				<<set _args[0].pronouns.itwcan = "могло">>
 				<<set _args[0].pronouns.itwhow = "которое">>
@@ -374,11 +371,10 @@
 				<<set _args[0].pronouns.hers = "they">>
 				<<set _args[0].pronouns.him = "them">>
 				<<set _args[0].pronouns.himself = "themselves">>
+				<<set _args[0].pronouns.end = "и">>
 				<<set _args[0].pronouns.man = "man">>
 				<<set _args[0].pronouns.boy = "boy">>
 				<<set _args[0].pronouns.men = "men">>
-				<<set _args[0].pronouns.itwsays = "сказали">>
-				<<set _args[0].pronouns.itwcute = "милые">>
 				<<set _args[0].pronouns.itwmadesound = "издали">>
 				<<set _args[0].pronouns.itwcan = "могли">>
 				<<set _args[0].pronouns.itwhow = "которые">>
@@ -397,8 +393,7 @@
 		<<set _args[0].pronouns.man = 0>>
 		<<set _args[0].pronouns.boy = 0>>
 		<<set _args[0].pronouns.men = 0>>
-		<<set _args[0].pronouns.itwsays = 0>>
-		<<set _args[0].pronouns.itwcute = 0>>
+		<<set _args[0].pronouns.end = 0>>
 		<<set _args[0].pronouns.itwmadesound = 0>>
 		<<set _args[0].pronouns.itwcan = 0>>
 		<<set _args[0].pronouns.itwfather = 0>>
@@ -843,6 +838,42 @@
 	<</if>>
 <</widget>>
 
+<<widget "end">><<silently>>
+    <!-- Add the option to call for named NPCs individually -->
+    <<if _args[0]>>
+        <<set $pronoun to C.npc[_args[0]].pronoun>>
+    <</if>>
+    <<if $pronoun is "m">>
+        <<set _text_output to "">>
+    <<elseif $pronoun is "f">>
+        <<set _text_output to "а">>
+    <<elseif $pronoun is "i">>
+        <<set _text_output to "о">>
+    <<elseif $pronoun is "n">>
+        <<set _text_output to "">>
+    <<elseif $pronoun is "t">>
+        <<set _text_output to "и">>
+    <</if>>
+<</silently>>_text_output<</widget>>
+
+<<widget "itwfather">><<silently>>
+	<!-- Add the option to call for named NPCs individually -->
+	<<if _args[0]>>
+		<<set $pronoun to C.npc[_args[0]].pronoun>>
+	<</if>>
+	<<if $pronoun is "m">>
+		<<set _text_output to "дедушка">>
+	<<elseif $pronoun is "f">>
+		<<set _text_output to "бабушка">>
+	<<elseif $pronoun is "i">>
+		<<set _text_output to "ничего">>
+	<<elseif $pronoun is "n">>
+		<<set _text_output to "ничего">>
+	<<elseif $pronoun is "t">>
+		<<set _text_output to "ничего">>
+	<</if>>
+<</silently>>_text_output<</widget>>
+
 <!-- Keeping his1-6 for legacy support as of v2.3 -->
 <<widget "his1">>
 	<<person1>><<his>>
@@ -1249,9 +1280,9 @@
 <</silently>><<print _text_output>><</widget>>
 
 <<widget "bottom">><<silently>>
-	<<set _text_output to ["стройн", "худ", "скром", "роскош", "мягк", "кругл", "пухл", "больш", "здор"][Math.clamp(0, 8, $player.bottomsize)]>>
+	<<set _text_output to ["стройная", "худая", "скромная", "роскошная", "мягкая", "круглая", "пухлая", "большая", "здоровая"][Math.clamp(0, 8, $player.bottomsize)]>>
 	/* _args[0] is a flag to prevent .pluck() from altering state random when calling from overlays */
-	<<set _text_output to _text_output + [" задниц", " попк", " жоп"].pluck(_args[0])>>
+	<<set _text_output to _text_output + [" задница", " попка", " жопа"].pluck(_args[0])>>
 <</silently>><<bottomsensitivity>><<print _text_output>><</widget>>
 
 <!-- Too small and too big outputs are intended as error messages
@@ -2346,16 +2377,16 @@
 <</silently>>_text_output<</widget>>
 
 <<widget "allTops">>
-	<<if $worn.over_upper.name isnot "ничего">>
+	<<if $worn.over_upper.name isnot "naked">>
 		$worn.over_upper.name\
 	<</if>>
-	<<if $worn.upper.name isnot "ничего">>
-		<<if $worn.over_upper.name isnot "ничего">>
+	<<if $worn.upper.name isnot "naked">>
+		<<if $worn.over_upper.name isnot "naked">>
 			and
 		<</if>>
 		$worn.upper.name\
 	<<elseif $worn.under_upper.type.includes("covered")>>
-		<<if $worn.over_upper.name isnot "ничего">>
+		<<if $worn.over_upper.name isnot "naked">>
 			and
 		<</if>>
 		$worn.under_upper.name\
@@ -2366,13 +2397,13 @@
 	<<if $worn.over_lower.name isnot "naked" and $worn.over_lower.set isnot $worn.over_upper.set>>
 		$worn.over_lower.name\
 	<</if>>
-	<<if $worn.lower.name isnot "ничего">>
-		<<if $worn.over_lower.name isnot "ничего">>
+	<<if $worn.lower.name isnot "naked">>
+		<<if $worn.over_lower.name isnot "naked">>
 			and
 		<</if>>
 		$worn.lower.name\
 	<<elseif $worn.under_lower.type.includes("covered")>>
-		<<if $worn.over_lower.name isnot "ничего">>
+		<<if $worn.over_lower.name isnot "naked">>
 			and
 		<</if>>
 		$worn.under_lower.name\
@@ -2381,13 +2412,13 @@
 
 <<widget "allTopsUnderwear">><<silently>>
 	<<set _tops to []>>
-	<<if $worn.over_upper.name isnot "ничего">>
+	<<if $worn.over_upper.name isnot "naked">>
 		<<set _tops.push($worn.over_upper.name)>>
 	<</if>>
-	<<if $worn.upper.name isnot "ничего">>
+	<<if $worn.upper.name isnot "naked">>
 		<<set _tops.push($worn.upper.name)>>
 	<</if>>
-	<<if $worn.under_upper.name isnot "ничего">>
+	<<if $worn.under_upper.name isnot "naked">>
 		<<set _tops.push($worn.under_upper.name)>>
 	<</if>>
 	<<if _tops.length is 1>><<set _text_output to _tops[0]>><</if>>
@@ -2397,13 +2428,13 @@
 
 <<widget "allBottomsUnderwear">><<silently>>
 	<<set _bottoms to []>>
-	<<if $worn.over_lower.name isnot "ничего">>
+	<<if $worn.over_lower.name isnot "naked">>
 		<<set _bottoms.push($worn.over_lower.name)>>
 	<</if>>
-	<<if $worn.lower.name isnot "ничего">>
+	<<if $worn.lower.name isnot "naked">>
 		<<set _bottoms.push($worn.lower.name)>>
 	<</if>>
-	<<if $worn.under_lower.name isnot "ничего">>
+	<<if $worn.under_lower.name isnot "naked">>
 		<<set _bottoms.push($worn.under_lower.name)>>
 	<</if>>
 	<<if _bottoms.length is 1>><<set _text_output to _bottoms[0]>><</if>>
@@ -4851,7 +4882,7 @@
 		<<if $farm_work[_args[0]].gender is "m">>
 			<<set _text_output to "he">>
 		<<else>>
-			<<set _text_output to "she">>
+			<<set _text_output to "она">>
 		<</if>>
 	<<else>>
 		<<set _text_output to "it">>

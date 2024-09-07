@@ -16,7 +16,7 @@ function initFeet() {
 	setup.clothes.feet = [
 		{
 			index: 0,
-			name: "ничего",
+			name: "naked",
 			name_cap: "Ничего",
 			variable: "naked",
 			integrity: 10,
@@ -45,7 +45,7 @@ function initFeet() {
 		},
 		{
 			index: 1,
-			name: "школьная обувь",
+			name: "school shoes",
 			name_cap: "Школьная обувь",
 			variable: "schoolshoes",
 			integrity: 200,
@@ -75,7 +75,7 @@ function initFeet() {
 
 		{
 			index: 2,
-			name: "туфли для смокинга",
+			name: "tuxedo shoes",
 			name_cap: "Туфли для смокинга",
 			variable: "tuxedoshoes",
 			integrity: 200,
@@ -106,7 +106,7 @@ function initFeet() {
 
 		{
 			index: 3,
-			name: "наручники на лодыжках",
+			name: "ankle cuffs",
 			name_cap: "Наручники на лодыжках",
 			variable: "anklecuffs",
 			integrity: 400,
@@ -136,7 +136,7 @@ function initFeet() {
 
 		{
 			index: 4,
-			name: "сандали",
+			name: "sandals",
 			name_cap: "Сандали",
 			variable: "sandals",
 			integrity: 100,
@@ -167,7 +167,7 @@ function initFeet() {
 
 		{
 			index: 5,
-			name: "парадные босоножки",
+			name: "dress sandals",
 			name_cap: "Парадные босоножки",
 			variable: "dresssandals",
 			integrity: 100,
@@ -198,7 +198,7 @@ function initFeet() {
 
 		{
 			index: 6,
-			name: "кроссовки",
+			name: "trainers",
 			name_cap: "Кроссовки",
 			variable: "trainers",
 			integrity: 250,
@@ -229,7 +229,7 @@ function initFeet() {
 
 		{
 			index: 7,
-			name: "ведьмины туфли",
+			name: "witch shoes",
 			name_cap: "Ведьмины туфли",
 			variable: "witch",
 			integrity: 200,
@@ -261,7 +261,7 @@ function initFeet() {
 
 		{
 			index: 8,
-			name: "резиновые сапоги",
+			name: "wellies",
 			name_cap: "Резиновые сапоги",
 			variable: "wellies",
 			integrity: 200,
@@ -291,7 +291,7 @@ function initFeet() {
 
 		{
 			index: 9,
-			name: "каблуки на платформе",
+			name: "platform heels",
 			name_cap: "Каблуки на платформе",
 			variable: "platformheels",
 			integrity: 200,
@@ -322,7 +322,7 @@ function initFeet() {
 
 		{
 			index: 10,
-			name: "кошачьи каблуки",
+			name: "kitten heels",
 			name_cap: "Кошачьи каблуки",
 			variable: "kittenheels",
 			integrity: 200,
@@ -353,7 +353,7 @@ function initFeet() {
 
 		{
 			index: 11,
-			name: "босоножки на танкетке",
+			name: "wedge sandals",
 			name_cap: "Босоножки на танкетке",
 			variable: "wedgesandals",
 			integrity: 100,
@@ -385,7 +385,7 @@ function initFeet() {
 
 		{
 			index: 12,
-			name: "туфли-лодочки на каблуках",
+			name: "court heels",
 			name_cap: "Туфли-лодочки на каблуках",
 			variable: "courtheels",
 			integrity: 200,
@@ -416,7 +416,7 @@ function initFeet() {
 
 		{
 			index: 13,
-			name: "сапоги на высоком каблуке",
+			name: "heeled boots",
 			name_cap: "Сапоги на высоком каблуке",
 			variable: "bootheels",
 			integrity: 200,
@@ -447,7 +447,7 @@ function initFeet() {
 
 		{
 			index: 14,
-			name: "каблуки для стриптизерш",
+			name: "stripper heels",
 			name_cap: "Каблуки для стриптизерш",
 			variable: "stripperheels",
 			integrity: 200,
@@ -479,7 +479,7 @@ function initFeet() {
 
 		{
 			index: 15,
-			name: "мокасины укус лошади",
+			name: "horsebit loafers",
 			name_cap: "Мокасины укус лошади",
 			variable: "horsebitloafers",
 			integrity: 200,
@@ -510,7 +510,7 @@ function initFeet() {
 
 		{
 			index: 16,
-			name: "мокасины из кордовской кожи",
+			name: "cordovan loafers",
 			name_cap: "Мокасины из кордовской кожи",
 			variable: "cordovanloafers",
 			integrity: 300,
@@ -541,7 +541,7 @@ function initFeet() {
 
 		{
 			index: 17,
-			name: "тапочки-зайчики",
+			name: "bunny slippers",
 			name_cap: "Тапочки-зайчики",
 			variable: "bunny",
 			integrity: 100,
@@ -572,7 +572,7 @@ function initFeet() {
 
 		{
 			index: 18,
-			name: "армейские ботинки",
+			name: "combat boots",
 			name_cap: "Армейские ботинки",
 			variable: "combat",
 			integrity: 500,
@@ -603,7 +603,7 @@ function initFeet() {
 
 		{
 			index: 19,
-			name: "походные ботинки",
+			name: "field boots",
 			name_cap: "Походные ботинки",
 			variable: "field",
 			integrity: 400,
@@ -634,7 +634,7 @@ function initFeet() {
 
 		{
 			index: 20,
-			name: "ботинки для загона",
+			name: "paddock boots",
 			name_cap: "Ботинки для загона",
 			variable: "paddock",
 			integrity: 300,
@@ -665,7 +665,7 @@ function initFeet() {
 
 		{
 			index: 21,
-			name: "рабочие ботинки",
+			name: "work boots",
 			name_cap: "Рабочие ботинки",
 			variable: "work",
 			integrity: 300,
@@ -696,7 +696,7 @@ function initFeet() {
 
 		{
 			index: 22,
-			name: "ласты",
+			name: "flippers",
 			name_cap: "Ласты",
 			variable: "flippers",
 			integrity: 200,
@@ -727,7 +727,7 @@ function initFeet() {
 
 		{
 			index: 23,
-			name: "коньки",
+			name: "ice skates",
 			name_cap: "Коньки",
 			variable: "iceskates",
 			integrity: 100,
@@ -758,7 +758,7 @@ function initFeet() {
 
 		{
 			index: 24,
-			name: "длинные сапоги",
+			name: "long boots",
 			name_cap: "Длинные сапоги",
 			variable: "long",
 			integrity: 200,
@@ -789,7 +789,7 @@ function initFeet() {
 
 		{
 			index: 25,
-			name: "светящиеся кроссовки",
+			name: "light-up trainers",
 			name_cap: "Светящиеся кроссовки",
 			variable: "lightuptrainers",
 			integrity: 250,
@@ -819,7 +819,7 @@ function initFeet() {
 
 		{
 			index: 26,
-			name: "цепь с шаром",
+			name: "ball and chain",
 			name_cap: "Цепь с шаром",
 			variable: "ballchain",
 			integrity: 400,
@@ -849,7 +849,7 @@ function initFeet() {
 
 		{
 			index: 27,
-			name: "ковбойские сапоги",
+			name: "cowboy boots",
 			name_cap: "Ковбойские сапоги",
 			variable: "cowboy",
 			integrity: 350,
@@ -880,7 +880,7 @@ function initFeet() {
 
 		{
 			index: 28,
-			name: "высокие кроссовки",
+			name: "high top trainers",
 			name_cap: "Высокие кроссовки",
 			variable: "hightops",
 			integrity: 300,
@@ -910,7 +910,7 @@ function initFeet() {
 
 		{
 			index: 29,
-			name: "туфли танцовщицы",
+			name: "belly dancer's shoes",
 			name_cap: "Туфли танцовщицы",
 			variable: "belly",
 			integrity: 200,
@@ -941,7 +941,7 @@ function initFeet() {
 
 		{
 			index: 30,
-			name: "брезентовые мокасины",
+			name: "canvas loafers",
 			name_cap: "Брезентовые мокасины",
 			variable: "canvas loafers",
 			integrity: 200,
@@ -972,7 +972,7 @@ function initFeet() {
 		},
 		{
 			index: 31,
-			name: "сапоги на высоком каблуке до бедер",
+			name: "thigh-high heeled boots",
 			name_cap: "Сапоги на высоком каблуке до бедер",
 			variable: "thighhigh_heels",
 			integrity: 200,
@@ -1002,7 +1002,7 @@ function initFeet() {
 		},
 		{
 			index: 32,
-			name: "сапоги с мехом",
+			name: "fur boots",
 			name_cap: "Сапоги с мехом",
 			variable: "fur_boots",
 			integrity: 200,
@@ -1033,7 +1033,7 @@ function initFeet() {
 		},
 		{
 			index: 33,
-			name: "туфли мэри джейн",
+			name: "mary janes",
 			name_cap: "Туфли мэри Джейн",
 			variable: "maryjanes",
 			integrity: 300,
@@ -1064,7 +1064,7 @@ function initFeet() {
 		},
 		{
 			index: 34,
-			name: "платформа Мэри Джейн",
+			name: "platform mary janes",
 			name_cap: "Платформа Мэри Джейн",
 			variable: "platformmaryjanes",
 			integrity: 300,

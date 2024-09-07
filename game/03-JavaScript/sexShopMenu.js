@@ -43,7 +43,7 @@ setup.sextoys = [
 		name: "dildo",
 		namecap: "Большой фаллоимитатор",
 		name_underscore: "dildo",
-		description: "Пятнадцатисантиметровый фаллоимитатор.",
+		description: "Пятнадцатисантиметровый дилдо.",
 		cost: 5000,
 		category: "dildo",
 		wearable: 0,
@@ -62,7 +62,7 @@ setup.sextoys = [
 	{
 		index: 1,
 		name: "small dildo",
-		namecap: "Маленький фаллоимитатор",
+		namecap: "Маленький дилдо",
 		name_underscore: "small_dildo",
 		description: "Хорошая игрушка для начинающих.",
 		cost: 4000,
@@ -170,10 +170,10 @@ setup.sextoys = [
 	{
 		index: 6,
 		name: "strap-on horse cock",
-		namecap: "Страпон в виде конского члена",
+		namecap: "Страпон в форме конского члена",
 		name_underscore: "strap-on_horse_cock",
 		clothes_index: 34,
-		description: "Новинка — страпон в виде конского члена. Одевается на бедра. Используется для секса с проникновением.", /* Хранить в недоступном для детей месте */
+		description: "Новинка — страпон в форме конского члена. Одевается на бедра. Используется для секса с проникновением.", /* Хранить в недоступном для детей месте */
 		cost: 8000,
 		wearable: 1,
 		size: 4,
@@ -193,10 +193,10 @@ setup.sextoys = [
 	{
 		index: 7,
 		name: "strap-on knotted cock",
-		namecap: "Страпон в виде собачего члена",
+		namecap: "Страпон в форме собачего члена",
 		name_underscore: "strap-on_knotted_cock",
 		clothes_index: 35,
-		description: "Новинка — страпон в виде собачего члена. Одевается на бедра. Используется для секса с проникновением.",
+		description: "Новинка — страпон в форме собачего члена. Одевается на бедра. Используется для секса с проникновением.",
 		cost: 8000,
 		wearable: 1,
 		size: 3,
