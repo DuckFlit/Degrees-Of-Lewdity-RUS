@@ -2536,7 +2536,7 @@ Renderer.CanvasModels.main = {
 				return options.show_writings && !!options.writing_right_shoulder;
 			},
 			dxfn(options) {
-				if (options.arm_right === "cover") return 4;
+				if (options.arm_right === "cover" || options.handheld_position === "right_cover") return 4;
 				return 0;
 			},			
 			zfn(options) {
@@ -3610,7 +3610,7 @@ Renderer.CanvasModels.main = {
 
 				const cardNum = V.blackjack ? Math.clamp(V.blackjack.playersCards.length, 1, 5) : 0;
 				const cards = options.worn.handheld.setup.variable === "cards" ? cardNum : '';
-				const cover = options.arm_right === "cover" ? "right_cover" : "right";
+				const cover = options.arm_right === "cover" && options.handheld_position !== 'right_cover' ? "right_cover" : "right";
 				const extra = torch || cards || '';
 				const path = `img/clothes/handheld/${options.worn.handheld.setup.variable}/${cover}${extra}.png`;
 				return gray_suffix(path, options.filters['worn_handheld']);
@@ -3634,7 +3634,7 @@ Renderer.CanvasModels.main = {
 				const cardNum = V.blackjack ? Math.clamp(V.blackjack.playersCards.length, 1, 5) : 0;
 				const cards = options.worn.handheld.setup.variable === "cards" ? cardNum : '';
 
-				const cover = options.arm_right === "cover" ? "right_cover" : "right";
+				const cover = options.arm_right === "cover" && options.handheld_position !== 'right_cover' ? "right_cover" : "right";
 				const extra = cards || '';
 				const path = `img/clothes/handheld/${options.worn.handheld.setup.variable}/${cover}${extra}_acc.png`;
 				return gray_suffix(path, options.filters['worn_handheld_acc']);
