@@ -545,7 +545,7 @@ window.importSettings = function (data, type) {
 	let reader;
 	switch (type) {
 		case "text":
-			V.importString = document.getElementById("settingsDataInput")?.textContent;
+			V.importString = document.getElementById("settingsDataInput")?.value;
 			Wikifier.wikifyEval('<<displaySettings "importConfirmDetails">>');
 			break;
 		case "file":
