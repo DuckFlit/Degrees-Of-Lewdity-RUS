@@ -1198,69 +1198,68 @@
 			<<set $keepchoke = 1>>
 		<</if>>
 
-		<<if $leftaction is "stopchoke" or $rightaction is "stopchoke">>
-			<<if $leftaction is "stopchoke">>
-				<<set $leftaction to 0>><<set $leftactiondefault to "stopchoke">>
-				<<brat 1 $lefttarget>><<personselect $lefttarget>>
-			<</if>>
-			<<if $rightaction is "stopchoke">>
-				<<set $rightaction to 0>><<set $rightactiondefault to "stopchoke">>
-				<<brat 1 $righttarget>><<personselect $righttarget>>
-			<</if>>
-
-			<<if $neckuse is "hand">>
-				You reach out to <<his>> hand on your neck and gently pull it away. <<He>> doesn't resist.
-				<<unset $neckuse>>
-				<<if $NPCList[_n].lefthand == "throat">>
-					<<set $NPCList[_n].lefthand = 0>>
+		<<if ["stopchoke", "stopchokenoncon"].includesAny($leftaction, $rightaction)>>
+			<<if $consensual is 1>>
+				<<if ["stopchoke", "stopchokenoncon"].includes($leftaction)>>
+					<<set $leftaction to 0>><<set $leftactiondefault to "stopchoke">>
+					<<brat 1 $lefttarget>><<personselect $lefttarget>>
 				<</if>>
-				<<if $NPCList[_n].righthand == "throat">>
-					<<set $NPCList[_n].righthand = 0>>
+				<<if ["stopchoke", "stopchokenoncon"].includes($rightaction)>>
+					<<set $rightaction to 0>><<set $rightactiondefault to "stopchoke">>
+					<<brat 1 $righttarget>><<personselect $righttarget>>
 				<</if>>
-			<</if>>
-		<</if>>
 
-
-		<<if $leftaction is "stopchokenoncon" or $rightaction is "stopchokenoncon">>
-			<<set _handsCount = 0>>
-			<<if $leftaction is "stopchokenoncon">>
-				<<set $leftaction to 0>><<set $leftactiondefault to "stopchokenoncon">>
-				<<defiance 2 $lefttarget>><<personselect $lefttarget>>
-				<<set _handsCount++>>
-			<</if>>
-			<<if $rightaction is "stopchokenoncon">>
-				<<set $rightaction to 0>><<set $rightactiondefault to "stopchokenoncon">>
-				<<defiance 2 $righttarget>><<personselect $righttarget>>
-				<<set _handsCount++>>
-			<</if>>
-
-			<<if $neckuse is "hand">>
-				You dig your nails into <<his>> hand around your throat and pull it.
-				<<defiance 2 _n>><<set $speechstruggle to 1>>
-				<<if currentSkillValue('physique') gte random(1, 60000/_handsCount)>>
-					<span class="teal">You manage to rip <<his>> hand off your throat.</span>
-					<<defiance 5 _n>>
+				<<if $neckuse is "hand">>
+					You reach out to <<his>> hand on your neck and gently pull it away. <<He>> doesn't resist.
 					<<unset $neckuse>>
-					<<gaspair>>
-
-					<<if $leftactiondefault == "stopchokenoncon">>
-						<<set $leftactiondefault to "rest">>
-					<</if>>
-					<<if $rightactiondefault == "stopchokenoncon">>
-						<<set $rightactiondefault to "rest">>
-					<</if>>
-
 					<<if $NPCList[_n].lefthand == "throat">>
 						<<set $NPCList[_n].lefthand = 0>>
 					<</if>>
 					<<if $NPCList[_n].righthand == "throat">>
 						<<set $NPCList[_n].righthand = 0>>
 					<</if>>
-				<<elseif currentSkillValue('physique') gte random(1, 40000/_handsCount)>>
-					<<His>> hand doesn't move, however <span class="blue">you manage to gasp for a bit of air when <<his>> grip weakens momentarily</span>.
-					<<oxygen 200>>
-				<<else>>
-					<span class="purple"><<His>> hand remains on your throat.</span>
+				<</if>>
+			<<else>>
+				<<set _handsCount = 0>>
+				<<if ["stopchoke", "stopchokenoncon"].includes($leftaction)>>
+					<<set $leftaction to 0>><<set $leftactiondefault to "stopchokenoncon">>
+					<<defiance 2 $lefttarget>><<personselect $lefttarget>>
+					<<set _handsCount++>>
+				<</if>>
+				<<if ["stopchoke", "stopchokenoncon"].includes($rightaction)>>
+					<<set $rightaction to 0>><<set $rightactiondefault to "stopchokenoncon">>
+					<<defiance 2 $righttarget>><<personselect $righttarget>>
+					<<set _handsCount++>>
+				<</if>>
+
+				<<if $neckuse is "hand">>
+					You dig your nails into <<his>> hand around your throat and pull it.
+					<<defiance 2 _n>><<set $speechstruggle to 1>>
+					<<if currentSkillValue('physique') gte random(1, 60000/_handsCount)>>
+						<span class="teal">You manage to rip <<his>> hand off your throat.</span>
+						<<defiance 5 _n>>
+						<<unset $neckuse>>
+						<<gaspair>>
+
+						<<if $leftactiondefault == "stopchokenoncon">>
+							<<set $leftactiondefault to "rest">>
+						<</if>>
+						<<if $rightactiondefault == "stopchokenoncon">>
+							<<set $rightactiondefault to "rest">>
+						<</if>>
+
+						<<if $NPCList[_n].lefthand == "throat">>
+							<<set $NPCList[_n].lefthand = 0>>
+						<</if>>
+						<<if $NPCList[_n].righthand == "throat">>
+							<<set $NPCList[_n].righthand = 0>>
+						<</if>>
+					<<elseif currentSkillValue('physique') gte random(1, 40000/_handsCount)>>
+						<<His>> hand doesn't move, however <span class="blue">you manage to gasp for a bit of air when <<his>> grip weakens momentarily</span>.
+						<<oxygen 200>>
+					<<else>>
+						<span class="purple"><<His>> hand remains on your throat.</span>
+					<</if>>
 				<</if>>
 			<</if>>
 		<</if>>
