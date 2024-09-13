@@ -3362,7 +3362,11 @@ Renderer.CanvasModels.main = {
 					&& options.worn.under_lower.setup.accessory === 1;
 			},
 		}),
-		"under_lower_acc": genlayer_clothing_accessory('under_lower'),
+		"under_lower_acc": genlayer_clothing_accessory("under_lower", {
+			masksrcfn(options) {
+				return options.belly_mask_under_clip_src;
+			},
+		}),
 		"under_lower_penis": {
 			z: ZIndices.under_lower_top,
 			filters: ["worn_under_lower"],
