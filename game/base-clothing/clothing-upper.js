@@ -5110,7 +5110,7 @@ function initUpper() {
 			exposed_base: 0,
 			type: ["cool", "bellyShow"],
 			set: "upper",
-			gender: "n",
+			gender: "m",
 			femininity: -100,
 			warmth: 8,
 			cost: 12000,
