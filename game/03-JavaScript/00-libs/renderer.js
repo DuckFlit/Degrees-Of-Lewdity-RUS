@@ -7,6 +7,11 @@ var Renderer;
     const millitime = function () {
         return performance.now();
     };
+    function getUniqueCanvas(image) {
+        let copy = createCanvas(image.width, image.height);
+        copy.drawImage(image, 0, 0);
+        return copy.canvas;
+    }
     function rescaleImageToCanvasHeight(scale, image, targetHeight) {
         const aspectRatio = image.width / image.height;
         const scaledWidth = scale ? targetHeight * aspectRatio : image.width;
@@ -652,7 +657,7 @@ var Renderer;
     function processLayer(layer, rects, listener) {
         let context = {
             layer: layer,
-            image: layer.image,
+            image: getUniqueCanvas(layer.image),
             needsCutout: false,
             rects: rects,
             listener: listener
