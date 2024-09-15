@@ -8,6 +8,12 @@ namespace Renderer {
 		return performance.now()
 	};
 
+	function getUniqueCanvas(image: HTMLCanvasElement): HTMLCanvasElement {
+		let copy = createCanvas(image.width, image.height);
+		copy.drawImage(image, 0, 0);
+		return copy.canvas;
+	}
+
 	function rescaleImageToCanvasHeight(scale: boolean, image: HTMLImageElement, targetHeight: number): HTMLCanvasElement {
 		const aspectRatio = image.width / image.height;
 		const scaledWidth = scale ? targetHeight * aspectRatio : image.width;
@@ -848,7 +854,7 @@ namespace Renderer {
 	) {
 		let context: RenderPipelineContext = {
 			layer: layer,
-			image: layer.image!!,
+			image: getUniqueCanvas(layer.image!!),
 			needsCutout: false,
 			rects: rects,
 			listener: listener
