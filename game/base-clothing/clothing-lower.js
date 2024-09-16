@@ -7061,7 +7061,7 @@ function initLower() {
 			location: 0,
 			iconFile: 0,
 			accIcon: 0,
-			outfitSecondary: ["upper", "prison jumpsuit"],
+			outfitSecondary: ["upper", "jumpsuit"],
 		},
 		{
 			index: 141,

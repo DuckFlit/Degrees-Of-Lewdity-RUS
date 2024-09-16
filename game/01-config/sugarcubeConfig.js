@@ -11,7 +11,7 @@ const StartConfig = {
 	debug: false,
 	enableImages: true,
 	enableLinkNumberify: true,
-	version: "0.5.2.4",
+	version: "0.5.2.8",
 	versionName: `Издание "Витая в облаках" (в русском переводе)`,
 	sneaky: false,
 	socialMediaEnabled: true,

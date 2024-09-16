@@ -1422,7 +1422,7 @@ function initHandheld() {
 			accessory_colour_options: [],
 			accessory_colour_sidebar: 0,
 			coverImage: 0,
-			back_img: 1,
+			back_img: 0,
 		},
 		{
 			index: 56,

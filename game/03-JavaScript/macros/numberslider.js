@@ -103,7 +103,7 @@ Macro.add("numberslider", {
 		const $elValue = $("<span>").attr("id", `${this.name}-value-${varId}`).appendTo($elControl);
 
 		const showValue = () => {
-			$elValue.html(callbacks.value ? callbacks.value(Number($elInput.val())) : Number($elInput.val()).toFixed(0));
+			$elValue.html(callbacks.value ? callbacks.value(Number($elInput.val())) : Number($elInput.val()));
 		};
 
 		$elInput.val(defValue);

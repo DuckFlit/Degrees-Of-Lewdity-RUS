@@ -610,19 +610,29 @@ setup.LocationImages = {
 					cycleDelay: () => random(5, 30, true) * 1000,
 				},
 			},
-			water: {
-				image: "water.png",
-				animation: {
-					frameDelay: 250,
-					cycleDelay: () => 0,
-				},
-			},
 			bunny: {
 				condition: () => Time.dayState !== "night",
 				image: "bunny.png",
 				animation: {
-					frameDelay: 175,
-					cycleDelay: () => random(5, 15, true) * 1000,
+					frameDelay: 150,
+					cycleDelay: () => random(10, 40, true) * 1000,
+				},
+			},
+		},
+		reflective: {
+			mask: {
+				image: "reflective.png",
+				compositeOperation: "overlay",
+				verticalFactor: 4,
+				amplitude: 20,
+				frequency: 15,
+			},
+			overlay: {
+				image: "water.png",
+				compositeOperation: "overlay",
+				animation: {
+					frameDelay: 250,
+					cycleDelay: () => 0,
 				},
 			},
 		},
