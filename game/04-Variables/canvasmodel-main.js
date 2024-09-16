@@ -664,7 +664,7 @@ Renderer.CanvasModels.main = {
 
 		options.zupper = (options.upper_tucked) ? ZIndices.upper_tucked : ZIndices.upper;
 		options.zupperleft = (options.upper_tucked) ? ZIndices.upper_arms_tucked : ZIndices.upper_arms;
-		options.zupperright = (options.upper_tucked) ? ZIndices.upper_arms_tucked : ZIndices.upper_arms_tucked;
+		options.zupperright = (options.upper_tucked) ? ZIndices.upper_arms_tucked : ZIndices.upper_arms;
 
 		if (options.arm_right === "cover" || options.arm_right === "hold" ) options.zupperright = ZIndices.upper_arms_cover;
 		if (options.arm_left === "cover") options.zupperleft = ZIndices.upper_arms_cover;
@@ -786,7 +786,7 @@ Renderer.CanvasModels.main = {
 		if (options.worn.handheld.setup.type.includes("rainproof")) {
 			options.handheld_overhead = true;
 			if (options.angel_halo_type === "default") options.angel_halo_lower = true;
-		} else if (["balloon", "heart balloon", "paper fan", "torch"].includes(options.worn.handheld.setup.name)) {
+		} else if (["balloon", "heart balloon", "paper fan", "torch", "forearm crutch", "cane"].includes(options.worn.handheld.setup.name)) {
 			options.handheld_overhead = true;
 			options.angel_halo_lower = false;
 		} else {
@@ -846,17 +846,17 @@ Renderer.CanvasModels.main = {
 			if (V.options.tanLines){
 				if (!Skin.cachedLayers) {
 					const canvasModel = this;
-	
+
 					// Don't modify the original options object
 					const newOptions = canvasModel.options.deepCopy();
-	
+
 					// Highest tanning values are added first
 					const tanningGroups = [...Skin.tanningLayers].sort((a, b) => a.value - b.value);
-	
+
 					for (let i = 0; i < tanningGroups.length; i++) {
 						const layerGroup = tanningGroups[i];
 						if (layerGroup.layers.length === 0) continue;
-	
+
 						// For every item in tanning layers, create a new entry in options.worn, and setup the filters
 						for (const [slot, props] of Object.entries(layerGroup.slots)) {
 							const item = {
@@ -873,13 +873,13 @@ Renderer.CanvasModels.main = {
 							setClothingFilter(newOptions, slot, item, item.setup, '', 'colour_sidebar', 'colour');
 							setClothingFilter(newOptions, slot, item, item.setup, '_acc', 'accessory_colour_sidebar', 'accColour');
 						}
-	
+
 						// Get the source paths for the tanning layer
 						// Filter out non-unique rows
 						const layers = { arms: [], body: [] };
 						for (const layerName of layerGroup.layers) {
 							const layer = canvasModel.layers[layerName];
-	
+
 							// Set offsets (mostly for preg belly)
 							const srcObject = {
 								path: layer.srcfn(newOptions),
@@ -892,7 +892,7 @@ Renderer.CanvasModels.main = {
 								target.push(srcObject);
 							}
 						}
-	
+
 						// Generate final tanning layers
 						// Separate the base with the arms, since they can overlap
 						// Base layer has disabled animations
@@ -1693,7 +1693,7 @@ Renderer.CanvasModels.main = {
 			animation: "idle",
 
 			srcfn(options) {
-				return `img/transformations/angel/leftwing/${options.angel_wings_type}.png`;
+				return `img/transformations/angel/leftwing/${options.angel_wings_type}_front.png`;
 			},
 			showfn(options) {
 				return options.show_tf
@@ -2535,6 +2535,10 @@ Renderer.CanvasModels.main = {
 			showfn(options) {
 				return options.show_writings && !!options.writing_right_shoulder;
 			},
+			dxfn(options) {
+				if (options.arm_right === "cover" || options.handheld_position === "right_cover") return 4;
+				return 0;
+			},
 			zfn(options) {
 				return ["cover", "hold"].includes(options.arm_right) ? ZIndices.arms_cover + 0.1 : ZIndices.armsidle + 0.1;
 			},
@@ -3358,7 +3362,11 @@ Renderer.CanvasModels.main = {
 					&& options.worn.under_lower.setup.accessory === 1;
 			},
 		}),
-		"under_lower_acc": genlayer_clothing_accessory('under_lower'),
+		"under_lower_acc": genlayer_clothing_accessory("under_lower", {
+			masksrcfn(options) {
+				return options.belly_mask_under_clip_src;
+			},
+		}),
 		"under_lower_penis": {
 			z: ZIndices.under_lower_top,
 			filters: ["worn_under_lower"],
@@ -3606,7 +3614,7 @@ Renderer.CanvasModels.main = {
 
 				const cardNum = V.blackjack ? Math.clamp(V.blackjack.playersCards.length, 1, 5) : 0;
 				const cards = options.worn.handheld.setup.variable === "cards" ? cardNum : '';
-				const cover = options.arm_right === "cover" ? "right_cover" : "right";
+				const cover = options.arm_right === "cover" && options.handheld_position !== 'right_cover' ? "right_cover" : "right";
 				const extra = torch || cards || '';
 				const path = `img/clothes/handheld/${options.worn.handheld.setup.variable}/${cover}${extra}.png`;
 				return gray_suffix(path, options.filters['worn_handheld']);
@@ -3630,7 +3638,7 @@ Renderer.CanvasModels.main = {
 				const cardNum = V.blackjack ? Math.clamp(V.blackjack.playersCards.length, 1, 5) : 0;
 				const cards = options.worn.handheld.setup.variable === "cards" ? cardNum : '';
 
-				const cover = options.arm_right === "cover" ? "right_cover" : "right";
+				const cover = options.arm_right === "cover" && options.handheld_position !== 'right_cover' ? "right_cover" : "right";
 				const extra = cards || '';
 				const path = `img/clothes/handheld/${options.worn.handheld.setup.variable}/${cover}${extra}_acc.png`;
 				return gray_suffix(path, options.filters['worn_handheld_acc']);
