@@ -273,7 +273,7 @@ const Skin = (() => {
 		// sunscreen prevents tanning gains entirely
 		const sunscreenModifier = Skin.Sunscreen.isApplied() ? 0 : 1;
 		// Halved gain if gyaru
-		const skinType = Skin.color.natural === "gyaru" ? 0.5 : 1;
+		const skinType = ["gyaru", "ygyaru"].includes(Skin.color.natural) ? 0.5 : 1;
 
 		const result = round(sunIntensity * clothingModifier * sunscreenModifier * skinType, 2);
 		return {
