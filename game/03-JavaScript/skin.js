@@ -118,7 +118,7 @@ const Skin = (() => {
 				const current = getCurrentLayers(model, savedLayers);
 				const selectedLayers = setLayers(savedLayers, current);
 
-				const logFactorGain = 1 / Math.log1p((selectedLayers.value / 100) * tanningMultiplier + 1);
+				const logFactorGain = 1 / Math.log1p(((currentTan + accumulatedValue) / 100) * tanningMultiplier + 1);
 				let tanningGain = gainAmount * logFactorGain * scalingFactor;
 
 				// Handle tanning gain and ensure the total tanning value does not exceed 100
