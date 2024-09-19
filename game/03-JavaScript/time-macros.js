@@ -112,8 +112,22 @@ Macro.add("clock", {
 function schoolTerm() {
 	if (Time.schoolTerm) {
 		const date = Time.nextSchoolTermEndDate;
+		const currentTimeStamp = Time.date.timeStamp;
 		if (date.year === Time.year && date.month === Time.month && date.day === Time.monthDay) {
-			if (date.timeStamp > Time.date.timeStamp) return "School term finishes today.";
+			if (date.timeStamp > currentTimeStamp) {
+				return "School term finishes today.";
+			} else {
+				const nextDate = Time.getNextSchoolTermStartDate(date.addDays(1));
+				return (
+					"School term has finished. Next term starts on " +
+					nextDate.weekDayName +
+					" the " +
+					ordinalSuffixOf(nextDate.day) +
+					" of " +
+					nextDate.monthName +
+					"."
+				);
+			}
 		} else {
 			return "School term finishes on " + date.weekDayName + " the " + ordinalSuffixOf(date.day) + " of " + date.monthName + ".";
 		}
