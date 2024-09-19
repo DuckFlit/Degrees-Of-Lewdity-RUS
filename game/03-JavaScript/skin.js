@@ -71,7 +71,6 @@ const Skin = (() => {
 	 *
 	 * TANNING GAIN/DECAY:
 	 * - Logarithmic gain: Tanning gain slows down the higher it is.
-	 * - The logarithmic curve is based on the worn layer group at the time of tanning - so having a high value on a different group won't affect the current one.
 	 * - If the total tanning value exceeds 100, the gain will be capped at 100, and any excess will be treated as tanning loss (to all groups except the one that gets the tanning gain)
 	 * - Tanning decay is linear over time.
 	 * - If a group gains tanning during the same time - only that group won't lose tanning.
@@ -273,8 +272,10 @@ const Skin = (() => {
 		const clothingModifier = Object.values(V.worn).some(item => item.type.includes("shade")) ? 0.1 : 1;
 		// sunscreen prevents tanning gains entirely
 		const sunscreenModifier = Skin.Sunscreen.isApplied() ? 0 : 1;
+		// Halved gain if gyaru
+		const skinType = Skin.color.natural === "gyaru" ? 0.5 : 1;
 
-		const result = round(sunIntensity * clothingModifier * sunscreenModifier, 2);
+		const result = round(sunIntensity * clothingModifier * sunscreenModifier * skinType, 2);
 		return {
 			sun: sunIntensity,
 			month: Weather.genSettings.months[Time.date.month - 1].sunIntensity,
@@ -283,6 +284,7 @@ const Skin = (() => {
 			dayFactor: outside ? Time.date.simplifiedDayFactor : 1,
 			clothing: clothingModifier,
 			sunscreen: sunscreenModifier,
+			type: skinType,
 			result,
 		};
 	}
