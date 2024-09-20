@@ -974,7 +974,7 @@ function initLegs() {
 			name_cap: "Mismatched socks",
 			variable: "mismatched socks",
 			combat: {
-				reference: "tights",
+				reference: "striped socks long",
 			},
 			integrity: 100,
 			integrity_max: 100,

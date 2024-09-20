@@ -153,6 +153,11 @@ declare module "twine-sugarcube" {
 		world_corruption_hard: number;
 		world_corruption_soft: number;
 		world_corruption_reduced: number;
+
+		/**
+		 * Controls when mousetrap should activate or not.
+		 */
+		tempDisable: boolean;
 	}
 
 	export interface SugarCubeSetupObject {
