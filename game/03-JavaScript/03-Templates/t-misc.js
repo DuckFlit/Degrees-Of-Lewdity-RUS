@@ -155,7 +155,7 @@ Template.add("gwylanItem", () =>
 Template.add("sin", () => either("pride", "wrath", "envy", "lust", "gluttony", "greed", "sloth"));
 
 /* ?chatter1 */
-Template.add("chatter1",() => 
+Template.add("chatter1", () =>
 	either(
 		"If you think about it, neither of us are really here.",
 
@@ -175,14 +175,14 @@ Template.add("chatter1",() =>
 
 		"The canteen food is actually pretty good. It's a guilty pleasure of mine.",
 
-		"Oh, to be a caterpillar, unaware of the woes of the world.", 
+		"Oh, to be a caterpillar, unaware of the woes of the world.",
 
 		"Someone said they saw a whale that had, like, tentacles, like a squid. Think squids and whales finally put their differences aside and got busy?"
 	)
 );
 
 /* ?chatter2 */
-Template.add("chatter2",() => 
+Template.add("chatter2", () =>
 	either(
 		"Why am I friends with you?",
 
@@ -203,7 +203,7 @@ Template.add("chatter2",() =>
 		"I gotta get that restraining order. For real, this time.",
 
 		"Can I peg you?",
-		
+
 		"Can you make like a tree and die for the winter?"
 	)
 );

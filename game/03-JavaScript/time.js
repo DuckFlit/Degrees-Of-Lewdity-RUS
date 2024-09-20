@@ -702,8 +702,8 @@ function dayPassed() {
 
 	if (V.farm) {
 		if (V.farm.milking.catchChance > random(10, 1000) / 10) V.farm.milking.caught = true;
-		if (V.farm.milking.catchChance >= 4) V.farm.milking.catchChance = Math.clamp(V.farm.milking.catchChance * 0.9, 0, 100).toFixed(3);
-		else V.farm.milking.catchChance = Math.clamp(V.farm.milking.catchChance * 0.95, 0, 100).toFixed(3);
+		if (V.farm.milking.catchChance >= 25) V.farm.milking.catchChance = Math.clamp(V.farm.milking.catchChance * 0.95, 0, 100).toFixed(3);
+		else V.farm.milking.catchChance = Math.clamp(V.farm.milking.catchChance * 0.98, 0, 100).toFixed(3);
 	}
 
 	if (Weather.precipitation === "rain" && V.bird.upgrades?.firepit && !V.bird.upgrades.shelter) {

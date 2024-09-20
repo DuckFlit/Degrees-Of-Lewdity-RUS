@@ -233,6 +233,10 @@ const Skin = (() => {
 		return null;
 	}
 
+	/**
+	 * @param {any[]} groups
+	 * @returns {number}
+	 */
 	function getTanningValue(groups) {
 		return groups.reduce((sum, obj) => sum + (obj.value ?? 0), 0);
 	}

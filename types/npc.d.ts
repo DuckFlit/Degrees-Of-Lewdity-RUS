@@ -6,13 +6,59 @@ declare module "twine-sugarcube" {
 
 		kylarwatched: boolean;
 		kylar: {
+			timer: any;
+			riddle: number;
 			fountain: 0 | 1;
 		};
 	}
 }
 
 declare global {
+	export type HumanoidTypes =
+		| "human"
+		| "wolfboy"
+		| "wolfgirl"
+		| "bearboy"
+		| "beargirl"
+		| "pigboy"
+		| "piggirl"
+		| "catboy"
+		| "catgirl"
+		| "dolphinboy"
+		| "dolphingirl"
+		| "lizardboy"
+		| "lizardgirl"
+		| "cowgirl"
+		| "bullboy"
+		| "foxboy"
+		| "foxgirl";
+
+	export type BestialTypes =
+		| "dog"
+		| "cat"
+		| "pig"
+		| "bull"
+		| "wolf"
+		| "dolphin"
+		| "lizard"
+		| "bear"
+		| "boar"
+		| "creature"
+		| "horse"
+		| "centaur"
+		| "fox"
+		| "hawk"
+		| "harpy"
+		| "cow"
+		| "spider";
+
+	export type PlantTypes = "plant";
+
+	export type CharacterTypes = HumanoidTypes | BestialTypes | PlantTypes;
+
 	export interface Npc {
+		virginity: any;
+		outfits: any;
 		/**
 		 * The name... NaM
 		 */
@@ -20,7 +66,7 @@ declare global {
 		init: 0 | 1;
 		intro: 0 | 1;
 		state: "active" | "prison" | "";
-		type: "human";
+		type: CharacterTypes;
 		description: string;
 		title: string;
 
@@ -58,15 +104,53 @@ declare global {
 		eyeColour: string;
 		hairColour: string;
 
+		stance: "top" | "topface";
 		ballssize: number;
 		bottomsize: number;
 		breastdesc: string;
 		breastsdesc: string;
 		breastsize: number;
-		penis: "clothed" | "none" | 0;
+		penis:
+			| "anusentrance"
+			| "anusimminent"
+			| "anus"
+			| "anusentrancedouble"
+			| "anusdouble"
+			| "penisentrance"
+			| "penisimminent"
+			| "penis"
+			| "vaginaentrance"
+			| "vaginaimminent"
+			| "vagina"
+			| "vaginaentrancedouble"
+			| "vaginaimminentdouble"
+			| "vaginadouble"
+			| "mouthentrance"
+			| "mouthimminent"
+			| "mouth"
+			| "othermouth"
+			| "feet"
+			| "footjob"
+			| "leftarm"
+			| "rightarm"
+			| "thighs"
+			| "cheeks"
+			| "chest"
+			| "clothed"
+			| "none"
+			| 0;
 		penisdesc: string;
 		penissize: number;
-		vagina: "clothed" | "none";
+		vagina: "penisentrance" | "penisimminent" | "penis" | "clothed" | "none";
+
+		condom: Condom;
+
+		strapon?: {
+			state: "worn";
+			color: "black" | "red" | "pink" | "purple" | "fleshy" | "blue" | "green";
+			description: string;
+			size: number;
+		};
 
 		chastity: {
 			penis: string;

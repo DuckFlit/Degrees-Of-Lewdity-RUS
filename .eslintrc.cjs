@@ -24,6 +24,7 @@ module.exports = {
 		Template: "readonly",
 		UI: "readonly",
 		UIBar: "readonly",
+		PRNGWrapper: "readonly",
 		idb: "readonly",
 		wikifier: "readonly",
 		// SugarCube functions
@@ -246,6 +247,9 @@ module.exports = {
 		getClothingCost: "readonly",
 		isLoveInterest: "readonly",
 		nullable: "readonly",
+		combat: "readonly",
+		wearingCondom: "readonly",
+		npcHasStrapon: "readonly",
 	},
 
 	ignorePatterns: [
@@ -258,6 +262,7 @@ module.exports = {
 		"devTools",
 		"dist",
 		"game/03-JavaScript/external",
+		"game/03-JavaScript/00-libs/renderer.js",
 	],
 
 	parserOptions: {
@@ -309,7 +314,20 @@ module.exports = {
 		"jsdoc/no-undefined-types": [
 			1,
 			{
-				definedTypes: ["EventNpc"],
+				definedTypes: [
+					"EventNpc",
+					"ClothesItem",
+					"Penetrator",
+					"TentacleState",
+					"CompositeLayerParams",
+					"CompositeLayerSpec",
+					"CanvasModelOptions",
+					"CanvasModelLayer",
+					"AnimatingCanvas",
+					"Options",
+					"Npc",
+					"NpcOptions",
+				],
 			},
 		],
 
