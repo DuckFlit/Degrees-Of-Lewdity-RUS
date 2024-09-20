@@ -800,7 +800,7 @@ function initNeck() {
 		{
 			index: 25,
 			name: "leather collar",
-			name_cap: "Leather Collar",
+			name_cap: "Leather collar",
 			variable: "collarfetish",
 			integrity: 400,
 			integrity_max: 400,
