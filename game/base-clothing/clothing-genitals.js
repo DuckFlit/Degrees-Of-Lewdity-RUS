@@ -46,6 +46,9 @@ function initGenitals() {
 			name: "chastity belt",
 			name_cap: "Chastity belt",
 			variable: "chastitybelt",
+			combat: {
+				reference: "chastitycage",
+			},
 			integrity: 2000,
 			integrity_max: 2000,
 			fabric_strength: 15,
@@ -160,6 +163,9 @@ function initGenitals() {
 			name: "gold chastity belt",
 			name_cap: "Gold chastity belt",
 			variable: "goldchastitybelt",
+			combat: {
+				reference: "chastitycage",
+			},
 			integrity: 6000,
 			integrity_max: 6000,
 			fabric_strength: 15,
@@ -204,6 +210,9 @@ function initGenitals() {
 			name: "fetish chastity belt",
 			name_cap: "Fetish Chastity belt",
 			variable: "chastitybeltfetish",
+			combat: {
+				reference: "chastitycage",
+			},
 			integrity: 1500,
 			integrity_max: 1500,
 			fabric_strength: 12,
@@ -249,6 +258,9 @@ function initGenitals() {
 			name: "fetish chastity cage",
 			name_cap: "Fetish Chastity cage",
 			variable: "chastitycagefetish",
+			combat: {
+				reference: "chastitycage",
+			},
 			integrity: 1500,
 			integrity_max: 1500,
 			fabric_strength: 12,
@@ -318,6 +330,9 @@ function initGenitals() {
 			name: "small chastity cage",
 			name_cap: "Small Chastity cage",
 			variable: "smallchastitycage",
+			combat: {
+				reference: "chastitycage",
+			},
 			integrity: 4000,
 			integrity_max: 4000,
 			fabric_strength: 20,
@@ -388,6 +403,9 @@ function initGenitals() {
 			name: "flat chastity cage",
 			name_cap: "Flat Chastity cage",
 			variable: "flatchastitycage",
+			combat: {
+				reference: "chastitycage",
+			},
 			integrity: 6000,
 			integrity_max: 6000,
 			fabric_strength: 30,
@@ -458,6 +476,9 @@ function initGenitals() {
 			name: "chastity parasite",
 			name_cap: "chastity parasite",
 			variable: "slimechastitycage",
+			combat: {
+				reference: "chastitycage",
+			},
 			integrity: 500,
 			integrity_max: 500,
 			fabric_strength: 10,
