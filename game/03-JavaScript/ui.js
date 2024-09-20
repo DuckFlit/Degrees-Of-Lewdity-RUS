@@ -805,6 +805,6 @@ function sensitivityString(value) {
 	if (value >= 2.5) return "tender";
 	if (value >= 1.5) return "receptive";
 	return "normal";
-};
+}
 
 window.sensitivityString = sensitivityString;

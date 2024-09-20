@@ -1,11 +1,16 @@
+// @ts-check
 /* For any item that has a colour_combat tag, set it to 0 if that item ever gets its own combat sprites. */
 function initGenitals() {
-	setup.clothes.genitals = [
+	/** @type {ClothesItem[]} */
+	const clothing = [
 		{
 			index: 0,
 			name: "naked",
 			name_cap: "Naked",
 			variable: "naked",
+			state: 0,
+			state_base: 0,
+			warmth: 0,
 			integrity: 0,
 			integrity_max: 0,
 			fabric_strength: 0,
@@ -49,6 +54,7 @@ function initGenitals() {
 			one_piece: 0,
 			state: "waist",
 			state_base: "waist",
+			warmth: 0,
 			plural: 1,
 			colour: 0,
 			colour_options: [],
@@ -92,6 +98,7 @@ function initGenitals() {
 			one_piece: 0,
 			state: "waist",
 			state_base: "waist",
+			warmth: 0,
 			plural: 1,
 			colour: 0,
 			colour_options: [],
@@ -161,6 +168,7 @@ function initGenitals() {
 			one_piece: 0,
 			state: "waist",
 			state_base: "waist",
+			warmth: 0,
 			plural: 1,
 			colour: 0,
 			colour_options: [],
@@ -204,6 +212,7 @@ function initGenitals() {
 			one_piece: 0,
 			state: "waist",
 			state_base: "waist",
+			warmth: 0,
 			plural: 1,
 			colour: 0,
 			colour_options: ["black", "blue", "brown", "green", "pink", "purple", "red", "white", "yellow", "tangerine", "cyan"],
@@ -248,6 +257,7 @@ function initGenitals() {
 			one_piece: 0,
 			state: "waist",
 			state_base: "waist",
+			warmth: 0,
 			plural: 1,
 			colour: 0,
 			colour_options: ["black", "grey", "blue", "brown", "green", "pink", "purple", "red", "yellow", "tangerine", "cyan"],
@@ -316,6 +326,7 @@ function initGenitals() {
 			one_piece: 0,
 			state: "waist",
 			state_base: "waist",
+			warmth: 0,
 			plural: 1,
 			colour: 0,
 			colour_options: ["pink"],
@@ -385,6 +396,7 @@ function initGenitals() {
 			one_piece: 0,
 			state: "waist",
 			state_base: "waist",
+			warmth: 0,
 			plural: 1,
 			colour: 0,
 			colour_options: ["pink"],
@@ -454,6 +466,7 @@ function initGenitals() {
 			one_piece: 0,
 			state: "waist",
 			state_base: "waist",
+			warmth: 0,
 			plural: 1,
 			colour: 0,
 			colour_options: ["red"],
@@ -511,6 +524,7 @@ function initGenitals() {
 			penisSize: true,
 		},
 	];
+	setup.clothes.genitals = clothing;
 
 	/*
 		Clothes that modders add go into this array, this should be empty in the base game at all times.

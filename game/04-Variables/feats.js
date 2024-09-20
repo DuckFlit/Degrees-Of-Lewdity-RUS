@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 /*
 	Key points
 	series: "seriesName", //Will only show the first locked feat in a series to the player
