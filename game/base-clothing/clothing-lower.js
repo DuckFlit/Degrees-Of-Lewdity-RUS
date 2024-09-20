@@ -5258,7 +5258,7 @@ function initLower() {
 			set: "pinafore",
 			gender: "f",
 			femininity: 200,
-			warmth: 2,
+			warmth: 3,
 			cost: 2500,
 			description: "Proper school uniform.",
 			shop: ["clothing", "school"],
