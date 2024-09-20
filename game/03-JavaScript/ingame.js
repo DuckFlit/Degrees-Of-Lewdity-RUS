@@ -366,9 +366,11 @@ function hairdressersResetAlt() {
 DefineMacro("hairdressersResetAlt", hairdressersResetAlt);
 
 function browsDyeReset() {
-	jQuery(document).on("change", "#listbox-browsdyeoption", function (e) {
-		Wikifier.wikifyEval("<<replace #browsColourPreview>><<browsColourPreview>><</replace>>");
-	});
+	$(() =>
+		jQuery(document).on("change", "#listbox-browsdyeoption", function (e) {
+			Wikifier.wikifyEval("<<replace #browsColourPreview>><<browsColourPreview>><</replace>>");
+		})
+	);
 }
 DefineMacro("browsDyeReset", browsDyeReset);
 
