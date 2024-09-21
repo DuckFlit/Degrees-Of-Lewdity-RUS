@@ -679,6 +679,9 @@ const combatMainPc = {
 				return !!result;
 			},
 			animationfn(options) {
+				if (PlayerCombatMapper.getPcAnimationFrameCount(options) === 2 && options.position === "doggy") {
+					return "eyelids-doggy-idle";
+				}
 				if (combat.isActive()) {
 					return options.animKey;
 				}
@@ -695,6 +698,9 @@ const combatMainPc = {
 				return !!options.showPlayer && !!options.showFace;
 			},
 			animationfn(options) {
+				if (PlayerCombatMapper.getPcAnimationFrameCount(options) === 2 && options.position === "doggy") {
+					return "eyelashes-doggy-idle";
+				}
 				if (combat.isActive()) {
 					return options.animKey;
 				}
