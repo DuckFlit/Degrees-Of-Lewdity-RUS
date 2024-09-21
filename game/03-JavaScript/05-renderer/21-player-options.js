@@ -33,6 +33,7 @@
  * @property {"default" | "bound" | "handjob"} armFrontPosition The position the front arm is in.
  * @property {boolean} genitalsExposed
  * @property {MouthOptions} mouth
+ * @property {boolean} freckles
  * @property {number} blush The volume of blush on the player, higher is more. (1 to 5, usually)
  * @property {number} tears The volume of tears the player displays, higher is more. (1 to 5, usually)
  * @property {Partial<Record<ClothedSlots, ClothingState>>} clothes Template.
@@ -250,6 +251,7 @@ class PlayerCombatMapper {
 			animKey: "sex-2f-idle",
 			animKeyStill: "sex-2f-idle",
 			machineAnimKey: "machine-4f-slow",
+			freckles: false,
 			blush: 0,
 			breastsExposed: false,
 			breastSize: 0,
@@ -274,7 +276,7 @@ class PlayerCombatMapper {
 	 */
 	static mapPlayerToOptions(options) {
 		if (options == null) {
-			options = this.generateOptions();
+			options = PlayerCombatMapper.generateOptions();
 		}
 
 		options.isDebugging = !!V.debug;
@@ -286,20 +288,21 @@ class PlayerCombatMapper {
 		options.src = options.root + options.position + "/";
 
 		// Set hair properties
-		this.generateHairFilters(options);
+		PlayerCombatMapper.generateHairFilters(options);
 
 		// Set breast exposed, for example, an NPC had pushed clothing aside to make tits fall out
 		options.breastsExposed = true;
 
 		// Copied from <<leg_position>> - Centralise usage later. Added footjob state
-		options.legBackPosition = this.mapPcToLegBackPosition(options);
-		options.legFrontPosition = this.mapPcToLegFrontPosition(options);
+		options.legBackPosition = PlayerCombatMapper.mapPcToLegBackPosition(options);
+		options.legFrontPosition = PlayerCombatMapper.mapPcToLegFrontPosition(options);
 
 		// Mouth configuration
 		options.mouth.inOral = combat.isMouthActive();
 		options.mouth.open = combat.isActive() && V.arousalmax / V.arousal > 0.6;
 
-		// Set values for blush and tears
+		// Set values for freckles, blush, and tears
+		options.freckles = !!V.player.freckles;
 		options.blush = Math.floor(Math.clamp(V.arousal / 2000 + 1, 0, 5));
 		options.tears = painToTearsLvl(V.pain);
 
@@ -308,43 +311,43 @@ class PlayerCombatMapper {
 		options.breastSize = Math.clamp(breastSize, 0, 4);
 
 		// Clothing options
-		this.mapPcToClothingOptions(V.player, options);
+		PlayerCombatMapper.mapPcToClothingOptions(V.player, options);
 
 		// Ensure body options comes after clothing options
-		this.mapPcToBodyOptions(V.player, options);
+		PlayerCombatMapper.mapPcToBodyOptions(V.player, options);
 
-		this.mapToTransformationOptions(options);
+		PlayerCombatMapper.mapToTransformationOptions(options);
 
 		if (V.player.penisExist) {
-			options.penetrator = this.mapPcToPenetratorOptions(V.player, options);
+			options.penetrator = PlayerCombatMapper.mapPcToPenetratorOptions(V.player, options);
 		}
 
 		CombatRenderer.generateBodyFilters(options);
 
-		options.leftEye = V.leftEyeColour || "blue";
-		options.rightEye = V.rightEyeColour || "blue";
+		options.leftEye = V.makeup.eyelenses.left || V.leftEyeColour || "blue";
+		options.rightEye = V.makeup.eyelenses.right || V.rightEyeColour || "blue";
 
 		options.filters.leftEye = CombatRenderer.lookupColour(setup.colours.eyes_map, options.leftEye, "leftEye", undefined, "eyes");
 		options.filters.rightEye = CombatRenderer.lookupColour(setup.colours.eyes_map, options.rightEye, "rightEye", undefined, "eyes");
 
 		// Set props
-		this.mapToPropsOptions(options);
+		PlayerCombatMapper.mapToPropsOptions(options);
 
 		// Set machine
-		this.mapToMachineOptions(options);
+		PlayerCombatMapper.mapToMachineOptions(options);
 
 		// Set tentacles
-		this.mapToTentacleOptions(options);
+		PlayerCombatMapper.mapToTentacleOptions(options);
 
 		// Vore stuff
 		options.vore.show = options.position === "doggy" && V.vorestage > 0 && V.vorestage <= 7;
 		options.vore.stage = V.vorestage || 0;
 
 		// Set animation speed
-		options.animKey = this.getPcAnimation(options);
-		options.animKeyStill = this.getPcAnimation(options);
-		options.machineAnimKey = this.getMachineAnimationSpeed(options);
-		options.speed = this.getPcAnimationSpeed(options);
+		options.animKey = PlayerCombatMapper.getPcAnimation(options);
+		options.animKeyStill = PlayerCombatMapper.getPcAnimation(options);
+		options.machineAnimKey = PlayerCombatMapper.getMachineAnimationSpeed(options);
+		options.speed = PlayerCombatMapper.getPcAnimationSpeed(options);
 
 		return options;
 	}
@@ -354,8 +357,8 @@ class PlayerCombatMapper {
 	 * @returns {string}
 	 */
 	static getPcAnimation(options) {
-		const speed = this.getPcAnimationSpeed(options);
-		const frames = this.getPcAnimationFrameCount(options);
+		const speed = PlayerCombatMapper.getPcAnimationSpeed(options);
+		const frames = PlayerCombatMapper.getPcAnimationFrameCount(options);
 		return `sex-${frames}f-${speed}`;
 	}
 
@@ -691,12 +694,12 @@ class PlayerCombatMapper {
 	 */
 	static mapPcToArmPosition(options) {
 		if (options.position === "missionary") {
-			options.armBackPosition = this.getArmState(V.leftarm);
-			options.armFrontPosition = this.getArmState(V.rightarm);
+			options.armBackPosition = PlayerCombatMapper.getArmState(V.leftarm);
+			options.armFrontPosition = PlayerCombatMapper.getArmState(V.rightarm);
 			return options;
 		}
-		options.armBackPosition = this.getArmState(V.rightarm);
-		options.armFrontPosition = this.getArmState(V.leftarm);
+		options.armBackPosition = PlayerCombatMapper.getArmState(V.rightarm);
+		options.armFrontPosition = PlayerCombatMapper.getArmState(V.leftarm);
 		return options;
 	}
 
@@ -825,10 +828,7 @@ class PlayerCombatMapper {
 		/** @type {TotalClothingStates[]} */
 		const exposedStates = ["neck", "midriff", "thighs", "knees", "ankles", "totheside"];
 		const areLegsUp = ["up", "footjob"].includes(options.legBackPosition) || ["up", "footjob"].includes(options.legFrontPosition);
-		if (clothing.isSkirt) {
-			// Add states that are for skirts.
-		}
-		if (options.position === "missionary" && areLegsUp) {
+		if (clothing.isSkirt && options.position === "missionary" && areLegsUp) {
 			exposedStates.pushUnique("waist");
 		}
 		return exposedStates;
@@ -840,7 +840,7 @@ class PlayerCombatMapper {
 	 * @returns {boolean}
 	 */
 	static isClothingExposed(options, clothing) {
-		return clothing.isExposed || this.getExposedStates(options, clothing).includes(clothing.state);
+		return clothing.isExposed || PlayerCombatMapper.getExposedStates(options, clothing).includes(clothing.state);
 	}
 
 	/**
@@ -849,13 +849,13 @@ class PlayerCombatMapper {
 	 */
 	static isPenisExposed(options) {
 		const lower = options.clothes.lower;
-		const lowerExposed = !lower?.show || this.isClothingExposed(options, lower);
+		const lowerExposed = !lower?.show || PlayerCombatMapper.isClothingExposed(options, lower);
 
 		const underLower = options.clothes.under_lower;
-		const underLowerExposed = !underLower?.show || this.isClothingExposed(options, underLower);
+		const underLowerExposed = !underLower?.show || PlayerCombatMapper.isClothingExposed(options, underLower);
 
 		const overLower = options.clothes.over_lower;
-		const overLowerExposed = !overLower?.show || this.isClothingExposed(options, overLower);
+		const overLowerExposed = !overLower?.show || PlayerCombatMapper.isClothingExposed(options, overLower);
 
 		const clothingExposed = lowerExposed && underLowerExposed && overLowerExposed;
 
@@ -870,7 +870,7 @@ class PlayerCombatMapper {
 	 */
 	static mapPcToPenetratorOptions(pc, options) {
 		const hasPenetrator = pc.penisExist || playerHasStrapon();
-		const isExposed = this.isPenisExposed(options);
+		const isExposed = PlayerCombatMapper.isPenisExposed(options);
 		const hasChastityBelt = V.worn.genitals.name.includes("chastity belt");
 		/** @type {Penetrator} */
 		const penetrator = {
@@ -909,7 +909,7 @@ class PlayerCombatMapper {
 	static mapPcToClothingOptions(pc, options) {
 		// Clothing filters and options
 		for (const slot of setup.clothes_all_slots) {
-			const clothes = this.mapPcToClothingOption(slot, pc, options);
+			const clothes = PlayerCombatMapper.mapPcToClothingOption(slot, pc, options);
 			options.clothes = options.clothes || {};
 			options.clothes[slot] = clothes;
 		}
@@ -967,7 +967,7 @@ class PlayerCombatMapper {
 			show = false;
 		}
 
-		this.generateClothingFilter(slot, clothing, options);
+		PlayerCombatMapper.generateClothingFilter(slot, clothing, options);
 
 		if (defaults.index === 0 || name === "naked") {
 			// Clothing is naked.
@@ -992,8 +992,8 @@ class PlayerCombatMapper {
 			hasAccessory: CombatRenderer.getAccessoryState(slot, defaults),
 			hasMainImg: clothing.combat?.hasMainImg !== false,
 			hasBackImg: !!defaults.back_img && [1, "combat"].includes(defaults.back_img),
-			breasts: this.genClothingBreastOptions(slot, source, options.breastSize),
-			sleeves: this.genClothingSleeveOptions(slot, source),
+			breasts: PlayerCombatMapper.genClothingBreastOptions(slot, source, options.breastSize),
+			sleeves: PlayerCombatMapper.genClothingSleeveOptions(slot, source),
 			renderStep: source.combat?.renderType,
 		};
 
@@ -1006,7 +1006,7 @@ class PlayerCombatMapper {
 	 */
 	static genClothingSleeveOptions(slot, source) {
 		return {
-			show: ["upper", "under_upper", "over_upper"].includes(slot) && this.hasSleeves(source),
+			show: ["upper", "under_upper", "over_upper"].includes(slot) && PlayerCombatMapper.hasSleeves(source),
 			state: "default",
 		};
 	}
@@ -1030,7 +1030,7 @@ class PlayerCombatMapper {
 	 */
 	static genClothingBreastOptions(slot, source, breastSize) {
 		return {
-			show: ["upper", "under_upper", "over_upper"].includes(slot) && this.hasBreasts(source),
+			show: ["upper", "under_upper", "over_upper"].includes(slot) && PlayerCombatMapper.hasBreasts(source),
 			size: breastSize,
 		};
 	}
@@ -1059,7 +1059,7 @@ class PlayerCombatMapper {
 		options.filters ||= {};
 
 		if (clothing.combat?.mainColour) {
-			options.filters[mainFilterKey] = this.genFilterWithHex(clothing.combat.mainColour);
+			options.filters[mainFilterKey] = PlayerCombatMapper.genFilterWithHex(clothing.combat.mainColour);
 		} else {
 			const colour = clothing.colour;
 			const debugName = slot + " clothing";
@@ -1069,12 +1069,16 @@ class PlayerCombatMapper {
 				: Renderer.emptyLayerFilter();
 		}
 
-		const accColour = clothing.combat?.accColour || clothing.accessory_colour;
-		const accDebugName = slot + " accessory";
-		const accCustomFilter = clothing.accessory_colourCustom;
-		options.filters[accFilterKey] = accColour
-			? CombatRenderer.lookupColour(setup.colours.clothes_map, accColour, accDebugName, accCustomFilter, clothing.prefilter)
-			: Renderer.emptyLayerFilter();
+		if (clothing.combat?.accColour) {
+			options.filters[accFilterKey] = PlayerCombatMapper.genFilterWithHex(clothing.combat.accColour);
+		} else {
+			const accColour = clothing.combat?.accColour || clothing.accessory_colour;
+			const accDebugName = slot + " accessory";
+			const accCustomFilter = clothing.accessory_colourCustom;
+			options.filters[accFilterKey] = accColour
+				? CombatRenderer.lookupColour(setup.colours.clothes_map, accColour, accDebugName, accCustomFilter, clothing.prefilter)
+				: Renderer.emptyLayerFilter();
+		}
 
 		return options;
 	}
@@ -1100,8 +1104,8 @@ class PlayerCombatMapper {
 	 * @returns {CombatPlayerOptions}
 	 */
 	static mapPcToBodyOptions(pc, options) {
-		this.mapPcToArmPosition(options);
-		this.mapPcToBodywritingOptions(pc, options);
+		PlayerCombatMapper.mapPcToArmPosition(options);
+		PlayerCombatMapper.mapPcToBodywritingOptions(pc, options);
 		return options;
 	}
 
@@ -1126,16 +1130,16 @@ class PlayerCombatMapper {
 		options.transformations = options.transformations || {};
 		transformations.forEach(transformation => {
 			options.transformations[transformation] = {
-				wings: this.mapToTransformationWingOptions(transformation),
-				halo: this.mapToTransformationHaloOptions(transformation),
-				horns: this.mapToTransformationHornOptions(transformation),
-				ears: this.mapToTransformationEarOptions(transformation),
-				tail: this.mapToTransformationTailOptions(transformation),
-				eyes: this.mapToTransformationEyeOptions(transformation),
-				cheeks: this.mapToTransformationCheekOptions(transformation),
-				malar: this.mapToTransformationMalarOptions(transformation),
-				pubes: this.mapToTransformationPubeOptions(transformation),
-				plumage: this.mapToTransformationPlumageOptions(transformation),
+				wings: PlayerCombatMapper.mapToTransformationWingOptions(transformation),
+				halo: PlayerCombatMapper.mapToTransformationHaloOptions(transformation),
+				horns: PlayerCombatMapper.mapToTransformationHornOptions(transformation),
+				ears: PlayerCombatMapper.mapToTransformationEarOptions(transformation),
+				tail: PlayerCombatMapper.mapToTransformationTailOptions(transformation),
+				eyes: PlayerCombatMapper.mapToTransformationEyeOptions(transformation),
+				cheeks: PlayerCombatMapper.mapToTransformationCheekOptions(transformation),
+				malar: PlayerCombatMapper.mapToTransformationMalarOptions(transformation),
+				pubes: PlayerCombatMapper.mapToTransformationPubeOptions(transformation),
+				plumage: PlayerCombatMapper.mapToTransformationPlumageOptions(transformation),
 			};
 			generateTransformationFilter(transformation, "wings");
 			generateTransformationFilter(transformation, "halo");
@@ -1428,14 +1432,7 @@ class PlayerCombatMapper {
 
 		switch (options.position) {
 			case "missionary":
-				options.bodywriting.frontCheek = getState("left_cheek", (id, bodywriting) => {
-					return {
-						show: false,
-						area: bodywriting.writing,
-						type: sanitise(id),
-					};
-				});
-				options.bodywriting.backCheek = getState("right_cheek", (id, bodywriting) => {
+				options.bodywriting.frontCheek = getState("right_cheek", (id, bodywriting) => {
 					if (bodywriting.type === "text" || bodywriting.special === "islander") {
 						return {
 							show: true,
@@ -1451,6 +1448,13 @@ class PlayerCombatMapper {
 						};
 					}
 					return null;
+				});
+				options.bodywriting.backCheek = getState("left_cheek", (id, bodywriting) => {
+					return {
+						show: false,
+						area: bodywriting.writing,
+						type: sanitise(id),
+					};
 				});
 				options.bodywriting.backShoulder = getState("right_shoulder", (id, bodywriting) => {
 					if (bodywriting.type === "text" || bodywriting.special === "islander") {

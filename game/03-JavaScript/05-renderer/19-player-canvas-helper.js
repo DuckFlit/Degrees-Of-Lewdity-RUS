@@ -128,8 +128,10 @@ class PlayerCanvasHelper {
 				return options.animKey;
 			},
 			filtersfn(options) {
-				const filter = `worn_${slot}_main`;
-				return [filter];
+				if (isAccessory) {
+					return [`worn_${slot}_acc`];
+				}
+				return [`worn_${slot}_main`];
 			},
 			z: CombatRenderer.indices[slot],
 		};

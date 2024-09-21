@@ -88,6 +88,8 @@ function initLegs() {
 			variable: "boysgymsocks",
 			combat: {
 				renderType: "thighhighs",
+				accessory: true,
+				accColour: "#00f",
 			},
 			integrity: 100,
 			integrity_max: 100,
@@ -121,7 +123,9 @@ function initLegs() {
 			name_cap: "Girl's gym socks",
 			variable: "girlsgymsocks",
 			combat: {
-				renderType: "thighhighs",
+				reference: "boysgymsocks",
+				accessory: true,
+				accColour: "#a354ce",
 			},
 			integrity: 100,
 			integrity_max: 100,
