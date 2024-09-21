@@ -750,3 +750,35 @@ Renderer.Animations["vagina-missionary-vfast"] = genFourOffsetKeyFrames(80, 0, 4
 Renderer.Animations["blowjob-missionary-idle"] = genLinearKeyFrames(2, 1000, 0, 12, 0, -6);
 Renderer.Animations["blowjob-missionary-mid"] = genFourSkewedKeyFrames(170, 0, 12, 0, -6);
 Renderer.Animations["blowjob-missionary-vfast"] = genFourSkewedKeyFrames(80, 0, 12, 0, -6);
+
+/**
+ * @type {KeyframeAnimationSpec}
+ */
+const eyelashesDoggyIdle = {
+	frameCount: 1,
+	keyframes: [
+		{
+			frame: 4,
+			duration: 1000,
+			dx: -2,
+			dy: 0,
+		},
+	],
+};
+Renderer.Animations["eyelashes-doggy-idle"] = eyelashesDoggyIdle;
+
+/**
+ * @type {KeyframeAnimationSpec}
+ */
+const eyelidsDoggyIdle = {
+	frameCount: 1,
+	keyframes: [
+		{
+			frame: 4,
+			duration: 1000,
+			dx: -2,
+			dy: 0,
+		},
+	],
+};
+Renderer.Animations["eyelids-doggy-idle"] = eyelidsDoggyIdle;

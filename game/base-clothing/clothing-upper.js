@@ -250,7 +250,7 @@ function initUpper() {
 			name_cap: "School shirt",
 			variable: "schoolshirt",
 			combat: {
-				reference: "sundress",
+				reference: "tshirt",
 			},
 			integrity: 200,
 			integrity_max: 200,
