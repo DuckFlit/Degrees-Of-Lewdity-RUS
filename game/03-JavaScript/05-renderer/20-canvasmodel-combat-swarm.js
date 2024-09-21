@@ -21,7 +21,7 @@ const combatMainSwarm = {
 	layers: {
 		analImminent: {
 			srcfn(options) {
-				const path = `${options.src}/swarms/${options.type}/anal.png`;
+				const path = `${options.src}swarms/${options.type}/anal.png`;
 				return path;
 			},
 			showfn(options) {
@@ -35,7 +35,7 @@ const combatMainSwarm = {
 		},
 		analPenetrating: {
 			srcfn(options) {
-				const path = `${options.src}/swarms/${options.type}/anal.png`;
+				const path = `${options.src}swarms/${options.type}/anal.png`;
 				return path;
 			},
 			showfn(options) {
@@ -48,7 +48,7 @@ const combatMainSwarm = {
 		},
 		vaginalImminent: {
 			srcfn(options) {
-				const path = `${options.src}/swarms/${options.type}/vaginal.png`;
+				const path = `${options.src}swarms/${options.type}/vaginal.png`;
 				return path;
 			},
 			showfn(options) {
@@ -63,7 +63,7 @@ const combatMainSwarm = {
 		},
 		vaginalPenetrating: {
 			srcfn(options) {
-				const path = `${options.src}/swarms/${options.type}/vaginal.png`;
+				const path = `${options.src}swarms/${options.type}/vaginal.png`;
 				return path;
 			},
 			showfn(options) {
@@ -77,7 +77,7 @@ const combatMainSwarm = {
 		},
 		penileImminent: {
 			srcfn(options) {
-				const path = `${options.src}/swarms/${options.type}/penile.png`;
+				const path = `${options.src}swarms/${options.type}/penile.png`;
 				return path;
 			},
 			showfn(options) {
@@ -92,7 +92,7 @@ const combatMainSwarm = {
 		},
 		penilePenetrating: {
 			srcfn(options) {
-				const path = `${options.src}/swarms/${options.type}/penile.png`;
+				const path = `${options.src}swarms/${options.type}/penile.png`;
 				return path;
 			},
 			showfn(options) {
@@ -105,7 +105,7 @@ const combatMainSwarm = {
 		},
 		background: {
 			srcfn(options) {
-				const path = `${options.src}/swarms/${options.type}/${options.amount}.png`;
+				const path = `${options.src}swarms/${options.type}/${options.amount}.png`;
 				return path;
 			},
 			showfn(options) {

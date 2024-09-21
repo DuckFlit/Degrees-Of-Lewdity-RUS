@@ -32,13 +32,14 @@
  * @property {30} backArm
  * Front arms:
  * @property {75} frontArm
+ * @property {82} frontBoundArms
  * Transformation parts
  * @property {40} backWings
  * @property {40} backHalo
  * @property {40} backHorns
  * @property {40} backEars
  * @property {40} backTail
- * @property {40} frontWings
+ * @property {90} frontWings
  * @property {84} frontHalo
  * @property {83} frontHorns
  * @property {82} frontEars
@@ -179,7 +180,7 @@ class CombatRenderer {
 			backHorns: 40,
 			backEars: 40,
 			backTail: 40,
-			frontWings: 40,
+			frontWings: 90,
 			frontHalo: 84,
 			frontHorns: 83,
 			frontEars: 82,
@@ -199,6 +200,7 @@ class CombatRenderer {
 			frontArm: 75,
 
 			hair: 81,
+			frontBoundArms: 82,
 
 			near: 100,
 		};

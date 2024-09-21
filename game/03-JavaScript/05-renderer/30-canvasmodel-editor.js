@@ -8,16 +8,18 @@ class CombatEditor {
 		const para = document.createElement("div");
 		para.classList.add("d-flex", "flex-row", "p-1", "gap-1", "justify-content-end");
 		para.append(
-			CombatEditor.createButtonAsIcon("./img/ui/reload.png", "Reload", () => {
+			CombatEditor.createButtonAsIcon("./img/ui/reload.png", "Reload - Use when animation breaks", () => {
 				CombatEditor.recompileCombatCanvas();
 			})
 		);
 
-		para.append(
-			CombatEditor.createButtonAsIcon("./img/ui/refresh.png", "Refresh", () => {
-				CombatEditor.refreshCombatCanvas();
-			})
-		);
+		if (V.debug) {
+			para.append(
+				CombatEditor.createButtonAsIcon("./img/ui/refresh.png", "Refresh", () => {
+					CombatEditor.refreshCombatCanvas();
+				})
+			);
+		}
 		fragment.append(para);
 
 		return fragment;
@@ -39,7 +41,7 @@ class CombatEditor {
 			if (layer.show !== true) {
 				btn.classList.add("faded");
 			}
-			btn.addEventListener("click", ev => {
+			btn.addEventListener("click", () => {
 				console.log("Layer", layer.name, "clicked.");
 				CombatEditor.layer = layer;
 				const dialog = document.getElementById("combatMainLayerDialog");
@@ -88,6 +90,44 @@ class CombatEditor {
 			});
 		}
 
+		// Z
+		CombatEditor.CreateNumericControl(container, "cr-layer-z", "Z: ", layer.z, (control, layer) => {
+			if (!Number.isFinite(control.valueAsNumber)) {
+				control.value = layer.z?.toString() || "0";
+				return;
+			}
+			layer.z = control.valueAsNumber;
+		});
+
+		// Blend
+		if (typeof layer.blend === "string") {
+			CombatEditor.CreateTextboxControl(container, "cr-layer-blend", "Blend: ", layer.blend, (control, layer) => {
+				layer.blend = control.value;
+			});
+		}
+
+		// Blend mode
+		if (typeof layer.blendMode === "string") {
+			CombatEditor.CreateTextboxControl(container, "cr-layer-blend", "Blend mode: ", layer.blendMode, (control, layer) => {
+				// @ts-ignore - Dev-User input
+				layer.blendMode = control.value;
+			});
+		}
+
+		// Alpha
+		CombatEditor.CreateNumericControl(container, "cr-layer-blend", "Alpha: ", layer.alpha, (control, layer) => {
+			if (!Number.isFinite(control.valueAsNumber)) {
+				control.value = layer.alpha?.toString() || "0";
+				return;
+			}
+			layer.alpha = control.valueAsNumber;
+		});
+
+		// Filter list
+		const span = document.createElement("span");
+		span.textContent = "Filters: " + layer.filters;
+		container.append(span);
+
 		fragment.append(container);
 		return fragment;
 	}
@@ -101,11 +141,13 @@ class CombatEditor {
 	 */
 	static CreateCheckboxControl(parent, id, summary, value, onChange) {
 		const label = document.createElement("label");
+		label.classList.add("d-flex");
 		label.textContent = summary;
 		label.htmlFor = id;
 
 		const control = document.createElement("input");
 		control.id = id;
+		control.classList.add("mx-auto");
 		control.type = "checkbox";
 		control.checked = value;
 		control.addEventListener("change", ev => {
@@ -126,11 +168,12 @@ class CombatEditor {
 	 * @param {HTMLElement} parent
 	 * @param {string} id
 	 * @param {string?} summary
-	 * @param {string} value
+	 * @param {string | null | undefined} value
 	 * @param {function(HTMLInputElement, Partial<CompositeLayerSpec>): void} onChange
 	 */
 	static CreateTextboxControl(parent, id, summary, value, onChange) {
 		const label = document.createElement("label");
+		label.classList.add("d-flex", "justify-content-space-between");
 		label.textContent = summary;
 		label.htmlFor = id;
 
@@ -138,7 +181,45 @@ class CombatEditor {
 		control.id = id;
 		control.classList.add("bg-black", "white");
 		control.type = "text";
-		control.value = value;
+		control.value = value?.toString() || "";
+		control.onfocus = () => {
+			V.tempDisable = true;
+		};
+		control.onblur = () => {
+			V.tempDisable = false;
+		};
+		control.addEventListener("change", ev => {
+			if (CombatEditor.layer == null) {
+				return;
+			}
+			if (!(ev.target instanceof HTMLInputElement)) {
+				return;
+			}
+			onChange(ev.target, CombatEditor.layer);
+			CombatEditor.refreshCombatCanvas();
+		});
+		label.append(control);
+		parent.append(label);
+	}
+
+	/**
+	 * @param {HTMLElement} parent
+	 * @param {string} id
+	 * @param {string?} summary
+	 * @param {number | undefined} value
+	 * @param {function(HTMLInputElement, Partial<CompositeLayerSpec>): void} onChange
+	 */
+	static CreateNumericControl(parent, id, summary, value, onChange) {
+		const label = document.createElement("label");
+		label.classList.add("d-flex", "justify-content-space-between");
+		label.textContent = summary;
+		label.htmlFor = id;
+
+		const control = document.createElement("input");
+		control.id = id;
+		control.classList.add("bg-black", "white");
+		control.type = "number";
+		control.value = value?.toString() || "0";
 		control.onfocus = () => {
 			V.tempDisable = true;
 		};

@@ -209,6 +209,13 @@ declare module "twine-sugarcube" {
 			left_thigh: Bodywriting;
 			right_thigh: Bodywriting;
 		};
+
+		makeup: {
+			eyelenses: {
+				left: string;
+				right: string;
+			};
+		};
 	}
 }
 
@@ -290,6 +297,7 @@ declare global {
 			kiss: boolean;
 		};
 
+		freckles: boolean;
 		skin: {
 			color: SkinColours;
 		};

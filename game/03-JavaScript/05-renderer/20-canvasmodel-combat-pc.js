@@ -582,7 +582,12 @@ const combatMainPc = {
 				return options.animKey;
 			},
 			filters: ["body"],
-			z: CombatRenderer.indices.frontArm,
+			zfn(options) {
+				if (options.armFrontPosition === "bound") {
+					return CombatRenderer.indices.frontBoundArms;
+				}
+				return CombatRenderer.indices.frontArm;
+			},
 		},
 		frontbreast: {
 			srcfn(options) {
@@ -704,6 +709,20 @@ const combatMainPc = {
 			},
 			showfn(options) {
 				const result = options.showPlayer && !!options.showFace && options.blush > 0;
+				return !!result;
+			},
+			animationfn(options) {
+				return options.animKey;
+			},
+			filters: ["body"],
+			z: CombatRenderer.indices.head + 1,
+		},
+		freckles: {
+			srcfn(options) {
+				return `${options.src}body/head/freckles.png`;
+			},
+			showfn(options) {
+				const result = options.showPlayer && !!options.showFace && !!options.freckles;
 				return !!result;
 			},
 			animationfn(options) {
@@ -839,10 +858,10 @@ const combatMainPc = {
 			z: CombatRenderer.indices.head + 3,
 		}),
 		bodywritingBackCheek: PlayerCanvasHelper.genBodywritingLayer("backCheek", {
-			z: CombatRenderer.indices.base - 1,
+			z: CombatRenderer.indices.head - 1,
 		}),
 		bodywritingFrontCheek: PlayerCanvasHelper.genBodywritingLayer("frontCheek", {
-			z: CombatRenderer.indices.base + 1,
+			z: CombatRenderer.indices.head + 1,
 		}),
 		bodywritingBackShoulder: PlayerCanvasHelper.genBodywritingLayer("backShoulder", {
 			z: CombatRenderer.indices.base - 1,
@@ -1010,7 +1029,12 @@ const combatMainPc = {
 				const available = options.position === "doggy" ? ["default", "handjob"] : ["default", "handjob", "stroke"];
 				return available.includes(options.armFrontPosition);
 			},
-			z: CombatRenderer.indices.frontArm + 1,
+			zfn(options) {
+				if (options.armFrontPosition === "bound") {
+					return CombatRenderer.indices.frontBoundArms + 1;
+				}
+				return CombatRenderer.indices.frontArm + 1;
+			},
 		}),
 		handsFrontAcc: PlayerCanvasHelper.genClothingAccLayer("hands", {
 			srcfn(options) {
@@ -1033,7 +1057,12 @@ const combatMainPc = {
 				const found = available.includes(options.armFrontPosition);
 				return !!show && !!found;
 			},
-			z: CombatRenderer.indices.frontArm + 1,
+			zfn(options) {
+				if (options.armFrontPosition === "bound") {
+					return CombatRenderer.indices.frontBoundArms + 1;
+				}
+				return CombatRenderer.indices.frontArm + 1;
+			},
 		}),
 		headwearBack: PlayerCanvasHelper.genClothingLayer("head", {
 			srcfn(options) {
@@ -1224,7 +1253,12 @@ const combatMainPc = {
 				const show = CombatRenderer.isClothingShown(clothes, options.showClothing) && clothes.sleeves.show;
 				return !!show;
 			},
-			z: CombatRenderer.indices.frontArm + 1,
+			zfn(options) {
+				if (options.armFrontPosition === "bound") {
+					return CombatRenderer.indices.frontBoundArms + 1;
+				}
+				return CombatRenderer.indices.frontArm + 1;
+			},
 		}),
 	},
 };
