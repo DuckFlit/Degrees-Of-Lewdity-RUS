@@ -658,6 +658,24 @@ setup.colours.hairgradients_prototypes = {
 					[0.16, "rgba(0, 0, 0, 1)"],
 				],
 			},
+			combatMohawkDoggy: {
+				gradient: "radial",
+				values: [69, 84, 0, 130, 115, 187],
+				lengthFunctions: [(length, value) => value, (length, value) => value],
+				colors: [
+					[0.155, "rgba(0, 0, 0, 1)"],
+					[0.16, "rgba(0, 0, 0, 1)"],
+				],
+			},
+			combatMohawk: {
+				gradient: "radial",
+				values: [30, 142, 0, 130, 115, 184],
+				lengthFunctions: [(length, value) => value, (length, value) => value],
+				colors: [
+					[0.155, "rgba(0, 0, 0, 1)"],
+					[0.16, "rgba(0, 0, 0, 1)"],
+				],
+			},
 			overgrown: {
 				gradient: "radial",
 				values: [93, 60, 0, 93, 60, 200],
