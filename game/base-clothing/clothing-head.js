@@ -2248,7 +2248,7 @@ function initHead() {
 			name_cap: "Lolita headband",
 			variable: "lolita",
 			combat: {
-				reference: "band",
+				reference: "maid",
 			},
 			state: 0,
 			state_base: 0,
@@ -2315,6 +2315,9 @@ function initHead() {
 			name: "gold hairpin",
 			name_cap: "Gold hairpin",
 			variable: "goldhairpin",
+			combat: {
+				reference: "hairpin",
+			},
 			state: 0,
 			state_base: 0,
 			integrity: 50,
@@ -2348,6 +2351,9 @@ function initHead() {
 			name: "classic lolita headband",
 			name_cap: "Classic lolita headband",
 			variable: "lolitaold",
+			combat: {
+				reference: "maid",
+			},
 			state: 0,
 			state_base: 0,
 			integrity: 50,

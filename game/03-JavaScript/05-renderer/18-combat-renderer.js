@@ -4,6 +4,13 @@
 /**
  * @typedef CombatZIndices
  * @type {object}
+ * Closeup layers
+ * @property {10} closeBase
+ * @property {12} closeWornUnder
+ * @property {14} closeGenitals
+ * @property {16} closeWorn
+ * @property {18} closeCum
+ * @property {20} closeNpc
  * Combat layers
  * @property {0} far
  * @property {50} base
@@ -47,8 +54,8 @@
  * @property {80} frontEyes
  * @property {80} frontCheeks
  * @property {80} frontMalar
- * @property {40} frontPubes
- * @property {40} frontPlumage
+ * @property {50} frontPubes
+ * @property {50} frontPlumage
  */
 
 class CombatRenderer {
@@ -189,8 +196,8 @@ class CombatRenderer {
 			frontEyes: 80,
 			frontCheeks: 80,
 			frontMalar: 80,
-			frontPubes: 40,
-			frontPlumage: 40,
+			frontPlumage: 50,
+			frontPubes: 50,
 
 			frontThigh: 65,
 			frontFootwear: 70,
@@ -203,6 +210,13 @@ class CombatRenderer {
 			frontBoundArms: 82,
 
 			near: 100,
+
+			closeBase: 10,
+			closeWornUnder: 12,
+			closeGenitals: 14,
+			closeWorn: 16,
+			closeCum: 18,
+			closeNpc: 20,
 		};
 	}
 
@@ -343,8 +357,9 @@ class CombatRenderer {
 	 * @returns {Partial<CompositeLayerSpec>}
 	 */
 	static createHairColourGradient(hairPart, gradient, hairType, hairLength, prefilterName) {
+		const combatHair = CombatRenderer.getHairGradientType(hairType);
 		const filterPrototypeLibrary = setup.colours.hairgradients_prototypes[hairPart][gradient.style];
-		const filterPrototype = filterPrototypeLibrary[hairType] || filterPrototypeLibrary.all;
+		const filterPrototype = filterPrototypeLibrary[combatHair] || filterPrototypeLibrary.all;
 		/** @type {Partial<CompositeLayerSpec>} */
 		const filter = {
 			// @ts-ignore
@@ -572,6 +587,15 @@ class CombatRenderer {
 		if (V.hairColourStyle === "simple") {
 			return CombatRenderer.lookupColour(setup.colours.hair_map, V.haircolour, "hair", "hair_custom", "hair");
 		}
+		if (["wide flaps", "hime", "curtain", "mohawk"].includes(V.fringetype)) {
+			return CombatRenderer.createHairColourGradient(
+				"fringe",
+				V.hairFringeColourGradient,
+				CombatRenderer.getHairFringeType(),
+				hairLengthStringToNumber(V.fringelengthstage),
+				"hair"
+			);
+		}
 		return CombatRenderer.createHairColourGradient(
 			"sides",
 			V.hairColourGradient,
@@ -598,22 +622,38 @@ class CombatRenderer {
 	}
 
 	static getFringeType() {
-		if (V.fringetype === "wide flaps") {
-			return "wide_flaps";
-		}
-		if (V.fringetype === "mohawk" && V.worn.head.mask_img === 1) {
+		if (V.hairtype === "short") {
 			return "short";
+		}
+		if (V.fringetype === "wide flaps") {
+			return "wide-flaps";
+		}
+		if (V.fringetype === "hime") {
+			return "hime";
+		}
+		if (V.fringetype === "curtain") {
+			return "curtain";
+		}
+		if (V.fringetype === "mohawk") {
+			return V.worn.head.mask_img === 1 ? "short" : "mohawk";
 		}
 		if (V.fringetype === "buzzcut") {
 			return "buzzcut";
 		}
-		if (V.hairtype === "short") {
-			return "short";
-		}
 		if (V.hairtype === "layered bob") {
-			return V.hairtype;
+			return "layered-bob";
 		}
 		return "default";
+	}
+
+	/**
+	 * @param {string} hairType
+	 */
+	static getHairGradientType(hairType) {
+		if (V.fringetype === "mohawk") {
+			return V.position === "missionary" ? "combatMohawk" : "combatMohawkDoggy";
+		}
+		return hairType;
 	}
 
 	/**
