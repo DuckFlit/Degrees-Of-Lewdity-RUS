@@ -80,6 +80,7 @@ declare global {
 	}
 
 	interface Window {
+		CloseCombatMapper?: typeof CloseCombatMapper;
 		CombatRenderer?: typeof CombatRenderer;
 		PlayerCombatMapper?: typeof PlayerCombatMapper;
 		PlayerCanvasHelper?: typeof PlayerCanvasHelper;

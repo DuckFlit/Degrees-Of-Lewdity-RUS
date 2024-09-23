@@ -1,5 +1,5 @@
 // @ts-check
-/* globals CloseOptions */
+/* globals CombatRenderer, CloseCombatMapper, CloseOptions */
 
 /**
  * @type {CanvasModelOptions<CloseOptions>}
@@ -13,17 +13,10 @@ const combatCloseChest = {
 		return [];
 	},
 	defaultOptions() {
-		return {
-			root: "img/newsex/close/",
-			position: "missionary",
-			showChest: false,
-			filters: {
-				worn: {},
-			},
-		};
+		return { ...CloseCombatMapper.generateOptions(), ...this.metadata };
 	},
 	preprocess(options) {
-		getCloseOptions(options);
+		CloseCombatMapper.mapCloseOptions(options);
 	},
 	layers: {
 		chest: {
@@ -37,7 +30,7 @@ const combatCloseChest = {
 				return options.animKeyChest;
 			},
 			filters: ["body"],
-			z: ZIndices.closeBase,
+			z: CombatRenderer.indices.closeBase,
 		},
 		breasts: {
 			srcfn(options) {
@@ -50,14 +43,14 @@ const combatCloseChest = {
 				return options.animKeyChest;
 			},
 			filters: ["body"],
-			z: ZIndices.closeNpc + 1,
+			z: CombatRenderer.indices.closeNpc + 1,
 		},
 		npc: {
 			srcfn(options) {
 				return `${options.src}chest/npc/${options.chest.npc}.png`;
 			},
 			showfn(options) {
-				return !!options.showChest && ["penis", "tentacle"].includes(V.chestuse);
+				return !!options.showChest && ["penis", "tentacle"].includes(V.chestuse.toString());
 			},
 			animationfn(options) {
 				return options.animKeyChest;
@@ -73,7 +66,7 @@ const combatCloseChest = {
 				const isWraith = ["tentacles-wraith", "tentacles-wraith-penetrated"].includes(V.tentacleColour);
 				return options.chest.npc === "tentacle" && isWraith ? 0.2 : 0;
 			},
-			z: ZIndices.closeNpc,
+			z: CombatRenderer.indices.closeNpc,
 		},
 		npcCondom: {
 			srcfn(options) {
@@ -87,7 +80,7 @@ const combatCloseChest = {
 			},
 			filters: ["chestCondom"],
 			alpha: 0.4,
-			z: ZIndices.closeNpc,
+			z: CombatRenderer.indices.closeNpc,
 		},
 	},
 };

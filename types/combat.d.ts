@@ -23,7 +23,12 @@ declare module "twine-sugarcube" {
 		leftarm: number | string;
 		rightarm: number | string;
 
+		active_enemy: number;
+		enemyno: number;
+		monster: number;
+
 		anustarget: number;
+		anusdoubletarget: number;
 		anususe: number;
 		anusstate: string | 0;
 		bottomtarget: number;
@@ -59,6 +64,7 @@ declare module "twine-sugarcube" {
 		tooltarget: number;
 		tooluse: number;
 		toolstate: string | 0;
+		vaginadoubletarget: number;
 		vaginatarget: number;
 		vaginause: number;
 		vaginastate: string | 0;
