@@ -669,8 +669,19 @@ class CombatRenderer {
 		if (transformation === "bird" && ["tail", "wings", "malar", "plumage", "pubes"].includes(part)) {
 			return CombatRenderer.getHairFilter();
 		}
-		if (["cat", "wolf"].includes(transformation) && ["ears", "tail"].includes(part)) {
+		if (["cat", "wolf"].includes(transformation) && ["ears", "tail", "pubes"].includes(part)) {
 			return CombatRenderer.getHairFilter();
+		}
+		if (transformation === "fox" && ["ears", "tail", "cheeks", "pubes"].includes(part)) {
+			return CombatRenderer.getHairFilter();
+		}
+		// No filter possible as part(s) cannot be recoloured
+		if (
+			["angel", "fallen"].includes(transformation) ||
+			(transformation === "wolf" && part === "cheeks") ||
+			(transformation === "bird" && part === "eyes")
+		) {
+			return Renderer.emptyLayerFilter();
 		}
 		return {
 			blend: ColourUtils.toHslString(active[part + "_colour"], ColourUtils.toHslString(defaults.colour)),

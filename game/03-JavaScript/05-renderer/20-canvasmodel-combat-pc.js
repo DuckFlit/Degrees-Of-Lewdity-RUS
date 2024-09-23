@@ -813,10 +813,17 @@ const combatMainPc = {
 		birdTailFront: PlayerCanvasHelper.genTransformationLayer("bird", "tail", "front"),
 		birdWingsBack: PlayerCanvasHelper.genTransformationLayer("bird", "wings", "back"),
 		birdWingsFront: PlayerCanvasHelper.genTransformationLayer("bird", "wings", "front"),
-		birdEyes: PlayerCanvasHelper.genTransformationLayer("bird", "eyes", "front"),
 		birdMalar: PlayerCanvasHelper.genTransformationLayer("bird", "malar", "front"),
 		birdPubes: PlayerCanvasHelper.genTransformationLayer("bird", "pubes", "front"),
 		birdPlumage: PlayerCanvasHelper.genTransformationLayer("bird", "plumage", "front"),
+		birdEyes: PlayerCanvasHelper.genTransformationLayer("bird", "eyes", "front", {
+			animationfn(options) {
+				if (PlayerCombatMapper.getPcAnimationFrameCount(options) === 2) {
+					return "eyes-bird-idle";
+				}
+				return options.animKey;
+			},
+		}),
 
 		catEarsFront: PlayerCanvasHelper.genTransformationLayer("cat", "ears", "front"),
 		catEarsBack: PlayerCanvasHelper.genTransformationLayer("cat", "ears", "back"),
@@ -842,14 +849,14 @@ const combatMainPc = {
 		fallenAngelHaloBack: PlayerCanvasHelper.genTransformationLayer("fallenAngel", "halo", "back"),
 		fallenAngelHaloFront: PlayerCanvasHelper.genTransformationLayer("fallenAngel", "halo", "front"),
 
-		foxEarsFront: PlayerCanvasHelper.genTransformationLayer("fox", "ears", "front"),
 		foxEarsBack: PlayerCanvasHelper.genTransformationLayer("fox", "ears", "back"),
+		foxEarsFront: PlayerCanvasHelper.genTransformationLayer("fox", "ears", "front"),
 		foxTailBack: PlayerCanvasHelper.genTransformationLayer("fox", "tail", "back"),
 		foxTailFront: PlayerCanvasHelper.genTransformationLayer("fox", "tail", "front"),
 		foxCheeks: PlayerCanvasHelper.genTransformationLayer("fox", "cheeks", "front"),
 
-		wolfEarsFront: PlayerCanvasHelper.genTransformationLayer("wolf", "ears", "front"),
 		wolfEarsBack: PlayerCanvasHelper.genTransformationLayer("wolf", "ears", "back"),
+		wolfEarsFront: PlayerCanvasHelper.genTransformationLayer("wolf", "ears", "front"),
 		wolfTailBack: PlayerCanvasHelper.genTransformationLayer("wolf", "tail", "back"),
 		wolfTailFront: PlayerCanvasHelper.genTransformationLayer("wolf", "tail", "front"),
 		wolfCheeks: PlayerCanvasHelper.genTransformationLayer("wolf", "cheeks", "front"),
