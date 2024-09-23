@@ -782,3 +782,19 @@ const eyelidsDoggyIdle = {
 	],
 };
 Renderer.Animations["eyelids-doggy-idle"] = eyelidsDoggyIdle;
+
+/**
+ * @type {KeyframeAnimationSpec}
+ */
+const eyesBirdIdle = {
+	frameCount: 1,
+	keyframes: [
+		{
+			frame: 2,
+			duration: 1000,
+			dx: 0,
+			dy: 0,
+		},
+	],
+};
+Renderer.Animations["eyes-bird-idle"] = eyesBirdIdle;
