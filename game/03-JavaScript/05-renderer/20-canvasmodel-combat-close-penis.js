@@ -1,5 +1,5 @@
 // @ts-check
-/* globals CloseOptions */
+/* globals CombatRenderer, CloseCombatMapper, CloseOptions */
 
 /**
  * @type {CanvasModelOptions<CloseOptions>}
@@ -13,18 +13,10 @@ const combatClosePenis = {
 		return [];
 	},
 	defaultOptions() {
-		return {
-			root: "img/newsex/close/",
-			position: "missionary",
-			showPenis: false,
-			penis: {},
-			filters: {
-				worn: {},
-			},
-		};
+		return { ...CloseCombatMapper.generateOptions(), ...this.metadata };
 	},
 	preprocess(options) {
-		getCloseOptions(options);
+		CloseCombatMapper.mapCloseOptions(options);
 	},
 	layers: {
 		base: {
@@ -38,7 +30,7 @@ const combatClosePenis = {
 				return options.animKeyPenis;
 			},
 			filters: ["body"],
-			z: ZIndices.closeBase,
+			z: CombatRenderer.indices.closeBase,
 		},
 		panties: {
 			srcfn(options) {
@@ -51,7 +43,7 @@ const combatClosePenis = {
 				return options.animKeyPenis;
 			},
 			filters: ["worn_under_lower_main"],
-			z: ZIndices.closeWorn,
+			z: CombatRenderer.indices.closeWorn,
 		},
 		penis: {
 			srcfn(options) {
@@ -74,11 +66,11 @@ const combatClosePenis = {
 				return options.animKeyPenis;
 			},
 			filters: ["body"],
-			z: ZIndices.closeGenitals + 4,
+			z: CombatRenderer.indices.closeGenitals + 4,
 		},
 		condom: {
 			srcfn(options) {
-				return `${options.src}penis/${options.position}/${options.penis.size}-condom-${V.player.condom.type}.png`;
+				return `${options.src}penis/${options.position}/${options.penis.size}-condom.png`;
 			},
 			showfn(options) {
 				return !!options.showPenis && !!options.penis.condom;
@@ -88,7 +80,7 @@ const combatClosePenis = {
 			},
 			alpha: 0.4,
 			filters: ["condom"],
-			z: ZIndices.closeGenitals + 4,
+			z: CombatRenderer.indices.closeGenitals + 4,
 		},
 		parasite: {
 			srcfn(options) {
@@ -103,7 +95,7 @@ const combatClosePenis = {
 				return options.animKeyPenis;
 			},
 			filters: ["parasitePanties"],
-			z: ZIndices.closeWornUnder,
+			z: CombatRenderer.indices.closeWornUnder,
 		},
 		parasiteBalls: {
 			srcfn(options) {
@@ -122,7 +114,7 @@ const combatClosePenis = {
 				return options.animKeyPenis;
 			},
 			filters: ["parasitePanties"],
-			z: ZIndices.closeWornUnder,
+			z: CombatRenderer.indices.closeWornUnder,
 		},
 		chastity: {
 			srcfn(options) {
@@ -137,7 +129,7 @@ const combatClosePenis = {
 			filtersfn(options) {
 				return options.penis.chastityDevice.includes("parasite") ? ["parasitePanties"] : [];
 			},
-			z: ZIndices.closeWorn,
+			z: CombatRenderer.indices.closeWorn,
 		},
 		penetratedNpc: {
 			srcfn(options) {
@@ -155,7 +147,7 @@ const combatClosePenis = {
 			alphafn(options) {
 				return options.penis.npc === "tentacle" && ["tentacles-wraith", "tentacles-wraith-penetrated"].includes(V.tentacleColour) ? 0.4 : 1;
 			},
-			z: ZIndices.closeNpc,
+			z: CombatRenderer.indices.closeNpc,
 		},
 		cum: {
 			srcfn(options) {
@@ -167,8 +159,7 @@ const combatClosePenis = {
 			animationfn(options) {
 				return options.animKeyPenis;
 			},
-			filters: ["parasitePanties"],
-			z: ZIndices.closeCum,
+			z: CombatRenderer.indices.closeCum,
 		},
 	},
 };

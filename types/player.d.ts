@@ -61,6 +61,8 @@ declare module "twine-sugarcube" {
 
 		controlstart: number;
 
+		vaginaWetness: number;
+		vaginaArousalWetness: number;
 		arousalmasochism: number;
 		trackedArousal: int[];
 		timeSinceArousal: number;
@@ -71,6 +73,7 @@ declare module "twine-sugarcube" {
 		eyeselect: string;
 		leftEyeColour: string;
 		rightEyeColour: string;
+		naturalhaircolour: string;
 		haircolour: string;
 		hairfringecolour: string;
 		hairlengthstage: string;
@@ -215,6 +218,11 @@ declare module "twine-sugarcube" {
 				left: string;
 				right: string;
 			};
+			pbcolour: string;
+			lipstick: string;
+			mascara: string;
+			concealer: string;
+			eyeshadow: string;
 		};
 	}
 }
@@ -332,6 +340,13 @@ declare global {
 
 	export interface ParasiteState {
 		name: "parasite";
+	}
+
+	export interface BodyLiquid {
+		bodyparts: string[];
+		innerbodyparts: string[];
+		liquidtype: string[];
+		combined: (bodypart: string) => number;
 	}
 }
 

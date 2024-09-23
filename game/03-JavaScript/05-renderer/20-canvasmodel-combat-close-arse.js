@@ -1,5 +1,5 @@
 // @ts-check
-/* globals CloseOptions, CanvasModelLayers */
+/* globals CombatRenderer, CloseCombatMapper, CloseOptions, CanvasModelLayers */
 
 /**
  * @type {CanvasModelOptions<CloseOptions>}
@@ -13,17 +13,10 @@ const combatCloseArse = {
 		return [];
 	},
 	defaultOptions() {
-		return {
-			root: "img/newsex/close/",
-			position: "missionary",
-			showArse: false,
-			filters: {
-				worn: {},
-			},
-		};
+		return { ...CloseCombatMapper.generateOptions(), ...this.metadata };
 	},
 	preprocess(options) {
-		getCloseOptions(options);
+		CloseCombatMapper.mapCloseOptions(options);
 	},
 	layers: {
 		arse: {
@@ -37,7 +30,7 @@ const combatCloseArse = {
 				return options.animKeyArse;
 			},
 			filters: ["body"],
-			z: ZIndices.closeBase,
+			z: CombatRenderer.indices.closeBase,
 		},
 		npcSilhouette: {
 			srcfn(options) {
@@ -49,7 +42,7 @@ const combatCloseArse = {
 			animationfn(options) {
 				return options.animKeyArse;
 			},
-			z: ZIndices.closeNpc + 3,
+			z: CombatRenderer.indices.closeNpc + 3,
 		},
 		panties: {
 			srcfn(options) {
@@ -62,7 +55,7 @@ const combatCloseArse = {
 				return options.animKeyArse;
 			},
 			filters: ["worn_under_lower_main"],
-			z: ZIndices.closeWorn,
+			z: CombatRenderer.indices.closeWorn,
 		},
 		npcPenetrator: arsePenetrator("npc", "strapon"),
 		npcPenetrator2: arsePenetrator("npc2", "dpStrapon"),
@@ -106,7 +99,7 @@ function arsePenetrator(npc, strapon, overrideOptions = {}) {
 			const isWraith = options.anus[npc] === "tentacle" && ["tentacles-wraith", "tentacles-wraith-penetrated"].includes(V.tentacleColour);
 			return isWraith ? (V.tentacleColour === "tentacles-wraith" ? 0.4 : 0.8) : 1;
 		},
-		z: ZIndices.closeNpc,
+		z: CombatRenderer.indices.closeNpc,
 	};
 	return Object.assign(defaults, overrideOptions);
 }
@@ -134,7 +127,7 @@ function arsePenetratorCondom(npc, overrideOptions = {}) {
 		},
 		alpha: 0.4,
 		filters: npc === "npc2" ? ["anusCondom2"] : ["anusCondom"],
-		z: ZIndices.closeNpc + 1,
+		z: CombatRenderer.indices.closeNpc + 1,
 	};
 	return Object.assign(defaults, overrideOptions);
 }

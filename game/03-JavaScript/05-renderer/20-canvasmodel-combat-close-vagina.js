@@ -1,5 +1,5 @@
 // @ts-check
-/* globals CloseOptions */
+/* globals CombatRenderer, CloseCombatMapper, CloseOptions, CanvasModelLayers */
 
 /**
  * @type {CanvasModelOptions<CloseOptions>}
@@ -13,18 +13,10 @@ const combatCloseVagina = {
 		return [];
 	},
 	defaultOptions() {
-		return {
-			root: "img/newsex/close/",
-			position: "missionary",
-			showVagina: false,
-			penis: {},
-			filters: {
-				worn: {},
-			},
-		};
+		return { ...CloseCombatMapper.generateOptions(), ...this.metadata };
 	},
 	preprocess(options) {
-		getCloseOptions(options);
+		CloseCombatMapper.mapCloseOptions(options);
 	},
 	layers: {
 		vagina: {
@@ -38,7 +30,7 @@ const combatCloseVagina = {
 				return options.animKeyVagina;
 			},
 			filters: ["body"],
-			z: ZIndices.closeBase,
+			z: CombatRenderer.indices.closeBase,
 		},
 		vaginaAroused: {
 			srcfn(options) {
@@ -51,7 +43,7 @@ const combatCloseVagina = {
 				return options.animKeyVagina;
 			},
 			filters: ["body"],
-			z: ZIndices.closeBase,
+			z: CombatRenderer.indices.closeBase,
 		},
 		penis: {
 			srcfn(options) {
@@ -69,7 +61,7 @@ const combatCloseVagina = {
 				return options.animKeyVagina;
 			},
 			filters: ["body"],
-			z: ZIndices.closeGenitals + 2,
+			z: CombatRenderer.indices.closeGenitals + 2,
 		},
 		vaginaCum: {
 			srcfn(options) {
@@ -81,7 +73,7 @@ const combatCloseVagina = {
 			animationfn(options) {
 				return options.vagina.cumState === "vagina" ? "sex-17f-slow" : options.animKeyVagina;
 			},
-			z: ZIndices.closeCum,
+			z: CombatRenderer.indices.closeCum,
 		},
 		hirsute: {
 			srcfn(options) {
@@ -94,7 +86,7 @@ const combatCloseVagina = {
 				return options.animKeyVagina;
 			},
 			filters: ["pbhair"],
-			z: ZIndices.closeBase + 1,
+			z: CombatRenderer.indices.closeBase + 1,
 		},
 		silhouette: {
 			srcfn(options) {
@@ -106,7 +98,7 @@ const combatCloseVagina = {
 			animationfn(options) {
 				return options.animKeyVagina;
 			},
-			z: ZIndices.closeNpc + 3,
+			z: CombatRenderer.indices.closeNpc + 3,
 		},
 		parasite: {
 			srcfn(options) {
@@ -119,7 +111,7 @@ const combatCloseVagina = {
 				return options.animKeyVagina;
 			},
 			filters: ["parasitePanties"],
-			z: ZIndices.closeWorn,
+			z: CombatRenderer.indices.closeWorn,
 		},
 		panties: {
 			srcfn(options) {
@@ -132,7 +124,7 @@ const combatCloseVagina = {
 				return options.animKeyVagina;
 			},
 			filters: ["worn_under_lower_main"],
-			z: ZIndices.closeWorn,
+			z: CombatRenderer.indices.closeWorn,
 		},
 		chastity: {
 			srcfn(options) {
@@ -147,7 +139,7 @@ const combatCloseVagina = {
 			filtersfn(options) {
 				return options.vagina.chastityDevice.includes("parasite") ? ["parasitePanties"] : [];
 			},
-			z: ZIndices.closeWorn,
+			z: CombatRenderer.indices.closeWorn,
 		},
 		npcCum: {
 			srcfn(options) {
@@ -165,7 +157,7 @@ const combatCloseVagina = {
 			animationfn(options) {
 				return options.animKeyVagina;
 			},
-			z: ZIndices.closeNpc,
+			z: CombatRenderer.indices.closeNpc,
 		},
 		npcPenetrator: vaginaPenetrator("npc", "strapon"),
 		npcPenetrator2: vaginaPenetrator("npc2", "dpStrapon"),
@@ -211,7 +203,7 @@ function vaginaPenetrator(npc, strapon, overrideOptions = {}) {
 			const isWraith = options.vagina[npc] === "tentacle" && ["tentacles-wraith", "tentacles-wraith-penetrated"].includes(V.tentacleColour);
 			return isWraith ? (V.tentacleColour === "tentacles-wraith" ? 0.4 : 0.8) : 1;
 		},
-		z: ZIndices.closeNpc,
+		z: CombatRenderer.indices.closeNpc,
 	};
 	return Object.assign(defaults, overrideOptions);
 }
@@ -239,7 +231,7 @@ function vaginaPenetratorCondom(npc, overrideOptions = {}) {
 		},
 		alpha: 0.4,
 		filters: npc === "npc2" ? ["vaginaCondom2"] : ["vaginaCondom"],
-		z: ZIndices.closeNpc + 1,
+		z: CombatRenderer.indices.closeNpc + 1,
 	};
 	return Object.assign(defaults, overrideOptions);
 }
@@ -257,7 +249,8 @@ function vaginaPubes(pubes, level, overrideOptions = {}) {
 	 */
 	const defaults = {
 		srcfn(options) {
-			return `${options.src}vagina/${options.position}/hair/${options.vagina.state}-${pubes + V[pubes]}.png`;
+			const state = options.vagina.state === "chastity" ? "entrance" : options.vagina.state;
+			return `${options.src}vagina/${options.position}/hair/${state}-${pubes + V[pubes]}.png`;
 		},
 		showfn(options) {
 			return !!options.showVagina && V.pbdisable === "f" && V[pubes] >= level;
@@ -268,7 +261,7 @@ function vaginaPubes(pubes, level, overrideOptions = {}) {
 		brightness: -0.2,
 		contrast: 0.1,
 		filters: ["pbhair"],
-		z: ZIndices.closeBase,
+		z: CombatRenderer.indices.closeBase,
 	};
 	return Object.assign(defaults, overrideOptions);
 }

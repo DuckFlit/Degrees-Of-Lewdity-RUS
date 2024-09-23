@@ -170,6 +170,7 @@ declare module "twine-sugarcube" {
 			eyeshadow: FilterMap[];
 			eyes: FilterMap[];
 			hair: FilterMap[];
+			tentacle: FilterMap[];
 			clothes_default: Partial<CompositeLayerSpec>;
 			lipstick_default: Partial<CompositeLayerSpec>;
 			condom_default: Partial<CompositeLayerSpec>;
@@ -196,6 +197,9 @@ declare module "twine-sugarcube" {
 				[x: string]: FilterMap;
 			};
 			hair_map: {
+				[x: string]: FilterMap;
+			};
+			tentacle_map: {
 				[x: string]: FilterMap;
 			};
 			hairgradients_prototypes: {
@@ -236,6 +240,7 @@ declare module "twine-sugarcube" {
 			ygyaru: SkinColourConfig;
 			slime: SkinColourConfig;
 		};
+		bodyliquid: BodyLiquid;
 		LocationImages: LocationImages;
 		Locations: any;
 	}

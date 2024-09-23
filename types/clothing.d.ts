@@ -65,22 +65,11 @@ declare module "twine-sugarcube" {
 }
 
 declare global {
-	export type ClothingStates = "chest" | "midriff" | "waist" | "thighs" | "knees" | "ankles";
+	export type ClothingStates = "chest" | "midriff" | "waist" | "thighs" | "knees" | "ankles" | "totheside";
 
 	export type ZeroedClothingStates = 0 | ClothingStates;
 
-	export type TotalClothingStates =
-		| ZeroedClothingStates
-		| "default"
-		| "full"
-		| "bound"
-		| "handjob"
-		| "up"
-		| "down"
-		| "footjob"
-		| "neck"
-		| "worn"
-		| "totheside";
+	export type TotalClothingStates = ZeroedClothingStates | "default" | "full" | "bound" | "handjob" | "up" | "down" | "footjob" | "neck" | "worn";
 
 	export type ClothesSlots = "clothes_all_slots" | ClothedSlots;
 
