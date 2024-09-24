@@ -992,8 +992,8 @@ class PlayerCombatMapper {
 			hasAccessory: CombatRenderer.getAccessoryState(slot, defaults),
 			hasMainImg: clothing.combat?.hasMainImg !== false,
 			hasBackImg: !!defaults.back_img && [1, "combat"].includes(defaults.back_img),
-			breasts: PlayerCombatMapper.genClothingBreastOptions(slot, source, options.breastSize),
-			sleeves: PlayerCombatMapper.genClothingSleeveOptions(slot, source),
+			breasts: PlayerCombatMapper.genClothingBreastOptions(slot, clothing, options.breastSize),
+			sleeves: PlayerCombatMapper.genClothingSleeveOptions(slot, clothing),
 			renderStep: source.combat?.renderType,
 		};
 
@@ -1001,50 +1001,70 @@ class PlayerCombatMapper {
 	}
 
 	/**
-	 * @param {string} slot
-	 * @param {ClothesItem} source
+	 * @param {ClothedSlots} slot
+	 * @param {ClothesItem} clothing
 	 */
-	static genClothingSleeveOptions(slot, source) {
+	static genClothingSleeveOptions(slot, clothing) {
 		return {
-			show: ["upper", "under_upper", "over_upper"].includes(slot) && PlayerCombatMapper.hasSleeves(source),
+			show: ["upper", "under_upper", "over_upper"].includes(slot) && PlayerCombatMapper.hasSleeves(slot, clothing),
 			state: "default",
 		};
 	}
 
 	/**
-	 * @param {ClothesItem} source
+	 * @param {ClothedSlots} slot
+	 * @param {ClothesItem} clothing
 	 * @returns {boolean}
 	 */
-	static hasSleeves(source) {
+	static hasSleeves(slot, clothing) {
 		// Has combat.hasSleeves property
-		if (source.combat == null || source.combat.hasSleeves == null) {
-			return !!source.sleeve_img;
+		// Find clothing item recursively through reference.
+		// Checks each level starting from the top, based on given method.
+		const found = CombatRenderer.findClothingByProperty(slot, clothing, item => {
+			if (item.combat == null || item.combat.hasSleeves == null) {
+				return item.sleeve_img != null;
+			}
+			return item.combat.hasSleeves != null;
+		});
+		// Check the returned item for the sleeves property.
+		if (found.combat == null || found.combat.hasSleeves == null) {
+			return !!found.sleeve_img;
 		}
-		return source.combat.hasSleeves;
+		return found.combat.hasSleeves;
 	}
 
 	/**
-	 * @param {string} slot
+	 * @param {ClothedSlots} slot
 	 * @param {ClothesItem} source
 	 * @param {number} breastSize
 	 */
 	static genClothingBreastOptions(slot, source, breastSize) {
 		return {
-			show: ["upper", "under_upper", "over_upper"].includes(slot) && PlayerCombatMapper.hasBreasts(source),
+			show: ["upper", "under_upper", "over_upper"].includes(slot) && PlayerCombatMapper.hasBreasts(slot, source),
 			size: breastSize,
 		};
 	}
 
 	/**
+	 * @param {ClothedSlots} slot
 	 * @param {ClothesItem} source
 	 * @returns {boolean}
 	 */
-	static hasBreasts(source) {
-		// Has combat.hasSleeves property
-		if (source.combat == null || source.combat.hasBreasts == null) {
-			return !!source.breast_img;
+	static hasBreasts(slot, source) {
+		// Has combat.hasBreasts property
+		// Find clothing item recursively through reference.
+		// Checks each level starting from the top, based on given method.
+		const found = CombatRenderer.findClothingByProperty(slot, source, item => {
+			if (item.combat == null || item.combat.hasBreasts == null) {
+				return item.breast_img != null;
+			}
+			return item.combat.hasBreasts != null;
+		});
+		// Check the returned item for the sleeves property.
+		if (found.combat == null || found.combat.hasBreasts == null) {
+			return !!found.breast_img;
 		}
-		return source.combat.hasBreasts;
+		return found.combat.hasBreasts;
 	}
 
 	/**
