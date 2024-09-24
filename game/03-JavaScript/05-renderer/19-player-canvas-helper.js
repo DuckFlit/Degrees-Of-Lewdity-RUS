@@ -66,9 +66,11 @@ class PlayerCanvasHelper {
 					return "";
 				}
 				const states = [];
+				// @ts-ignore
 				if (step.isStateLayered(options.position, clothes.state)) {
 					states.push(layer);
 				}
+				// @ts-ignore
 				if (clothes.positions != null && step.isStateLegged(options.position, clothes.state)) {
 					states.push(clothes.positions[layer]);
 				}
@@ -110,6 +112,7 @@ class PlayerCanvasHelper {
 				if (isAccessory && !clothes.hasAccessory) {
 					return false;
 				}
+				// @ts-ignore
 				const stepShow = step.shouldShow(options.position, clothes.state);
 				const isClothingShown = CombatRenderer.isClothingShown(clothes, options.showClothing);
 				const hasMainImg = clothes.hasMainImg;
@@ -175,6 +178,56 @@ class PlayerCanvasHelper {
 			},
 			filtersfn(options) {
 				const filter = `worn_${slot}_main`;
+				return [filter];
+			},
+			z: CombatRenderer.indices[slot],
+		};
+		return Object.assign(defaults, overrideOptions);
+	}
+
+	/**
+	 * @param {ClothedSlots} slot
+	 * @param {"front" | "back"} layer
+	 * @param {CanvasModelLayers<CombatPlayerOptions>} overrideOptions
+	 * @returns {CanvasModelLayers<CombatPlayerOptions>}
+	 */
+	static genClothingSleeves(slot, layer, overrideOptions = {}) {
+		/**
+		 * @type {CanvasModelLayers<CombatPlayerOptions>}
+		 */
+		const defaults = {
+			srcfn(options) {
+				const clothes = options.clothes[slot];
+				if (clothes?.name == null) return "";
+				const position = layer === "front" ? options.armFrontPosition : options.armBackPosition;
+				const path = `${options.src}clothing/${slot}/${clothes.name}/sleeves/${layer}-${position}.png`;
+				return path;
+			},
+			showfn(options) {
+				const clothes = options.clothes[slot];
+				const show = options.showClothing && clothes != null && clothes.show && clothes.sleeves.show;
+				return !!show;
+			},
+			alphafn(options) {
+				const clothes = options.clothes[slot];
+				if (clothes == null) {
+					return 1;
+				}
+				const alpha = clothes.alpha;
+				return alpha;
+			},
+			animationfn(options) {
+				return options.animKey;
+			},
+			filtersfn(options) {
+				const filter = `worn_${slot}_main`;
+				const clothes = options.clothes[slot];
+				if (clothes == null) {
+					return [];
+				}
+				if (clothes.sleeves.useSecondary) {
+					return [`worn_${slot}_acc`];
+				}
 				return [filter];
 			},
 			z: CombatRenderer.indices[slot],

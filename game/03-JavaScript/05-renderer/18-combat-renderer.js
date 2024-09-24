@@ -494,6 +494,19 @@ class CombatRenderer {
 
 	/**
 	 * @param {ClothedSlots} slot
+	 * @returns {ClothesItem}
+	 */
+	static getClothingSetupBySlot(slot) {
+		const active = V.worn[slot];
+		if (active == null) {
+			return CombatRenderer.emptyClothing;
+		}
+		const category = setup.clothes[slot];
+		return category == null ? CombatRenderer.emptyClothing : category[active.index];
+	}
+
+	/**
+	 * @param {ClothedSlots} slot
 	 * @returns {number}
 	 */
 	static getAlpha(slot) {
@@ -514,7 +527,7 @@ class CombatRenderer {
 	 * @returns {boolean}
 	 */
 	static getAccessoryState(slot, defaults) {
-		const source = this.getSourceClothing(slot, defaults);
+		const source = CombatRenderer.getSourceClothing(slot, defaults);
 		if (source.combat?.accessory !== undefined) {
 			return !!source.combat.accessory;
 		}
@@ -527,7 +540,7 @@ class CombatRenderer {
 	 * @returns {CombatClothingTypes | undefined}
 	 */
 	static getClothingRenderType(slot, defaults) {
-		const source = this.getSourceClothing(slot, defaults);
+		const source = CombatRenderer.getSourceClothing(slot, defaults);
 		return source.combat?.renderType;
 	}
 
@@ -562,7 +575,7 @@ class CombatRenderer {
 		}
 		// If this redirect item has combatImg, we'll want to look again:
 		if (source.combat != null && source.combat.reference != null) {
-			return this.getSourceClothing(slot, source, failsafe);
+			return CombatRenderer.getSourceClothing(slot, source, failsafe);
 		}
 		return source;
 	}
