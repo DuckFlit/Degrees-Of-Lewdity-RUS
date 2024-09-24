@@ -568,6 +568,37 @@ class CombatRenderer {
 	}
 
 	/**
+	 * @param {ClothedSlots} slot
+	 * @param {ClothesItem} item
+	 * @param {function(ClothesItem): boolean} predicate
+	 * @param {string[]} failsafe
+	 * @returns {ClothesItem}
+	 */
+	static findClothingByProperty(slot, item, predicate, failsafe = []) {
+		const reference = item.combat?.reference;
+		// Check to ensure no loops
+		if (failsafe.includes(item.variable)) {
+			console.error("getSourceClothing ran into a potential infinite loop:", item.variable, failsafe);
+			return item;
+		}
+		failsafe.push(item.variable);
+		// Main code
+		if (predicate(item)) {
+			return item;
+		}
+		// Check combatImg's redirect for a possible clothing item:
+		const source = setup.clothes[slot].find(c => c.variable === reference);
+		if (source == null) {
+			return item;
+		}
+		// If this redirect item has combatImg, we'll want to look again:
+		if (source.combat != null && source.combat.reference != null) {
+			return CombatRenderer.findClothingByProperty(slot, source, predicate, failsafe);
+		}
+		return source;
+	}
+
+	/**
 	 * @param {ClothingState} clothing
 	 * @param {boolean=} globalShow
 	 */
