@@ -175,6 +175,7 @@
 /**
  * @typedef PlayerSleeveState
  * @property {boolean} show
+ * @property {boolean} useSecondary
  * @property {string} state
  */
 
@@ -945,6 +946,7 @@ class PlayerCombatMapper {
 				},
 				sleeves: {
 					show: false,
+					useSecondary: false,
 					state: "default",
 				},
 			};
@@ -1008,7 +1010,21 @@ class PlayerCombatMapper {
 		return {
 			show: ["upper", "under_upper", "over_upper"].includes(slot) && PlayerCombatMapper.hasSleeves(slot, clothing),
 			state: "default",
+			useSecondary: PlayerCombatMapper.getSleeveColourType(slot, clothing) === "secondary",
 		};
+	}
+
+	/**
+	 * @param {ClothedSlots} slot
+	 * @param {ClothesItem} clothing
+	 * @returns {"primary" | "secondary"}
+	 */
+	static getSleeveColourType(slot, clothing) {
+		const found = CombatRenderer.findClothingByProperty(slot, clothing, item => item.sleeve_colour != null);
+		if (found.sleeve_colour === "secondary") {
+			return "secondary";
+		}
+		return "primary";
 	}
 
 	/**

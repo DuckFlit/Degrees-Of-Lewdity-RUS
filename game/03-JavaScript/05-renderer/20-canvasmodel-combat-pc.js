@@ -1229,13 +1229,7 @@ const combatMainPc = {
 			},
 			z: CombatRenderer.indices.frontArm - 3,
 		}),
-		upperBackSleeves: PlayerCanvasHelper.genClothingLayer("upper", {
-			srcfn(options) {
-				const clothes = options.clothes.upper;
-				if (clothes?.name == null) return "";
-				const path = `${options.src}clothing/upper/${clothes.name}/sleeves/back-${options.armBackPosition}.png`;
-				return path;
-			},
+		upperBackSleeves: PlayerCanvasHelper.genClothingSleeves("upper", "back", {
 			showfn(options) {
 				const clothes = options.clothes.upper;
 				if (clothes == null) {
@@ -1250,13 +1244,7 @@ const combatMainPc = {
 			},
 			z: CombatRenderer.indices.backArm + 1,
 		}),
-		upperFrontSleeves: PlayerCanvasHelper.genClothingLayer("upper", {
-			srcfn(options) {
-				const clothes = options.clothes.upper;
-				if (clothes?.name == null) return "";
-				const path = `${options.src}clothing/upper/${clothes.name}/sleeves/front-${options.armFrontPosition}.png`;
-				return path;
-			},
+		upperFrontSleeves: PlayerCanvasHelper.genClothingSleeves("upper", "front", {
 			showfn(options) {
 				const clothes = options.clothes.upper;
 				if (clothes == null) {
