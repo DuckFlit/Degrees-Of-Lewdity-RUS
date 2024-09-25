@@ -1,5 +1,4 @@
 // @ts-check
-// Someone needs to fix the close options code, it is shit.
 /* global CombatRenderer, PlayerCombatMapper, NpcCombatMapper */
 
 /**
@@ -196,21 +195,21 @@ class CloseCombatMapper {
 		if (options[slot].npc === "tentacle") {
 			const tentacleColour = V.tentacleColour || "tentacles-purple";
 			options.filters[`${slot}Tentacle`] = CombatRenderer.lookupColour(setup.colours.tentacle_map, tentacleColour, "tentacle", undefined, undefined);
-		}
-		/* enemyno check exists only to enable tentacle encounters to work, this check checks NPCList 0 by default which always returns true */
-		if (V.NPCList[V[`${slot}target`]] && V.enemyno !== 0) {
-			const targetNpc = V.NPCList[V[`${slot}target`]];
+		} else {
+			if (options[slot].npc) {
+				const targetNpc = V.NPCList[V[`${slot}target`]];
 
-			/* filters for npc targeting vagina/anus */
-			options.filters[`${slot}Npc`] = NpcCombatMapper.getNpcPenetratorFilter(targetNpc);
-			options.filters[`${slot}Condom`] = CombatRenderer.getCondomOptions(targetNpc.condom);
-		}
-		if (V.NPCList[V[`${slot}doubletarget`]] && V.enemyno !== 0) {
-			const targetNpc2 = V.NPCList[V[`${slot}doubletarget`]];
+				/* filters for npc targeting vagina/anus */
+				options.filters[`${slot}Npc`] = NpcCombatMapper.getNpcPenetratorFilter(targetNpc);
+				options.filters[`${slot}Condom`] = CombatRenderer.getCondomOptions(targetNpc.condom).colour;
+			}
+			if (options[slot].npc2) {
+				const targetNpc2 = V.NPCList[V[`${slot}doubletarget`]];
 
-			/* filters for npc double-penetrating vagina/anus */
-			options.filters[`${slot}Npc2`] = NpcCombatMapper.getNpcPenetratorFilter(targetNpc2);
-			options.filters[`${slot}Condom2`] = CombatRenderer.getCondomOptions(targetNpc2.condom);
+				/* filters for npc double-penetrating vagina/anus */
+				options.filters[`${slot}Npc2`] = NpcCombatMapper.getNpcPenetratorFilter(targetNpc2);
+				options.filters[`${slot}Condom2`] = CombatRenderer.getCondomOptions(targetNpc2.condom).colour;
+			}
 		}
 	}
 
