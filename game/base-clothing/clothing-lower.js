@@ -779,6 +779,7 @@ function initLower() {
 			variable: "nun",
 			combat: {
 				reference: "sundress",
+				mainColour: "#4c4c4c",
 			},
 			integrity: 100,
 			integrity_max: 100,
@@ -881,6 +882,7 @@ function initLower() {
 			variable: "tuxedo",
 			combat: {
 				reference: "trousers",
+				mainColour: "#2a2433",
 			},
 			integrity: 160,
 			integrity_max: 160,
@@ -6817,6 +6819,7 @@ function initLower() {
 			variable: "monklewd",
 			combat: {
 				reference: "shorts",
+				mainColour: "#4d4252",
 			},
 			integrity: 100,
 			integrity_max: 100,

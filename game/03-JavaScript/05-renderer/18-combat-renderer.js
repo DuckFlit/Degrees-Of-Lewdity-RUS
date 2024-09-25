@@ -776,7 +776,10 @@ class CombatRenderer {
 			volume: 0,
 			colour: {
 				blend: this.getCondomColour(condom.colour),
-				blendMode: "multiply",
+				blendMode: "hard-light",
+				desaturate: true,
+				brightness: 0.4,
+				contrast: 1.0,
 			},
 		};
 	}

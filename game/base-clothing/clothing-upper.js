@@ -68,7 +68,6 @@ function initUpper() {
 			variable: "sundress",
 			combat: {
 				hasBreasts: true,
-				hasSleeves: true,
 			},
 			integrity: 100,
 			integrity_max: 100,
@@ -117,7 +116,7 @@ function initUpper() {
 			name_cap: "Pyjama shirt",
 			variable: "pjs",
 			combat: {
-				reference: "sundress",
+				reference: "regularshirt",
 			},
 			integrity: 100,
 			integrity_max: 100,
@@ -250,7 +249,7 @@ function initUpper() {
 			name_cap: "School shirt",
 			variable: "schoolshirt",
 			combat: {
-				reference: "tshirt",
+				reference: "regularshirt",
 			},
 			integrity: 200,
 			integrity_max: 200,
@@ -424,6 +423,9 @@ function initUpper() {
 			name: "tank top",
 			name_cap: "Tank top",
 			variable: "tanktop",
+			combat: {
+				hasBreasts: true,
+			},
 			integrity: 100,
 			integrity_max: 100,
 			fabric_strength: 20,
@@ -552,7 +554,7 @@ function initUpper() {
 			name_cap: "Kimono",
 			variable: "kimono",
 			combat: {
-				reference: "sundress",
+				reference: "regularshirt",
 			},
 			integrity: 120,
 			integrity_max: 120,
@@ -604,7 +606,7 @@ function initUpper() {
 			name_cap: "Mini kimono",
 			variable: "kimonomini",
 			combat: {
-				reference: "sundress",
+				reference: "regularshirt",
 			},
 			integrity: 120,
 			integrity_max: 120,
@@ -656,7 +658,8 @@ function initUpper() {
 			name_cap: "Maid dress",
 			variable: "maid",
 			combat: {
-				reference: "sundress",
+				reference: "tshirt",
+				mainColour: "#ffffff",
 			},
 			integrity: 110,
 			integrity_max: 110,
@@ -706,7 +709,8 @@ function initUpper() {
 			name_cap: "Nun's habit",
 			variable: "nun",
 			combat: {
-				reference: "sundress",
+				reference: "regularshirt",
+				mainColour: "#4c4c4c",
 			},
 			integrity: 100,
 			integrity_max: 100,
@@ -801,7 +805,8 @@ function initUpper() {
 			name_cap: "Tuxedo jacket",
 			variable: "tuxedo",
 			combat: {
-				reference: "sundress",
+				reference: "regularshirt",
+				mainColour: "#2a2433",
 			},
 			integrity: 160,
 			integrity_max: 160,
@@ -2035,7 +2040,7 @@ function initUpper() {
 			name_cap: "Punk leather jacket",
 			variable: "blackleather",
 			combat: {
-				reference: "sundress",
+				reference: "regularshirt",
 			},
 			integrity: 240,
 			integrity_max: 240,
@@ -2104,7 +2109,7 @@ function initUpper() {
 			name_cap: "Leather jacket",
 			variable: "brownleather",
 			combat: {
-				reference: "sundress",
+				reference: "regularshirt",
 			},
 			integrity: 240,
 			integrity_max: 240,
@@ -4094,7 +4099,7 @@ function initUpper() {
 			name_cap: "Utility vest",
 			variable: "utility",
 			combat: {
-				reference: "sundress",
+				reference: "tanktop",
 			},
 			integrity: 200,
 			integrity_max: 200,
@@ -4140,8 +4145,7 @@ function initUpper() {
 			name_cap: "Utility vest with shirt",
 			variable: "utilityshirt",
 			combat: {
-				reference: "sundress",
-				accessory: false,
+				reference: "tanktop",
 			},
 			integrity: 250,
 			integrity_max: 250,
@@ -5354,8 +5358,8 @@ function initUpper() {
 			exposed_base: 0,
 			type: ["normal", "bellyHide"],
 			set: "cocoon",
-			gender: "f",
-			femininity: 200,
+			gender: "n",
+			femininity: 0,
 			warmth: 5,
 			cost: 0,
 			description: "Binding.",
@@ -5521,7 +5525,7 @@ function initUpper() {
 			name_cap: "Futuristic bodysuit",
 			variable: "futuresuit",
 			combat: {
-				reference: "sundress",
+				reference: "regularshirt",
 			},
 			integrity: 130,
 			integrity_max: 130,
@@ -7312,7 +7316,7 @@ function initUpper() {
 			name_cap: "Cropped leather jacket",
 			variable: "leathercropjacket",
 			combat: {
-				reference: "sundress",
+				reference: "regularshirt",
 			},
 			integrity: 240,
 			integrity_max: 240,
@@ -7383,6 +7387,7 @@ function initUpper() {
 			combat: {
 				reference: "sundress",
 				mainColour: "#312737",
+				hasSleeves: false,
 			},
 			integrity: 100,
 			integrity_max: 100,
@@ -7431,7 +7436,8 @@ function initUpper() {
 			name_cap: "Sexy priest's vestments",
 			variable: "monklewd",
 			combat: {
-				reference: "sundress",
+				reference: "tshirt",
+				mainColour: "#4d4252",
 			},
 			integrity: 100,
 			integrity_max: 100,
@@ -7479,7 +7485,7 @@ function initUpper() {
 			name_cap: "Waistcoat",
 			variable: "waistcoat",
 			combat: {
-				reference: "sundress",
+				reference: "regularshirt",
 			},
 			integrity: 160,
 			integrity_max: 160,
@@ -7535,7 +7541,7 @@ function initUpper() {
 			name_cap: "Lapelled waistcoat",
 			variable: "waistcoatlapel",
 			combat: {
-				reference: "sundress",
+				reference: "regularshirt",
 			},
 			integrity: 160,
 			integrity_max: 160,
@@ -7591,7 +7597,7 @@ function initUpper() {
 			name_cap: "Long waistcoat",
 			variable: "waistcoatlong",
 			combat: {
-				reference: "sundress",
+				reference: "regularshirt",
 			},
 			integrity: 160,
 			integrity_max: 160,
@@ -7644,7 +7650,7 @@ function initUpper() {
 			name_cap: "Long lapelled waistcoat",
 			variable: "waistcoatlonglapel",
 			combat: {
-				reference: "sundress",
+				reference: "regularshirt",
 			},
 			integrity: 160,
 			integrity_max: 160,
@@ -7698,7 +7704,7 @@ function initUpper() {
 			name_cap: "Shirt and blazer",
 			variable: "blazershirt",
 			combat: {
-				reference: "sundress",
+				reference: "regularshirt",
 			},
 			integrity: 160,
 			integrity_max: 160,
@@ -7753,7 +7759,7 @@ function initUpper() {
 			name_cap: "Oversized button-down",
 			variable: "oversizedbuttondown",
 			combat: {
-				reference: "sundress",
+				reference: "regularshirt",
 			},
 			integrity: 120,
 			integrity_max: 120,
@@ -7805,7 +7811,8 @@ function initUpper() {
 			name_cap: "Button-down",
 			variable: "buttondown",
 			combat: {
-				reference: "sundress",
+				reference: "tshirt",
+				hasSleeves: false,
 			},
 			integrity: 160,
 			integrity_max: 160,
@@ -7858,7 +7865,7 @@ function initUpper() {
 			name_cap: "Life vest",
 			variable: "lifevest",
 			combat: {
-				reference: "sundress",
+				reference: "tanktop",
 			},
 			integrity: 200,
 			integrity_max: 200,
@@ -7952,9 +7959,6 @@ function initUpper() {
 			name: "long-sleeved shirt",
 			name_cap: "Long-sleeved shirt",
 			variable: "regularshirt",
-			combat: {
-				reference: "sundress",
-			},
 			integrity: 200,
 			integrity_max: 200,
 			fabric_strength: 20,
@@ -8001,7 +8005,7 @@ function initUpper() {
 			name_cap: "Sexy butler top",
 			variable: "slutler",
 			combat: {
-				reference: "sundress",
+				reference: "tshirt",
 			},
 			integrity: 100,
 			integrity_max: 100,
@@ -8098,7 +8102,7 @@ function initUpper() {
 			name_cap: "Jumpsuit",
 			variable: "jumpsuitstylish",
 			combat: {
-				reference: "sundress",
+				reference: "regularshirt",
 			},
 			integrity: 100,
 			integrity_max: 100,
