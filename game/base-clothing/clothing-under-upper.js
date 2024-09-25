@@ -1340,8 +1340,9 @@ function initUnderUpper() {
 			name_cap: "Undershirt",
 			variable: "undershirt",
 			combat: {
-				reference: "swimshirt",
-				accessory: false,
+				hasSleeves: true,
+				hasBreasts: true,
+				useSecondary: true,
 			},
 			integrity: 100,
 			integrity_max: 100,

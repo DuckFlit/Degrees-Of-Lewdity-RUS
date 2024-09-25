@@ -1261,6 +1261,38 @@ const combatMainPc = {
 				return CombatRenderer.indices.frontArm + 1;
 			},
 		}),
+		underUpperBackSleeves: PlayerCanvasHelper.genClothingSleeves("under_upper", "back", {
+			showfn(options) {
+				const clothes = options.clothes.under_upper;
+				if (clothes == null) {
+					Errors.report("Clothing object was undefined");
+					return false;
+				}
+				const show = CombatRenderer.isClothingShown(clothes, options.showClothing) && clothes.sleeves.show;
+				// If missionary: Sleeves on the side behind are never shown, except for handjobs.
+				if (options.position === "doggy" && options.armBackPosition === "bound") return false;
+				if (options.position === "missionary" && !["handjob"].includes(clothes.sleeves.state)) return false;
+				return !!show;
+			},
+			z: CombatRenderer.indices.backArm + 1,
+		}),
+		underUpperFrontSleeves: PlayerCanvasHelper.genClothingSleeves("under_upper", "front", {
+			showfn(options) {
+				const clothes = options.clothes.under_upper;
+				if (clothes == null) {
+					Errors.report("Clothing object was undefined");
+					return false;
+				}
+				const show = CombatRenderer.isClothingShown(clothes, options.showClothing) && clothes.sleeves.show;
+				return !!show;
+			},
+			zfn(options) {
+				if (options.armFrontPosition === "bound") {
+					return CombatRenderer.indices.frontBoundArms + 1;
+				}
+				return CombatRenderer.indices.frontArm + 1;
+			},
+		}),
 	},
 };
 Renderer.CanvasModels.combatMainPc = combatMainPc;
