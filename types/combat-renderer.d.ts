@@ -141,6 +141,7 @@ declare global {
 		height: number;
 		frames: number;
 		metadata?: object;
+		scale?: boolean;
 		layers: {
 			[x: string]: CanvasModelLayers<T>;
 		};

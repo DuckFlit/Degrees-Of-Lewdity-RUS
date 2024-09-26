@@ -8,6 +8,7 @@ const combatClosePenis = {
 	name: "combatClosePenis",
 	width: 64,
 	height: 64,
+	scale: true,
 	frames: 6,
 	generatedOptions() {
 		return [];

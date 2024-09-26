@@ -9,6 +9,7 @@ const combatCloseVagina = {
 	width: 64,
 	height: 64,
 	frames: 6,
+	scale: true,
 	generatedOptions() {
 		return [];
 	},

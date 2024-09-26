@@ -8,6 +8,7 @@ const combatCloseChest = {
 	name: "combatCloseChest",
 	width: 64,
 	height: 64,
+	scale: true,
 	frames: 6,
 	generatedOptions() {
 		return [];

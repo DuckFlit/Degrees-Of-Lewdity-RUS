@@ -8,6 +8,7 @@ const combatMainSwarm = {
 	name: "combatMainSwarm",
 	width: 256,
 	height: 256,
+	scale: true,
 	frames: 4,
 	generatedOptions() {
 		return [];
