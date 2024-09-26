@@ -99,6 +99,7 @@ const Skin = (() => {
 			const model = Renderer.locateModel(...defaultModel);
 			const savedLayers = V.player.skin.layers;
 			const nextTime = new DateTime(Time.date);
+			let selectedLayersIndex = null;
 
 			if (!model.tanningLayers?.layers) {
 				console.warn("applyTanningGain: CanvasModel not found.");
@@ -116,6 +117,7 @@ const Skin = (() => {
 				const currentTan = getTanningValue(savedLayers);
 				const current = getCurrentLayers(model, savedLayers);
 				const selectedLayers = setLayers(savedLayers, current);
+				selectedLayersIndex = current.index;
 
 				const logFactorGain = 1 / Math.log1p(((currentTan + accumulatedValue) / 100) * tanningMultiplier + 1);
 				let tanningGain = gainAmount * logFactorGain * scalingFactor;
@@ -137,7 +139,9 @@ const Skin = (() => {
 
 			// Distribute lowest if layers become more than maxLayerGroups
 			if (savedLayers.length > maxLayerGroups) {
-				const lowestValueGroup = savedLayers.reduce((min, group) => (group.value < min.value ? group : min), savedLayers[0]);
+				const lowestValueGroup = savedLayers
+					.filter((_, index) => index !== selectedLayersIndex) // Exclude the selected layer
+					.reduce((min, group) => (group.value < min.value ? group : min)); // Find the group with the lowest value
 				const index = savedLayers.indexOf(lowestValueGroup);
 				if (index !== -1) {
 					const [removedGroup] = savedLayers.splice(index, 1);
