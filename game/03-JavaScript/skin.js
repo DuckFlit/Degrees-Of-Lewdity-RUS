@@ -57,7 +57,7 @@ const Skin = (() => {
 	// Constants
 	const defaultModel = ["main", "sidebar"];
 	const defaultLayer = { layers: [], slots: {} };
-	const tanningMultiplier = 9; // Increase to make the tanning function even out more sharply (as the tan level increases)
+	const tanningMultiplier = 6; // Increase to make the tanning function even out more sharply (as the tan level increases)
 	const scalingFactor = 0.033; // Decrease for slower tanning gain from sun intensity
 	const tanningLossPerMinute = 0.000695; // ~1 per day - ~100 days from 100% to 0%
 	const maxLayerGroups = 6;
@@ -117,7 +117,7 @@ const Skin = (() => {
 				const currentTan = getTanningValue(savedLayers);
 				const current = getCurrentLayers(model, savedLayers);
 				const selectedLayers = setLayers(savedLayers, current);
-				selectedLayersIndex = current.index;
+				selectedLayersIndex = savedLayers.indexOf(selectedLayers);
 
 				const logFactorGain = 1 / Math.log1p(((currentTan + accumulatedValue) / 100) * tanningMultiplier + 1);
 				let tanningGain = gainAmount * logFactorGain * scalingFactor;
@@ -137,11 +137,14 @@ const Skin = (() => {
 				nextTime.addMinutes(chunkMinutes);
 			}
 
+			const trimmedLayers = savedLayers.filter(group => group.layers.length > 0);
+			selectedLayersIndex = trimmedLayers.indexOf(savedLayers[selectedLayersIndex]);
 			// Distribute lowest if layers become more than maxLayerGroups
-			if (savedLayers.length > maxLayerGroups) {
-				const lowestValueGroup = savedLayers
-					.filter((_, index) => index !== selectedLayersIndex) // Exclude the selected layer
-					.reduce((min, group) => (group.value < min.value ? group : min)); // Find the group with the lowest value
+			if (trimmedLayers.length > maxLayerGroups) {
+				const lowestValueGroup = trimmedLayers.reduce(
+					(min, group, index) => (index !== selectedLayersIndex && (!min || group.value < min.value) ? group : min),
+					null
+				);
 				const index = savedLayers.indexOf(lowestValueGroup);
 				if (index !== -1) {
 					const [removedGroup] = savedLayers.splice(index, 1);
