@@ -8,6 +8,7 @@ const combatMainPc = {
 	name: "combatMainPc",
 	width: 256,
 	height: 256,
+	scale: true,
 	frames: 4,
 	/*
 	 * http://patorjk.com/software/taag/#p=display&c=c&f=ANSI%20Regular&t=generated
