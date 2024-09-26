@@ -27,7 +27,6 @@ declare module "twine-sugarcube" {
 		control: number;
 
 		arousalmax: number;
-		tirednessmax: number;
 		stressmax: number;
 		traumamax: number;
 		controlmax: number;
