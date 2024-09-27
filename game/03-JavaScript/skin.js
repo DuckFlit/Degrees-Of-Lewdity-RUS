@@ -60,7 +60,7 @@ const Skin = (() => {
 	const tanningMultiplier = 6; // Increase to make the tanning function even out more sharply (as the tan level increases)
 	const scalingFactor = 0.033; // Decrease for slower tanning gain from sun intensity
 	const tanningLossPerMinute = 0.000695; // ~1 per day - ~100 days from 100% to 0%
-	const maxLayerGroups = 6;
+	const maxLayerGroups = 7;
 
 	// Properties
 	const cachedLayers = null;

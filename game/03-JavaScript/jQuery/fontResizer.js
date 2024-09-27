@@ -1,3 +1,8 @@
+/*
+	Resizes text to fit inside an element.
+	Optionally add a margin.
+*/
+
 (function ($) {
 	$.fn.fontResizer = function (options) {
 		const settings = $.extend(
