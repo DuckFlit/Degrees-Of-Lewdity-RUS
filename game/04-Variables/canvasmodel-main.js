@@ -904,7 +904,7 @@ Renderer.CanvasModels.main = {
 						// Generate final tanning layers
 						// Separate the base with the arms, since they can overlap
 						// Base layer has disabled animations
-						const alpha = layerGroup.value;
+						const alpha = layerGroup.value * (["gyaru", "ygyaru"].includes(options.skin_type) ? 0.3 : 0);
 						if (layers.body.length) {
 							options.generatedLayers[`tan_base${i}`] = (genlayer_tanning("base", i, layers.body, alpha, null));
 							options.generatedLayers[`tan_breasts${i}`] = (genlayer_tanning("breasts", i, layers.body, alpha));
