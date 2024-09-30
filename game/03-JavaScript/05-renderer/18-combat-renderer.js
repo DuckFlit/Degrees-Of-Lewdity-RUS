@@ -417,6 +417,16 @@ class CombatRenderer {
 				options["ztan_" + slot[0]] = options["ztan_" + slot[0]] + 0.01 * i;
 			});
 		}
+
+		if (options.bellyState === "clothed") {
+			options.filters.preggy = {
+				blend: options.filters.worn_upper_main.blend,
+				blendMode: "multiply",
+				desaturate: true,
+			};
+		} else {
+			options.filters.preggy = options.filters.body;
+		}
 	}
 
 	/** @returns {string} */
@@ -721,7 +731,7 @@ class CombatRenderer {
 		}
 		// No filter possible as part(s) cannot be recoloured
 		if (
-			["angel", "fallen"].includes(transformation) ||
+			["angel", "fallen", "cow"].includes(transformation) ||
 			(transformation === "wolf" && part === "cheeks") ||
 			(transformation === "bird" && part === "eyes")
 		) {
