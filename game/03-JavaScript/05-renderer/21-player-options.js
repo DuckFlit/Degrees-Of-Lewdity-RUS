@@ -20,6 +20,8 @@
  * @property {string} machineAnimKey The key used for fetching the animation configuration for machine sprites like milkers/dildos.
  * @property {number} breastSize The size of the player breasts.
  * @property {boolean} breastsExposed Whether the breasts are shown.
+ * @property {number} bellySize The size of the player's belly.
+ * @property {"hidden" | "exposed" | "clothed"} bellyState Whether the pregnant belly is hidden, exposed, or clothed.
  * @property {Penetrator?} penetrator Typically the PC's penis, or strapon etc.
  * @property {SkinColours} skinType
  * @property {number} skinTone
@@ -256,6 +258,8 @@ class PlayerCombatMapper {
 			blush: 0,
 			breastsExposed: false,
 			breastSize: 0,
+			bellyState: "hidden",
+			bellySize: 0,
 			genitalsExposed: false,
 			hairLength: "short",
 			leftEye: "blue",
@@ -311,6 +315,9 @@ class PlayerCombatMapper {
 		const breastSize = Math.round(V.player.perceived_breastsize / 3);
 		options.breastSize = Math.clamp(breastSize, 0, 4);
 
+		// Ditto for belly size.
+		options.bellySize = playerBellySize();
+
 		// Clothing options
 		PlayerCombatMapper.mapPcToClothingOptions(V.player, options);
 
@@ -322,6 +329,8 @@ class PlayerCombatMapper {
 		if (V.player.penisExist) {
 			options.penetrator = PlayerCombatMapper.mapPcToPenetratorOptions(V.player, options);
 		}
+
+		options.bellyState = PlayerCombatMapper.isBellyExposed(options);
 
 		CombatRenderer.generateBodyFilters(options);
 
@@ -833,6 +842,25 @@ class PlayerCombatMapper {
 			exposedStates.pushUnique("waist");
 		}
 		return exposedStates;
+	}
+
+	/**
+	 * @param {CombatPlayerOptions} options
+	 * @returns {"hidden" | "exposed" | "clothed"}
+	 */
+	static isBellyExposed(options) {
+		const upper = options.clothes.upper;
+		const upperExposed = !upper?.show || PlayerCombatMapper.isClothingExposed(options, upper);
+		const lower = options.clothes.lower;
+		const lowerExposed = !lower?.show || PlayerCombatMapper.isClothingExposed(options, lower);
+
+		if (options.bellySize <= 7 && !V.worn.upper?.type.includesAny("naked", "bellyShow") && !upperExposed && !lowerExposed) {
+			return "hidden";
+		}
+		if (V.worn.upper?.type.includesAny("naked", "bellyShow") || upperExposed) {
+			return "exposed";
+		}
+		return "clothed";
 	}
 
 	/**

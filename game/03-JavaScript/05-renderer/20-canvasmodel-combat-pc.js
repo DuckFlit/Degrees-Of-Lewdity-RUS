@@ -636,6 +636,38 @@ const combatMainPc = {
 			},
 			z: CombatRenderer.indices.backLowerOverwear + 1,
 		},
+		preggy: {
+			srcfn(options) {
+				return `${options.src}body/preggyBelly/${options.bellySize}.png`;
+			},
+			showfn(options) {
+				if (!options.bellySize || !options.bellyState) return false;
+				const result = options.showPlayer && options.bellyState !== "hidden";
+				return !!result;
+			},
+			animationfn(options) {
+				return options.animKey;
+			},
+			filters: ["preggy"],
+			z: CombatRenderer.indices.base + 24,
+		},
+		preggyOverlay: {
+			srcfn(options) {
+				return options.bellyState === "exposed" && options.position === "doggy"
+					? `${options.src}body/preggyBelly/overlay_exposed.png`
+					: `${options.src}body/preggyBelly/overlay.png`;
+			},
+			showfn(options) {
+				if (!options.bellySize || !options.bellyState) return false;
+				const result = options.showPlayer && options.bellyState !== "hidden";
+				return !!result;
+			},
+			animationfn(options) {
+				return options.animKey;
+			},
+			filters: ["preggy"],
+			z: CombatRenderer.indices.base + 23,
+		},
 		/*
 		 *	██   ██ ███████  █████  ██████
 		 *	██   ██ ██      ██   ██ ██   ██
