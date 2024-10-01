@@ -422,7 +422,8 @@ function initLower() {
 			name_cap: "Plant skirt",
 			variable: "plant",
 			combat: {
-				reference: "sundress",
+				reference: "micropleatedskirt",
+				mainColour: "#2d8452",
 			},
 			integrity: 10,
 			integrity_max: 10,
@@ -625,7 +626,7 @@ function initLower() {
 			name_cap: "Kimono skirt",
 			variable: "kimono",
 			combat: {
-				reference: "sundress",
+				reference: "longskirt",
 			},
 			integrity: 120,
 			integrity_max: 120,
@@ -728,6 +729,7 @@ function initLower() {
 			variable: "maid",
 			combat: {
 				reference: "sundress",
+				mainColour: "#414141",
 			},
 			integrity: 110,
 			integrity_max: 110,
@@ -778,7 +780,7 @@ function initLower() {
 			name_cap: "Nun's habit skirt",
 			variable: "nun",
 			combat: {
-				reference: "sundress",
+				reference: "longskirt",
 				mainColour: "#4c4c4c",
 			},
 			integrity: 100,
@@ -1031,7 +1033,7 @@ function initLower() {
 			name_cap: "Long cut skirt",
 			variable: "cutskirtlong",
 			combat: {
-				reference: "sundress",
+				reference: "longskirt",
 			},
 			integrity: 130,
 			integrity_max: 130,
@@ -1132,6 +1134,7 @@ function initLower() {
 			variable: "cycleshorts",
 			combat: {
 				reference: "shorts",
+				mainColour: "#404040",
 			},
 			integrity: 100,
 			integrity_max: 100,
@@ -1429,7 +1432,7 @@ function initLower() {
 			name_cap: "Short school skirt",
 			variable: "schoolskirtshort",
 			combat: {
-				reference: "sundress",
+				reference: "micropleatedskirt",
 			},
 			integrity: 80,
 			integrity_max: 80,
@@ -1634,7 +1637,7 @@ function initLower() {
 			name_cap: "Denim shorts",
 			variable: "jorts",
 			combat: {
-				reference: "bootyjorts",
+				renderType: "shorts",
 			},
 			integrity: 160,
 			integrity_max: 160,
@@ -1737,6 +1740,7 @@ function initLower() {
 			variable: "christmas",
 			combat: {
 				reference: "trousers",
+				mainColour: "#ff0000",
 			},
 			integrity: 160,
 			integrity_max: 160,
@@ -1785,6 +1789,7 @@ function initLower() {
 			variable: "christmasdress",
 			combat: {
 				reference: "sundress",
+				mainColour: "#ff0000",
 			},
 			integrity: 120,
 			integrity_max: 120,
@@ -1833,7 +1838,8 @@ function initLower() {
 			name_cap: "Monk's habit skirt",
 			variable: "monk",
 			combat: {
-				reference: "sundress",
+				reference: "longskirt",
+				mainColour: "#905424",
 			},
 			integrity: 100,
 			integrity_max: 100,
@@ -1886,6 +1892,7 @@ function initLower() {
 			variable: "cowboy",
 			combat: {
 				reference: "trousers",
+				mainColour: "#7e5d3f",
 			},
 			integrity: 200,
 			integrity_max: 200,
@@ -1986,7 +1993,7 @@ function initLower() {
 			name_cap: "Straightjacket bottom",
 			variable: "straightjacket",
 			combat: {
-				reference: "trousers",
+				reference: "naked",
 			},
 			integrity: 50,
 			integrity_max: 50,
@@ -2037,6 +2044,7 @@ function initLower() {
 			variable: "khakis",
 			combat: {
 				reference: "trousers",
+				mainColour: "#d0ae76",
 			},
 			integrity: 200,
 			integrity_max: 200,
@@ -2204,7 +2212,7 @@ function initLower() {
 			name_cap: "Cheongsam skirt",
 			variable: "cheongsam",
 			combat: {
-				reference: "sundress",
+				reference: "longskirt",
 			},
 			integrity: 120,
 			integrity_max: 120,
@@ -2407,7 +2415,8 @@ function initLower() {
 			name_cap: "Gothic skirt",
 			variable: "gothic",
 			combat: {
-				reference: "sundress",
+				reference: "longskirt",
+				mainColour: "#262626",
 			},
 			integrity: 120,
 			integrity_max: 120,
@@ -2461,6 +2470,7 @@ function initLower() {
 			variable: "gothictrousers",
 			combat: {
 				reference: "trousers",
+				mainColour: "#262626",
 			},
 			integrity: 160,
 			integrity_max: 160,
@@ -2511,6 +2521,7 @@ function initLower() {
 			variable: "waiter",
 			combat: {
 				reference: "trousers",
+				mainColour: "#4f4f4f",
 			},
 			integrity: 130,
 			integrity_max: 130,
@@ -2560,7 +2571,8 @@ function initLower() {
 			name_cap: "Lederhosen bottoms",
 			variable: "leder",
 			combat: {
-				reference: "trousers",
+				reference: "shorts",
+				mainColour: "#595900",
 			},
 			integrity: 150,
 			integrity_max: 150,
@@ -2964,7 +2976,8 @@ function initLower() {
 			name_cap: "Mummy skirt",
 			variable: "mummy",
 			combat: {
-				reference: "sundress",
+				reference: "micropleatedskirt",
+				mainColour: "#ffffff",
 			},
 			integrity: 10,
 			integrity_max: 10,
@@ -3015,6 +3028,7 @@ function initLower() {
 			variable: "diving",
 			combat: {
 				reference: "trousers",
+				mainColour: "#303030",
 			},
 			integrity: 200,
 			integrity_max: 200,
@@ -3218,7 +3232,8 @@ function initLower() {
 			name_cap: "Classic gothic skirt",
 			variable: "gothicold",
 			combat: {
-				reference: "sundress",
+				reference: "longskirt",
+				mainColour: "#262626",
 			},
 			integrity: 120,
 			integrity_max: 120,
@@ -3585,6 +3600,7 @@ function initLower() {
 			variable: "kilt",
 			combat: {
 				reference: "longskirt",
+				mainColour: "#3b8c3d",
 			},
 			integrity: 100,
 			integrity_max: 100,
@@ -3632,7 +3648,8 @@ function initLower() {
 			name_cap: "Bathrobe bottom",
 			variable: "bathrobe",
 			combat: {
-				reference: "trousers",
+				reference: "longskirt",
+				mainColour: "#ffffff",
 			},
 			integrity: 100,
 			integrity_max: 100,
@@ -3986,6 +4003,7 @@ function initLower() {
 			variable: "prison",
 			combat: {
 				reference: "trousers",
+				mainColour: "#ffffff",
 			},
 			integrity: 100,
 			integrity_max: 100,
@@ -4036,6 +4054,7 @@ function initLower() {
 			variable: "jumpsuit",
 			combat: {
 				reference: "trousers",
+				mainColour: "#ff6c00",
 			},
 			integrity: 100,
 			integrity_max: 100,
@@ -4085,7 +4104,7 @@ function initLower() {
 			name_cap: "Patient gown skirt",
 			variable: "patient",
 			combat: {
-				reference: "sundress",
+				reference: "longskirt",
 			},
 			integrity: 100,
 			integrity_max: 100,
@@ -4137,6 +4156,7 @@ function initLower() {
 			variable: "cowonesie",
 			combat: {
 				reference: "trousers",
+				mainColour: "#ffffff",
 			},
 			integrity: 300,
 			integrity_max: 300,
@@ -4187,6 +4207,7 @@ function initLower() {
 			variable: "cowchaps",
 			combat: {
 				reference: "trousers",
+				mainColour: "#59819d",
 			},
 			integrity: 200,
 			integrity_max: 200,
@@ -4287,6 +4308,7 @@ function initLower() {
 			variable: "scarecrow",
 			combat: {
 				reference: "sundress",
+				mainColour: "#5e4144",
 			},
 			integrity: 100,
 			integrity_max: 100,
@@ -4537,7 +4559,7 @@ function initLower() {
 			name_cap: "Short ballgown skirt",
 			variable: "shortballgown",
 			combat: {
-				reference: "sundress",
+				reference: "micropleatedskirt",
 			},
 			integrity: 80,
 			integrity_max: 80,
@@ -4674,6 +4696,7 @@ function initLower() {
 			variable: "pinknurse",
 			combat: {
 				reference: "sundress",
+				mainColour: "#ff8c91",
 			},
 			integrity: 120,
 			integrity_max: 120,
@@ -4779,6 +4802,7 @@ function initLower() {
 			variable: "transparentnurse",
 			combat: {
 				reference: "sundress",
+				mainColour: "#ff8c91",
 			},
 			integrity: 120,
 			integrity_max: 120,
@@ -4830,7 +4854,7 @@ function initLower() {
 			name_cap: "Hanfu skirt",
 			variable: "hanfu",
 			combat: {
-				reference: "sundress",
+				reference: "longskirt",
 			},
 			integrity: 100,
 			integrity_max: 100,
@@ -4948,6 +4972,7 @@ function initLower() {
 			variable: "cocoon",
 			combat: {
 				reference: "trousers",
+				mainColour: "#fff0dc",
 			},
 			integrity: 200,
 			integrity_max: 200,
@@ -5000,6 +5025,7 @@ function initLower() {
 			variable: "skele",
 			combat: {
 				reference: "trousers",
+				mainColour: "#303030",
 			},
 			integrity: 120,
 			integrity_max: 120,
@@ -5154,6 +5180,7 @@ function initLower() {
 			variable: "lacegown",
 			combat: {
 				reference: "sundress",
+				mainColour: "#4f2837",
 			},
 			integrity: 80,
 			integrity_max: 80,
@@ -5255,7 +5282,8 @@ function initLower() {
 			name_cap: "Traditional maid skirt",
 			variable: "traditionalmaid",
 			combat: {
-				reference: "sundress",
+				reference: "longskirt",
+				mainColour: "#414141",
 			},
 			integrity: 110,
 			integrity_max: 110,
@@ -5306,7 +5334,8 @@ function initLower() {
 			name_cap: "Victorian maid skirt",
 			variable: "victorianmaid",
 			combat: {
-				reference: "sundress",
+				reference: "longskirt",
+				mainColour: "#414141",
 			},
 			integrity: 110,
 			integrity_max: 110,
@@ -5357,7 +5386,8 @@ function initLower() {
 			name_cap: "Shrine maiden skirt",
 			variable: "shrinemaiden",
 			combat: {
-				reference: "sundress",
+				reference: "longskirt",
+				mainColour: "#fc4d57",
 			},
 			integrity: 110,
 			integrity_max: 110,
@@ -5771,6 +5801,7 @@ function initLower() {
 			variable: "yoga pants",
 			combat: {
 				reference: "trousers",
+				mainColour: "#303030",
 			},
 			integrity: 100,
 			integrity_max: 100,
@@ -5835,7 +5866,7 @@ function initLower() {
 			name_cap: "Virgin killer skirt",
 			variable: "virginkillerdress",
 			combat: {
-				reference: "sundress",
+				reference: "micropleatedskirt",
 			},
 			integrity: 140,
 			integrity_max: 140,
@@ -5886,7 +5917,7 @@ function initLower() {
 			name_cap: "Halter sundress skirt",
 			variable: "haltersundress",
 			combat: {
-				reference: "sundress",
+				reference: "longskirt",
 			},
 			integrity: 100,
 			integrity_max: 100,
@@ -6178,7 +6209,7 @@ function initLower() {
 			name_cap: "Long school skirt",
 			variable: "schoolskirtlong2",
 			combat: {
-				reference: "sundress",
+				reference: "longskirt",
 			},
 			integrity: 120,
 			integrity_max: 120,
@@ -6229,7 +6260,7 @@ function initLower() {
 			name_cap: "Short school skirt",
 			variable: "schoolskirtshort2",
 			combat: {
-				reference: "shorts",
+				reference: "micropleatedskirt",
 			},
 			integrity: 80,
 			integrity_max: 80,
@@ -6518,6 +6549,7 @@ function initLower() {
 			variable: "jingledress",
 			combat: {
 				reference: "sundress",
+				mainColour: "#ce0d1b",
 			},
 			integrity: 120,
 			integrity_max: 120,
@@ -6568,6 +6600,7 @@ function initLower() {
 			variable: "jingledresssleeveless",
 			combat: {
 				reference: "sundress",
+				mainColour: "#ce0d1b",
 			},
 			integrity: 120,
 			integrity_max: 120,
@@ -7157,6 +7190,7 @@ function initLower() {
 			variable: "slutler",
 			combat: {
 				reference: "shorts",
+				mainColour: "#383642",
 			},
 			integrity: 130,
 			integrity_max: 130,
@@ -7505,7 +7539,8 @@ function initLower() {
 			name_cap: "Ragged dress skirt",
 			variable: "drowneddress",
 			combat: {
-				renderType: "skirt",
+				reference: "longskirt",
+				mainColour: "#ffffff",
 			},
 			integrity: 200,
 			integrity_max: 200,

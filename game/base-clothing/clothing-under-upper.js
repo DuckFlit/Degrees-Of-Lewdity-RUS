@@ -112,7 +112,7 @@ function initUnderUpper() {
 			name_cap: "School swimsuit",
 			variable: "schoolswimsuit",
 			combat: {
-				reference: "plainbra",
+				reference: "swimsuit",
 			},
 			integrity: 40,
 			integrity_max: 40,
@@ -160,9 +160,6 @@ function initUnderUpper() {
 			name: "leotard",
 			name_cap: "Leotard",
 			variable: "leotard",
-			combat: {
-				reference: "plainbra",
-			},
 			integrity: 100,
 			integrity_max: 100,
 			fabric_strength: 30,
@@ -209,7 +206,9 @@ function initUnderUpper() {
 			name_cap: "Unitard",
 			variable: "unitard",
 			combat: {
-				reference: "plainbra",
+				reference: "undershirt",
+				accessory: false,
+				accColour: "#fff",
 			},
 			oldVariable: [{ name: "full body leotard", variable: "leotardfull" }],
 			integrity: 100,
@@ -258,7 +257,7 @@ function initUnderUpper() {
 			name_cap: "Skimpy leotard",
 			variable: "leotardskimpy",
 			combat: {
-				reference: "straplessbra",
+				reference: "swimsuit",
 			},
 			integrity: 80,
 			integrity_max: 80,
@@ -306,7 +305,7 @@ function initUnderUpper() {
 			name_cap: "Foreign school swimsuit",
 			variable: "schoolswimsuitj",
 			combat: {
-				reference: "straplessbra",
+				reference: "swimsuit",
 				accessory: false,
 			},
 			integrity: 40,
@@ -355,9 +354,6 @@ function initUnderUpper() {
 			name: "swimsuit",
 			name_cap: "Swimsuit",
 			variable: "swimsuit",
-			combat: {
-				reference: "plainbra",
-			},
 			integrity: 60,
 			integrity_max: 60,
 			fabric_strength: 30,
@@ -404,7 +400,7 @@ function initUnderUpper() {
 			name_cap: "Bunny leotard",
 			variable: "leotardbunny",
 			combat: {
-				reference: "straplessbra",
+				reference: "leotard",
 			},
 			integrity: 120,
 			integrity_max: 120,
@@ -731,6 +727,10 @@ function initUnderUpper() {
 			name: "corset",
 			name_cap: "Corset",
 			variable: "corset",
+			combat: {
+				hasMainImg: false,
+				hasBreasts: true,
+			},
 			integrity: 180,
 			integrity_max: 180,
 			fabric_strength: 30,
@@ -778,6 +778,7 @@ function initUnderUpper() {
 			combat: {
 				reference: "plainbra",
 				accessory: false,
+				hasBreastsAcc: false,
 			},
 			integrity: 100,
 			integrity_max: 100,
@@ -871,7 +872,11 @@ function initUnderUpper() {
 			name_cap: "Arm sleeves",
 			variable: "armsleeves",
 			combat: {
-				reference: "naked",
+				reference: "undershirt",
+				hasMainImg: false,
+				accessory: false,
+				hasSleevesAcc: false,
+				hasBreasts: false,
 			},
 			integrity: 80,
 			integrity_max: 80,
@@ -964,7 +969,7 @@ function initUnderUpper() {
 			name_cap: "Classic school swimsuit",
 			variable: "classicschoolswimsuit",
 			combat: {
-				reference: "plainbra",
+				reference: "swimsuit",
 			},
 			integrity: 40,
 			integrity_max: 40,
@@ -1014,6 +1019,7 @@ function initUnderUpper() {
 			variable: "swimshirt",
 			combat: {
 				accessory: false,
+				hasBreasts: true,
 			},
 			integrity: 100,
 			integrity_max: 100,
@@ -1062,6 +1068,7 @@ function initUnderUpper() {
 			variable: "vest",
 			combat: {
 				reference: "swimshirt",
+				hasSleeves: false,
 			},
 			integrity: 150,
 			integrity_max: 150,
@@ -1340,9 +1347,11 @@ function initUnderUpper() {
 			name_cap: "Undershirt",
 			variable: "undershirt",
 			combat: {
-				hasSleeves: true,
+				accessory: false,
+				hasBreastsAcc: false,
 				hasBreasts: true,
-				useSecondary: true,
+				mainColour: "secondary",
+				sleeveColour: "primary",
 			},
 			integrity: 100,
 			integrity_max: 100,
@@ -1377,7 +1386,6 @@ function initUnderUpper() {
 			accessory_colour_options: ["black", "blue", "brown", "green", "pink", "purple", "red", "tangerine", "teal", "custom"],
 			accessory_colour_sidebar: 1,
 			sleeve_img: 1,
-			breast_img: 0,
 			breast_acc_img: { 0: null, 1: null, 2: null, 3: 3, 4: 3, 5: 5, 6: 5 },
 			formfitting: 1,
 			cursed: 0,
@@ -1392,7 +1400,7 @@ function initUnderUpper() {
 			name_cap: "See-through swimsuit",
 			variable: "seethroughswimsuit",
 			combat: {
-				reference: "plainbra",
+				reference: "swimsuit",
 			},
 			integrity: 40,
 			integrity_max: 40,
@@ -1531,7 +1539,7 @@ function initUnderUpper() {
 			name_cap: "Turtleneck leotard",
 			variable: "leotardturtleneck",
 			combat: {
-				reference: "plainbra",
+				reference: "leotard",
 			},
 			integrity: 100,
 			integrity_max: 100,
@@ -1578,7 +1586,7 @@ function initUnderUpper() {
 			name_cap: "Camisole",
 			variable: "camisole",
 			combat: {
-				reference: "plainbra",
+				reference: "swimsuit",
 				accessory: false,
 			},
 			integrity: 150,
@@ -1640,7 +1648,7 @@ function initUnderUpper() {
 			name_cap: "Latex leotard",
 			variable: "latexleotard",
 			combat: {
-				reference: "plainbra",
+				reference: "swimsuit",
 			},
 			integrity: 100,
 			integrity_max: 100,
@@ -1687,7 +1695,7 @@ function initUnderUpper() {
 			name_cap: "Bunny-tie bikini top",
 			variable: "buntiebikinitop",
 			combat: {
-				reference: "plainbra",
+				reference: "straplessbra",
 			},
 			integrity: 20,
 			integrity_max: 20,

@@ -454,19 +454,12 @@ class CombatRenderer {
 
 		// For lowerwear, we want to normalise leg positions into either [ Up | Down ]
 		// Except for missionary, where the front leg can be [ Up | Down | Footjob ]
-		if (["lower", "under_lower", "over_lower"].includes(slot)) {
-			if (position === "doggy") {
-				if (frontPosition === "footjob") {
-					frontPosition = "up";
-				}
-				if (backPosition === "footjob") {
-					backPosition = "up";
-				}
+		if (["lower", "under_lower", "over_lower", "legs", "feet"].includes(slot)) {
+			if (position === "doggy" && frontPosition === "footjob") {
+				frontPosition = "up";
 			}
-			if (position === "missionary") {
-				if (backPosition === "footjob") {
-					backPosition = "up";
-				}
+			if (backPosition === "footjob") {
+				backPosition = "up";
 			}
 		}
 		return {

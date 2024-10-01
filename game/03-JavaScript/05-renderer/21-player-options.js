@@ -171,12 +171,14 @@
 
 /**
  * @typedef PlayerBreastState
+ * @property {boolean} hasAccessory Whether the breasts use accessory layer.
  * @property {boolean} show
  * @property {number} size
  */
 
 /**
  * @typedef PlayerSleeveState
+ * @property {boolean} hasAccessory Whether the sleeves use accessory layer.
  * @property {boolean} show
  * @property {boolean} useSecondary
  * @property {string} state
@@ -974,10 +976,12 @@ class PlayerCombatMapper {
 				hasMainImg: false,
 				hasBackImg: false,
 				breasts: {
+					hasAccessory: false,
 					show: false,
 					size: 0,
 				},
 				sleeves: {
+					hasAccessory: false,
 					show: false,
 					useSecondary: false,
 					state: "default",
@@ -1031,7 +1035,6 @@ class PlayerCombatMapper {
 			sleeves: PlayerCombatMapper.genClothingSleeveOptions(slot, clothing),
 			renderStep: source.combat?.renderType,
 		};
-
 		return clothes;
 	}
 
@@ -1041,6 +1044,7 @@ class PlayerCombatMapper {
 	 */
 	static genClothingSleeveOptions(slot, clothing) {
 		return {
+			hasAccessory: ["upper", "under_upper", "over_upper"].includes(slot) && PlayerCombatMapper.hasSleevesAcc(slot, clothing),
 			show: ["upper", "under_upper", "over_upper"].includes(slot) && PlayerCombatMapper.hasSleeves(slot, clothing),
 			state: "default",
 			useSecondary: PlayerCombatMapper.getSleeveColourType(slot, clothing) === "secondary",
@@ -1084,11 +1088,34 @@ class PlayerCombatMapper {
 
 	/**
 	 * @param {ClothedSlots} slot
+	 * @param {ClothesItem} clothing
+	 * @returns {boolean}
+	 */
+	static hasSleevesAcc(slot, clothing) {
+		// Has combat.hasSleevesAcc property
+		// Find clothing item recursively through reference.
+		// Checks each level starting from the top, based on given method.
+		const found = CombatRenderer.findClothingByProperty(slot, clothing, item => {
+			if (item.combat == null || item.combat.hasSleevesAcc == null) {
+				return item.sleeve_acc_img != null;
+			}
+			return item.combat.hasSleevesAcc != null;
+		});
+		// Check the returned item for the sleeves acc property.
+		if (found.combat == null || found.combat.hasSleevesAcc == null) {
+			return !!found.sleeve_acc_img;
+		}
+		return found.combat.hasSleevesAcc;
+	}
+
+	/**
+	 * @param {ClothedSlots} slot
 	 * @param {ClothesItem} source
 	 * @param {number} breastSize
 	 */
 	static genClothingBreastOptions(slot, source, breastSize) {
 		return {
+			hasAccessory: ["upper", "under_upper", "over_upper"].includes(slot) && PlayerCombatMapper.hasBreastsAcc(slot, source),
 			show: ["upper", "under_upper", "over_upper"].includes(slot) && PlayerCombatMapper.hasBreasts(slot, source),
 			size: breastSize,
 		};
@@ -1109,11 +1136,33 @@ class PlayerCombatMapper {
 			}
 			return item.combat.hasBreasts != null;
 		});
-		// Check the returned item for the sleeves property.
+		// Check the returned item for the breasts property.
 		if (found.combat == null || found.combat.hasBreasts == null) {
 			return !!found.breast_img;
 		}
 		return found.combat.hasBreasts;
+	}
+
+	/**
+	 * @param {ClothedSlots} slot
+	 * @param {ClothesItem} source
+	 * @returns {boolean}
+	 */
+	static hasBreastsAcc(slot, source) {
+		// Has combat.hasBreastsAcc property
+		// Find clothing item recursively through reference.
+		// Checks each level starting from the top, based on given method.
+		const found = CombatRenderer.findClothingByProperty(slot, source, item => {
+			if (item.combat == null || item.combat.hasBreastsAcc == null) {
+				return item.breast_acc_img != null;
+			}
+			return item.combat.hasBreastsAcc != null;
+		});
+		// Check the returned item for the breast acc property.
+		if (found.combat == null || found.combat.hasBreastsAcc == null) {
+			return !!found.breast_acc_img;
+		}
+		return found.combat.hasBreastsAcc;
 	}
 
 	/**
@@ -1123,12 +1172,21 @@ class PlayerCombatMapper {
 	 */
 	static generateClothingFilter(slot, clothing, options) {
 		const mainFilterKey = `worn_${slot}_main`;
+		const sleeveFilterKey = `worn_${slot}_sleeve`;
 		const accFilterKey = `worn_${slot}_acc`;
+		const sleeveAccFilterKey = `worn_${slot}_sleeve_acc`;
 
 		options.filters ||= {};
 
-		if (clothing.combat?.mainColour) {
+		if (clothing.combat?.mainColour && !["primary", "secondary"].includes(clothing.combat?.mainColour)) {
 			options.filters[mainFilterKey] = PlayerCombatMapper.genFilterWithHex(clothing.combat.mainColour);
+		} else if (clothing.combat?.mainColour && clothing.combat?.mainColour === "secondary") {
+			const accColour = clothing.combat?.accColour || clothing.accessory_colour;
+			const accDebugName = slot + " accessory";
+			const accCustomFilter = clothing.accessory_colourCustom;
+			options.filters[mainFilterKey] = accColour
+				? CombatRenderer.lookupColour(setup.colours.clothes_map, accColour, accDebugName, accCustomFilter, clothing.prefilter)
+				: Renderer.emptyLayerFilter();
 		} else {
 			const colour = clothing.colour;
 			const debugName = slot + " clothing";
@@ -1138,8 +1196,15 @@ class PlayerCombatMapper {
 				: Renderer.emptyLayerFilter();
 		}
 
-		if (clothing.combat?.accColour) {
+		if (clothing.combat?.accColour && !["primary", "secondary"].includes(clothing.combat?.accColour)) {
 			options.filters[accFilterKey] = PlayerCombatMapper.genFilterWithHex(clothing.combat.accColour);
+		} else if (clothing.combat?.accColour && clothing.combat?.accColour === "primary") {
+			const colour = clothing.colour;
+			const debugName = slot + " clothing";
+			const customFilter = clothing.colourCustom;
+			options.filters[accFilterKey] = colour
+				? CombatRenderer.lookupColour(setup.colours.clothes_map, colour, debugName, customFilter, clothing.prefilter)
+				: Renderer.emptyLayerFilter();
 		} else {
 			const accColour = clothing.combat?.accColour || clothing.accessory_colour;
 			const accDebugName = slot + " accessory";
@@ -1149,6 +1214,31 @@ class PlayerCombatMapper {
 				: Renderer.emptyLayerFilter();
 		}
 
+		if (clothing.combat?.sleeveColour && clothing.combat?.sleeveColour !== "primary") {
+			options.filters[sleeveFilterKey] = PlayerCombatMapper.genFilterWithHex(clothing.combat.sleeveColour);
+		} else if (clothing.combat?.mainColour && !clothing.combat?.sleeveColour) {
+			options.filters[sleeveFilterKey] = PlayerCombatMapper.genFilterWithHex(clothing.combat.mainColour);
+		} else {
+			const colour = clothing.colour;
+			const debugName = slot + " clothing";
+			const customFilter = clothing.colourCustom;
+			options.filters[sleeveFilterKey] = colour
+				? CombatRenderer.lookupColour(setup.colours.clothes_map, colour, debugName, customFilter, clothing.prefilter)
+				: Renderer.emptyLayerFilter();
+		}
+
+		if (clothing.combat?.sleeveAccColour && clothing.combat?.sleeveAccColour !== "primary") {
+			options.filters[sleeveAccFilterKey] = PlayerCombatMapper.genFilterWithHex(clothing.combat.sleeveAccColour);
+		} else if (clothing.combat?.accColour && !clothing.combat?.sleeveAccColour) {
+			options.filters[sleeveAccFilterKey] = PlayerCombatMapper.genFilterWithHex(clothing.combat.accColour);
+		} else {
+			const accColour = clothing.combat?.accColour || clothing.accessory_colour;
+			const accDebugName = slot + " accessory";
+			const accCustomFilter = clothing.accessory_colourCustom;
+			options.filters[sleeveAccFilterKey] = accColour
+				? CombatRenderer.lookupColour(setup.colours.clothes_map, accColour, accDebugName, accCustomFilter, clothing.prefilter)
+				: Renderer.emptyLayerFilter();
+		}
 		return options;
 	}
 

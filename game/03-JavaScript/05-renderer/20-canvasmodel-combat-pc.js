@@ -1218,28 +1218,22 @@ const combatMainPc = {
 		overUpperAcc: PlayerCanvasHelper.genClothingAccLayer("over_upper", {
 			z: CombatRenderer.indices.frontArm - 1,
 		}),
+		overUpperBreasts: PlayerCanvasHelper.genBreastsLayer("over_upper", {
+			z: CombatRenderer.indices.frontArm - 1,
+		}),
+		overUpperBreastsAcc: PlayerCanvasHelper.genBreastsAccLayer("over_upper", {
+			z: CombatRenderer.indices.frontArm - 1,
+		}),
 		underUpper: PlayerCanvasHelper.genClothingLayer("under_upper", {
 			z: CombatRenderer.indices.frontArm - 4,
 		}),
 		underUpperAcc: PlayerCanvasHelper.genClothingAccLayer("under_upper", {
 			z: CombatRenderer.indices.frontArm - 4,
 		}),
-		underUpperBreasts: PlayerCanvasHelper.genClothingLayer("under_upper", {
-			srcfn(options) {
-				const clothes = options.clothes.under_upper;
-				if (clothes?.name == null) return "";
-				const path = `${options.src}clothing/under_upper/${clothes.name}/breasts/${clothes.breasts.size}.png`;
-				return path;
-			},
-			showfn(options) {
-				const clothes = options.clothes.under_upper;
-				if (clothes == null) {
-					Errors.report("Clothing object was undefined");
-					return false;
-				}
-				const show = CombatRenderer.isClothingShown(clothes, options.showClothing) && clothes.breasts.show;
-				return !!show;
-			},
+		underUpperBreasts: PlayerCanvasHelper.genBreastsLayer("under_upper", {
+			z: CombatRenderer.indices.frontArm - 4,
+		}),
+		underUpperBreastsAcc: PlayerCanvasHelper.genBreastsAccLayer("under_upper", {
 			z: CombatRenderer.indices.frontArm - 4,
 		}),
 		upper: PlayerCanvasHelper.genClothingLayer("upper", {
@@ -1248,22 +1242,10 @@ const combatMainPc = {
 		upperAcc: PlayerCanvasHelper.genClothingAccLayer("upper", {
 			z: CombatRenderer.indices.frontArm - 3,
 		}),
-		upperBreasts: PlayerCanvasHelper.genClothingLayer("upper", {
-			srcfn(options) {
-				const clothes = options.clothes.upper;
-				if (clothes?.name == null) return "";
-				const path = `${options.src}clothing/upper/${clothes.name}/breasts/${clothes.breasts.size}.png`;
-				return path;
-			},
-			showfn(options) {
-				const clothes = options.clothes.upper;
-				if (clothes == null) {
-					Errors.report("Clothing object was undefined");
-					return false;
-				}
-				const show = CombatRenderer.isClothingShown(clothes, options.showClothing) && clothes.breasts.show;
-				return !!show;
-			},
+		upperBreasts: PlayerCanvasHelper.genBreastsLayer("upper", {
+			z: CombatRenderer.indices.frontArm - 3,
+		}),
+		upperBreastsAcc: PlayerCanvasHelper.genBreastsAccLayer("upper", {
 			z: CombatRenderer.indices.frontArm - 3,
 		}),
 		upperBackSleeves: PlayerCanvasHelper.genClothingSleeves("upper", "back", {
@@ -1279,7 +1261,22 @@ const combatMainPc = {
 				if (options.position === "missionary" && !["handjob"].includes(clothes.sleeves.state)) return false;
 				return !!show;
 			},
-			z: CombatRenderer.indices.backArm + 1,
+			z: CombatRenderer.indices.backArm + 2,
+		}),
+		upperBackSleevesAcc: PlayerCanvasHelper.genClothingSleevesAcc("upper", "back", {
+			showfn(options) {
+				const clothes = options.clothes.upper;
+				if (clothes == null) {
+					Errors.report("Clothing object was undefined");
+					return false;
+				}
+				const show = CombatRenderer.isClothingShown(clothes, options.showClothing) && clothes.sleeves.hasAccessory;
+				// If missionary: Sleeves on the side behind are never shown, except for handjobs.
+				if (options.position === "doggy" && options.armBackPosition === "bound") return false;
+				if (options.position === "missionary" && !["handjob"].includes(clothes.sleeves.state)) return false;
+				return !!show;
+			},
+			z: CombatRenderer.indices.backArm + 2,
 		}),
 		upperFrontSleeves: PlayerCanvasHelper.genClothingSleeves("upper", "front", {
 			showfn(options) {
@@ -1295,7 +1292,24 @@ const combatMainPc = {
 				if (options.armFrontPosition === "bound") {
 					return CombatRenderer.indices.frontBoundArms + 1;
 				}
-				return CombatRenderer.indices.frontArm + 1;
+				return CombatRenderer.indices.frontArm + 2;
+			},
+		}),
+		upperFrontSleevesAcc: PlayerCanvasHelper.genClothingSleevesAcc("upper", "front", {
+			showfn(options) {
+				const clothes = options.clothes.upper;
+				if (clothes == null) {
+					Errors.report("Clothing object was undefined");
+					return false;
+				}
+				const show = CombatRenderer.isClothingShown(clothes, options.showClothing) && clothes.sleeves.hasAccessory;
+				return !!show;
+			},
+			zfn(options) {
+				if (options.armFrontPosition === "bound") {
+					return CombatRenderer.indices.frontBoundArms + 1;
+				}
+				return CombatRenderer.indices.frontArm + 2;
 			},
 		}),
 		underUpperBackSleeves: PlayerCanvasHelper.genClothingSleeves("under_upper", "back", {
@@ -1313,6 +1327,21 @@ const combatMainPc = {
 			},
 			z: CombatRenderer.indices.backArm + 1,
 		}),
+		underUpperBackSleevesAcc: PlayerCanvasHelper.genClothingSleevesAcc("under_upper", "back", {
+			showfn(options) {
+				const clothes = options.clothes.under_upper;
+				if (clothes == null) {
+					Errors.report("Clothing object was undefined");
+					return false;
+				}
+				const show = CombatRenderer.isClothingShown(clothes, options.showClothing) && clothes.sleeves.hasAccessory;
+				// If missionary: Sleeves on the side behind are never shown, except for handjobs.
+				if (options.position === "doggy" && options.armBackPosition === "bound") return false;
+				if (options.position === "missionary" && !["handjob"].includes(clothes.sleeves.state)) return false;
+				return !!show;
+			},
+			z: CombatRenderer.indices.backArm + 1,
+		}),
 		underUpperFrontSleeves: PlayerCanvasHelper.genClothingSleeves("under_upper", "front", {
 			showfn(options) {
 				const clothes = options.clothes.under_upper;
@@ -1321,6 +1350,23 @@ const combatMainPc = {
 					return false;
 				}
 				const show = CombatRenderer.isClothingShown(clothes, options.showClothing) && clothes.sleeves.show;
+				return !!show;
+			},
+			zfn(options) {
+				if (options.armFrontPosition === "bound") {
+					return CombatRenderer.indices.frontBoundArms + 1;
+				}
+				return CombatRenderer.indices.frontArm + 1;
+			},
+		}),
+		underUpperFrontSleevesAcc: PlayerCanvasHelper.genClothingSleevesAcc("under_upper", "front", {
+			showfn(options) {
+				const clothes = options.clothes.under_upper;
+				if (clothes == null) {
+					Errors.report("Clothing object was undefined");
+					return false;
+				}
+				const show = CombatRenderer.isClothingShown(clothes, options.showClothing) && clothes.sleeves.hasAccessory;
 				return !!show;
 			},
 			zfn(options) {
