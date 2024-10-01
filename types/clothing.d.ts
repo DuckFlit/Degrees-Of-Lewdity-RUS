@@ -107,10 +107,14 @@ declare global {
 			renderType?: CombatClothingTypes;
 			hasMainImg?: boolean;
 			hasSleeves?: boolean;
+			hasSleevesAcc?: boolean;
 			hasBreasts?: boolean;
+			hasBreastsAcc?: boolean;
 			accessory?: boolean;
 			mainColour?: string;
 			accColour?: string;
+			sleeveAccColour?: string;
+			sleeveColour?: string;
 			boundable?: boolean;
 		};
 		integrity?: number;
