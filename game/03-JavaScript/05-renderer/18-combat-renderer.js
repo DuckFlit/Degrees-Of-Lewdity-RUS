@@ -417,16 +417,6 @@ class CombatRenderer {
 				options["ztan_" + slot[0]] = options["ztan_" + slot[0]] + 0.01 * i;
 			});
 		}
-
-		if (options.bellyState === "clothed") {
-			options.filters.preggy = {
-				blend: options.filters.worn_upper_main.blend,
-				blendMode: "multiply",
-				desaturate: true,
-			};
-		} else {
-			options.filters.preggy = options.filters.body;
-		}
 	}
 
 	/** @returns {string} */
