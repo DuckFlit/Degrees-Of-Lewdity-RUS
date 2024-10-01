@@ -22,6 +22,7 @@
  * @property {boolean} breastsExposed Whether the breasts are shown.
  * @property {number} bellySize The size of the player's belly.
  * @property {"hidden" | "exposed" | "clothed"} bellyState Whether the pregnant belly is hidden, exposed, or clothed.
+ * @property {string} pregnantBellyPath Path to pregnant belly folder
  * @property {Penetrator?} penetrator Typically the PC's penis, or strapon etc.
  * @property {SkinColours} skinType
  * @property {number} skinTone
@@ -259,6 +260,7 @@ class PlayerCombatMapper {
 			breastsExposed: false,
 			breastSize: 0,
 			bellyState: "hidden",
+			pregnantBellyPath: "base",
 			bellySize: 0,
 			genitalsExposed: false,
 			hairLength: "short",
@@ -331,6 +333,9 @@ class PlayerCombatMapper {
 		}
 
 		options.bellyState = PlayerCombatMapper.isBellyExposed(options);
+
+		// Temporary default folder until more clothing items get preg belly variants
+		options.pregnantBellyPath = options.bellyState === "clothed" ? "clothed/default" : "base";
 
 		CombatRenderer.generateBodyFilters(options);
 

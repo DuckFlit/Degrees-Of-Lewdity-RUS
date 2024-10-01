@@ -116,7 +116,7 @@ declare global {
 		frames?: number;
 		framesfn?(options: T): number;
 		filters?: string[];
-		filtersfn?(options: T): string[];
+		filtersfn?(options: T): string[] | object[];
 		dx?: number;
 		dxfn?(options: T): number;
 		dy?: number;

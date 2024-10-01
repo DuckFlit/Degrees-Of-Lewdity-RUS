@@ -636,9 +636,9 @@ const combatMainPc = {
 			},
 			z: CombatRenderer.indices.backLowerOverwear + 1,
 		},
-		preggy: {
+		pregnantBelly: {
 			srcfn(options) {
-				return `${options.src}body/preggyBelly/${options.bellySize}.png`;
+				return `${options.src}body/pregnantBelly/${options.pregnantBellyPath}/${options.bellySize}.png`;
 			},
 			showfn(options) {
 				if (!options.bellySize || !options.bellyState) return false;
@@ -648,14 +648,16 @@ const combatMainPc = {
 			animationfn(options) {
 				return options.animKey;
 			},
-			filters: ["preggy"],
+			filtersfn(options) {
+				return options.bellyState !== "clothed" ? ["body"] : [{ blend: options.filters.worn_upper_main.blend, blendMode: "multiply" }];
+			},
 			z: CombatRenderer.indices.base + 24,
 		},
-		preggyOverlay: {
+		pregnantBellyOverlay: {
 			srcfn(options) {
 				return options.bellyState === "exposed" && options.position === "doggy"
-					? `${options.src}body/preggyBelly/overlay_exposed.png`
-					: `${options.src}body/preggyBelly/overlay.png`;
+					? `${options.src}body/pregnantBelly/base/overlay_exposed.png`
+					: `${options.src}body/pregnantBelly/${options.pregnantBellyPath}/overlay.png`;
 			},
 			showfn(options) {
 				if (!options.bellySize || !options.bellyState) return false;
@@ -665,7 +667,9 @@ const combatMainPc = {
 			animationfn(options) {
 				return options.animKey;
 			},
-			filters: ["preggy"],
+			filtersfn(options) {
+				return options.bellyState !== "clothed" ? ["body"] : [{ blend: options.filters.worn_upper_main.blend, blendMode: "multiply" }];
+			},
 			z: CombatRenderer.indices.base + 23,
 		},
 		/*
