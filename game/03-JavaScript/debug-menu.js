@@ -1685,8 +1685,9 @@ window.changeBorderColor = changeBorderColor;
 // const categories = ["debugEventsMain", "debugEventsCharacter", "debugEventsEvents"];
 const categories2 = ["debugMain", "debugCharacter", "debugEvents", "debugFavourites", "debugAdd"];
 
-function researchEvents(defaultValue) {
+function researchEvents(defaultValue, event) {
 	$(function () {
+		if (event != null) event.preventDefault();
 		let needle = defaultValue != null ? defaultValue : document.getElementById("searchEvents").value;
 		const eventsList = [
 			document.getElementById("debugEventsMain").getElementsByTagName("div"),
