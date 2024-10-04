@@ -2145,6 +2145,18 @@ function fixIntegrityUpdater() {
 }
 window.fixIntegrityUpdater = fixIntegrityUpdater;
 
+// Set plots to watered if it rains
+// Temporary solution until a rework
+$(document).on(":onWeatherChange", () => {
+	if (V.daily?.plotsRain || Weather.precipitation !== "rain") return;
+	V.daily.plotsRain = true;
+	Object.values(V.plots).forEach(([location, plots]) => {
+		// Don't water greenhouse plants from rain - disabled for now
+		// if (location === "garden" && V.alex_greenhouse === 3) return;
+		plots.forEach(plot => (plot.water = 1));
+	});
+});
+
 /**
  * @param {string} slot
  * @param {ClothesItem} value
