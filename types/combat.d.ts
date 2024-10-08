@@ -9,6 +9,7 @@ declare module "twine-sugarcube" {
 		arousalmax: number;
 		enemyarousal: number;
 		enemyarousalmax: number;
+		ejaculating: number;
 
 		orgasmdown: number;
 		orgasmcount: number;
@@ -92,6 +93,7 @@ declare module "twine-sugarcube" {
 			tattoo: {
 				use: string;
 			};
+			speed: any;
 		};
 		tentacleColour:
 			| "tentacles-blue"
@@ -127,6 +129,9 @@ declare module "twine-sugarcube" {
 			active: number;
 			max: number;
 		};
+		tentacleVagina: string | 0;
+		tentacleAnus: string | 0;
+		tentaclePenis: string | 0;
 		swarm: Swarm;
 	}
 

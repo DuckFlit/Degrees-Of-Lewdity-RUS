@@ -11,6 +11,14 @@
  * @property {16} closeWorn
  * @property {18} closeCum
  * @property {20} closeNpc
+ * Xray layers
+ * @property {10} xrayBase
+ * @property {12} xrayEjac
+ * @property {14} xrayPenetrator
+ * @property {15} xrayCondom
+ * @property {16} xrayPenetrator2
+ * @property {17} xrayCondom2
+ * @property {20} xrayCum
  * Combat layers
  * @property {0} far
  * @property {50} base
@@ -217,6 +225,14 @@ class CombatRenderer {
 			closeWorn: 16,
 			closeCum: 18,
 			closeNpc: 20,
+
+			xrayBase: 10,
+			xrayEjac: 12,
+			xrayPenetrator: 14,
+			xrayCondom: 15,
+			xrayPenetrator2: 16,
+			xrayCondom2: 17,
+			xrayCum: 20,
 		};
 	}
 

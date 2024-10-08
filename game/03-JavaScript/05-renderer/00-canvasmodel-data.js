@@ -117,6 +117,11 @@ Renderer.Animations["sex-2f-idle"] = {
 	],
 };
 
+Renderer.Animations["sex-2f-vfast"] = {
+	frames: 2,
+	duration: 80,
+};
+
 Renderer.Animations["sex-1f-idle"] = {
 	keyframes: [
 		{
@@ -201,6 +206,26 @@ Renderer.Animations["sex-6f-fast"] = {
 Renderer.Animations["sex-6f-vfast"] = {
 	frames: 6,
 	duration: 80,
+};
+
+Renderer.Animations["sex-8f-slow"] = {
+	frames: 8,
+	duration: 110,
+};
+
+Renderer.Animations["sex-8f-mid"] = {
+	frames: 8,
+	duration: 77,
+};
+
+Renderer.Animations["sex-8f-fast"] = {
+	frames: 8,
+	duration: 58,
+};
+
+Renderer.Animations["sex-8f-vfast"] = {
+	frames: 8,
+	duration: 30,
 };
 
 Renderer.Animations["sex-10f-slow"] = {
