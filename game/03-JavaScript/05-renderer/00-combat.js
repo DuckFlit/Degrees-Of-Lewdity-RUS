@@ -102,7 +102,7 @@ class CombatSystem {
 	}
 
 	isVaginaPenetrated() {
-		const activeState = V.vaginastate && ["penetrated", "doublepenetrated", "tentacledeep"].includes(V.vaginastate);
+		const activeState = V.vaginastate && ["penetrated", "doublepenetrated", "tentacle", "tentacledeep"].includes(V.vaginastate);
 		return !!activeState;
 	}
 
@@ -130,7 +130,7 @@ class CombatSystem {
 	}
 
 	isAnusPenetrated() {
-		const activeState = V.anusstate && ["penetrated", "doublepenetrated", "tentacledeep"].includes(V.anusstate);
+		const activeState = V.anusstate && ["penetrated", "doublepenetrated", "tentacle", "tentacledeep"].includes(V.anusstate);
 		return !!activeState;
 	}
 
@@ -161,7 +161,7 @@ class CombatSystem {
 	}
 
 	isPenisPenetrated() {
-		const activeState = V.penisstate && ["penetrated", "tentacledeep", "othermouth"].includes(V.penisstate);
+		const activeState = V.penisstate && ["penetrated", "tentacle", "tentacledeep", "othermouth", "otheranus"].includes(V.penisstate);
 		return !!activeState;
 	}
 
