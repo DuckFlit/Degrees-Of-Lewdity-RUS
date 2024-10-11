@@ -240,6 +240,9 @@ function initFace() {
 			name: "skulduggery mask",
 			name_cap: "Skulduggery mask",
 			variable: "skulmask",
+			combat: {
+				mainColour: "#333333",
+			},
 			state: 0,
 			state_base: 0,
 			integrity: 30,
@@ -947,6 +950,9 @@ function initFace() {
 			name: "penis gag",
 			name_cap: "Penis gag",
 			variable: "penisgag",
+			combat: {
+				mainColour: "#ff0000",
+			},
 			state: 0,
 			state_base: 0,
 			integrity: 20,
@@ -1376,6 +1382,10 @@ function initFace() {
 			name: "fox mask",
 			name_cap: "Fox mask",
 			variable: "foxmask",
+			combat: {
+				reference: "skulmask",
+				mainColour: "#af531b",
+			},
 			state: 0,
 			state_base: 0,
 			integrity: 30,

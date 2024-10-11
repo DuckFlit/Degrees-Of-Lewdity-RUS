@@ -688,7 +688,7 @@ class CombatRenderer {
 			return "curtain";
 		}
 		if (V.fringetype === "mohawk") {
-			return V.worn.head.mask_img === 1 ? "short" : "mohawk";
+			return "mohawk";
 		}
 		if (V.fringetype === "buzzcut") {
 			return "buzzcut";

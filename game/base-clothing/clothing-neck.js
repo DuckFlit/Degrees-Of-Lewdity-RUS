@@ -86,6 +86,7 @@ function initNeck() {
 			variable: "bunnycollar",
 			combat: {
 				reference: "clothchoker",
+				mainColour: "#000000",
 			},
 			state: 0,
 			state_base: 0,
@@ -224,6 +225,10 @@ function initNeck() {
 			name: "gold choker",
 			name_cap: "Gold choker",
 			variable: "goldchoker",
+			combat: {
+				reference: "clothchoker",
+				mainColour: "#d8b608",
+			},
 			state: 0,
 			state_base: 0,
 			integrity: 100,
@@ -363,6 +368,7 @@ function initNeck() {
 			variable: "spiked",
 			combat: {
 				reference: "clothchoker",
+				mainColour: "#000000",
 			},
 			state: 0,
 			state_base: 0,
@@ -399,6 +405,7 @@ function initNeck() {
 			variable: "heartchoker",
 			combat: {
 				reference: "clothchoker",
+				mainColour: "#000000",
 			},
 			state: 0,
 			state_base: 0,
@@ -435,6 +442,7 @@ function initNeck() {
 			variable: "ringedcollar",
 			combat: {
 				reference: "clothchoker",
+				mainColour: "#000000",
 			},
 			state: 0,
 			state_base: 0,
@@ -633,7 +641,8 @@ function initNeck() {
 			name_cap: "Gold chain",
 			variable: "chaingold",
 			combat: {
-				reference: "goldchoker",
+				reference: "clothchoker",
+				mainColour: "#d8b608",
 			},
 			state: 0,
 			state_base: 0,
@@ -669,7 +678,7 @@ function initNeck() {
 			name_cap: "Iron chain",
 			variable: "chainiron",
 			combat: {
-				reference: "goldchoker",
+				reference: "clothchoker",
 			},
 			state: 0,
 			state_base: 0,
@@ -741,6 +750,7 @@ function initNeck() {
 			variable: "freeuse",
 			combat: {
 				reference: "clothchoker",
+				mainColour: "#b59a51",
 			},
 			state: 0,
 			state_base: 0,
@@ -776,6 +786,7 @@ function initNeck() {
 			variable: "collarleash",
 			combat: {
 				reference: "clothchoker",
+				mainColour: "#000000",
 				accessory: false,
 			},
 			state: 0,
@@ -812,6 +823,7 @@ function initNeck() {
 			variable: "freeuseleash",
 			combat: {
 				reference: "clothchoker",
+				mainColour: "#b59a51",
 				accessory: false,
 			},
 			state: 0,
@@ -956,6 +968,7 @@ function initNeck() {
 			variable: "spikedleash",
 			combat: {
 				reference: "clothchoker",
+				mainColour: "#000000",
 				accessory: false,
 			},
 			state: 0,
@@ -1191,7 +1204,7 @@ function initNeck() {
 			name_cap: "Bowtie",
 			variable: "bowtie",
 			combat: {
-				reference: "naked",
+				reference: "clothchoker",
 			},
 			state: 0,
 			state_base: 0,

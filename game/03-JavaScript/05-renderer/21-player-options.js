@@ -159,6 +159,8 @@
  * @property {boolean} hasAccessory Whether the clothing uses accessory layer.
  * @property {boolean} hasMainImg Whether the clothing has a main img layer, tape for example.
  * @property {boolean} hasBackImg Whether the clothing has a back img layer, typically for headwear or handhelds.
+ * @property {boolean} hasBackAccessory Whether the clothing has a back acc layer, typically for headwear or handhelds.
+ * @property {boolean} hasMaskImg Whether the clothing uses a mask, typically for headwear or handhelds.
  * @property {PlayerBreastState} breasts Breast state.
  * @property {PlayerSleeveState} sleeves Sleeve state.
  */
@@ -781,7 +783,7 @@ class PlayerCombatMapper {
 			}
 		}
 		if (V.feetuse === "penis" || V.feetstate === "tentacle") {
-			return "footjob";
+			return "up";
 		}
 		if (V.machine && V.machine.tattoo && ["left_thigh", "right_thigh"].includes(V.machine.tattoo.use)) {
 			return "up";
@@ -975,6 +977,8 @@ class PlayerCombatMapper {
 				hasAccessory: false,
 				hasMainImg: false,
 				hasBackImg: false,
+				hasBackAccessory: false,
+				hasMaskImg: false,
 				breasts: {
 					hasAccessory: false,
 					show: false,
@@ -1031,6 +1035,8 @@ class PlayerCombatMapper {
 			hasAccessory: CombatRenderer.getAccessoryState(slot, defaults),
 			hasMainImg: clothing.combat?.hasMainImg !== false,
 			hasBackImg: !!defaults.back_img && [1, "combat"].includes(defaults.back_img),
+			hasBackAccessory: !!defaults.back_img_acc && [1, "combat"].includes(defaults.back_img_acc),
+			hasMaskImg: !!defaults.mask_img && [1, "combat"].includes(defaults.mask_img),
 			breasts: PlayerCombatMapper.genClothingBreastOptions(slot, clothing, options.breastSize),
 			sleeves: PlayerCombatMapper.genClothingSleeveOptions(slot, clothing),
 			renderStep: source.combat?.renderType,
