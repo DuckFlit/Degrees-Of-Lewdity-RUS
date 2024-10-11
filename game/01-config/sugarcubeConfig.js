@@ -102,6 +102,9 @@ function onSave(save, details) {
 	// * update feats * //
 	Wikifier.wikifyEval("<<updateFeats>>");
 
+	// Save the recently loaded version
+	save.state.loadedVersion = StartConfig.version;
+
 	// * update $saveDetails wherever possible * //
 	const type = details.type;
 	const date = save.date;

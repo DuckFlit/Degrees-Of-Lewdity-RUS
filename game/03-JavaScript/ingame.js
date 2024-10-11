@@ -2157,6 +2157,28 @@ $(document).on(":onWeatherChange", () => {
 	});
 });
 
+// Temporary until a rework
+// Apparently the sugarcube <<script>> parser don't parse the following correctly - so made it a function instead
+function tendingDay() {
+	Object.entries(V.plots).forEach(([location, plots]) => {
+		let irrigation = location === "farm" ? V.farm.irrigation || 0 : 0;
+
+		plots.forEach(plot => {
+			// Growth check
+			if (plot.stage >= 1 && (plot.water === 1 || plot.bed === "water")) {
+				plot.days += 1;
+				if (plot.days >= setup.plants[plot.plant].days * ((plot.stage + 1) / 5)) {
+					plot.stage += 1;
+				}
+			}
+
+			// Rain check moved to event in ingame.js
+			plot.water = irrigation >= 1 ? (irrigation--, 1) : 0;
+		});
+	});
+}
+window.tendingDay = tendingDay;
+
 /**
  * @param {string} slot
  * @param {ClothesItem} value

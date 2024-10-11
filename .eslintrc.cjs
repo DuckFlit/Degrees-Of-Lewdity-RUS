@@ -102,6 +102,7 @@ module.exports = {
 		DoLCompressorDictionaries: "readonly",
 		DoLSave: "readonly",
 		// DoL functions
+		tendingDay: "readonly",
 		ampm: "readonly",
 		assignDefaults: "readonly",
 		calculatePenisBulge: "readonly",

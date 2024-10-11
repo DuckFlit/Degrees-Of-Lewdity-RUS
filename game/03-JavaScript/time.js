@@ -808,7 +808,7 @@ function dayPassed() {
 
 	parasiteProgressDay();
 	parasiteProgressDay("vagina");
-	wikifier("tending_day");
+	tendingDay();
 	fragment.append(wikifier("creatureContainersProgressDay"));
 
 	if (Number.isInteger(V.challengetimer)) {
