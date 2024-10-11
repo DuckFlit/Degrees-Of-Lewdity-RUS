@@ -385,6 +385,7 @@ function initLegs() {
 			variable: "goldanklets",
 			combat: {
 				renderType: "ankled",
+				mainColour: "#e8b826",
 			},
 			integrity: 100,
 			integrity_max: 100,
@@ -446,7 +447,7 @@ function initLegs() {
 			name_cap: "Striped thighhighs",
 			variable: "stripedthighhighs",
 			combat: {
-				renderType: "thighhighs",
+				reference: "plainthighhighs",
 			},
 			integrity: 100,
 			integrity_max: 100,
@@ -553,7 +554,7 @@ function initLegs() {
 			name_cap: "Cow socks",
 			variable: "cow",
 			combat: {
-				reference: "striped socks long",
+				renderType: "kneehighs",
 			},
 			integrity: 100,
 			integrity_max: 100,
@@ -587,7 +588,7 @@ function initLegs() {
 			name_cap: "Nurse socks",
 			variable: "nursesocks",
 			combat: {
-				renderType: "thighhighs",
+				reference: "stockings",
 				mainColour: "#f00",
 			},
 			integrity: 100,
@@ -745,7 +746,7 @@ function initLegs() {
 			name_cap: "Sports socks",
 			variable: "sports socks short",
 			combat: {
-				reference: "anklesocks",
+				reference: "striped socks short",
 			},
 			integrity: 100,
 			integrity_max: 100,
@@ -853,7 +854,8 @@ function initLegs() {
 			name_cap: "Rib-knit ankle socks",
 			variable: "striped socks short",
 			combat: {
-				reference: "anklesocks",
+				renderType: "ankled",
+				accessory: true,
 			},
 			integrity: 100,
 			integrity_max: 100,
@@ -889,7 +891,8 @@ function initLegs() {
 			name_cap: "Striped kneehighs",
 			variable: "striped kneehighs",
 			combat: {
-				reference: "striped socks long",
+				reference: "striped socks short",
+				accessory: true,
 			},
 			integrity: 100,
 			integrity_max: 100,
@@ -925,7 +928,7 @@ function initLegs() {
 			name_cap: "Sheer leggings",
 			variable: "sheerleggings",
 			combat: {
-				renderType: "waisthighs",
+				reference: "tights",
 			},
 			integrity: 30,
 			integrity_max: 30,
@@ -978,7 +981,8 @@ function initLegs() {
 			name_cap: "Mismatched socks",
 			variable: "mismatched socks",
 			combat: {
-				reference: "striped socks long",
+				reference: "striped socks short",
+				accessory: true,
 			},
 			integrity: 100,
 			integrity_max: 100,
@@ -1013,7 +1017,7 @@ function initLegs() {
 			name_cap: "Loose socks",
 			variable: "loosesocks",
 			combat: {
-				reference: "anklesocks",
+				renderType: "ankled",
 			},
 			integrity: 100,
 			integrity_max: 100,
@@ -1158,6 +1162,7 @@ function initLegs() {
 			variable: "ruffled socks",
 			combat: {
 				reference: "anklesocks",
+				accColour: "primary",
 			},
 			integrity: 100,
 			integrity_max: 100,
@@ -1263,7 +1268,8 @@ function initLegs() {
 			name_cap: "Tabi",
 			variable: "tabi",
 			combat: {
-				reference: "goldanklets",
+				reference: "anklesocks",
+				accColour: "primary",
 			},
 			integrity: 100,
 			integrity_max: 100,
@@ -1297,7 +1303,8 @@ function initLegs() {
 			name_cap: "Gold shackles",
 			variable: "goldshackles",
 			combat: {
-				renderType: "ankled",
+				reference: "goldanklets",
+				mainColour: "#e8b826",
 			},
 			integrity: 100,
 			integrity_max: 100,

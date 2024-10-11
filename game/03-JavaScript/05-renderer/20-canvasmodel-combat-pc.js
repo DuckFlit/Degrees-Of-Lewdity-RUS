@@ -831,6 +831,12 @@ const combatMainPc = {
 			animationfn(options) {
 				return options.animKey;
 			},
+			masksrcfn(options) {
+				if (options.clothes.head?.hasMaskImg) {
+					return `${options.src}clothing/head/${options.clothes.head.name}/mask.png`;
+				}
+				return null;
+			},
 			filters: ["hair"],
 			z: CombatRenderer.indices.hair,
 		},
@@ -1113,6 +1119,24 @@ const combatMainPc = {
 				}
 				return CombatRenderer.indices.frontArm + 1;
 			},
+		}),
+		headwearBackAcc: PlayerCanvasHelper.genClothingAccLayer("head", {
+			srcfn(options) {
+				const clothes = options.clothes.head;
+				if (clothes?.name == null) return "";
+				const path = `${options.src}clothing/head/${clothes.name}/back-acc.png`;
+				return path;
+			},
+			showfn(options) {
+				const clothes = options.clothes.head;
+				if (clothes == null) {
+					Errors.report("Clothing object was undefined");
+					return false;
+				}
+				if (!CombatRenderer.isClothingShown(clothes, options.showClothing)) return false;
+				return !!clothes.hasBackAccessory;
+			},
+			z: CombatRenderer.indices.head - 1,
 		}),
 		headwearBack: PlayerCanvasHelper.genClothingLayer("head", {
 			srcfn(options) {
