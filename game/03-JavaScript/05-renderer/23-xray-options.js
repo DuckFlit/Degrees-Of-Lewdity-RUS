@@ -106,7 +106,7 @@ class XrayCombatMapper {
 
 		/* Type of NPC penetrating the player */
 		options[slot].npcType =
-			V.enemytype === "machine" ? "machine" : ["tentacle", "tentacledeep"].includes(V[slot + "state"]) ? "tentacle" : V.NPCList[V[slot + "state"]].type;
+			V.enemytype === "machine" ? "machine" : ["tentacle", "tentacledeep"].includes(V[slot + "state"]) ? "tentacle" : V.NPCList[V[slot + "target"]].type;
 
 		/* slot is being doublepenetrated or not */
 		options[slot].doublePen =
@@ -328,13 +328,15 @@ class XrayCombatMapper {
 	 * @param {XrayOptions} options
 	 */
 	static mapXrayPlayerPenis(options) {
+		options.penis = {};
+
 		/* if player penetrating others */
 		options.penis.penetratedType =
 			V.enemytype === "machine"
 				? "machine"
 				: V.penisstate !== 0 && ["tentacle", "tentacledeep"].includes(V.penisstate)
 				? "tentacle"
-				: V.NPCList[V.penisstate].type;
+				: V.NPCList[V.penistarget].type;
 
 		const playerPenisType = playerHasStrapon() ? "strap" : V.player.gender === "f" ? "parasite" : "penis";
 		options.penis.type = playerPenisType;
@@ -358,8 +360,8 @@ class XrayCombatMapper {
 			options.penis.cum += V.semen_amount > (V.semen_volume / 24) * 18 ? 2 : 1;
 			options.penis.cum = Math.clamp(options.penis.cum, 0, 5);
 			options.penis.isCumActive = true;
+			options.showCum = true;
 		}
-		options.showCum = true;
 
 		if (["tentacle", "tentacledeep"].includes(options.penis.state)) {
 			if (options.penis.penetratedType === "machine") {
