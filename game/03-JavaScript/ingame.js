@@ -2150,7 +2150,7 @@ window.fixIntegrityUpdater = fixIntegrityUpdater;
 $(document).on(":onWeatherChange", () => {
 	if (V.daily?.plotsRain || Weather.precipitation !== "rain") return;
 	V.daily.plotsRain = true;
-	Object.values(V.plots).forEach(([location, plots]) => {
+	Object.entries(V.plots).forEach(([location, plots]) => {
 		// Don't water greenhouse plants from rain - disabled for now
 		// if (location === "garden" && V.alex_greenhouse === 3) return;
 		plots.forEach(plot => (plot.water = 1));
