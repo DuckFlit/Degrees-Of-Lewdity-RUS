@@ -42,7 +42,7 @@ const combatXrayArse = {
 		cum: {
 			srcfn(options) {
 				const baseSize = options.anus.size ? "_size" + options.anus.size : "";
-				const cumAmt = options.anus.penetratedSprite.includes("horse") ? "_cum_horse" : "_cum";
+				const cumAmt = options.anus.penetratorSprite.includes("horse") ? "_cum_horse" : "_cum";
 				return `${options.src}anal/cum/${options.anus.base}${baseSize}${cumAmt}.png`;
 			},
 			showfn(options) {

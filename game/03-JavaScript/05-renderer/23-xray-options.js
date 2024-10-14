@@ -1,5 +1,5 @@
 // @ts-check
-/* global CombatRenderer, NpcCombatMapper */
+/* global CombatRenderer, NpcCombatMapper, Condom */
 
 /**
  * @typedef XrayOptions
@@ -12,14 +12,45 @@
  * @property {boolean} showNpcVagina
  * @property {boolean} showNpcArse
  * @property {boolean} showCum
- * @property {object} penis Player penis and penetrated.
- * @property {object} vagina Player vagina and penetrators.
- * @property {object} anus Player anus and penetrators.
+ * @property {XrayPlayerPenetrator} penis Player penis and penetrated.
+ * @property {XrayNpcPenetrator} vagina Player vagina and penetrators.
+ * @property {XrayNpcPenetrator} anus Player anus and penetrators.
  * @property {object} filters The filters for layers.
  * @property {string} animKeyBase
  * @property {string} animKeyVagina
  * @property {string} animKeyPenis
  * @property {string} animKeyArse
+ */
+
+/**
+ * @typedef XrayPlayerPenetrator
+ * @property {string} base
+ * @property {string} penetratedType
+ * @property {string} type
+ * @property {"anal" | "vaginal"} penetrated
+ * @property {string} playerSprite
+ * @property {string} tentacleColour
+ * @property {number} size
+ * @property {string | 0} state
+ * @property {Condom} condom
+ * @property {number} cum
+ * @property {boolean} isCumActive
+ * @property {boolean} showCum
+ */
+
+/**
+ * @typedef XrayNpcPenetrator
+ * @property {string} base
+ * @property {number} npc
+ * @property {number} npc2
+ * @property {string} npcType
+ * @property {number} size
+ * @property {number} size2
+ * @property {boolean} doublePen
+ * @property {string} penetratorSprite
+ * @property {string} tentacleColour
+ * @property {boolean} isCumActive
+ * @property {number} cum
  */
 
 class XrayCombatMapper {
@@ -33,6 +64,54 @@ class XrayCombatMapper {
 			animKeyPenis: "sex-1f-idle",
 			animKeyArse: "sex-1f-idle",
 			filters: {},
+			// For the default objects below, replace default values where applicable
+			// You may want to set these properties as nullable/undefinable in the typings
+			vagina: {
+				base: "",
+				cum: 0,
+				doublePen: false,
+				isCumActive: false,
+				npc: 0,
+				npc2: 0,
+				npcType: "",
+				penetratorSprite: "",
+				size: 0,
+				size2: 0,
+				tentacleColour: "tentacle-purple",
+			},
+			anus: {
+				base: "",
+				cum: 0,
+				doublePen: false,
+				isCumActive: false,
+				npc: 0,
+				npc2: 0,
+				npcType: "",
+				penetratorSprite: "",
+				size: 0,
+				size2: 0,
+				tentacleColour: "tentacle-purple",
+			},
+			penis: {
+				base: "",
+				cum: 0,
+				isCumActive: false,
+				size: 0,
+				tentacleColour: "tentacle-purple",
+				condom: {
+					state: "",
+					colour: "",
+					type: "",
+					willUse: false,
+					worn: false,
+				},
+				penetrated: "vaginal",
+				penetratedType: "",
+				playerSprite: "",
+				showCum: false,
+				state: "",
+				type: "",
+			},
 		};
 	}
 
@@ -56,13 +135,13 @@ class XrayCombatMapper {
 
 		// Genitals
 		if (options.showPcPenis) {
-			this.mapXrayPlayerPenis(options);
+			XrayCombatMapper.mapXrayPlayerPenis(options, options.penis);
 		}
 		if (options.showPcVagina) {
-			this.mapXrayPenetrators("vagina", options);
+			XrayCombatMapper.mapXrayPenetrators(options, options.vagina, "vagina");
 		}
 		if (options.showPcArse) {
-			this.mapXrayPenetrators("anus", options);
+			XrayCombatMapper.mapXrayPenetrators(options, options.anus, "anus");
 		}
 
 		// Colours
@@ -98,64 +177,63 @@ class XrayCombatMapper {
 	}
 
 	/**
-	 * @param {string} slot
 	 * @param {XrayOptions} options
+	 * @param {XrayNpcPenetrator} penetrator
+	 * @param {"vagina" | "anus" | "penis"} slot
 	 */
-	static mapXrayPenetrators(slot, options) {
-		options[slot] = {};
-
+	static mapXrayPenetrators(options, penetrator, slot) {
 		/* Type of NPC penetrating the player */
-		options[slot].npcType =
+		penetrator.npcType =
 			V.enemytype === "machine" ? "machine" : ["tentacle", "tentacledeep"].includes(V[slot + "state"]) ? "tentacle" : V.NPCList[V[slot + "target"]].type;
 
 		/* slot is being doublepenetrated or not */
-		options[slot].doublePen =
+		penetrator.doublePen =
 			V[slot + "state"] === "doublepenetrated" &&
 			V.NPCList[V[slot + "target"]].penis === slot + "double" &&
 			V.NPCList[V[slot + "doubletarget"]].penis === slot + "double";
 
 		/* If NPC pulled out, show empty xray base for that turn */
 		if (T["pullOut" + slot.toUpperFirst()]) {
-			options[slot].npcType = "none";
-			options[slot].size = null;
-			options[slot].base = slot === "vagina" && V.orgasmdown >= 1 ? "twitching" : "rest";
+			penetrator.npcType = "none";
+			penetrator.size = 0;
+			penetrator.base = slot === "vagina" && V.orgasmdown >= 1 ? "twitching" : "rest";
 		} else {
-			options[slot].base = "sex";
-			options[slot].npc = V[slot + "target"];
+			penetrator.base = "sex";
+			penetrator.npc = V[slot + "target"];
 		}
 
 		/* Penetrator control */
-		switch (options[slot].npcType) {
+		switch (penetrator.npcType) {
 			case "none":
-				options[slot].penetratorSprite = "";
-				options[slot].size = null;
+				penetrator.penetratorSprite = "";
+				penetrator.size = 0;
 				options.showNpcPenis = false;
 				options.filters[slot + "Penetrator"] = "";
 				break;
 			case "machine":
-				options[slot].penetratorSprite = "tentacle";
-				options[slot].size = 3;
-				options[slot].tentacleColour = V.tentacleColour || "tentacles-peach";
+				penetrator.penetratorSprite = "tentacle";
+				penetrator.size = 3;
+				penetrator.tentacleColour = V.tentacleColour || "tentacles-peach";
 				options.filters[slot + "Penetrator"] = CombatRenderer.lookupColour(
 					setup.colours.tentacle_map,
-					options[slot].tentacleColour,
+					penetrator.tentacleColour,
 					"xrayTentacle",
 					undefined,
 					undefined
 				);
 				break;
 			case "tentacle":
-				options[slot].penetratorSprite = "tentacle";
+				penetrator.penetratorSprite = "tentacle";
 				for (let tentacleIndex = 0; tentacleIndex < V.tentacles.max; tentacleIndex++) {
 					if (V.tentacles[tentacleIndex] !== undefined && V.tentacles[tentacleIndex].fullDesc === V["tentacle" + slot.toUpperFirst()]) {
-						options[slot].size = V.tentacles[tentacleIndex].size;
+						penetrator.size = V.tentacles[tentacleIndex].size;
 						break;
 					}
 				}
-				options[slot].tentacleColour = V.tentacleColour || "tentacles-purple";
+				penetrator.tentacleColour = V.tentacleColour || "tentacles-purple";
 				options.filters[slot + "Penetrator"] = CombatRenderer.lookupColour(
 					setup.colours.tentacle_map,
-					options[slot].tentacleColour,
+					penetrator.tentacleColour,
 					"xrayTentacle",
 					undefined,
 					undefined
@@ -164,23 +242,23 @@ class XrayCombatMapper {
 			case "human":
 			case "plant":
 				/* For DP, bigger penis MUST be the primary target sprite. */
-				if (options[slot].doublePen) {
-					options[slot].npc =
+				if (penetrator.doublePen) {
+					penetrator.npc =
 						V.NPCList[V[slot + "target"]].penissize <= V.NPCList[V[slot + "doubletarget"]].penissize
 							? V[slot + "doubletarget"]
 							: V[slot + "target"];
-					options[slot].npc2 = options[slot].npc === V[slot + "doubletarget"] ? V[slot + "target"] : V[slot + "doubletarget"];
+					penetrator.npc2 = penetrator.npc === V[slot + "doubletarget"] ? V[slot + "target"] : V[slot + "doubletarget"];
 				} else {
-					options[slot].npc = V[slot + "target"];
+					penetrator.npc = V[slot + "target"];
 				}
 
 				this.mapXrayHumanPenis("npc", slot, options);
-				if (options[slot].npc2) {
+				if (penetrator.npc2) {
 					this.mapXrayHumanPenis("npc2", slot, options);
 
 					/* size 1 and 5 penises are supposed to be impossible to dp with, so just in case, make sure sprites don't error out */
-					Math.clamp(options[slot].size, 2, 4);
-					Math.clamp(options[slot].size2, 2, 4);
+					Math.clamp(penetrator.size, 2, 4);
+					Math.clamp(penetrator.size2, 2, 4);
 				}
 				break;
 			case "horse":
@@ -189,8 +267,8 @@ class XrayCombatMapper {
 			case "cowgirl":
 			case "bull":
 			case "bullboy":
-				options[slot].penetratorSprite = "horse";
-				options[slot].size = 5;
+				penetrator.penetratorSprite = "horse";
+				penetrator.size = 5;
 				options.filters[slot + "Penetrator"] = {
 					blend: "#ec3535",
 					blendMode: "multiply",
@@ -206,9 +284,9 @@ class XrayCombatMapper {
 			case "wolf":
 			case "wolfgirl":
 			case "wolfboy":
-				options[slot].penetratorSprite = V.ejaculating === 1 && (T.knotted || T.knotted_short) ? "knottedFull" : "knotted";
-				options[slot].size = options[slot].npcType.includes("wolf") ? 3 : 2;
-				options[slot].base = V.ejaculating === 1 && (T.knotted || T.knotted_short) ? "knotting" : options[slot].base;
+				penetrator.penetratorSprite = V.ejaculating === 1 && (T.knotted || T.knotted_short) ? "knottedFull" : "knotted";
+				penetrator.size = penetrator.npcType.includes("wolf") ? 3 : 2;
+				penetrator.base = V.ejaculating === 1 && (T.knotted || T.knotted_short) ? "knotting" : penetrator.base;
 				options.filters[slot + "Penetrator"] = {
 					blend: "#ec3535",
 					blendMode: "multiply",
@@ -221,8 +299,8 @@ class XrayCombatMapper {
 			case "boar":
 			case "boargirl":
 			case "boarboy":
-				options[slot].penetratorSprite = "spiral";
-				options[slot].size = options[slot].npcType.includes("boar") ? 3 : 2;
+				penetrator.penetratorSprite = "spiral";
+				penetrator.size = penetrator.npcType.includes("boar") ? 3 : 2;
 				options.filters[slot + "Penetrator"] = {
 					blend: "#ec3535",
 					blendMode: "multiply",
@@ -237,8 +315,8 @@ class XrayCombatMapper {
 			case "dolphin":
 			case "dolphingirl":
 			case "dolphinboy":
-				options[slot].penetratorSprite = "point";
-				options[slot].size = 2;
+				penetrator.penetratorSprite = "point";
+				penetrator.size = 2;
 				options.filters[slot + "Penetrator"] = {
 					blend: "#ec3535",
 					blendMode: "multiply",
@@ -251,8 +329,8 @@ class XrayCombatMapper {
 			case "creature":
 			case "horned girl":
 			case "horned boy":
-				options[slot].penetratorSprite = "tentacle";
-				options[slot].size = 3;
+				penetrator.penetratorSprite = "tentacle";
+				penetrator.size = 3;
 				options.filters[slot + "Penetrator"] = {
 					blend: "#ec3535",
 					blendMode: "multiply",
@@ -262,8 +340,8 @@ class XrayCombatMapper {
 			case "lizard":
 			case "lizardgirl":
 			case "lizardboy":
-				options[slot].penetratorSprite = "penis";
-				options[slot].size = 2;
+				penetrator.penetratorSprite = "penis";
+				penetrator.size = 2;
 				options.filters[slot + "Penetrator"] = {
 					blend: "#ec3535",
 					blendMode: "multiply",
@@ -271,67 +349,69 @@ class XrayCombatMapper {
 				};
 				break;
 			default:
-				Errors.report("Invalid npc for xray image. options[slot].npcType");
+				Errors.report("Invalid npc for xray image. penetrator.npcType");
 				break;
 		}
 
-		options[slot].isCumActive =
-			(V.ejaculating === 1 &&
-				((wearingCondom(options[slot].npc) !== "worn" && !options[slot].npc.strapon) ||
-					(wearingCondom(options[slot].npc2) !== "worn" && !options[slot].npc2.strapon))) ||
-			V[slot + "state"] === "tentacledeep";
+		penetrator.isCumActive = false;
+		if (V.ejaculating === 1) {
+			const npc1HasSperm = wearingCondom(penetrator.npc) !== "worn" && !npcHasStrapon(penetrator.npc);
+			const npc2HasSperm = wearingCondom(penetrator.npc2) !== "worn" && !npcHasStrapon(penetrator.npc2);
+			// Should this also check if NCPs are ejaculating? Or does $ejaculating = 1 do that
+			penetrator.isCumActive = npc1HasSperm || npc2HasSperm || V[slot + "state"] === "tentacledeep";
+		}
 
-		if (options[slot].base !== "knotting" && (setup.bodyliquid.combined("vagina") >= 1 || options[slot].isCumActive)) {
-			options[slot].cum = Math.clamp(setup.bodyliquid.combined("vagina"), 1, 5);
+		if (penetrator.base !== "knotting" && (setup.bodyliquid.combined("vagina") >= 1 || penetrator.isCumActive)) {
+			penetrator.cum = Math.clamp(setup.bodyliquid.combined("vagina"), 1, 5);
 			options.showCum = true;
 		}
 	}
 
 	/**
-	 * @param {string} npc
-	 * @param {object} slot
+	 * @param {"npc" | "npc2"} npc
+	 * @param {"vagina" | "anus" | "penis"} slot
 	 * @param {XrayOptions} options
 	 */
 	static mapXrayHumanPenis(npc, slot, options) {
 		const index = npc === "npc2" ? "2" : "";
+		const penetrator = options[slot];
 		if (npcHasStrapon(options[slot][npc])) {
-			options[slot][npc].strapon = true;
-			if (V.NPCList[options[slot][npc]].penisdesc.includes("horse")) {
-				options[slot]["penetratorSprite" + index] = "horseGray";
-				options[slot]["size" + index] = 5;
-			} else if (V.NPCList[options[slot][npc]].penisdesc.includes("knotted")) {
-				options[slot]["penetratorSprite" + index] = "knotted";
-				options[slot]["size" + index] = 3;
-			} else if (V.NPCList[options[slot][npc]].penisdesc.includes("tentacle")) {
-				options[slot]["penetratorSprite" + index] = "tentacle";
-				options[slot]["size" + index] = V.NPCList[options[slot][npc]].penissize;
-			} else if (V.NPCList[options[slot][npc]].penisdesc.includes("dolphin")) {
-				options[slot]["penetratorSprite" + index] = "point";
-				options[slot]["size" + index] = 2;
+			penetrator[npc].strapon = true;
+			if (V.NPCList[penetrator[npc]].penisdesc.includes("horse")) {
+				penetrator["penetratorSprite" + index] = "horseGray";
+				penetrator["size" + index] = 5;
+			} else if (V.NPCList[penetrator[npc]].penisdesc.includes("knotted")) {
+				penetrator["penetratorSprite" + index] = "knotted";
+				penetrator["size" + index] = 3;
+			} else if (V.NPCList[penetrator[npc]].penisdesc.includes("tentacle")) {
+				penetrator["penetratorSprite" + index] = "tentacle";
+				penetrator["size" + index] = V.NPCList[penetrator[npc]].penissize;
+			} else if (V.NPCList[penetrator[npc]].penisdesc.includes("dolphin")) {
+				penetrator["penetratorSprite" + index] = "point";
+				penetrator["size" + index] = 2;
 			} else {
-				options[slot]["penetratorSprite" + index] = "penis";
-				options[slot]["size" + index] = V.NPCList[options[slot][npc]].penissize;
+				penetrator["penetratorSprite" + index] = "penis";
+				penetrator["size" + index] = V.NPCList[penetrator[npc]].penissize;
 			}
 		} else {
-			options[slot]["penetratorSprite" + index] = "penis";
-			options[slot]["size" + index] = V.NPCList[options[slot][npc]].penissize;
-			if (wearingCondom(options[slot][npc])) {
-				options.filters[slot + "Condom" + index] = CombatRenderer.getCondomOptions(V.NPCList[options[slot][npc]].condom).colour;
+			penetrator["penetratorSprite" + index] = "penis";
+			penetrator["size" + index] = V.NPCList[penetrator[npc]].penissize;
+			if (wearingCondom(penetrator[npc])) {
+				options.filters[slot + "Condom" + index] = CombatRenderer.getCondomOptions(V.NPCList[penetrator[npc]].condom).colour;
 			}
 		}
-		options.filters[slot + "Penetrator" + index] = NpcCombatMapper.getNpcPenetratorFilter(V.NPCList[options[slot][npc]]);
+		options.filters[slot + "Penetrator" + index] = NpcCombatMapper.getNpcPenetratorFilter(V.NPCList[penetrator[npc]]);
 
-		return options[slot];
+		return penetrator;
 	}
 
 	/**
 	 * @param {XrayOptions} options
+	 * @param {XrayPlayerPenetrator} penetrator
 	 */
-	static mapXrayPlayerPenis(options) {
-		options.penis = {};
-
+	static mapXrayPlayerPenis(options, penetrator) {
 		/* if player penetrating others */
-		options.penis.penetratedType =
+		penetrator.penetratedType =
 			V.enemytype === "machine"
 				? "machine"
 				: V.penisstate !== 0 && ["tentacle", "tentacledeep"].includes(V.penisstate)
@@ -339,60 +419,62 @@ class XrayCombatMapper {
 				: V.NPCList[V.penistarget].type;
 
 		const playerPenisType = playerHasStrapon() ? "strap" : V.player.gender === "f" ? "parasite" : "penis";
-		options.penis.type = playerPenisType;
-		options.penis.playerSprite = options.penis.type === "parasite" ? "parasite" : "penis";
-		options.penis.size = playerHasStrapon() && V.worn.under_lower.size !== undefined ? V.worn.under_lower.size : V.player.penissize;
-		options.penis.state = V.penisstate;
+		penetrator.type = playerPenisType;
+		penetrator.playerSprite = penetrator.type === "parasite" ? "parasite" : "penis";
+		penetrator.size = playerHasStrapon() && V.worn.under_lower.size !== undefined ? V.worn.under_lower.size : V.player.penissize;
+		penetrator.state = V.penisstate;
 
-		options.penis.condom = V.player.condom;
-		if (options.penis.condom.colour) {
-			options.filters.playerCondom = CombatRenderer.lookupColour(
-				setup.colours.condom_map,
-				options.penis.condom.colour,
-				"condom",
-				"condom_custom",
-				"condom"
-			);
+		if (V.player.condom) {
+			penetrator.condom = V.player.condom;
+			if (penetrator.condom.colour) {
+				options.filters.playerCondom = CombatRenderer.lookupColour(
+					setup.colours.condom_map,
+					penetrator.condom.colour,
+					"condom",
+					"condom_custom",
+					"condom"
+				);
+			}
 		}
 
-		options.penis.cum = options.penis.cum || 0;
+		penetrator.cum = penetrator.cum || 0;
 		if (V.orgasmdown >= 1 && V.orgasmcount <= 24 && V.femaleclimax !== 1 && wearingCondom("player") !== "worn" && !playerHasStrapon()) {
-			options.penis.cum += V.semen_amount > (V.semen_volume / 24) * 18 ? 2 : 1;
-			options.penis.cum = Math.clamp(options.penis.cum, 0, 5);
-			options.penis.isCumActive = true;
-			options.showCum = true;
+			penetrator.cum += V.semen_amount > (V.semen_volume / 24) * 18 ? 2 : 1;
+			penetrator.cum = Math.clamp(penetrator.cum, 0, 5);
+			penetrator.isCumActive = true;
+			penetrator.showCum = true;
 		}
 
-		if (["tentacle", "tentacledeep"].includes(options.penis.state)) {
-			if (options.penis.penetratedType === "machine") {
-				options.penis.penetrated = "vaginal";
-				options.penis.tentacleColour = V.tentacleColour || "tentacles-peach";
+		if (penetrator.state && ["tentacle", "tentacledeep"].includes(penetrator.state)) {
+			if (penetrator.penetratedType === "machine") {
+				penetrator.penetrated = "vaginal";
+				penetrator.tentacleColour = V.tentacleColour || "tentacles-peach";
 				options.filters.penisPenetrated = CombatRenderer.lookupColour(
 					setup.colours.tentacle_map,
-					options.penis.tentacleColour,
+					penetrator.tentacleColour,
 					"xrayTentacle",
 					undefined,
 					undefined
 				);
 			} else {
-				options.penis.penetrated = "vaginal";
-				options.penis.tentacleColour = V.tentacleColour || "tentacles-purple";
+				penetrator.penetrated = "vaginal";
+				penetrator.tentacleColour = V.tentacleColour || "tentacles-purple";
 				options.filters.penisPenetrated = CombatRenderer.lookupColour(
 					setup.colours.tentacle_map,
-					options.penis.tentacleColour,
+					penetrator.tentacleColour,
 					"xrayTentacle",
 					undefined,
 					undefined
 				);
 			}
 		} else {
-			options.penis.penetrated = options.penis.state === "otheranus" ? "anal" : "vaginal";
+			penetrator.penetrated = penetrator.state === "otheranus" ? "anal" : "vaginal";
 		}
-		options.penis.base = "sex";
-		options.showNpcVagina = options.penis.penetrated === "vaginal";
-		options.showNpcArse = options.penis.penetrated === "anal";
+		penetrator.base = "sex";
+		options.showNpcVagina = penetrator.penetrated === "vaginal";
+		options.showNpcArse = penetrator.penetrated === "anal";
 
-		return options.penis;
+		return penetrator;
 	}
 }
 window.XrayCombatMapper = XrayCombatMapper;
