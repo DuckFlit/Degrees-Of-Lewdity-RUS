@@ -1,5 +1,5 @@
 // @ts-check
-/* globals CombatRenderer, XrayCombatMapper, XrayOptions, CanvasModelLayers */
+/* globals CombatRenderer, XrayCombatMapper, XrayOptions */
 
 /**
  * @type {CanvasModelOptions<XrayOptions>}
