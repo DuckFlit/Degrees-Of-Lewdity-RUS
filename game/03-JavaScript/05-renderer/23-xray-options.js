@@ -11,7 +11,6 @@
  * @property {boolean} showNpcPenis
  * @property {boolean} showNpcVagina
  * @property {boolean} showNpcArse
- * @property {boolean} showCum
  * @property {XrayPlayerPenetrator} penis Player penis and penetrated.
  * @property {XrayNpcPenetrator} vagina Player vagina and penetrators.
  * @property {XrayNpcPenetrator} anus Player anus and penetrators.
@@ -41,8 +40,8 @@
 /**
  * @typedef XrayNpcPenetrator
  * @property {string} base
- * @property {number} npc
- * @property {number} npc2
+ * @property {number=} npc
+ * @property {number=} npc2
  * @property {string} npcType
  * @property {number} size
  * @property {number} size2
@@ -50,6 +49,7 @@
  * @property {string} penetratorSprite
  * @property {string} tentacleColour
  * @property {boolean} isCumActive
+ * @property {boolean} showCum
  * @property {number} cum
  */
 
@@ -71,8 +71,7 @@ class XrayCombatMapper {
 				cum: 0,
 				doublePen: false,
 				isCumActive: false,
-				npc: 0,
-				npc2: 0,
+				showCum: false,
 				npcType: "",
 				penetratorSprite: "",
 				size: 0,
@@ -84,8 +83,7 @@ class XrayCombatMapper {
 				cum: 0,
 				doublePen: false,
 				isCumActive: false,
-				npc: 0,
-				npc2: 0,
+				showCum: false,
 				npcType: "",
 				penetratorSprite: "",
 				size: 0,
@@ -354,16 +352,16 @@ class XrayCombatMapper {
 		}
 
 		penetrator.isCumActive = false;
-		if (V.ejaculating === 1) {
+		if (V.ejaculating === 1 || V[slot + "state"] === "tentacledeep") {
 			const npc1HasSperm = wearingCondom(penetrator.npc) !== "worn" && !npcHasStrapon(penetrator.npc);
 			const npc2HasSperm = wearingCondom(penetrator.npc2) !== "worn" && !npcHasStrapon(penetrator.npc2);
 			// Should this also check if NCPs are ejaculating? Or does $ejaculating = 1 do that
 			penetrator.isCumActive = npc1HasSperm || npc2HasSperm || V[slot + "state"] === "tentacledeep";
 		}
 
-		if (penetrator.base !== "knotting" && (setup.bodyliquid.combined("vagina") >= 1 || penetrator.isCumActive)) {
-			penetrator.cum = Math.clamp(setup.bodyliquid.combined("vagina"), 1, 5);
-			options.showCum = true;
+		if (penetrator.base !== "knotting" && (setup.bodyliquid.combined(slot) >= 1 || penetrator.isCumActive)) {
+			penetrator.cum = Math.clamp(setup.bodyliquid.combined(slot), 1, 5);
+			penetrator.showCum = true;
 		}
 	}
 
@@ -376,7 +374,7 @@ class XrayCombatMapper {
 		const index = npc === "npc2" ? "2" : "";
 		const penetrator = options[slot];
 		if (npcHasStrapon(options[slot][npc])) {
-			penetrator[npc].strapon = true;
+			penetrator[npc + "Strapon"] = true;
 			if (V.NPCList[penetrator[npc]].penisdesc.includes("horse")) {
 				penetrator["penetratorSprite" + index] = "horseGray";
 				penetrator["size" + index] = 5;

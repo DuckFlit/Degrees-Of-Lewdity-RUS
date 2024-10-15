@@ -57,7 +57,7 @@ const combatXrayPenis = {
 				return `${options.src}${options.penis.penetrated}/cum/${options.penis.base}${size}${cumAmt}.png`;
 			},
 			showfn(options) {
-				return !!options.showCum;
+				return !!options.penis.showCum;
 			},
 			animationfn(options) {
 				return options.animKeyPenis;
@@ -71,7 +71,7 @@ const combatXrayPenis = {
 				return `${options.src}${options.penis.penetrated}/cum/${options.penis.base}${cumSize}.png`;
 			},
 			showfn(options) {
-				return !!options.showCum && !!options.penis.isCumActive;
+				return !!options.penis.showCum && !!options.penis.isCumActive;
 			},
 			animationfn(options) {
 				return options.animKeyPenis;

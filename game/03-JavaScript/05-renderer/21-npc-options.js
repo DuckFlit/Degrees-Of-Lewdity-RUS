@@ -533,7 +533,7 @@ class NpcCombatMapper {
 	 * @returns {Partial<CompositeLayerSpec>}
 	 */
 	static getNpcSkinFilter(npc) {
-		return setup.colours.getSkinFilter(npc.skincolour === "white" ? "light" : "dark", 0);
+		return setup.colours.getSkinFilter(npc.skincolour === "ghost" ? "ghost" : npc.skincolour === "white" ? "light" : "dark", 0);
 	}
 
 	/**
@@ -549,37 +549,37 @@ class NpcCombatMapper {
 					return this.getNpcSkinFilter(npc);
 				case "black":
 					return {
-						blend: "#b27052",
+						blend: "#504949",
 						blendMode: "multiply",
 						desaturate: true,
 					};
 				case "blue":
 					return {
-						blend: "#4372ff",
+						blend: "#3973ac",
 						blendMode: "multiply",
 						desaturate: true,
 					};
 				case "green":
 					return {
-						blend: "#38b20a",
+						blend: "#007400",
 						blendMode: "multiply",
 						desaturate: true,
 					};
 				case "pink":
 					return {
-						blend: "#e40081",
+						blend: "#ff80aa",
 						blendMode: "multiply",
 						desaturate: true,
 					};
 				case "purple":
 					return {
-						blend: "#aa4bc8",
+						blend: "#ab66ff",
 						blendMode: "multiply",
 						desaturate: true,
 					};
 				case "red":
 					return {
-						blend: "#ec3535",
+						blend: "#f53d43",
 						blendMode: "multiply",
 						desaturate: true,
 					};
