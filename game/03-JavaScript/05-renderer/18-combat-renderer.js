@@ -730,7 +730,7 @@ class CombatRenderer {
 		}
 		// No filter possible as part(s) cannot be recoloured
 		if (
-			["angel", "fallen", "cow"].includes(transformation) ||
+			["angel", "fallenAngel", "cow"].includes(transformation) ||
 			(transformation === "wolf" && part === "cheeks") ||
 			(transformation === "bird" && part === "eyes")
 		) {

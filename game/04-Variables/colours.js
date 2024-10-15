@@ -150,9 +150,10 @@ setup.colours = {
 			blendMode: "multiply",
 			desaturate: false,
 		},
-		wraith: {
+		ghost: {
 			gradient: ["#ffffff", "#ffffff"],
 			blendMode: "multiply",
+			alpha: 0.6,
 			desaturate: true,
 		},
 	},
@@ -165,6 +166,7 @@ setup.colours = {
 			blend: setup.colours.getSkinRgb(options, tan / 100),
 			blendMode: options.blendMode,
 			desaturate: options.desaturate,
+			alpha: options.alpha ? options.alpha : 1,
 		};
 	},
 	getSkinRgb(type, tan) {
