@@ -339,10 +339,14 @@ const statChange = (() => {
 					break;
 			}
 
+
 			// Adjusts modifier for body part sensitivity, if applicable
-			// Do not apply sensitivity boosts during chef job
-			if (sensitivity >= 1 && !V.masturbation_bowl) {
-				mod += (sensitivity - 1) * (sensitivity >= 2 ? 0.5 : 1);
+			if (amount > 0) {
+					let sensitivityMod = (sensitivity - 1) ** 2 / 4;
+					// Halve sensitivity boosts during chef job
+					// todo: rebalance chef job better
+					if (V.masturbation_bowl) sensitivityMod /= 2;
+					mod += sensitivityMod;
 			}
 
 			// Reduce the mod if masturbating while in heat and/or rut
