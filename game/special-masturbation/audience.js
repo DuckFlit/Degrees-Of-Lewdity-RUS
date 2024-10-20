@@ -20,7 +20,7 @@ function masturbationAudience() {
 		}
 		if (V.npc[npc - 1]) {
 			sWikifier(
-				`<span class="lewd"><<person${npc}>>You can feel <<combatperson>>'s eyes${V.masturbationAudience > 1 ? ", alongside others," : ""} on you.${
+				`<span class="lewd"><<person${npc}>>You can feel <<combatpersons>> eyes${V.masturbationAudience > 1 ? ", alongside others," : ""} on you.${
 					audienceMutual && V.masturbationAudience <= 6
 						? ` <<He>> mirrors${V.mouth === 0 || V.mouth === "disabled" ? " " : " some of"} your actions.`
 						: ""
