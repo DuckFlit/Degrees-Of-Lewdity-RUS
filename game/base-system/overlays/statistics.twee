@@ -67,11 +67,13 @@
 		Whored yourself: $prostitutionstat
 		<br>
 		<<if $gamemode isnot "soft">>
-		Forcibly whored out: $forcedprostitutionstat
-		<br>
+			Forcibly whored out: $forcedprostitutionstat
+			<br>
 		<</if>>
-		Hours worked on the docks: $dockhours
-		<br>
+		<<if statChange.timeTrackingTotal("docks")>>
+			Hours worked on the docks: <<print statChange.timeTrackingTotal("docks")>>
+			<br>
+		<</if>>
 		Buns sold at the cafe: $bunstat
 		<br>
 		Most "cream" produced: <<print parseFloat($creamstat.toFixed(1))>> mL
@@ -452,6 +454,19 @@
 		<br><br>
 	<</foldout>>
 
+	<<foldout false "_moneyFoldout">>
+		<span class="gold">Money</span>
+		Notes <mouse class="tooltip linkBlue">(?)<span>Adding too many extra colums may make it harder to read on some devices. Many of these were not tracked at all before version '0.5.2.x' and so will be inaccurate.<<if Object.keys($timeStats).length>> Hour rates cannot be easily used to track every state and so most will just be "N/A".<</if>></span></mouse>
+		<br>
+		<<set [_moneyKeys, _moneyStats, _moneyStatsTotal] to moneyStatsProcess(clone($moneyStats))>>
+		<<if $moneyStatsSnapshot?.money>>
+			<<set [_moneySnapshotKeys, _moneyStatsSnapshot, _moneyStatsSnapshotTotal] to moneyStatsProcess(clone($moneyStatsSnapshot.money))>>
+		<</if>>
+		<div id="moneyStatsDiv">
+			<<moneyStats>>
+		</div>
+	<</foldout>>
+
 	<<foldout false "_miscFoldout">>
 		<span class="gold">Miscellaneous</span>
 		<<if $gamemode isnot "soft">>
@@ -517,7 +532,7 @@
 			Lurkers eaten: $bird.lurkersEaten
 			<br>
 		<</if>>
-		Total paid to Bailey: <<printmoney $baileyPaidStat true>>
+		Total paid to Bailey: <<printmoney `$moneyStats.baileyRent?.spent or 0`>>
 		<mouse class="tooltip linkBlue">(?)<span>Not tracked in versions '0.4.5.X' and older</span></mouse>
 		<br>
 		<<if $baileyRefusedToPayTotal>>
@@ -1163,6 +1178,340 @@
 		<</if>>
 	<<else>>
 		<<set $_text_output to "never">>
+	<</if>>
+<</silently>><<if $_text_output>><<print $_text_output>><</if>>
+<</widget>>
+
+<<widget "moneyStats">>
+	<<set $_moneyStats to (_showSnapshot is "show" ? clone(_moneyStatsSnapshot) : clone(_moneyStats))>>
+	<<set $_moneyKeys to (_showSnapshot is "show" ? clone(_moneySnapshotKeys) : clone(_moneyKeys))>>
+	<<set $_moneyTotal to (_showSnapshot is "show" ? clone(_moneyStatsSnapshotTotal) : clone(_moneyStatsTotal))>>
+	<<link `$moneyStatsSnapshot ? "Re-create Snapshot" : "Create Snapshot"`>>
+		<<set $moneyStatsSnapshot to {
+			date: Time.date.timeStamp,
+			money: clone(V.moneyStats),
+			time: clone(V.timeStats),
+		}>>
+		<<set [_moneySnapshotKeys, _moneyStatsSnapshot, _moneyStatsSnapshotTotal] to moneyStatsProcess(clone($moneyStatsSnapshot.money))>>
+		<<replace "#moneyStatsDiv">><<moneyStats>><</replace>>
+	<</link>>
+	<<if $moneyStatsSnapshot>>
+		| <<link "Clear Snapshot">>
+			<<unset $moneyStatsSnapshot>>
+			<<unset _showSnapshot>>
+			<<replace "#moneyStatsDiv">><<moneyStats>><</replace>>
+		<</link>>
+	<</if>>
+	<br><br>
+	<<link `_moneyStatsDetailed ? "Reduce details" : "Expand details"`>>
+		<<set _moneyStatsDetailed to !_moneyStatsDetailed>>
+		<<set [_moneyKeys, _moneyStats, _moneyStatsTotal] to moneyStatsProcess(clone($moneyStats))>>
+		<<if $moneyStatsSnapshot?.data>>
+			<<set [_moneySnapshotKeys, _moneyStatsSnapshot, _moneyStatsSnapshotTotal] to moneyStatsProcess(clone($moneyStatsSnapshot.money))>>
+		<</if>>
+		<<replace "#moneyStatsDiv">><<moneyStats>><</replace>>
+	<</link>> |
+	<span @class="_moneyStatsCount ? 'goldLink' : ''">
+		<<link `_moneyStatsCount ? "Hide Counts" : "Show Counts"`>>
+			<<set _moneyStatsCount to !_moneyStatsCount>>
+			<<if !_moneyStatsCount and _moneyStatsSorting?.includes("Count")>><<unset _moneyStatsSorting>><</if>>
+			<<replace "#moneyStatsDiv">><<moneyStats>><</replace>>
+		<</link>>
+	</span> |
+	<span @class="_moneyStatsAverages ? 'goldLink' : ''">
+		<<link `_moneyStatsAverages ? "Hide Averages" : "Show Averages"`>>
+			<<set _moneyStatsAverages to !_moneyStatsAverages>>
+			<<if !_moneyStatsAverages and _moneyStatsSorting?.includes("Average")>><<unset _moneyStatsSorting>><</if>>
+			<<replace "#moneyStatsDiv">><<moneyStats>><</replace>>
+		<</link>>
+	</span> |
+	<span @class="_moneyStatsDate ? 'goldLink' : ''">
+		<<link `_moneyStatsDate ? "Hide Dates" : "Show Dates"`>>
+			<<set _moneyStatsDate to !_moneyStatsDate>>
+			<<if !_moneyStatsDate and _moneyStatsSorting?.includes("Date")>><<unset _moneyStatsSorting>><</if>>
+			<<replace "#moneyStatsDiv">><<moneyStats>><</replace>>
+		<</link>>
+	</span> |
+	<<if Object.keys($timeStats).length>>
+		<span @class="_moneyStatsHourRates ? 'goldLink' : ''">
+			<<link `_moneyStatsHourRates ? "Hide Hour Rates" : "Show Hour Rates"`>>
+				<<set _moneyStatsHourRates to !_moneyStatsHourRates>>
+				<<if !_moneyStatsHourRates and _moneyStatsSorting?.includes("Hour Rates")>><<unset _moneyStatsSorting>><</if>>
+				<<replace "#moneyStatsDiv">><<moneyStats>><</replace>>
+			<</link>>
+		</span>
+	<</if>>
+	<<if $moneyStatsSnapshot>>
+		||
+		<span @class="_showSnapshot is 'show' ? 'goldLink' : ''">
+			<<link `_showSnapshot is "show" ? "Hide Snapshot" : "Show Snapshot"`>>
+				<<if _showSnapshot is "show">>
+					<<unset _showSnapshot>>
+				<<else>>
+					<<set _showSnapshot to "show">>
+				<</if>>
+				<<replace "#moneyStatsDiv">><<moneyStats>><</replace>>
+			<</link>>
+		</span>
+		|
+		<span @class="_showSnapshot is 'compare' ? 'goldLink' : ''">
+			<<link `_showSnapshot is "compare" ? "Hide Snapshot" : "Compare Snapshot"`>>
+				<<if _showSnapshot is "compare">>
+					<<unset _showSnapshot>>
+				<<else>>
+					<<set _showSnapshot to "compare">>
+				<</if>>
+				<<replace "#moneyStatsDiv">><<moneyStats>><</replace>>
+			<</link>>
+		</span>
+	<</if>>
+	<<if _moneyStatsSorting>>
+		| <<link "Reset Sorting">>
+			<<unset _moneyStatsSorting>>
+			<<replace "#moneyStatsDiv">><<moneyStats>><</replace>>
+		<</link>>
+		<<run $_moneyKeys.sort((a, b) => {
+			if (_moneyStatsSorting.includes("Desc")) {
+				const tempSwap = clone(a);
+				a = clone(b);
+				b = tempSwap;
+			}
+			switch(_moneyStatsSorting.replace("Desc","")) {
+				case "Source":
+					if (a.toUpperCase() < b.toUpperCase()) return -1;
+					return 1;
+					break;
+				case "Earned":
+					return ($_moneyStats[b].earned || 0) - ($_moneyStats[a].earned || 0);
+				case "Spent":
+					return ($_moneyStats[b].spent || 0) - ($_moneyStats[a].spent || 0);
+				case "Earned Count":
+					return ($_moneyStats[b].earnedCount || 0) - ($_moneyStats[a].earnedCount || 0);
+				case "Earned Average":
+					return ($_moneyStats[b].earned / $_moneyStats[b].earnedCount || 0) - ($_moneyStats[a].earned / $_moneyStats[a].earnedCount || 0);
+				case "Hour Rates":
+					return (statChange.timeTrackingTotal(b) ? $_moneyStats[b].earned / statChange.timeTrackingTotal(b) : 0) - (statChange.timeTrackingTotal(a) ? $_moneyStats[a].earned / statChange.timeTrackingTotal(a) : 0);
+				case "Spent Count":
+					return ($_moneyStats[b].spentCount || 0) - ($_moneyStats[a].spentCount || 0);
+				case "Spent Average":
+					return ($_moneyStats[b].spent / $_moneyStats[b].spentCount || 0) - ($_moneyStats[a].spent / $_moneyStats[a].spentCount || 0);
+				case "Date":
+					return (Math.max($_moneyStats[b].earnedTimeStamp || 0, $_moneyStats[b].spentTimeStamp || 0)) - (Math.max($_moneyStats[a].earnedTimeStamp || 0, $_moneyStats[a].spentTimeStamp || 0));
+			}
+		})>>
+	<</if>>
+	<table id="moneyStats">
+		<thead>
+			<tr>
+				<th scope="col"><<moneyStatsTitle "Source">></th>
+				<th scope="col"><<moneyStatsTitle "Spent">></th>
+				<<if _moneyStatsAverages>>
+					<th scope="col"><<moneyStatsTitle "Spent Average">></th>
+				<</if>>
+				<<if _moneyStatsCount>>
+					<th scope="col"><<moneyStatsTitle "Spent Count">></th>
+				<</if>>
+				<th scope="col"><<moneyStatsTitle "Earned">></th>
+				<<if _moneyStatsAverages>>
+					<th scope="col"><<moneyStatsTitle "Earned Average">></th>
+				<</if>>
+				<<if _moneyStatsCount>>
+					<th scope="col"><<moneyStatsTitle "Earned Count">></th>
+				<</if>>
+				<<if _moneyStatsHourRates>>
+					<th scope="col"><<moneyStatsTitle "Hour Rates">></th>
+				<</if>>
+				<<if _moneyStatsDate>>
+					<th scope="col"><<moneyStatsTitle "Date">></th>
+				<</if>>
+			</tr>
+		</thead>
+		<<if _showSnapshot is "show">><<set _timeTrackingSnapshotOveride to true>><</if>>
+		<<for $_key range $_moneyKeys>>
+			<<if $_moneyStats[$_key].earned or $_moneyStats[$_key].spent>>
+				<tbody class="stat">
+					<td data-label="Source"><<moneyStatsNames $_key>></td>
+					<td data-label="Spent" @class="$_moneyStats[$_key].spent ? '' : 'mobileHidden'">
+						<<if $_moneyStats[$_key].spent>>
+							<<printmoney `$_moneyStats[$_key].spent or 0` "red">>
+							<<moneyStatsCompare $_key "spent">>
+						<<else>>
+							<span class="dash">-</span>
+						<</if>>
+					</td>
+					<<if _moneyStatsAverages>>
+						<td data-label="Spent Average" @class="$_moneyStats[$_key].spent ? '' : 'mobileHidden'">
+							<<if $_moneyStats[$_key].spent>>
+								<<printmoney `$_moneyStats[$_key].spent / $_moneyStats[$_key].spentCount or 0` "red">>
+							<<else>>
+								<span class="dash">-</span>
+							<</if>>
+						</td>
+					<</if>>
+					<<if _moneyStatsCount>>
+						<td data-label="Spent Count" @class="$_moneyStats[$_key].spent ? '' : 'mobileHidden'">
+							<<if $_moneyStats[$_key].spentCount>>
+								<<print $_moneyStats[$_key].spentCount>>
+							<<else>>
+								<span class="dash">-</span>
+							<</if>>
+						</td>
+					<</if>>
+					<td data-label="Earned" @class="$_moneyStats[$_key].earned ? '' : 'mobileHidden'">
+						<<if $_moneyStats[$_key].earned>>
+							<<printmoney `$_moneyStats[$_key].earned or 0`>>
+							<<moneyStatsCompare $_key "earned">>
+						<<else>>
+							<span class="dash">-</span>
+						<</if>>
+					</td>
+					<<if _moneyStatsAverages>>
+						<td data-label="Earned Average" @class="$_moneyStats[$_key].earned ? '' : 'mobileHidden'">
+							<<if $_moneyStats[$_key].earned>>
+								<<printmoney `$_moneyStats[$_key].earned / $_moneyStats[$_key].earnedCount or 0`>>
+							<<else>>
+								<span class="dash">-</span>
+							<</if>>
+						</td>
+					<</if>>
+					<<if _moneyStatsCount>>
+						<td data-label="Earned Count" @class="$_moneyStats[$_key].earned ? '' : 'mobileHidden'">
+							<<if $_moneyStats[$_key].earnedCount>>
+								<<print $_moneyStats[$_key].earnedCount>>
+							<<else>>
+								<span class="dash">-</span>
+							<</if>>
+						</td>
+					<</if>>
+					<<if _moneyStatsHourRates>>
+						<td data-label="Hour Rates">
+							<<if statChange.timeTrackingTotal($_key)>>
+								<<printmoney `$_moneyStats[$_key].earned / statChange.timeTrackingTotal($_key)`>>
+								<<moneyStatsCompareHourly $_key>>
+							<<else>>
+								<span class="dash">-</span>
+							<</if>>
+						</td>
+					<</if>>
+					<<if _moneyStatsDate>>
+						<td data-label="Date"><<moneyStatsDate $_moneyStats[$_key].spentTimeStamp $_moneyStats[$_key].earnedTimeStamp>></td>
+					<</if>>
+				</tbody>
+			<</if>>
+		<</for>>
+		<<unset _timeTrackingSnapshotOveride>>
+		<tbody class="total">
+			<td data-label="Source">Total</td>
+			<td data-label="Spent">
+				<<printmoney $_moneyTotal.spent "red">>
+				<<moneyStatsCompare "total" "spent">>
+			</td>
+			<<if _moneyStatsAverages>>
+				<td data-label="Spent Average"><<printmoney `$_moneyTotal.spent / $_moneyTotal.spentCount or 0` "red">></td>
+			<</if>>
+			<<if _moneyStatsCount>>
+				<td data-label="Spent Count"><<print $_moneyTotal.spentCount>></td>
+			<</if>>
+			<td data-label="Earned">
+				<<printmoney $_moneyTotal.earned>>
+				<<moneyStatsCompare "total" "earned">>
+			</td>
+			<<if _moneyStatsAverages>>
+				<td data-label="Earned Average"><<printmoney `$_moneyTotal.earned / $_moneyTotal.earnedCount or 0`>></td>
+			<</if>>
+			<<if _moneyStatsCount>>
+				<td data-label="Earned Count"><<print $_moneyTotal.earnedCount>></td>
+			<</if>>
+			<<if _moneyStatsHourRates>>
+				<td data-label="Hour Rates">-</td>
+			<</if>>
+			<<if _moneyStatsDate>>
+				<td data-label="Date"><<moneyStatsDate $_moneyTotal.spentTimeStamp $_moneyTotal.earnedTimeStamp>></td>
+			<</if>>
+		</tbody>
+		<<if _showSnapshot>>
+			<tfoot>
+				<tr>
+					<td colspan="3">
+						<<set _snapShotDate to new DateTime($moneyStatsSnapshot.date)>>
+						Snapshot from: 
+						<<switch $options.dateFormat>>
+							<<case "en-US">>
+								<<print _snapShotDate.month>>/<<print _snapShotDate.day>>/<<print _snapShotDate.year>>
+							<<case "zh-CN">>
+								<<print _snapShotDate.year>>/<<print _snapShotDate.month>>/<<print _snapShotDate.day>>
+							<<default>>
+								<<print _snapShotDate.day>>/<<print _snapShotDate.month>>/<<print _snapShotDate.year>>
+						<</switch>>
+						- <<ampm _snapShotDate.hour _snapShotDate.minute>>
+						<br>
+						Snapshot age: <<statisticsTimeCompare $moneyStatsSnapshot.date>>
+					</td>
+				</tr>
+			</tfoot>
+		<</if>>
+	</table>
+<</widget>>
+
+<<widget "moneyStatsNames">><<silently>>
+	<<switch _args[0]>>
+		<<case "cafeWaiter">><<set $_text_output to $player.gender_appearance is "m" ? "Cafe Waiter" : "Cafe Waitress">>
+		<<case "partyDanceTips">><<set $_text_output to "Party Dance Job Tips">>
+		<<case "danubeDanceTips">><<set $_text_output to "Danube Dance Job Tips">>
+		<<default>><<set $_text_output to camelCaseToTitle(_args[0])>>
+	<</switch>>
+<</silently>><<if $_text_output>><<print $_text_output>><</if>>
+<</widget>>
+
+<<widget "moneyStatsTitle">><<silently>>
+	<<if _moneyStatsSorting is _args[0]>>
+		<<set $_text_output to ` <<link "${_args[0]}&#x25B2;">><<set _moneyStatsSorting to "${_args[0]}Desc">><<replace "#moneyStatsDiv">><<moneyStats>><</replace>><</link>>`>>
+	<<elseif  _moneyStatsSorting is _args[0] + "Desc">>
+		<<set $_text_output to ` <<link "${_args[0]}&#x25BC;">><<unset _moneyStatsSorting>><<replace "#moneyStatsDiv">><<moneyStats>><</replace>><</link>>`>>
+	<<else>>
+		<<set $_text_output to ` <<link "${_args[0]}">><<set _moneyStatsSorting to "${_args[0]}">><<replace "#moneyStatsDiv">><<moneyStats>><</replace>><</link>>`>>
+	<</if>>
+<</silently>><<if $_text_output>><<print $_text_output>><</if>>
+<</widget>>
+
+<<widget "moneyStatsCompare">><<silently>>
+	<<if _args[0] and _args[1] and _showSnapshot is "compare">>
+		<<set $_amount to (_moneyStats[_args[0]][_args[1]] or 0) - (_moneyStatsSnapshot[_args[0]] ? _moneyStatsSnapshot[_args[0]][_args[1]] || 0 : 0)>>
+		<<set $_text_output to `+<<printmoney ${$_amount} "white">>`>>
+	<</if>>
+<</silently>><<if $_text_output>><<print $_text_output>><</if>>
+<</widget>>
+
+<<widget "moneyStatsCompareHourly">><<silently>>
+	<<if _args[0] and _showSnapshot is "compare">>
+		<<if statChange.timeTrackingTotal(_args[0]) and _moneyStats[_args[0]]?.earned and _moneyStatsSnapshot[_args[0]]?.earned>>
+			<<set $_current to _moneyStats[_args[0]].earned / statChange.timeTrackingTotal(_args[0])>>
+			<<set _timeTrackingSnapshotOveride to true>>
+			<<if statChange.timeTrackingTotal(_args[0])>>
+				<<set $_previous to _moneyStatsSnapshot[_args[0]].earned / statChange.timeTrackingTotal(_args[0])>>
+				<<set $_amount to $_current - $_previous>>
+				<<set $_text_output to `${$_amount gt 0 ? "+" : ""}<<printmoney ${$_amount} ${$_amount lt 0 ? "red" : "white"}>>`>>
+			<</if>>
+			<<unset _timeTrackingSnapshotOveride>>
+		<</if>>
+	<</if>>
+<</silently>><<if $_text_output>><<print $_text_output>><</if>>
+<</widget>>
+
+<<widget "moneyStatsDate">><<silently>>
+	<<if _args[0] or _args[1]>>
+		<<set $_time to new DateTime(Math.max(_args[0] or 0, _args[1] or 0))>>
+		<<switch $options.dateFormat>>
+			<<case "en-US">>
+				<<set $_text_output to `<<print $_time.month>>/<<print $_time.day>>/<<print $_time.year>>`>>
+			<<case "zh-CN">>
+				<<set $_text_output to `<<print $_time.year>>/<<print $_time.month>>/<<print $_time.day>>`>>
+			<<default>>
+				<<set $_text_output to `<<print $_time.day>>/<<print $_time.month>>/<<print $_time.year>>`>>
+		<</switch>>
+		<<set $_text_output += ` - <<ampm $_time.hour $_time.minute>>`>>
+	<<else>>
+		<<set $_text_output to `<span class="dash">-</span>`>>
 	<</if>>
 <</silently>><<if $_text_output>><<print $_text_output>><</if>>
 <</widget>>

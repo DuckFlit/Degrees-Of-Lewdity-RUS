@@ -2,6 +2,10 @@
 
 <<set $outside to 0>><<set $location to "strip_club">><<effects>>
 
+<<if $stripclubdancingintro>>
+	<<timeTrackingEndStripclub>>
+<</if>>
+
 You are in the strip club on Connudatus Street. <<if Time.dayState isnot "day" and Time.dayState isnot "dawn">>A few stages dot the room, with dancers working their trade. Two bouncers stand near the entrance, solemnly observing the clientele. Security is taken seriously here.<</if>>
 <br><br>
 
@@ -92,7 +96,9 @@ You are in the strip club on Connudatus Street. <<if Time.dayState isnot "day" a
 	<<if $bartendaction is undefined>><<set $bartendaction to "normal">><</if>>/*For the radiobutton variable that determines the PC's attitude while working.*/
 		<<if Time.dayState isnot "dawn" and Time.dayState isnot "day" and $stripclubbartendingintro is 1>>
 			<<foodicon "beerbottle">>
-			<<link [[Work as a bartender (1:00)|Strip Club Bartending]]>><<pass 30>><</link>>
+			<<link [[Work as a bartender (1:00)|Strip Club Bartending]]>>
+				<<timeTrackingStart "stripClub">><<timeTrackingStart "stripClubBartender">><<pass 30>>
+			<</link>>
 			<<if $bartendaction is "normal">>
 				| <label>Work normally <<radiobutton "$bartendaction" "normal" checked>></label>
 			<<else>>
@@ -111,7 +117,10 @@ You are in the strip club on Connudatus Street. <<if Time.dayState isnot "day" a
 			<br>
 		<</if>>
 		<<if Time.dayState isnot "dawn" and Time.dayState isnot "day" and $stripclubdancingintro is 1>>
-			<<brothelicon "stage">><<link [[Work as a dancer (0:05)|Strip Club Dancing]]>><<danceinit>><<set $dancing to 1>><<set $venuemod to 1>><<stress -4>><<tiredness 4>><<set $dancelocation to "club">><</link>><<lstress>><<gtiredness>>
+			<<brothelicon "stage">><<link [[Work as a dancer (0:05)|Strip Club Dancing]]>>
+				<<timeTrackingStart "stripClub">><<timeTrackingStart "stripClubDancer">><<timeTrackingStart "stripClubDanceTips">>
+				<<danceinit>><<set $dancing to 1>><<set $venuemod to 1>><<stress -4>><<tiredness 4>><<set $dancelocation to "club">>
+			<</link>><<lstress>><<gtiredness>>
 			<br>
 			<<shopicon "clothing">><<link [[Dressing room (0:01)|Strip Club Dressing Room]]>><<pass 1>><</link>>
 			<br>
@@ -145,6 +154,10 @@ You are in the strip club on Connudatus Street. <<if Time.dayState isnot "day" a
 :: Strip Club Dressing Room
 
 <<effects>><<set $outside to 0>><<set $location to "strip_club">>
+
+<<if $stripclubdancingintro>>
+	<<timeTrackingEndStripclub>>
+<</if>>
 
 You are in the strip club's dressing room. <<if Time.dayState isnot "day" and Time.dayState isnot "dawn">>There are a few mirrors, currently occupied by staff fixing their hair and makeup.<</if>>
 <br><br>
@@ -443,7 +456,7 @@ You get to work supplying the patrons with overpriced drinks and snacks. <<if $d
 <<eventsbartendinglisten>>
 <<else>>
 
-Some patrons eye you up, but they're mostly distracted by the dancers. <<tipreceive>>
+Some patrons eye you up, but they're mostly distracted by the dancers. <<tipreceive "stripClubBartender">>
 <br><br>
 
 <<link [[Next|Strip Club]]>><<endevent>><<pass 30>><</link>>
@@ -528,7 +541,7 @@ Some patrons eye you up, but they're mostly distracted by the dancers. <<tiprece
 
 	<<elseif $rng gte 31>>
 
-	<<generate1>><<person1>>A <<person>> leaves you a tip. <<tipreceive>>
+	<<generate1>><<person1>>A <<person>> leaves you a tip. <<tipreceive "stripClubBartender">>
 	<br><br>
 
 	<<link [[Next|Strip Club]]>><<endevent>><<pass 30>><</link>>
@@ -627,12 +640,16 @@ Some patrons eye you up, but they're mostly distracted by the dancers. <<tiprece
 		<<link [[Don't tell anyone|Bartending Listen Darryl Refuse]]>><</link>>
 		<br>
 	<<else>>
-		You don't hear anything interesting. Some patrons eye you up, but they're mostly distracted by the dancers. <<tipreceive>>
+		You don't hear anything interesting. Some patrons eye you up, but they're mostly distracted by the dancers. <<tipreceive "stripClubBartender">>
 		<br><br>
 
 		<<link [[Next|Strip Club]]>><<endevent>><<pass 30>><</link>>
 		<br>
 	<</if>>
+<</widget>>
+
+<<widget "timeTrackingEndStripclub">>
+	<<timeTrackingEnd "stripClub">><<timeTrackingEnd "stripClubBartender">><<timeTrackingEnd "stripClubDancer">><<timeTrackingEnd "stripClubDanceTips">>
 <</widget>>
 
 :: Strip Club Bartending Flash

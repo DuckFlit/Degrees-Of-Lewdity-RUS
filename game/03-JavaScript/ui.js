@@ -808,3 +808,125 @@ function sensitivityString(value) {
 }
 
 window.sensitivityString = sensitivityString;
+
+function moneyStatsProcess(stats) {
+	const keys = [];
+	Object.entries(stats).forEach(([type, value]) => {
+		if (!T.moneyStatsDetailed) {
+			let compressTo;
+			if (type.includes("DanceTip")) {
+				compressTo = "danceTips";
+			} else if (type.includes("DanceJob")) {
+				compressTo = "danceJobs";
+			} else if (type.includes("Prostitution")) {
+				compressTo = "prostitution";
+			} else {
+				switch (type) {
+					case "libraryBooks":
+					case "schoolProject":
+					case "schoolCondoms":
+					case "schoolStimulant":
+						compressTo = "school";
+						break;
+					case "bus":
+						compressTo = "town";
+						break;
+					case "avery":
+					case "bailey":
+					case "baileyRent":
+					case "robin":
+					case "sydney":
+					case "whitney":
+						compressTo = "peopleOfInterest";
+						break;
+					case "hairdressers":
+					case "tailor":
+					case "clothes":
+					case "sexToys":
+					case "tattoo":
+					case "furniture":
+					case "cosmetics":
+						compressTo = "shopping";
+						break;
+					case "flatsCanal":
+					case "flatsCleaning":
+					case "flatsHookah":
+						compressTo = "flats";
+						break;
+					case "cafeWaiter":
+					case "cafeChef":
+					case "cafeBuns":
+						compressTo = "cafe";
+						break;
+					case "brothalShow":
+					case "brothalVendingMachine":
+					case "brothelCondoms":
+						compressTo = "brothal";
+						break;
+					case "hospitalPaternityTest":
+					case "hospitalPenisReduction":
+					case "hospitalPenisEnlargement":
+					case "hospitalBreastReduction":
+					case "hospitalBreastEnlargement":
+					case "hospitalParasiteRemoval":
+					case "hospitalParasitesSold":
+						compressTo = "hospital";
+						break;
+					case "pharmacyCondoms":
+					case "pharmacyCream":
+					case "pharmacyPills":
+					case "pharmacyPregnancyTest":
+						compressTo = "pharmacy";
+						break;
+					case "museumAntique":
+						compressTo = "museum";
+						break;
+					case "pubAlcohol":
+						compressTo = "pub";
+						break;
+					case "dockWage":
+						compressTo = "docks";
+						break;
+					case "stripClubBartender":
+					case "stripClubDancer":
+						compressTo = "stripClub";
+						break;
+				}
+			}
+
+			if (compressTo) {
+				if (!stats[compressTo]) {
+					stats[compressTo] = { earned: 0, earnedCount: 0, spent: 0, spentCount: 0 };
+				}
+				if (value.earned) {
+					stats[compressTo].earned = (stats[compressTo].earned || 0) + value.earned;
+					stats[compressTo].earnedCount = (stats[compressTo].earnedCount || 0) + value.earnedCount;
+					stats[compressTo].earnedTimeStamp = Math.max(0, stats[compressTo].earnedTimeStamp || 0, value.earnedTimeStamp || 0);
+				}
+				if (value.spent) {
+					stats[compressTo].spent = (stats[compressTo].spent || 0) + value.spent;
+					stats[compressTo].spentCount = (stats[compressTo].spentCount || 0) + value.spentCount;
+					stats[compressTo].spentTimeStamp = Math.max(0, stats[compressTo].spentTimeStamp || 0, value.spentTimeStamp || 0);
+				}
+				delete stats[type];
+				keys.pushUnique(compressTo);
+				return;
+			}
+		}
+		keys.pushUnique(type);
+	});
+	const total = { earned: 0, earnedCount: 0, spent: 0, spentCount: 0 };
+	Object.values(stats).forEach(stat => {
+		if (stat.earned) total.earned += stat.earned;
+		if (stat.earnedCount) total.earnedCount += stat.earnedCount;
+		if (stat.spent) total.spent += stat.spent;
+		if (stat.spentCount) total.spentCount += stat.spentCount;
+
+		if (stat.earnedTimeStamp) total.earnedTimeStamp = Math.max(stat.earnedTimeStamp, total.earnedTimeStamp || 0);
+		if (stat.spentTimeStamp) total.spentTimeStamp = Math.max(stat.spentTimeStamp, total.spentTimeStamp || 0);
+	});
+	console.log(stats, total);
+
+	return [keys, stats, total];
+}
+window.moneyStatsProcess = moneyStatsProcess;

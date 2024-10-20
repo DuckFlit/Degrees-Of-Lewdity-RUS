@@ -2793,7 +2793,7 @@
 
 <<widget "tipreceive">>
 	<span class="gold"><<if random(1, 10000) is 10000>>You gain Brouzouf<<else>>You make<</if>> <<printmoney $tip>>.</span>
-	<<set $money += $tip>>
+	<<money $tip `_args[0] ? _args[0] : ""`>>
 	<<if $tip gte 50000>>
 		<<earnFeat "Negotiator">>
 	<</if>>
@@ -4669,7 +4669,7 @@
 <</widget>>
 
 <<widget "cheatStart">>
-	<<set $cheatdisable to "f">><<set $money to 500000>>
+	<<set $cheatdisable to "f">><<money 500000 "debug">>
 	<<set $rentmoney to 10000>><<rentmod>>
 	<<set $renttime to 7>><<set $rentday to Time.weekDay>>
 	<<set $rentstage to 1>>
@@ -4876,6 +4876,7 @@
 	Argument 1 is base amount. You can also use decimals.
 	Argument 2 is variation.
 	Argument 3 is crime.
+	Argument 4 is source. Best to use <<money x>><<printmoney x>> when args 2 and 3 are both false.
 	<<moneyGain 1>> will give £1.00 which is not stolen.
 	<<moneyGain 1 false false>> will give £1.00 which is not stolen.
 	<<moneyGain 1 true>> will give between £0.80 and £1.20 which is not stolen.
@@ -4902,12 +4903,12 @@
 	<<if _args[2]>>
 		<<crimeUp `_money_gain / 100` "thievery">>
 	<</if>>
-	<<set $money += _money_gain>>
+	<<money _money_gain `_args[3] ? _args[3] : (_args[2] ? "thievery" : "")`>>
 <</silently>><<printmoney _money_gain>><</widget>>
 
 /*
 	Used like above, but only shows the money amount, doesn't add money or crime.
-	Use <<crimeUp `_money_gain / 100`>> and <<set $money += _money_gain>> where necessary in links, etc.
+	Use <<crimeUp `_money_gain / 100`>> and <<money _money_gain>> where necessary in links, etc.
 */
 <<widget "moneyGainDisplay">><<silently>>
 	<<if _args[0]>>

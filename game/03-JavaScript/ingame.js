@@ -546,6 +546,22 @@ function toTitleCase(str) {
 }
 window.toTitleCase = toTitleCase;
 
+function camelCaseToTitle(str) {
+	return str.replace(/([A-Z])/g, " $1").toUpperFirst();
+}
+window.camelCaseToTitle = camelCaseToTitle;
+
+function toCamelCase(str) {
+	return str
+		.split(/[ _-]/g)
+		.map((str, index) => {
+			if (index) return str.toLocaleUpperFirst();
+			return str;
+		})
+		.join("");
+}
+window.toCamelCase = toCamelCase;
+
 function numbersBetween(start, end, step = 1) {
 	return Array.from({ length: (end - start) / step + 1 }, (_, i) => start + i * step);
 }

@@ -1256,7 +1256,7 @@ setup.debugMenu.eventList = {
 		},
 		{
 			link: [`Money`, stayOnPassageFn],
-			widgets: [`<<set $money += 500000>>`],
+			widgets: [`<<money 500000 "debug">>`],
 		},
 		{
 			link: [`Grow hair`, stayOnPassageFn],
