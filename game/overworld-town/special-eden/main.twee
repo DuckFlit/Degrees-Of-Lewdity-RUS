@@ -102,7 +102,7 @@ You throw your arms around <<him>>, giving <<him>> a tight hug, which <<he>> ret
 <</if>>
 <br><br>
 
-<<He>> strokes your hair tenderly, then releases you. <<He>> gives you a longing look before turning towards the forest. <<He>> walks across the road without looking.
+<<He>> holds you against <<his>> chest in a bruising hug, then reluctantly releases you. <<He>> gives you a longing look before turning towards the forest. <<He>> walks across the road without looking.
 <br><br>
 <<endevent>>
 <<destinationeventend>>
@@ -112,18 +112,7 @@ You throw your arms around <<him>>, giving <<him>> a tight hug, which <<he>> ret
 
 You nod and assure <<him>> that you'll visit soon.
 <br><br>
-
 "Good." <<He>> pauses for a moment. "I've missed you."
-<br><br>
-
-<<link [[Hug|Street Eden Worried Hug]]>><<npcincr Eden love 1>><</link>><<glove>>
-<br>
-<<link [[Leave|Street Eden Worried Leave 2]]>><</link>>
-
-:: Street Eden Worried Leave 2
-<<effects>>
-
-You tell Eden that you have to go, and wish <<him>> goodbye.
 <br><br>
 It's hard to tell, but you think <<he>> is disappointed. <<He>> walks across the road without looking.
 <br><br>
@@ -131,7 +120,7 @@ It's hard to tell, but you think <<he>> is disappointed. <<He>> walks across the
 <<destinationeventend>>
 
 :: Street Eden Worried Go To Cabin
-<<effects>>
+<<effects>><<set $edendays to 0>>
 
 You nod.
 
@@ -206,34 +195,116 @@ closing the door behind you.
 
 <<link [[Next|Eden Cabin]]>><<endevent>><</link>>
 
-:: Street Eden Worried Refuse Cabin
+:: Street Eden Worried Run Cabin
+<<effects>><<set $NPCList[0].skills to {athletics: random(750, 1500), security: random(750, 1500)}>>
+Not wanting to leave town, you do the only thing you can think of. Waiting until Eden doesn't expect it, you begin to sprint and break free of <<his>> hold.
+<br>
+You hear heavy footsteps behind you. <span class="red">Someone is hunting you.</span>
+<br><br>
+<<link [[Next|Street Stalk Run Eden]]>><<set $molestationstart to 1>><</link>>
+
+:: Street Stalk Run Eden
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<violence 1>>
+	<<neutral 1>>
+
+	<<maninit>>
+	<<stalk_init>>
+	<<set $combatgoal to "confront">>
+	<<set $NPCList[0].bold to 10000>>
+	<<set $stalk_assess to true>>
+<</if>>
+
 <<effects>>
 
-You shake your head, and try to explain that you can't go with <<him>>, that you've got other things to do.
+<<effectsman>><<man>>
+
+<<stateman>>
 <br><br>
+<<actionsman>>
 
-"So this is all more important than me?" <<he>> asks. <<He>> glances around the street.
-<br><br>
-
-<<if currentSkillValue('english') gte 500>>
-	"It's not that," you protest. "I just have to do these things. I have obligations here, in town. I am sorry that I haven't been able to come and see you, and I will, I just need a little more time. I promise."
-	<br><br>
-
-	<<He>> glares at you, but relaxes. <<He>> looks away. "Fine. Don't come back with me then. I'll just go home." <<He>> walks a few steps, then turns to face you again. "I will check up on you. I need you back at the cabin."
-	<br><br>
-	With that, <<he>> turns and strides across the road without looking.
+<<if $stalk_end>>
+	<span id="next"><<link [[Next|Street Stalk Run Eden Finish]]>><<if $feetaction is "confront">><<set $phase to 1>><<else>><<set $phase to 0>><</if>><</link>></span><<nexttext>>
 <<else>>
-	"Yes. I mean no!" you say. "Not more. There's just things, and I've got to do them. And I-I just didn't get time." You know you're not helping yourself, and stammer into silence.
-	<br><br>
-
-	"Liar!" <<he>> spits. "I came here to find you, to make sure you were okay, to bring you home. I should've stayed home." <<He>> struggles to look at you. "I just-."
-	<br><br>
-
-	<<He>> turns away, and strides across the road without looking. You try to mollify <<him>>, but the words stick in your throat. <<llove>><<npcincr Eden love -1>>
+	<span id="next"><<link [[Next|Street Stalk Run Eden]]>><</link>></span><<nexttext>>
 <</if>>
-<br><br>
-<<endevent>>
-<<destinationeventend>>
+
+:: Street Stalk Run Eden Finish
+<<set $outside to 1>><<set $location to "town">><<effects>>
+
+<<person1>>
+<<if $stalk_end is "confront">>
+	<<if $phase is 1>>
+		Eden grabs you by the arm, <<his>> grip painful. <<He>> looks mad.
+		<br><br>
+	<</if>>
+
+	<<endcombat>>
+	<<npc Eden>><<person1>>
+
+	"We're going home," <<he>> snarls as <<he>> hauls you over <<his>> shoulder. 
+	<br><br>
+	People stop and take notice, but no one tries to help as Eden carries you back. 
+	<br><br>
+	Once you make it back to the cabin, Eden drops you on the ground.<<pain 3>><<gpain>>
+	<br><br>
+	"You really should listen to me, I'm only looking out for you." <<He>> pulls you up and over <<his>> lap.
+	<br><br>
+	<<link [[Next|Eden Recaptured Spank]]>><<set $molestationstart to 1>><</link>>
+<<elseif $stalk_end is "hide">>
+	You pant as you emerge from your hiding place. Eden is nowhere to be found.<<npcincr Eden love -10>><<lllove>>
+	<br><br>
+	
+	<<tearful>> you continue on your way.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<destinationeventend>>
+<<else>>
+	It takes a while, but eventually you lose Eden's trail.<<npcincr Eden love -10>><<lllove>>
+	<br><br>
+	
+	<<tearful>> you slow to a walk, and continue on your way.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<destinationeventend>>
+<</if>>
+
+:: Street Eden Worried Suggest
+<<effects>>
+
+<<if $speech_attitude is "meek">>
+	"B-but I wanted to do something fun with you," you pout. 
+<<elseif $speech_attitude is "bratty">>
+	"Oh come on, let's have some fun while you're here!" you insist.
+<<else>>
+	"I actually wanted to do something first," you say as you pull Eden to a stop.
+<</if>>
+<br>
+
+<<if $englishsuccess>>
+	<span class="green">"Fine, what?" Eden relents</span>, but <<he>> still seems tense.
+	<br><br>
+	<<link [[Suggest a walk in the park (1:00)|Street Eden Worried Suggest Park]]>><</link>>
+
+	<<if Time.hour gte 6 and Time.hour lte 20 and $edenshopping is 0>>
+		<br>
+		<<link [[Suggest going shopping (1:00)|Street Eden Worried Suggest Shopping]]>><</link>>
+	<</if>>
+
+<<else>>
+	<span class="red">"We can do something back home."</span> Eden stays stubborn, once again pulling you with <<him>>. <<He>> warily keeps an eye on those you pass.
+	<br><br>
+	<<link [[Go with $NPCList[0].pronouns.him (1:00)|Street Eden Worried Go To Cabin]]>><<pass 60>><<npcincr Eden dom 1>><</link>>
+	<br>
+	<<link [[Run|Street Eden Worried Run Cabin]]>><<npcincr Eden love -2>><<npcincr Eden dom -1>><</link>><<llove>>
+<</if>>
 
 :: Street Eden Worried Suggest Park
 <<effects>>
@@ -274,21 +345,15 @@ You shake your head, and try to explain that you can't go with <<him>>, that you
 
 "Would you like to come shopping with me?" you ask.
 <br>
-
 "Not if I can help it," <<he>> grumbles.
 <br>
-
 "But don't you need supplies? I was going to go for you anyway."
 <br>
-
 "I'm running low." <<He>> admits. "But I can last. I came here to get you, and would rather not stay."
 <br>
-
 "You might find it more tolerable if we're together."
 <br>
-
 <<He>> looks around at the buildings, and the traffic. "Fine. We'll go together. But you're making it up to me later."
-
 <br><br>
 <<He>> grasps your hand as you walk through town. <<takeHandholdingVirginity "Eden" "romantic">>
 <br><br>
@@ -296,7 +361,7 @@ You shake your head, and try to explain that you can't go with <<him>>, that you
 <<link [[Next|Town Eden Shopping]]>><<pass 60>><</link>>
 
 :: Town Eden Park
-<<set $outside to 1>><<set $location to "park">><<effects>><<set $bus to "park">><<set $edendays to 0>>
+<<set $outside to 1>><<set $location to "park">><<effects>><<set $bus to "park">>
 
 You arrive at the park.
 <<if Time.dayState is "dawn">>
@@ -478,7 +543,11 @@ You break into a run. Eden curses behind you, but you hear <<his>> bootfalls as 
 
 	You double over, panting. You hear Eden's feet approach. "I thought," <<he>> pauses to catch <<his>> breath. "Thought I'd lose you again. You're fit, but what if something snatched you while we were apart?" <<He>> seems more relieved than anything.
 	<br><br>
-	<<link [[Next|Town Eden Park Finish]]>><</link>>
+	"We're done here. Let's go back to the cabin."
+	<br><br>
+	<<link [[Go with $NPCList[0].pronouns.him (1:00)|Street Eden Worried Go To Cabin]]>><<pass 60>><<npcincr Eden dom 1>><</link>>
+	<br>
+	<<link [[Run|Street Eden Worried Run Cabin]]>><<npcincr Eden love -2>><<npcincr Eden dom -1>><</link>><<llove>>
 <<else>>
 	/* We run a silent second athletics check that is slightly easier, to determine if you come close or are utterly outclassed */
 	<<athleticsdifficulty 250 1000 true>>
@@ -540,8 +609,11 @@ You break into a run. Eden curses behind you, but you hear <<his>> bootfalls as 
 
 Eden glares at you, then glances around the park. <<He>> climbs to <<his>> feet. "This place is dangerous," <<he>> says. "I mean it."
 <br><br>
-
-<<link [[Next|Town Eden Park Finish]]>><</link>>
+"We're done here. Let's go back to the cabin."
+<br><br>
+<<link [[Go with $NPCList[0].pronouns.him (1:00)|Street Eden Worried Go To Cabin]]>><<pass 60>><<npcincr Eden dom 1>><</link>>
+<br>
+<<link [[Run|Street Eden Worried Run Cabin]]>><<npcincr Eden love -2>><<npcincr Eden dom -1>><</link>><<llove>>
 
 :: Town Eden Park Race Apologise
 <<effects>>
@@ -557,79 +629,50 @@ Eden glares at you, then glances around the park. <<He>> climbs to <<his>> feet.
 
 Eden glances around the park, then climbs to <<his>> feet. "I can't bear the thought of losing you," <<he>> says. "Just stay close. This place is dangerous."
 <br><br>
-
-<<link [[Next|Town Eden Park Finish]]>><</link>>
-
+"We're done here. Let's go back to the cabin."
+<br><br>
+<<link [[Go with $NPCList[0].pronouns.him (1:00)|Street Eden Worried Go To Cabin]]>><<pass 60>><<npcincr Eden dom 1>><</link>>
+<br>
+<<link [[Run|Street Eden Worried Run Cabin]]>><<npcincr Eden love -2>><<npcincr Eden dom -1>><</link>><<llove>>
 
 :: Town Eden Park Flirt
 <<effects>>
 
-You move close to Eden.
-
-<<if $awarelevel gte 2>>
-	<<if Time.dayState isnot "day">>
-		<<if random(1) is 0 and $NPCList[0].breastsize gte 2>>
-			Your hand brushes <<his>> $NPCList[0].breastsdesc as you point at the ducks on the river.
-		<<else>>
-			Your hand brushes <<his>> butt as you make a clumsy attempt to link arms.
-		<</if>>
-		You try to pass it off as an accident, but you doubt <<hes>> fooled.
-	<<else>>
-		You whisper in <<his>> ear, "There are places here we could have some private time."
-	<</if>>
-	<<npcincr Eden lust 2>><<glust>>
-<<else>>
-	You smile at <<him>>, letting your eyes and body convey what your words cannot.
-<</if>>
-<<promiscuity1>>
-
-<<if Time.dayState isnot "day">>
-	<<He>> rests a hand against your <<bottom>> as you walk, and gives it a little squeeze.
-	<<arousal 100 "bottom">><<garousal>>
-<<else>>
-	<<He>> leans close to you, <<his>> hand brushing against your waist as <<he>> does. You feel <<his>> hot breath on your ear.
-	<<arousal 50>><<garousal>>
-<</if>>
+You lean in, running your hand down Eden's arm.
 <br><br>
 
-<<if C.npc.Eden.lust gte 50 or
-		(Time.dayState isnot "day" and C.npc.Eden.lust gte 30)>>
-	<<if $awarelevel gte 2>>
-		"Naughty <<girl>>," <<he>> says, grasping your arm. "I can't wait any longer. There must be somewhere quiet here."
-	<<else>>
-		"Poor <<girl>>," <<he>> says. "You're in need. There must be somewhere quiet here."
-	<</if>>
-	<br><br>
-
-	<<He>> grasps your arm and walks faster, a lustful look in <<his>> eye.
-	<br><br>
-
-	<<He>> leads you beneath a cluster of trees, blocked from view of the path by thick bushes. There's no one around. Eden turns and pulls you close.
-	<br><br>
-
-	<<if Time.dayState is "day">>
-		<span class="pink">It's the middle of the day, but Eden seems beyond caring.</span>
-		<<arousal 100>><<npcincr Eden lust 2>><<garousal>><<glust>>
-		<br><br>
-	<</if>>
-	<<link [[Next|Town Eden Park Flirt Sex]]>><<set $sexstart to 1>><</link>>
+<<if $speech_attitude is "meek">>
+	"I-I want to do something," you whisper into <<his>> ear.
+<<elseif $speech_attitude is "bratty">>
+	"I've got a fun idea," you giggle, nipping at Eden's ear.
 <<else>>
-	"Wait until we get home, <<girl>>," <<he>> says. "Then I'll remind you who you belong to." Eden gives you a quick kiss, as if to pre-empt any objections.
-	<<takeKissVirginity Eden romantic>>
-	<br><br>
-	<<link [[Next|Town Eden Park Finish]]>><</link>>
+	"I need something from you, Eden," you whisper into <<his>> ear.
 <</if>>
+<br><br>
+<<His>> eyes darken for a second before someone walking past knocks <<him>> out of it. 
+<br><br>
+"Not here, it isn't safe." 
+<br><br>
+Eden takes your hand and begins leading you out of the park, towards the forest.
+<br><br>
 
-:: Town Eden Park Flirt Sex
+<<link [[Go with $NPCList[0].pronouns.him|Town Eden Park Leave]]>><<set $sexstart to 1>><</link>>
+<br>
+<<link [[Stop|Town Eden Park Stop]]>><</link>>
+
+:: Town Eden Park Leave
+
+You follow along as Eden takes you back home, your cheeks heating up at the thought of what <<he>> might do.<<arousal 100>><<garousal>>
+<br><br>
+<<He>> barely makes it into the clearing outside of the cabin before <<he>> turns, pulling you close.
+
 <<if $sexstart is 1>>
 	<<set $sexstart to 0>>
 	<<consensual>>
 	<<set $consensual to 1>>
 	<<neutral 1>>
 	<<maninit>>
-	<<set $enemytrust += 100>>
-	<<set $enemyhealth to 600>>
-	<<set $enemyhealthmax to 600>>
+	<<set $enemytrust += 100>><<set $enemyhealth to 600>><<set $enemyhealthmax to 600>>
 <</if>>
 
 <<effects>>
@@ -639,93 +682,133 @@ You move close to Eden.
 <br><br>
 <<actionsman>>
 
-<span id="next">
 <<if _combatend>>
-	<<link [[Next|Town Eden Park Flirt Sex Finish]]>><</link>>
+	<span id="next"><<link [[Next|Town Eden Park Leave Finish]]>><</link>></span><<nexttext>>
 <<else>>
-	<<link [[Next|Town Eden Park Flirt Sex]]>><</link>>
+	<span id="next"><<link [[Next|Town Eden Park Leave]]>><</link>></span><<nexttext>>
 <</if>>
-</span>
 
-:: Town Eden Park Flirt Sex Finish
-<<effects>>
+:: Town Eden Park Leave Finish
+<<set $outside to 0>><<set $location to "cabin">><<set $edendays to 0>><<effects>>
 
 <<if $enemyarousal gte $enemyarousalmax>>
-	<<ejaculation>><<set $edenFluidsCheck to "Eden">>
-	<<npcincr Eden lust -20>><<npcincr Eden love 1>>
+	<<ejaculation>><<npcincr Eden lust -20>><<npcincr Eden love 1>>
 
-	<<He>> pants from <<his>> exertions. "Fucking needed that." <<He>> holds you close as <<he>> comes down from <<his>> orgasm.<<glove>><<llust>>
-	<br><br>
-
-	<<He>> helps you to your feet, brushing grass off your body with a warm, sure hand. "Let's get dressed before anyone sees."
+	"I knew I kept you around for a reason," <<he>> gasps.<<glove>><<lllust>>
 <<elseif $enemyhealth lte 0>>
-	"You could've just said no," Eden says. <<He>> gets dressed without speaking.
-	<<llove>><<npcincr Eden love -1>>
-	<br><br>
-	<<tearful>> you wait for <<him>> to dress.
-<<elseif $finish is 1 or $phase is 1>>
-	<<He>> pulls away from you, looking frustrated.
+
+	"You ungrateful slut," <<he>> says. "Maybe I should throw you out and leave you to the wolves!" <<He>> winces and holds <<his>> side. "I need to get something for this."
 	<br><br>
 
-	You assure <<him>> that it's okay. <<He>> throws hungry glances at you as <<he>> dresses.
+	<<He>> walks away, leaving you alone.
+<<elseif $finish is 1>>
+
+	"You little tease," <<he>> says. "Don't get me worked up if you don't intend to go all the way."
 <</if>>
 <br><br>
 
 <<clotheson>>
 <<endcombat>>
-<<npc Eden>><<person1>>
+<<link [[Next|Eden Cabin]]>><</link>>
 
-<<link [[Next|Town Eden Park Finish]]>><</link>>
-
-:: Town Eden Park Finish
+:: Town Eden Park Stop
 <<effects>>
 
-You and Eden leave the park together.
+"But I don't want to go back home just yet," you insist. 
 <br><br>
-
-"That was more tolerable than I expected," Eden says.
-
-<<if ["night", "dusk"].includes(Time.dayState)>>
-	"It's getting late. Do you want to come back to the cabin for the evening? You'll be safe and warm there."
-<<else>>
-	"I'm going home. Are you coming?"
-<</if>>
+Eden looks cross. "I'm not doing it here." 
 <br><br>
-
-<<link [[Agree (1:00)|Town Eden Park Finish 2]]>><<set $phase to 0>><<pass 60>><</link>>
+<<link [[Give in|Town Eden Park Stop 2]]>><<set $phase to "agree">><</link>>
 <br>
-<<link [[Stay in town|Town Eden Park Finish 2]]>><<set $phase to 1>><</link>>
+<<link [[Pull away|Town Eden Park Stop 2]]>><<npcincr Eden love -2>><<npcincr Eden dom -1>><</link>><<llove>>
 
-:: Town Eden Park Finish 2
+:: Town Eden Park Stop 2
 <<effects>>
 
-<<if $phase is 0>>
-	You agree, and together you set off towards the forest. Eden's presence dissuades any interference.
+<<if $phase is "agree">>
+	You sigh, before starting to walk again. Eden's right, the town can be a dangerous place to be caught with your pants down.
 	<br><br>
-	<<He>> leads you into the forest, and <<his>> sure navigation soon has you both safe and sound at <<his>> cabin.
-	<br><br>
-
-	<<if Time.hour lte 6>>
-		<<He>> yawns and stretches,
-		<<if $NPCList[0].breastsize gt 1>>
-			causing <<his>> $NPCList[0].breastsdesc to strain against <<his>> top
-		<<else>>
-			showing off <<his>> toned physique
-		<</if>>
-		without meaning to.
-		<br><br>
-
-		"It's late, I need to go to bed." <<He>> pulls off <<his>> top, and slips beneath the sheets.
-	<</if>>
-	<br><br>
-
-	<<link [[Next|Eden Cabin]]>><<endevent>><</link>>
+	<<link [[Next|Town Eden Park Leave]]>><<set $sexstart to 1>><</link>>
 <<else>>
-	Eden nods. "Fine," <<he>> says. "But you'd better visit soon."
+	<<set $NPCList[0].skills to {athletics: random(750, 1500), security: random(750, 1500)}>>
+	Knowing you can't win this argument, you do the only other thing you can.
 	<br><br>
-	You hug <<him>>, and promise that you will. <<He>> strides across the road without looking.
+	Pulling away, you run through the park. <span class="red">Eden is right there behind you.</span>
 	<br><br>
-	<<link [[Next|Park]]>><<set $eventskip to 1>><<endevent>><</link>>
+	<<link [[Next|Park Run Eden]]>><<set $molestationstart to 1>><</link>>
+<</if>>
+
+:: Park Run Eden
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<violence 1>>
+	<<neutral 1>>
+
+	<<maninit>>
+	<<stalk_init>>
+	<<set $combatgoal to "confront">>
+	<<set $NPCList[0].bold to 10000>>
+	<<set $stalk_assess to true>>
+<</if>>
+
+<<effects>>
+
+<<effectsman>><<man>>
+
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if $stalk_end>>
+	<span id="next"><<link [[Next|Park Run Eden Finish]]>><<if $feetaction is "confront">><<set $phase to 1>><<else>><<set $phase to 0>><</if>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Park Run Eden]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Park Run Eden Finish
+<<set $outside to 1>><<set $location to "town">><<effects>>
+
+<<person1>>
+<<if $stalk_end is "confront">>
+	<<if $phase is 1>>
+		Eden grabs you by the arm, <<his>> grip painful. <<He>> looks mad.
+		<br><br>
+	<</if>>
+
+	<<endcombat>>
+	<<npc Eden>><<person1>>
+
+	"We're going home," <<he>> snarls as <<he>> hauls you over <<his>> shoulder. 
+	<br><br>
+	People stop and take notice, but no one tries to help as Eden carries you back. 
+	<br><br>
+	Once you make it back to the cabin, Eden drops you on the ground.<<pain 3>><<gpain>>
+	<br><br>
+	"You started this, so you better take it."
+	<br><br>
+	<<link [[Next|Eden Rape]]>><<set $edendays to 0>><<set $molestationstart to 1>><</link>>
+<<elseif $stalk_end is "hide">>
+	You pant as you emerge from your hiding place. Eden is nowhere to be found.<<npcincr Eden love -10>><<lllove>>
+	<br><br>
+	
+	<<tearful>> you continue on your way.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<destinationeventend>>
+<<else>>
+	It takes a while, but eventually you lose Eden's trail.<<npcincr Eden love -10>><<lllove>>
+	<br><br>
+	
+	<<tearful>> you slow to a walk, and continue on your way.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<destinationeventend>>
 <</if>>
 
 :: Town Eden Cafe
@@ -738,7 +821,7 @@ Can't think of a ton more you can really do with this one
 -->
 
 :: Town Eden Shopping
-<<set $outside to 0>><<set $location to "shopping_centre">><<effects>><<set $edendays to 0>>
+<<set $outside to 0>><<set $location to "shopping_centre">><<effects>>
 
 You arrive at the shopping centre.
 <<if Time.dayState is "day">>
@@ -796,13 +879,11 @@ You arrive at the shopping centre.
 <</switch>>
 <br><br>
 
-<<switch random(2)>>
-	<<case 0>>
-		<<link [[Next|Town Eden Shopping Petshop]]>><</link>>
+<<switch random(1,2)>>
 	<<case 1>>
-		<<link [[Next|Town Eden Shopping Clothes Eden Dress Up]]>><</link>>
+		<<link [[Next|Town Eden Shopping Petshop]]>><</link>>
 	<<case 2>>
-		<<link [[Next|Town Eden Shopping Clothes PC Dress Up]]>><</link>>
+		<<link [[Next|Town Eden Shopping Clothes]]>><</link>>
 <</switch>>
 
 :: Town Eden Shopping Petshop
@@ -853,446 +934,26 @@ The animals fall quiet as Eden passes. Some retreat deeper into their cages. Ede
 <br><br>
 <<link [[Next|Town Eden Shopping Finish]]>><</link>>
 
-:: Town Eden Shopping Clothes Eden Dress Up
+:: Town Eden Shopping Clothes
 <<effects>>
 
-
-<<He>> leads you upstairs, and into the clothing shop. <<He>> browses, and doesn't seem to be searching for anything specific.
-<<if C.npc.Eden.love gte 100>>
-	<<He>> keeps you close. You find <<his>> presence comforting. <<lstress>><<stress -10>>
-<</if>>
+Eden leads you upstairs into the clothing store. <<He>> spends a few minutes looking around before <<he>> stops at the underwear section. 
+<br><br>
+<<He>> seems uncomfortable as <<he>> snatches a pair of <<if $pronoun is "m">>men's<<elseif $pronoun is "f">>women's<</if>> underwear, keeping an eye on everyone else in the store. No one looks at Eden. Most people seem to avoid <<him>>.
+<br><br>
+"Come on, let's be quick," <<he>> insists, dragging you to the checkout. The cashier seems eager to ring the order up as quickly as possible.
+<br><br>
+Eden only relaxes once the underwear is hidden away in the bag. <<He>> leaves the store, ensuring that you aren't far behind.
+<br><br>
+"This town is full of creeps," <<he>> mumbles as you return to the street. 
+<br><br>
+Once outside, he starts dragging you along. "Come on. We're going home."
 <br><br>
 
-<<He>> walks to the underwear section. You hang back, wondering if <<he>> wants some privacy, but <<he>> grasps your arm and pulls you closer.
-<<He>> picks out a variety of <<if $pronoun is "m">>men's<<elseif $pronoun is "f">>women's<</if>> underwear.
-When <<he>> has a small armful, <<he>> heads towards the changing rooms. <<He>> pushes you ahead of <<him>>.
-<br><br>
-"Tell me what suits me," <<he>> says.
+<<link [[Go home (1:00)|Street Eden Worried Go To Cabin]]>><<pass 60>><<npcincr Eden dom 1>><</link>>
 <br>
-"I don't think we're supposed to-"
-<br>
-Eden laughs, and pulls the curtain shut behind <<him>>.
-<br><br>
+<<link [[Run|Street Eden Worried Run Cabin]]>><<npcincr Eden love -2>><<npcincr Eden dom -1>><</link>><<llove>>
 
-<<link [[Next|Town Eden Shopping Clothes Eden Dress Up 2]]>><</link>>
-<br>
-
-:: Town Eden Shopping Clothes Eden Dress Up 2
-<<effects>>
-
-Eden stands with <<his>> back to the door, and removes <<his>> clothing until <<hes>> left
-<<if $pronoun is "f">>
-	in <<his>> bra and panties.
-<<else>>
-	in <<his>> underwear.
-<</if>>
-They come next, leaving <<him>> naked.
-<br><br>
-
-You enjoy the show, knowing <<he>> wants you to watch. You ogle <<his>>
-<<if $NPCList[0].breastsize gt 1>>
-	$NPCList[0].breastsdesc,
-<<else>>
-	muscled chest,
-<</if>>
-and then allow your eyes to wander down <<his>> toned abdomen. <<garousal>><<arousal 100>>
-<br><br>
-
-<<if $pronoun is "f">>
-	<<set $eden_underwear_model to [
-		"a pair of black boyshorts",
-		"a set of dark green lace bra and panties",
-		"a red thong"
-	]>>
-<<else>>
-	<<set $eden_underwear_model to [
-		"a pair of plain white briefs",
-		"some navy boxershorts",
-		"a black g-string"
-	]>>
-<</if>>
-
-<<He>> has trouble meeting your gaze. <<He>> tries on the first item, $eden_underwear_model[0]. It suits <<him>> well enough. <<He>> looks at you, and you nod. <<He>> smiles a moment.
-<br><br>
-
-<<link [[Next|Town Eden Shopping Clothes Eden Dress Up 3]]>><</link>>
-<br>
-
-:: Town Eden Shopping Clothes Eden Dress Up 3
-<<effects>>
-
-
-<<He>> slips them off and pulls out the next item, $eden_underwear_model[1]. <<He>> seems a little more confident.
-<<if $pronoun is "f" and $NPCList[0].breastsize gt 1>>
-	<<His>> $NPCList[0].breastsdesc push out against the material, making sure you can't miss the cleavage.
-<<elseif $NPCList[0].penis isnot "none">>
-	The fabric contours around <<his>> $NPCList[0].penisdesc.
-<<else>>
-	The fabric contours around <<his>> body, hiding little.
-<</if>>
-You suspect <<hes>> enjoying <<himself>> more than <<he>> would ever admit.<<garousal>><<arousal 200>>
-<br><br>
-
-<<link [[Next|Town Eden Shopping Clothes Eden Dress Up 4]]>><</link>>
-<br>
-
-:: Town Eden Shopping Clothes Eden Dress Up 4
-<<effects>>
-
-<<He>> slips off the clothes, and picks up the last item, $eden_underwear_model[2]. There's not much fabric.
-<<He>> slips it on, and poses before you. <<He>> turns on the spot, letting you view <<him>> from all sides.
-<<if $player.penisExist>>
-	You feel your <<penis>> react to <<his>> teasing.
-<<elseif $player.vaginaExist>>
-	You feel your pulse pick up in response to <<his>> teasing.
-<</if>>
-<<garousal>><<arousal 200>>
-<br><br>
-<<unset $eden_underwear_model>>
-
-<<He>> slips off the garment, slower than <<he>> needs to. <<He>> seems relieved.
-<<glust>><<npcincr Eden lust 20>>
-<br><br>
-
-<<if C.npc.Eden.lust gte 50>>
-	"Did you enjoy that?" <<he>> asks. <<He>> sounds angry, and lustful. <<He>> pushes you onto the bench.
-	<br><br>
-
-
-	<<set $phase to 0>>
-	<<link [[Go along with it|Town Eden Shopping Clothes Eden Dress Up Sex]]>><<npcincr Eden love 1>><<set $sexstart to 1>><</link>><<glove>>
-	<br>
-	<<link [[Resist|Town Eden Shopping Clothes Eden Dress Up Sex Finish]]>><<npcincr Eden love -1>><<set $phase to 1>><</link>><<llove>>
-<<else>>
-	Eden gets dressed, and together you leave the changing room.
-	<br><br>
-	<<link [[Next|Town Eden Shopping Finish]]>><</link>>
-<</if>>
-
-:: Town Eden Shopping Clothes Eden Dress Up Sex
-<<if $sexstart is 1>>
-	<<set $sexstart to 0>>
-	<<consensual>>
-	<<set $consensual to 1>>
-	<<neutral 1>>
-	<<maninit>>
-	<<set $enemytrust += 100>>
-	<<set $enemyhealth to 600>>
-	<<set $enemyhealthmax to 600>>
-	<<takeKissVirginity "Eden" "romantic">>
-	<<He>> climbs atop you, still naked, and plants a vicious kiss on your lips. It lasts only a moment before <<he>> pulls <<his>> body up, straddling your chest. <<He>> uses one arm to steady <<himself>> against the wall behind you.
-	<<npcoral>>
-<</if>>
-
-<<effects>>
-<<effectsman>>
-<<man>>
-<<stateman>>
-<br><br>
-<<actionsman>>
-
-<span id="next">
-<<if _combatend>>
-	<<link [[Next|Town Eden Shopping Clothes Eden Dress Up Sex Finish]]>><</link>>
-<<else>>
-	<<link [[Next|Town Eden Shopping Clothes Eden Dress Up Sex]]>><</link>>
-<</if>>
-</span>
-
-:: Town Eden Shopping Clothes Eden Dress Up Sex Finish
-<<effects>>
-
-<<if $finish is 1 or $phase is 1>>
-	<<He>> pulls away from you, looking frustrated.
-	<br><br>
-
-	You assure <<him>> that it's okay. <<He>> gets dressed, but continues to throw hungry glances at you.
-<<elseif $enemyarousal gte $enemyarousalmax>>
-	<<ejaculation>><<set $edenFluidsCheck to "Eden">>
-	<<npcincr Eden lust -20>><<npcincr Eden love 1>>
-
-	<<if $NPCList[0].penis is "mouth">>
-		<<He>> moans softly as the last of <<his>> cum pours into your mouth. You clean <<his>> penis up with your tongue.
-		<br><br>
-		"Needed that. Good <<girl>>. You know how to use that mouth."
-	<<elseif ["mouth", "facesit"].includes($NPCList[0].vagina)>>
-		<<He>> moans with pleasure, then shifts <<his>> pussy away from your face.
-		<br><br>
-		"Needed that. Good <<girl>>. You know how to use that mouth."
-	<<else>>
-		<<He>> pants from the exertion. "Fucking needed that." <<He>> holds you close as <<he>> recovers from the orgasm.
-	<</if>>
-	<br><br>
-
-	<<He>> strokes your hair a moment before getting dressed.
-<<elseif $enemyhealth lte 0>>
-	"What the fuck? You could've just said no." <<He>> gets dressed without speaking.
-	<<llove>><<npcincr Eden love -1>>
-
-	<<tearful>> you wait for <<him>>.
-<</if>>
-<br><br>
-
-You accompany <<him>> from the shopping centre once dressed.
-<br><br>
-
-<<clotheson>>
-<<endcombat>>
-<<npc Eden>><<person1>>
-
-<<link [[Next|Town Eden Shopping Finish]]>><</link>>
-
-:: Town Eden Shopping Clothes PC Dress Up
-<<effects>>
-
-<<He>> leads you upstairs and into the clothing shop.
-<<He>> browses, and doesn't seem to be looking for anything in particular.
-<<if C.npc.Eden.love gte 100>>
-	<<He>> stays close to you. You find <<his>> presence comforting. <<lstress>><<stress -10>>
-<</if>>
-<br><br>
-
-<<He>> walks to the underwear section. You hang back, wondering if <<he>> wants some privacy, but <<he>> grasps your arm and pulls you closer.
-<<He>> starts picking out a variety of underwear.
-When <<he>> has a small armful, <<he>> pushes you into a changing room.
-<br><br>
-"I want you to try these for me," <<he>> says, closing the curtain behind <<him>>.
-<br>
-"I don't think we're supposed to-"
-<br>
-Eden laughs, and pushes a
-<<if $player.gender_appearance is "f">>
-	pair of boyshorts
-<<else>>
-	pair of plain briefs
-<</if>>
-into your chest.
-<br><br>
-
-
-
-<<link [[Put them on|Town Eden Shopping Clothes PC Dress Up Flaunt]]>>
-	<<set $phase to 1>>
-	<<strip>>
-	<<if $player.gender_appearance is "f">><<underlowerwear 14>><<else>><<underlowerwear 4>><</if>>
-<</link>><<exhibitionist1>>
-<br>
-<<link [[Refuse|Town Eden Shopping Clothes PC Dress Up Flaunt Refuse]]>><</link>>
-
-:: Town Eden Shopping Clothes PC Dress Up Flaunt
-<<effects>>
-
-<<if $phase is 1>>
-	You turn your back and undress. You feel Eden's eyes on you as you slip on the underwear. They feel quite comfy. You turn around.
-	<<exhibitionism1>>
-	Eden ogles your body without shame.
-	<<glust>><<npcincr Eden lust 5>>
-	<br><br>
-	"Here," <<he>> says. "Try these next." <<He>> holds
-	<<if $player.gender_appearance is "f">>
-		a set of lacey bra and panties
-	<<else>>
-		a pair of speedos
-	<</if>>
-	out to you. They're a bit more risqué.
-	<br><br>
-	<<if $exhibitionism lte 19>>
-		You are not lewd enough to flaunt this underwear for Eden.
-		<br><br>
-	<<else>>
-		<<link [[Try them on|Town Eden Shopping Clothes PC Dress Up Flaunt]]>>
-			<<set $phase to 2>>
-			<<undress "basket">>
-			<<if $player.gender_appearance is "f">><<underlowerwear 3>><<underupperwear 10>><<else>><<underlowerwear 19>><</if>>
-		<</link>><<exhibitionist2>>
-		<br>
-	<</if>>
-
-	<<link [[Refuse|Town Eden Shopping Clothes PC Dress Up Flaunt Refuse]]>><</link>>
-<<elseif $phase is 2>>
-	You take the <<if $player.gender_appearance is "f">>lacey underwear<<else>>speedos<</if>> and examine them.
-	<br><br>
-	<<if $player.gender_appearance is "f">>
-		The material feels soft, but it's very revealing. You doubt it will cover much at all.
-	<<else>>
-		They look tight. These aren't swimwear for modesty.
-	<</if>>
-	<br><br>
-	You turn around before putting them on. They don't hide much at all, but you allow Eden to look. You even give <<him>> a little twirl.
-	<<exhibitionism2>>
-
-	Eden looks lustful. <<Hes>> enjoying this.
-	<<glust>><<npcincr Eden lust 10>>
-	<br><br>
-	"Next." <<He>> hands you a
-	<<if $player.gender_appearance is "f">>
-		thong.
-	<<else>>
-		g-string.
-	<</if>>
-	It would barely cover a thing.
-	<br><br>
-	<<if $exhibitionism lt 34>>
-		You are not lewd enough to flaunt this underwear for Eden.
-		<br><br>
-	<<else>>
-		<<link [[Try them on|Town Eden Shopping Clothes PC Dress Up Flaunt]]>>
-			<<set $phase to 3>>
-			<<undress "basket">>
-			<<if $player.gender_appearance is "f">><<underlowerwear 22>><<else>><<underlowerwear 16>><</if>>
-		<</link>><<exhibitionist3>>
-		<br>
-	<</if>>
-	<<link [[Refuse|Town Eden Shopping Clothes PC Dress Up Flaunt Refuse]]>><</link>>
-<<elseif $phase is 3>>
-	<<if $player.gender_appearance is "f">>
-		You run the thong through your fingers. It will keep your <<print ($player.vaginaExist ? "pussy" : "genitals")>> covered, but only just. It will leave most of your <<bottom>> exposed as well.
-	<<else>>
-		You run the g-string through your fingers. There is just about enough fabric to cover your <<if $player.penisExist>>penis<<else>>genitals<</if>>, but your <<bottom>> will be exposed.
-	<</if>>
-	<br><br>
-	You turn and slip it on. You feel naked as you face Eden. There's a hungry look in <<his>> eyes. You tease <<him>>, giving your ass a little wiggle. <<He>> smacks and squeezes it.
-	<<exhibitionism3>>
-
-	Your little performance is having an effect on <<him>>.<<glust>><<npcincr Eden lust 20>>
-	<br><br>
-
-	<<if C.npc.Eden.lust gte 50>>
-		<<He>> wraps <<his>> arms around your waist, and slips <<his>> fingers beneath the waistband of your underwear. <<He>> tugs them down,
-		<<if $player.penisExist>>
-			exposing your penis.
-		<<elseif $player.vaginaExist>>
-			exposing your pussy.
-		<</if>>
-		<<undress "basket">>
-		<br><br>
-
-
-		<<link [[Go along with it|Town Eden Shopping Clothes PC Dress Up Sex]]>><<set $sexstart to 1>><</link>>
-		<br>
-		<<link [[Refuse|Town Eden Shopping Clothes PC Dress Up Sex]]>><<set $molestationstart to 1>><</link>>
-
-	<<else>>
-		<<He>> gives you a playful smack on the <<bottom>>. "I want to ravage you right now," <<he>> says. "But I can't. Not here. Get dressed before I lose it."
-		<br><br>
-		You consider teasing <<him>> more, but decide to dress as asked.
-		<br><br>
-
-		Eden pays for your new underwear on the way out.
-		<<storeon "basket">>
-		<<clotheson>>
-		<br><br>
-
-		<<link [[Next|Town Eden Shopping Finish]]>><</link>>
-	<</if>>
-<<else>>
-	<<link [[Next|Town Eden Shopping Finish]]>><</link>>
-<</if>>
-
-:: Town Eden Shopping Clothes PC Dress Up Flaunt Refuse
-<<effects>>
-
-Eden looks disappointed, but doesn't push you.
-<br><br>
-<<storeon "basket" "delete">>
-<<He>> heads back into the shop to return the underwear.
-<br><br>
-<<clotheson>>
-<br>
-
-<<link [[Next|Town Eden Shopping Finish]]>><</link>>
-
-:: Town Eden Shopping Clothes PC Dress Up Sex
-<<if $sexstart is 1>>
-	<<set $sexstart to 0>>
-	<<consensual>>
-	<<set $consensual to 1>>
-	<<neutral 1>>
-	<<maninit>>
-	<<set $enemytrust += 100>>
-	<<set $enemyhealth to 600>>
-	<<set $enemyhealthmax to 600>>
-
-<<elseif $molestationstart is 1>>
-	"Oh?" <<he>> says. "You just wanted to be a little <<if $NPCList[0].penis isnot "none">>cock<<elseif $NPCList[0].vagina isnot "none">>pussy<</if>> tease?"
-	<br><br>
-	<<He>> advances on you, <<his>> eyes still full of hunger.
-	<br><br>
-	<<enable_rescue>>
-	<<set $molestationstart to 0>>
-	<<controlloss>>
-	<<violence 1>>
-	<<neutral 1>>
-	<<molested>>
-	<<maninit>>
-	<<set $enemyhealth to 600>><<set $enemyhealthmax to 600>><<set $enemyanger += 50>>
-<</if>>
-
-<<effects>>
-<<effectsman>>
-<<alarmstate>>
-<<man>>
-<<stateman>>
-<br><br>
-<<actionsman>>
-
-<span id="next">
-<<if _combatend>>
-	<<link [[Next|Town Eden Shopping Clothes PC Dress Up Sex Finish]]>><</link>>
-<<else>>
-	<<link [[Next|Town Eden Shopping Clothes PC Dress Up Sex]]>><</link>>
-<</if>>
-</span>
-
-:: Town Eden Shopping Clothes PC Dress Up Sex Finish
-<<effects>>
-
-<<if $enemyarousal gte $enemyarousalmax>>
-	<<ejaculation>><<set $edenFluidsCheck to "Eden">>
-	<<npcincr Eden lust -20>><<npcincr Eden love 1>>
-
-	"Fucking needed that." <<He>> holds you close as <<he>> comes down from <<his>> orgasm.
-	<br><br>
-
-	<<He>> strokes your hair before getting dressed.
-<<elseif $enemyhealth lte 0>>
-	Eden staggers backwards, and thuds against the wall. <<He>> glares at you, but doesn't attack.
-	<<llove>><<npcincr Eden love -1>>
-	<br><br>
-	<<tearful>> pick up your clothes.
-	<<storeon "basket" "delete">>
-<<elseif $finish is 1>>
-	<<He>> pulls away from you, looking frustrated.
-	<br><br>
-
-	<<He>> gets dressed, but throws the occasional hungry glance at you.
-	<<storeon "basket" "delete">>
-<<else>>
-	<<set $rescued += 1>>
-	"Is everything okay in there?" says a voice from outside.
-	<br><br>
-	Eden releases you, and steps through the curtain. You hear a scream. Eden returns, and glares at you. "We're leaving."<<llove>><<npcincr Eden love -1>>
-	<<storeon "basket" "delete">>
-<</if>>
-<br><br>
-
-<<storeon "basket" "check">>
-<<if _store_check is 1>>
-	<<storeon "basket">>
-	<<clotheson>>
-
-	Eden dresses faster than you, and disappears through the curtain. You exit to find <<him>> buying the underwear.
-	<br><br>
-<<else>>
-	<<clotheson>>
-<</if>>
-
-<br><br>
-
-<<endcombat>>
-
-
-<<link [[Next|Town Eden Shopping Finish]]>><<npc Eden>><<person1>><</link>>
 
 :: Town Eden Shopping Finish
 <<set $outside to 0>><<effects>>
@@ -1301,9 +962,9 @@ Eden looks disappointed, but doesn't push you.
 <br><br>
 "We're done here. Let's go back to the cabin."
 <br><br>
-<<link [[Agree (1:00)|Town Eden Shopping Finish 2]]>><<set $phase to 0>><<pass 60>><</link>>
+<<link [[Go with $NPCList[0].pronouns.him (1:00)|Town Eden Shopping Finish 2]]>><<set $phase to 0>><<pass 60>><</link>>
 <br>
-<<link [[Stay in town|Town Eden Shopping Finish 2]]>><<set $phase to 1>><</link>>
+<<link [[Refuse|Town Eden Shopping Finish 2]]>><<set $phase to 1>><</link>>
 
 :: Town Eden Shopping Finish 2
 <<set $outside to 0>><<effects>>
@@ -1315,11 +976,14 @@ Eden looks disappointed, but doesn't push you.
 	<br><br>
 	You help <<him>> put the shopping away.
 	<br><br>
-	<<link [[Next|Eden Cabin]]>><<endevent>><</link>>
+	<<link [[Next|Eden Cabin]]>><<set $edendays to 0>><<endevent>><</link>>
 <<else>>
-	"Fine," Eden says. "You better visit soon. I'm sick of this place."
+	<<set $NPCList[0].skills to {athletics: random(750, 1500), security: random(750, 1500)}>>
+	"But I don't want to go home just yet," you insist, backing away. 
 	<br><br>
-	You hug <<him>>, and promise that you will. <<He>> strides across the road without looking.
+	"Don't be so stubborn," Eden snarls, lunging forwards. You panic and run.
+	<br>
+	You hear heavy footsteps behind you. <span class="red">Someone is hunting you.</span>
 	<br><br>
-	<<link [[Next|High Street]]>><<endevent>><<set $eventskip to 1>><</link>>
+	<<link [[Next|Street Stalk Run Eden]]>><<set $molestationstart to 1>><</link>>
 <</if>>
