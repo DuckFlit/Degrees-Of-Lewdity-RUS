@@ -47,7 +47,7 @@ const combatXrayVagina = {
 				return `${options.src}vaginal/cum/${options.vagina.base}${baseSize}${dp}${cumAmt}.png`;
 			},
 			showfn(options) {
-				return !!options.showCum;
+				return !!options.vagina.showCum;
 			},
 			animationfn(options) {
 				return options.animKeyVagina;
@@ -61,7 +61,7 @@ const combatXrayVagina = {
 				return `${options.src}vaginal/cum/${options.vagina.base}${cumSize}.png`;
 			},
 			showfn(options) {
-				return !!options.showCum && !!options.vagina.isCumActive;
+				return !!options.vagina.showCum && !!options.vagina.isCumActive;
 			},
 			animationfn(options) {
 				return options.animKeyVagina;
@@ -88,17 +88,17 @@ function xrayVaginaPenetrator(npc, overrideOptions = {}) {
 			return `${options.src}vaginal/${options.vagina.penetratorSprite}${penSize}${dp}.png`;
 		},
 		showfn(options) {
-			return !!options.showNpcPenis && !!options.vagina[npc];
+			return !!options.showNpcPenis && options.vagina[npc] !== undefined;
 		},
 		animationfn(options) {
 			return options.animKeyVagina;
 		},
 		filters: npc === "npc2" ? ["vaginaPenetrator2"] : ["vaginaPenetrator"],
 		desaturatefn(options) {
-			return !!options.vagina[npc].strapon;
+			return !!options.vagina[npc + "Strapon"];
 		},
 		brightnessfn(options) {
-			return options.vagina[npc].strapon ? -0.25 : 0;
+			return options.vagina[npc + "Strapon"] ? -0.25 : 0;
 		},
 		z: npc === "npc2" ? CombatRenderer.indices.xrayPenetrator2 : CombatRenderer.indices.xrayPenetrator,
 	};

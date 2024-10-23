@@ -631,6 +631,25 @@ Config.navigation.override = function (dest) {
 			case "Museum Island Arrow":
 				return "Museum Islander Arrow";
 
+			case "Street Eden Worried Refuse Cabin":
+			case "Street Eden Worried Leave 2":
+			case "Town Eden Park Flirt Sex":
+			case "Town Eden Park Flirt Sex Finish":
+			case "Town Eden Park Finish":
+			case "Town Eden Park Finish 2":
+			case "Town Eden Shopping Clothes Eden Dress Up":
+			case "Town Eden Shopping Clothes Eden Dress Up 2":
+			case "Town Eden Shopping Clothes Eden Dress Up 3":
+			case "Town Eden Shopping Clothes Eden Dress Up 4":
+			case "Town Eden Shopping Clothes Eden Dress Up Sex":
+			case "Town Eden Shopping Clothes Eden Dress Up Sex Finish":
+			case "Town Eden Shopping Clothes PC Dress Up":
+			case "Town Eden Shopping Clothes PC Dress Up Flaunt":
+			case "Town Eden Shopping Clothes PC Dress Up Flaunt Refuse":
+			case "Town Eden Shopping Clothes PC Dress Up Sex":
+			case "Town Eden Shopping Clothes PC Dress Up Sex Finish":
+				return "Street Eden Worried Suggest";
+
 			default:
 				return false;
 		}

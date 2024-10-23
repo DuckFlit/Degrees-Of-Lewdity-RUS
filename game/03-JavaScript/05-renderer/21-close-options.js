@@ -282,7 +282,8 @@ class CloseCombatMapper {
 		}
 		if (V.NPCList[V.penistarget]) {
 			/* skin colour of npc targeting penis */
-			options.penis.npcTone = V.NPCList[V.penistarget].skincolour === "black" ? "dark" : "light";
+			options.penis.npcTone =
+				V.NPCList[V.penistarget].skincolour === "ghost" ? "ghost" : V.NPCList[V.penistarget].skincolour === "black" ? "dark" : "light";
 			options.filters.penisNpc = setup.colours.getSkinFilter(options.penis.npcTone, 0);
 		}
 

@@ -42,11 +42,11 @@ const combatXrayArse = {
 		cum: {
 			srcfn(options) {
 				const baseSize = options.anus.size ? "_size" + options.anus.size : "";
-				const cumAmt = options.anus.penetratedSprite.includes("horse") ? "_cum_horse" : "_cum";
+				const cumAmt = options.anus.penetratorSprite.includes("horse") ? "_cum_horse" : "_cum";
 				return `${options.src}anal/cum/${options.anus.base}${baseSize}${cumAmt}.png`;
 			},
 			showfn(options) {
-				return !!options.showCum;
+				return !!options.anus.showCum;
 			},
 			animationfn(options) {
 				return options.animKeyArse;
@@ -60,7 +60,7 @@ const combatXrayArse = {
 				return `${options.src}anal/cum/${options.anus.base}${cumSize}.png`;
 			},
 			showfn(options) {
-				return !!options.showCum && !!options.anus.isCumActive;
+				return !!options.anus.showCum && !!options.anus.isCumActive;
 			},
 			animationfn(options) {
 				return options.animKeyArse;
@@ -87,17 +87,17 @@ function xrayArsePenetrator(npc, overrideOptions = {}) {
 			return `${options.src}anal/${options.anus.penetratorSprite}${penSize}${dp}.png`;
 		},
 		showfn(options) {
-			return !!options.showNpcPenis && !!options.anus[npc];
+			return !!options.showNpcPenis && options.anus[npc] !== undefined;
 		},
 		animationfn(options) {
 			return options.animKeyArse;
 		},
 		filters: npc === "npc2" ? ["anusPenetrator2"] : ["anusPenetrator"],
 		desaturatefn(options) {
-			return !!options.anus[npc].strapon;
+			return !!options.anus[npc + "Strapon"];
 		},
 		brightnessfn(options) {
-			return options.anus[npc].strapon ? -0.25 : 0;
+			return options.anus[npc + "Strapon"] ? -0.25 : 0;
 		},
 		z: npc === "npc2" ? CombatRenderer.indices.xrayPenetrator2 : CombatRenderer.indices.xrayPenetrator,
 	};

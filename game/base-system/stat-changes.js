@@ -3,6 +3,12 @@
 const statChange = (() => {
 	function paramError(functionName = "", param = "", value, expectedValues = "") {
 		if (typeof value === "object") value = JSON.stringify(value);
+		/* Included both types of error reporting, since this often will only occur in a link */
+		Errors.report(
+			`Unexpected value for the function "${functionName}" in the passage "${V.passage}". Param "${param}" had unexpected value of "${value}".${
+				expectedValues ? ` ${expectedValues}` : ""
+			}`
+		);
 		throw new Error(
 			`Unexpected value for the function "${functionName}". Param "${param}" had unexpected value of "${value}".${
 				expectedValues ? ` ${expectedValues}` : ""
@@ -339,10 +345,14 @@ const statChange = (() => {
 					break;
 			}
 
+
 			// Adjusts modifier for body part sensitivity, if applicable
-			// Do not apply sensitivity boosts during chef job
-			if (sensitivity >= 1 && !V.masturbation_bowl) {
-				mod += (sensitivity - 1) * (sensitivity >= 2 ? 0.5 : 1);
+			if (amount > 0) {
+					let sensitivityMod = (sensitivity - 1) ** 2 / 4;
+					// Halve sensitivity boosts during chef job
+					// todo: rebalance chef job better
+					if (V.masturbation_bowl) sensitivityMod /= 2;
+					mod += sensitivityMod;
 			}
 
 			// Reduce the mod if masturbating while in heat and/or rut
@@ -1008,6 +1018,179 @@ const statChange = (() => {
 	}
 	DefineMacro("world_corruption", worldCorruption);
 
+	function money(amount, source, optional = {}) {
+		if (isNaN(amount)) paramError("money", "amount", amount, "Expected a number.");
+		if (!(typeof source === "string" || source instanceof String || source === undefined))
+			paramError("money", "source", source, "Expected a string or undefined.");
+		if (!(typeof optional === "object" && optional !== null)) paramError("money", "optional", optional, "Expected a object.");
+		amount = Number(amount);
+
+		if (!Number.isFinite(amount)) {
+			paramError("money", "amount", amount, "Expected a valid number.");
+			return;
+		}
+		if (!optional.recordOnly) {
+			if (amount < 0 && V.money + amount < 0) {
+				/* Included both types of error reporting, since this often will only occur in a link */
+				Errors.report(`Unexpected use for the function "money" in the passage "${V.passage}". Player doesn't have enough money to spend.`);
+				throw new Error(`Unexpected use for the function "money". Player doesn't have enough money to spend.`);
+			}
+
+			V.money += amount;
+		}
+		if (!source || source === "prostitution") {
+			const mod = source === "prostitution" ? "Prostitution" : "";
+			switch (V.location) {
+				case "farm":
+				case "alex_farm":
+				case "alex_cottage":
+					source = "farm" + mod;
+					break;
+				case "dance_studio":
+					source = "danceStudio" + mod;
+					break;
+				case "moor":
+				case "bog":
+				case "castle":
+				case "tower":
+					source = "moor" + mod;
+					break;
+				case "riding_school":
+					source = "ridingSchool" + mod;
+					break;
+				case "strip_club":
+					source = "stripClub" + mod;
+					break;
+				case "forest":
+				case "lake":
+				case "old_temple":
+				case "lake_ruin":
+				case "wolf_cave":
+				case "cabin":
+				case "forest_shop":
+				case "catacombs":
+				case "churchyard":
+				case "sepulchre":
+					source = "forest" + mod;
+					break;
+				case "dilapidated_shop":
+				case "adult_shop":
+					source = "adultShop" + mod;
+					break;
+				case "town":
+				case "home":
+				case "police_station":
+				case "oak":
+				case "night_monster_lair":
+				case "industrial":
+				case "estate":
+				case "shopping_centre":
+				case "alley":
+				case "park":
+				case "drain":
+				case "sewers":
+				case "beech":
+				case "sea":
+				case "kylarmanor":
+					source = "town" + mod;
+					break;
+				case "studio":
+					source = "photoStudio" + mod;
+					break;
+				case "pirate_ship":
+					source = "pirates" + mod;
+					break;
+				case "school":
+				case "school_rear_courtyard":
+				case "pool":
+					source = "school" + mod;
+					break;
+				case "office":
+				case "office_building":
+				case "officeBuilding":
+					source = "office" + mod;
+					break;
+				case "canal":
+					source = "flatsCanal" + mod;
+					break;
+				default:
+					source = V.location + mod;
+					break;
+			}
+		}
+
+		if (!source) source = "unkown"; // Should be unreachable, but there just in case
+		// eslint-disable-next-line no-undef
+		source = toCamelCase(source);
+
+		const type = amount > 0 ? "earned" : "spent";
+		amount = Math.abs(amount);
+
+		if (!V.moneyStats[source]) V.moneyStats[source] = { earned: 0, earnedCount: 0, spent: 0, spentCount: 0 };
+		V.moneyStats[source][type] += amount;
+		V.moneyStats[source][type + "Count"]++;
+		V.moneyStats[source][type + "TimeStamp"] = Time.date.timeStamp;
+	}
+	DefineMacro("money", money);
+
+	/*
+		Using a similar source to above, you'll be able to generate 'hourly rates' in the money statistics.
+		See the 'Cafe' and 'Cafe Work' passages and `timeTrackingEndCafe` widget for example usage usage
+	*/
+	function timeTracking(source, startTracking) {
+		if (!(typeof source === "string" || source instanceof String)) paramError("timeTracking", "source", source, "Expected a string.");
+
+		if (!V.timeStats[source]) {
+			V.timeStats[source] = { total: 0, trackedStart: 0 };
+		}
+		if (startTracking) {
+			V.timeStats[source].trackedStart = Time.date.timeStamp;
+		} else if (V.timeStats[source].trackedStart) {
+			// Clamped to 24 hours to prevent crazy values from occuring
+			V.timeStats[source].total += Math.clamp(Time.date.timeStamp - V.timeStats[source].trackedStart, 0, 3600 * 24);
+			V.timeStats[source].trackedStart = 0;
+		}
+	}
+	DefineMacro("timeTrackingStart", source => timeTracking(source, true));
+	DefineMacro("timeTrackingEnd", source => timeTracking(source));
+
+	function timeTrackingManual(source, amount, timeType = "hour") {
+		if (isNaN(amount)) paramError("money", "amount", amount, "Expected a number.");
+		if (!(typeof source === "string" || source instanceof String)) paramError("timeTrackingManual", "source", source, "Expected a string.");
+		if (!["hour", "minute", "second"].includes(timeType))
+			paramError("timeTrackingManual", "timeType", timeType, "Expected a string of either 'hour', 'minute' or 'second'.");
+
+		amount = Number(amount);
+		if (Number.isFinite(amount)) {
+			if (!V.timeStats[source]) {
+				V.timeStats[source] = { total: 0, trackedStart: 0 };
+			}
+			if (timeType === "hour") amount *= 3600;
+			if (timeType === "minute") amount *= 60;
+
+			// Clamped to 24 hours to prevent crazy values from occuring
+			V.timeStats[source].total += Math.clamp(amount, 0, 3600 * 24);
+		}
+	}
+	DefineMacro("timeTrackingManual", (source, amount, timeType) => timeTrackingManual(source, amount, timeType));
+
+	function timeTrackingTotal(source, timeType = "hour") {
+		if (!(typeof source === "string" || source instanceof String)) paramError("timeTracking", "source", source, "Expected a string.");
+		if (!["hour", "minute", "second"].includes(timeType))
+			paramError("timeTrackingManual", "timeType", timeType, "Expected a string of either 'hour', 'minute' or 'second'.");
+
+		if (!V.timeStats[source]?.total || (T.timeTrackingSnapshotOveride && !V.moneyStatsSnapshot?.time[source])) return 0;
+
+		let multiplier = 1;
+		if (timeType === "hour") multiplier = 3600;
+		if (timeType === "minute") multiplier = 60;
+
+		// Override that returns a value when looking for the snapshot value
+		if (T.timeTrackingSnapshotOveride && V.moneyStatsSnapshot?.time[source]) return V.moneyStatsSnapshot?.time[source].total / multiplier;
+
+		return V.timeStats[source].total / multiplier;
+	}
+
 	return {
 		trauma,
 		combattrauma,
@@ -1065,6 +1248,10 @@ const statChange = (() => {
 		hallucinogen,
 		wet,
 		worldCorruption,
+		money,
+		timeTracking,
+		timeTrackingManual,
+		timeTrackingTotal,
 	};
 })();
 window.statChange = statChange;
