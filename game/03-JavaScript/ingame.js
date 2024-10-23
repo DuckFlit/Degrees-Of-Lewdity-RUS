@@ -2152,6 +2152,18 @@ function earSlimeMakingMundaneRequests() {
 }
 window.earSlimeMakingMundaneRequests = earSlimeMakingMundaneRequests;
 
+function earSlimeCorruptionClothes() {
+	if (!numberOfEarSlime()) return 0;
+	if (!V.daily.corruptionSlimeClothes) {
+		const baseCorruption = V.earSlime.corruption + V.earSlime.growth;
+		// Reduced from the origonal equivalent of *2.5 and *12.5, still want it to have SOME effect, but this should hopefully soften it enough
+		V.daily.corruptionSlimeClothes = Math.clamp(random(baseCorruption, baseCorruption * 5) - currentSkillValue("willpower"), 0, 1000);
+	}
+	const cap = ["prison", "asylum"].includes(V.location) ? 1000 : 500;
+	return Math.clamp(V.daily.corruptionSlimeClothes + (V.earSlime.growth >= 100 && V.earSlime.defyCooldown ? V.earSlime.defyCooldown * 25 : 0), 0, cap);
+}
+window.earSlimeCorruptionClothes = earSlimeCorruptionClothes;
+
 function fixIntegrityUpdater() {
 	Object.entries(V.worn).forEach(([slot, item]) => fixIntegrityMax(slot, item));
 	Object.entries(V.store).forEach(([slot, items]) => items.forEach(item => fixIntegrityMax(slot, item)));
