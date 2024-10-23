@@ -1361,9 +1361,11 @@ window.hasSexStatMapper = hasSexStatMapper;
 /**
  * @param {string} input
  * @param {number} required
+ * @param {boolean} modifiers
  */
-function hasSexStat(input, required) {
+function hasSexStat(input, required, modifiers = true) {
 	const stat = hasSexStatMapper(input);
+	// check if stat name is valid.
 	if (stat == null) {
 		Errors.report(`[hasSexStat]: input '${stat}' null.`, {
 			Stacktrace: Utils.GetStack(),
@@ -1371,7 +1373,8 @@ function hasSexStat(input, required) {
 		});
 		return false;
 	}
-	const statValue = V[stat];
+	let statValue = V[stat];
+	// check if value of stat is valid.
 	if (!Number.isFinite(statValue)) {
 		Errors.report(`[hasSexStat]: sex stat '${stat}' unknown.`, {
 			Stacktrace: Utils.GetStack(),
@@ -1379,6 +1382,22 @@ function hasSexStat(input, required) {
 		});
 		return false;
 	}
+	if (modifiers) {
+		// modify effective stat value based on inebriation.
+		if (V.drunk > 0) {
+			const maxValue = 40; // The maximum value of the curve.
+			const valueAdjust = Math.clamp(maxValue - Math.floor(statValue / 4), 0, maxValue); // The curve is less effective with higher base stat.
+			const growthRate = 3; // How fast the curve grows as the drunk value increases.
+			const midpoint = 500; // Needs to be half of the max drunk value.
+			const shifter = 0.85; // Decreases this value to make lower drunk values give higher results and higher drunk values give lower results.
+			const drunkMod = (V.drunk - midpoint) / 500; // Adjusts the drunk values to be scaled correctly with the equation and max stat value.
+
+			const denominator = 1 + shifter * Math.E ** (-1 * growthRate * drunkMod);
+			statValue += Math.floor(valueAdjust / denominator);
+		}
+	}
+	statValue = Math.clamp(statValue, 0, 100);
+
 	switch (required) {
 		case 6:
 			/* self-destructive, extreme actions, like leglocking a rapist unprotected or provoking a group for no sane benefit. */
