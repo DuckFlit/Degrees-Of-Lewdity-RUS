@@ -858,10 +858,10 @@ function moneyStatsProcess(stats) {
 					case "cafeBuns":
 						compressTo = "cafe";
 						break;
-					case "brothalShow":
-					case "brothalVendingMachine":
+					case "brothelShow":
+					case "brothelVendingMachine":
 					case "brothelCondoms":
-						compressTo = "brothal";
+						compressTo = "brothel";
 						break;
 					case "hospitalPaternityTest":
 					case "hospitalPenisReduction":
