@@ -884,7 +884,7 @@ function effects() {
 		}
 
 		if (V.fallenangelmessage) {
-			sWikifier('<span class="red">You feel dark presence clawing at your skin.</span> <<gstress>>');
+			sWikifier('<span class="red">You feel a dark presence clawing at your skin.</span> <<gstress>>');
 			V.stress += V.stressmax;
 			delete V.fallenangelmessage;
 		}
