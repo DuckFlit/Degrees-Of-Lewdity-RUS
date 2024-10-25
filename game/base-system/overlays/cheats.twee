@@ -39,7 +39,7 @@
 	<<= _bodypart.toUpperFirst().replace("_", " ")>>:
 	<<capture _bodypart, _parasiteTypes, _i, _temp>>
 		<<for _i = 0; _i < _parasiteTypes.length; _i++>>
-			<span @id="_parasite" @class="_i is 0 ? 'goldLink' : 'link' ">
+			<span @id="_parasite" @class="_parasiteTypes[_i] is $parasite[_bodypart].name || _parasiteTypes[_i] is 'none' and !$parasite[_bodypart].name ? 'goldLink' : 'link' ">
 				<<link _parasiteTypes[_i]>>
 					<<removeparasite _bodypart>>
 					<<set _temp to _parasiteTypes[_i]>>
@@ -127,13 +127,19 @@
 		<div class="settingsToggleItemWide">
 			<span class="gold">Miscellaneous</span>
 			<br>
-			<<numberStepper "Money" $money "money" {
+			<<numberStepper "Money" $money {
 				activeButtons: ["single", "double", "triple"],
 				step: 1000,
-				max: 100000000,
+				max: 10000000000,
 				colorArr:["--yellow"],
 				percentage: false,
-				valueFormat: (value) => `<b>${formatMoney(value)}</b>`
+				valueFormat: (value) => `<b>${formatMoney(value)}</b>`,
+				callback: (value) => {
+					const difference = value - V.money;
+					V.moneyStats.total.earned += difference;
+					V.moneyStats.cheats.earned += difference;
+					V.money = value;
+				}
 			}>>
 
 			<<if $location is "prison">>
@@ -205,6 +211,8 @@
 			Handholding: <<cheatVirginityToggle "handholding">>
 			<br>
 			First kiss: <<cheatVirginityToggle "kiss">>
+			<br>
+			Temple Vow: <<cheatVirginityToggle "temple">>
 		</div>
 		<div class="settingsToggleItem">
 			<span class="gold">State</span>
@@ -590,6 +598,7 @@
 				<<for _i range _subjects>>
 					<<set V[_i] to 0>><<clamp>>
 				<</for>>
+				<<adjust_school_traits>>
 				<<replace "#schoolSkills">><<cheatSection "school">><</replace>>
 			<</link>>
 			|
@@ -597,6 +606,7 @@
 				<<for _i range _subjects>>
 					<<set V[_i] to 1000>><<clamp>>
 				<</for>>
+				<<adjust_school_traits>>
 				<<replace "#schoolSkills">><<cheatSection "school">><</replace>>
 			<</link>>
 			<br><br>
@@ -1223,7 +1233,7 @@
 			<span class="gold">Alex</span>
 			<<numberStepper "<<symbol love>> Love" `C.npc.Alex.love` { callback: value => { C.npc.Alex.love = value } }>>
 			<<numberStepper "<<symbol lust>> Lust" `C.npc.Alex.lust` { callback: value => { C.npc.Alex.lust = value } }>>
-			<<numberStepper "<<symbol dominance>> Dominance" `C.npc.Alex.dom` { callback: value => { C.npc.Alex.dom = value } }>>
+			<<numberStepper "<<symbol dominance>> Dominance" `C.npc.Alex.dom` { callback: value => { C.npc.Alex.dom = value }, min: -50 }>>
 		</div>
 		<div class="settingsToggleItem">
 			<span class="gold">Great Hawk</span>
@@ -1464,7 +1474,7 @@
 		<<case "wolfpackleader" "pirate_rank">>
 				<<set _ranks to _args[0] is "pirate_rank" ? {0: "Scum", 1: "Mate"} : {0: "Packmate", 1: "Pack leader"}>>
 				<<capture _i, _ranks>>
-				    <<for _i to 0; _i lt Object.keys(_ranks).length; _i++>>
+					<<for _i to 0; _i lt Object.keys(_ranks).length; _i++>>
 						<span @class="V[_args[0]] is _i ? 'goldLink' : 'unselected'">
 							<<link _ranks[_i]>>
 								<<set V[_args[0]] to _i>>
@@ -2324,7 +2334,7 @@
 			<<numberStepper "<<symbol beauty>> Beauty" $beauty "beauty" {max: 10000}>>
 			<<numberStepper "<<symbol physique>> Physique" $physique "physique" {max: $physiquesize}>>
 			<<numberStepper "<<symbol willpower>> Willpower" $willpower "willpower" {max: 1000}>>
-			<<numberStepper "<<symbol awareness>> Awareness" $awareness "awareness" {max: 1000, reverse: true}>>
+			<<numberStepper "<<symbol awareness>> Awareness" $awareness "awareness" {min: -200, max: 1000, reverse: true}>>
 			<<numberStepper "<<symbol promiscuity>> Promiscuity" $promiscuity "promiscuity" {reverse: true}>>
 			<<numberStepper "<<symbol exhibitionism>> Exhibitionism" $exhibitionism "exhibitionism" {reverse: true}>>
 			<<numberStepper "<<symbol deviancy>> Deviancy" $deviancy "deviancy" {reverse: true}>>

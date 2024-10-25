@@ -402,34 +402,6 @@
 	<<run unsetTendingVars()>>
 <</widget>>
 
-<<widget "tending_day">>
-	<<for _location range Object.keys($plots)>>
-		<<switch _location>>
-			<<case "farm">> <<set _irrigation to ($farm.irrigation ? $farm.irrigation : 0)>>
-			<<default>> <<set _irrigation to 0>>
-		<</switch>>
-		<<for $_plot range $plots[_location]>>
-			/* growth check */
-			<<if $_plot.stage gte 1 and ($_plot.water is 1 or $_plot.bed is "water")>>
-				<<set $_plot.days += 1>>
-				<<if $_plot.days gte setup.plants[$_plot.plant].days * (($_plot.stage+1) / 5)>>
-					<<set $_plot.stage += 1>>
-				<</if>>
-			<</if>>
-
-			/* should this check really happen AFTER the growth check? */
-			<<if Weather.precipitation is "rain">>
-				<<set $_plot.water to 1>>
-			<<elseif _irrigation gte 1>>
-				<<set $_plot.water to 1>>
-				<<set _irrigation-->>
-			<<else>>
-				<<set $_plot.water to 0>>
-			<</if>>
-		<</for>>
-	<</for>>
-<</widget>>
-
 <<widget "tending_harvest">>
 	/* Argument is the plot you want to harvest */
 	<<set $_plot to _args[0]>>

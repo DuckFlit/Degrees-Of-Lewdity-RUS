@@ -1,3 +1,4 @@
+// @ts-check
 /* For any item that has a colour_combat tag, set it to 0 if that item ever gets its own combat sprites.
 
 Warmth checklist:
@@ -13,12 +14,15 @@ Warmth checklist:
 	Max warmth: 5
 */
 function initFeet() {
-	setup.clothes.feet = [
+	/** @type {ClothesItem[]} */
+	const clothing = [
 		{
 			index: 0,
 			name: "naked",
 			name_cap: "Naked",
 			variable: "naked",
+			state: 0,
+			state_base: 0,
 			integrity: 10,
 			integrity_max: 10,
 			fabric_strength: 20,
@@ -48,6 +52,11 @@ function initFeet() {
 			name: "school shoes",
 			name_cap: "School shoes",
 			variable: "schoolshoes",
+			combat: {
+				reference: "kittenheels",
+			},
+			state: 0,
+			state_base: 0,
 			integrity: 200,
 			integrity_max: 200,
 			fabric_strength: 20,
@@ -72,12 +81,16 @@ function initFeet() {
 			iconFile: "school_shoes.png",
 			accIcon: 0,
 		},
-
 		{
 			index: 2,
 			name: "tuxedo shoes",
 			name_cap: "Tuxedo shoes",
 			variable: "tuxedoshoes",
+			combat: {
+				reference: "kittenheels",
+			},
+			state: 0,
+			state_base: 0,
 			integrity: 200,
 			integrity_max: 200,
 			fabric_strength: 20,
@@ -103,12 +116,16 @@ function initFeet() {
 			iconFile: "tuxedo_shoes.png",
 			accIcon: 0,
 		},
-
 		{
 			index: 3,
 			name: "ankle cuffs",
 			name_cap: "Ankle cuffs",
 			variable: "anklecuffs",
+			combat: {
+				accessory: true,
+			},
+			state: 0,
+			state_base: 0,
 			integrity: 400,
 			integrity_max: 400,
 			fabric_strength: 20,
@@ -133,12 +150,16 @@ function initFeet() {
 			iconFile: 0,
 			accIcon: 0,
 		},
-
 		{
 			index: 4,
 			name: "sandals",
 			name_cap: "Sandals",
 			variable: "sandals",
+			combat: {
+				reference: "wedgesandals",
+			},
+			state: 0,
+			state_base: 0,
 			integrity: 100,
 			integrity_max: 100,
 			fabric_strength: 20,
@@ -164,12 +185,17 @@ function initFeet() {
 			iconFile: "sandals.png",
 			accIcon: 0,
 		},
-
 		{
 			index: 5,
 			name: "dress sandals",
 			name_cap: "Dress sandals",
 			variable: "dresssandals",
+			combat: {
+				reference: "wedgesandals",
+				accessory: true,
+			},
+			state: 0,
+			state_base: 0,
 			integrity: 100,
 			integrity_max: 100,
 			fabric_strength: 20,
@@ -195,12 +221,16 @@ function initFeet() {
 			iconFile: "dress_sandals.png",
 			accIcon: 0,
 		},
-
 		{
 			index: 6,
 			name: "trainers",
 			name_cap: "Trainers",
 			variable: "trainers",
+			combat: {
+				reference: "lightuptrainers",
+			},
+			state: 0,
+			state_base: 0,
 			integrity: 250,
 			integrity_max: 250,
 			fabric_strength: 20,
@@ -226,12 +256,16 @@ function initFeet() {
 			iconFile: "trainers.png",
 			accIcon: "trainers_acc.png",
 		},
-
 		{
 			index: 7,
 			name: "witch shoes",
 			name_cap: "Witch shoes",
 			variable: "witch",
+			combat: {
+				reference: "courtheels",
+			},
+			state: 0,
+			state_base: 0,
 			integrity: 200,
 			integrity_max: 200,
 			fabric_strength: 20,
@@ -258,12 +292,16 @@ function initFeet() {
 			iconFile: "witch_shoes.png",
 			accIcon: "witch_shoes_acc.png",
 		},
-
 		{
 			index: 8,
 			name: "wellies",
 			name_cap: "Wellies",
 			variable: "wellies",
+			combat: {
+				reference: "bootheels",
+			},
+			state: 0,
+			state_base: 0,
 			integrity: 200,
 			integrity_max: 200,
 			fabric_strength: 20,
@@ -288,12 +326,13 @@ function initFeet() {
 			iconFile: "wellies.png",
 			accIcon: 0,
 		},
-
 		{
 			index: 9,
 			name: "platform heels",
 			name_cap: "Platform heels",
 			variable: "platformheels",
+			state: 0,
+			state_base: 0,
 			integrity: 200,
 			integrity_max: 200,
 			fabric_strength: 20,
@@ -319,12 +358,13 @@ function initFeet() {
 			iconFile: "platform_heels.png",
 			accIcon: 0,
 		},
-
 		{
 			index: 10,
 			name: "kitten heels",
 			name_cap: "Kitten heels",
 			variable: "kittenheels",
+			state: 0,
+			state_base: 0,
 			integrity: 200,
 			integrity_max: 200,
 			fabric_strength: 20,
@@ -350,12 +390,13 @@ function initFeet() {
 			iconFile: "kitten_heels.png",
 			accIcon: 0,
 		},
-
 		{
 			index: 11,
 			name: "wedge sandals",
 			name_cap: "Wedge sandals",
 			variable: "wedgesandals",
+			state: 0,
+			state_base: 0,
 			integrity: 100,
 			integrity_max: 100,
 			fabric_strength: 20,
@@ -382,12 +423,13 @@ function initFeet() {
 			iconFile: "wedge_sandals.png",
 			accIcon: 0,
 		},
-
 		{
 			index: 12,
 			name: "court heels",
 			name_cap: "Court heels",
 			variable: "courtheels",
+			state: 0,
+			state_base: 0,
 			integrity: 200,
 			integrity_max: 200,
 			fabric_strength: 20,
@@ -413,12 +455,13 @@ function initFeet() {
 			iconFile: "court_heels.png",
 			accIcon: 0,
 		},
-
 		{
 			index: 13,
 			name: "heeled boots",
 			name_cap: "Heeled boots",
 			variable: "bootheels",
+			state: 0,
+			state_base: 0,
 			integrity: 200,
 			integrity_max: 200,
 			fabric_strength: 20,
@@ -444,12 +487,13 @@ function initFeet() {
 			iconFile: "heeled_boots.png",
 			accIcon: 0,
 		},
-
 		{
 			index: 14,
 			name: "stripper heels",
 			name_cap: "Stripper heels",
 			variable: "stripperheels",
+			state: 0,
+			state_base: 0,
 			integrity: 200,
 			integrity_max: 200,
 			fabric_strength: 20,
@@ -476,12 +520,16 @@ function initFeet() {
 			iconFile: "stripper_heels.png",
 			accIcon: 0,
 		},
-
 		{
 			index: 15,
 			name: "horsebit loafers",
 			name_cap: "Horsebit loafers",
 			variable: "horsebitloafers",
+			combat: {
+				reference: "wedgesandals",
+			},
+			state: 0,
+			state_base: 0,
 			integrity: 200,
 			integrity_max: 200,
 			fabric_strength: 20,
@@ -507,12 +555,16 @@ function initFeet() {
 			iconFile: "horsebit_loafers.png",
 			accIcon: 0,
 		},
-
 		{
 			index: 16,
 			name: "cordovan loafers",
 			name_cap: "Cordovan loafers",
 			variable: "cordovanloafers",
+			combat: {
+				reference: "wedgesandals",
+			},
+			state: 0,
+			state_base: 0,
 			integrity: 300,
 			integrity_max: 300,
 			fabric_strength: 20,
@@ -538,12 +590,16 @@ function initFeet() {
 			iconFile: "cordovan_loafers.png",
 			accIcon: 0,
 		},
-
 		{
 			index: 17,
 			name: "bunny slippers",
 			name_cap: "Bunny slippers",
 			variable: "bunny",
+			combat: {
+				reference: "wedgesandals",
+			},
+			state: 0,
+			state_base: 0,
 			integrity: 100,
 			integrity_max: 100,
 			fabric_strength: 20,
@@ -569,12 +625,16 @@ function initFeet() {
 			iconFile: "bunny_slippers.png",
 			accIcon: 0,
 		},
-
 		{
 			index: 18,
 			name: "combat boots",
 			name_cap: "Combat boots",
 			variable: "combat",
+			combat: {
+				reference: "bootheels",
+			},
+			state: 0,
+			state_base: 0,
 			integrity: 500,
 			integrity_max: 500,
 			fabric_strength: 50,
@@ -600,12 +660,16 @@ function initFeet() {
 			iconFile: "combat_boots.png",
 			accIcon: 0,
 		},
-
 		{
 			index: 19,
 			name: "field boots",
 			name_cap: "Field boots",
 			variable: "field",
+			combat: {
+				reference: "bootheels",
+			},
+			state: 0,
+			state_base: 0,
 			integrity: 400,
 			integrity_max: 400,
 			fabric_strength: 40,
@@ -631,12 +695,16 @@ function initFeet() {
 			iconFile: "field_boots.png",
 			accIcon: 0,
 		},
-
 		{
 			index: 20,
 			name: "paddock boots",
 			name_cap: "Paddock boots",
 			variable: "paddock",
+			combat: {
+				reference: "bootheels",
+			},
+			state: 0,
+			state_base: 0,
 			integrity: 300,
 			integrity_max: 300,
 			fabric_strength: 40,
@@ -662,12 +730,16 @@ function initFeet() {
 			iconFile: "paddock_boots.png",
 			accIcon: 0,
 		},
-
 		{
 			index: 21,
 			name: "work boots",
 			name_cap: "Work boots",
 			variable: "work",
+			combat: {
+				reference: "bootheels",
+			},
+			state: 0,
+			state_base: 0,
 			integrity: 300,
 			integrity_max: 300,
 			fabric_strength: 40,
@@ -693,12 +765,16 @@ function initFeet() {
 			iconFile: "work_boots.png",
 			accIcon: 0,
 		},
-
 		{
 			index: 22,
 			name: "flippers",
 			name_cap: "Flippers",
 			variable: "flippers",
+			combat: {
+				reference: "wedgesandals",
+			},
+			state: 0,
+			state_base: 0,
 			integrity: 200,
 			integrity_max: 200,
 			fabric_strength: 60,
@@ -724,12 +800,16 @@ function initFeet() {
 			iconFile: "flippers.png",
 			accIcon: 0,
 		},
-
 		{
 			index: 23,
 			name: "ice skates",
 			name_cap: "Ice skates",
 			variable: "iceskates",
+			combat: {
+				reference: "bootheels",
+			},
+			state: 0,
+			state_base: 0,
 			integrity: 100,
 			integrity_max: 100,
 			fabric_strength: 20,
@@ -755,12 +835,16 @@ function initFeet() {
 			iconFile: "ice_skates.png",
 			accIcon: 0,
 		},
-
 		{
 			index: 24,
 			name: "long boots",
 			name_cap: "Long boots",
 			variable: "long",
+			combat: {
+				reference: "bootheels",
+			},
+			state: 0,
+			state_base: 0,
 			integrity: 200,
 			integrity_max: 200,
 			fabric_strength: 60,
@@ -786,12 +870,13 @@ function initFeet() {
 			iconFile: "long_boots.png",
 			accIcon: 0,
 		},
-
 		{
 			index: 25,
 			name: "light-up trainers",
 			name_cap: "Light-up trainers",
 			variable: "lightuptrainers",
+			state: 0,
+			state_base: 0,
 			integrity: 250,
 			integrity_max: 250,
 			fabric_strength: 20,
@@ -816,12 +901,13 @@ function initFeet() {
 			iconFile: "light-up_trainers.png",
 			accIcon: "light-up_trainers_acc.png",
 		},
-
 		{
 			index: 26,
 			name: "ball and chain",
 			name_cap: "Ball and chain",
 			variable: "ballchain",
+			state: 0,
+			state_base: 0,
 			integrity: 400,
 			integrity_max: 400,
 			fabric_strength: 20,
@@ -846,12 +932,16 @@ function initFeet() {
 			iconFile: 0,
 			accIcon: 0,
 		},
-
 		{
 			index: 27,
 			name: "cowboy boots",
 			name_cap: "Cowboy boots",
 			variable: "cowboy",
+			combat: {
+				reference: "bootheels",
+			},
+			state: 0,
+			state_base: 0,
 			integrity: 350,
 			integrity_max: 350,
 			fabric_strength: 40,
@@ -877,12 +967,16 @@ function initFeet() {
 			iconFile: "cowboy_boots.png",
 			accIcon: 0,
 		},
-
 		{
 			index: 28,
 			name: "high top trainers",
 			name_cap: "High top trainers",
 			variable: "hightops",
+			combat: {
+				reference: "lightuptrainers",
+			},
+			state: 0,
+			state_base: 0,
 			integrity: 300,
 			integrity_max: 300,
 			fabric_strength: 20,
@@ -907,12 +1001,16 @@ function initFeet() {
 			iconFile: "trainers.png",
 			accIcon: "trainers_acc.png",
 		},
-
 		{
 			index: 29,
 			name: "belly dancer's shoes",
 			name_cap: "Belly dancer's shoes",
 			variable: "belly",
+			combat: {
+				reference: "courtheels",
+			},
+			state: 0,
+			state_base: 0,
 			integrity: 200,
 			integrity_max: 200,
 			fabric_strength: 20,
@@ -944,6 +1042,11 @@ function initFeet() {
 			name: "canvas loafers",
 			name_cap: "Canvas loafers",
 			variable: "canvas loafers",
+			combat: {
+				reference: "wedgesandals",
+			},
+			state: 0,
+			state_base: 0,
 			integrity: 200,
 			integrity_max: 200,
 			fabric_strength: 20,
@@ -975,6 +1078,11 @@ function initFeet() {
 			name: "thigh-high heeled boots",
 			name_cap: "Thigh-high heeled boots",
 			variable: "thighhigh_heels",
+			combat: {
+				reference: "bootheels",
+			},
+			state: 0,
+			state_base: 0,
 			integrity: 200,
 			integrity_max: 200,
 			fabric_strength: 20,
@@ -1005,6 +1113,11 @@ function initFeet() {
 			name: "fur boots",
 			name_cap: "Fur boots",
 			variable: "fur_boots",
+			combat: {
+				reference: "bootheels",
+			},
+			state: 0,
+			state_base: 0,
 			integrity: 200,
 			integrity_max: 200,
 			fabric_strength: 20,
@@ -1036,6 +1149,11 @@ function initFeet() {
 			name: "mary janes",
 			name_cap: "Mary janes",
 			variable: "maryjanes",
+			combat: {
+				reference: "wedgesandals",
+			},
+			state: 0,
+			state_base: 0,
 			integrity: 300,
 			integrity_max: 300,
 			fabric_strength: 20,
@@ -1067,6 +1185,11 @@ function initFeet() {
 			name: "platform mary janes",
 			name_cap: "Platform mary janes",
 			variable: "platformmaryjanes",
+			combat: {
+				reference: "wedgesandals",
+			},
+			state: 0,
+			state_base: 0,
 			integrity: 300,
 			integrity_max: 300,
 			fabric_strength: 20,
@@ -1098,6 +1221,11 @@ function initFeet() {
 			name: "geta",
 			name_cap: "Geta",
 			variable: "geta",
+			combat: {
+				reference: "wedgesandals",
+			},
+			state: 0,
+			state_base: 0,
 			integrity: 300,
 			integrity_max: 300,
 			fabric_strength: 20,
@@ -1127,6 +1255,11 @@ function initFeet() {
 			name: "zori",
 			name_cap: "Zori",
 			variable: "zori",
+			combat: {
+				reference: "wedgesandals",
+			},
+			state: 0,
+			state_base: 0,
 			integrity: 300,
 			integrity_max: 300,
 			fabric_strength: 20,
@@ -1152,6 +1285,7 @@ function initFeet() {
 			accIcon: "zori_acc.png",
 		},
 	];
+	setup.clothes.feet = clothing;
 
 	/*
 		Clothes that modders add go into this array, this should be empty in the base game at all times.

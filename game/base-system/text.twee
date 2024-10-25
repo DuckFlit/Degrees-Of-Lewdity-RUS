@@ -666,6 +666,8 @@
 				<<set _text_output to "The " + $npc[$npcrow.indexOf($index)]>>
 			<<elseif $npc.includes("Ivory Wraith")>>
 				<<set _text_output to "The pale figure">>
+			<<elseif $NPCList[$index].name_known is 0>>
+				<<set _text_output to "The " + $NPCList[$index].description>>
 			<<else>>
 				<<set _text_output to $npc[$npcrow.indexOf($index)]>>
 			<</if>>
@@ -781,7 +783,7 @@
 		<<personselect _n>>
 		<!-- NPC's name will only appear if they are selected -->
 		<<if $NPCList[_n].intro is 1>>
-			<<if $npcrow.includes(_n)>>
+			<<if $npcrow.includes(_n) and $NPCList[_n].name_known is 1>>
 				<<print $npc[$npcrow.indexOf(_n)]>>'s
 			<<else>>
 				the <<persons>>
@@ -1245,6 +1247,7 @@
 
 <!-- [0] - if truthy, genital sensitivity is omitted -->
 <<widget "pussy">><<silently>>
+	<<set _genital_state_text to "">>
 	<<if !_pussyStateDescribed>>
 		<<genitalstate "pussy">><<set _genital_state_text to _text_output>>
 	<</if>>
@@ -1430,7 +1433,11 @@
 
 <<widget "combatperson">><<silently>>
 	<<if $npc_named is 1 and $description isnot "pale figure">>
-		<<set _text_output to $NPCList[$index].fullDescription>>
+		<<if $NPCList[$index].name_known is 1>>
+			<<set _text_output to $NPCList[$index].fullDescription>>
+		<<else>>
+			<<set _text_output to "the " + $description>>
+		<</if>>
 	<<elseif $NPCList[$index].name_known is 1>>
 		<<set _text_output to $NPCList[$index].name>>
 	<<elseif $enemytype is "beast">>
@@ -1451,11 +1458,19 @@
 
 <<widget "combatpersons">><<silently>>
 	<<combatperson>>
-	<<set _text_output to _text_output + "'s">>
+	<<if (_text_output.endsWith("s") or _text_output.endsWith("sh")) and $NPCList[$index].name_known isnot 1>>
+		<<set _text_output to _text_output + "'">>
+	<<else>>
+		<<set _text_output to _text_output + "'s">>
+	<</if>>
 <</silently>><<print _text_output>><</widget>>
 
 <<widget "combatPerson">><<silently>>
 	<<combatperson>><<capitalise>>
+<</silently>><<print _text_output>><</widget>>
+
+<<widget "combatPersons">><<silently>>
+	<<combatpersons>><<capitalise>>
 <</silently>><<print _text_output>><</widget>>
 
 <<widget "genderswapPlayer">>
@@ -1833,87 +1848,75 @@
 <<widget "exhibitionist">>
 	<<if $statdisable is "f">> |
 		<<set _color to ["","teal","lblue","blue","purple","pink","red"][_args[0]]>>
-		<span @class="_color">Exhibitionism _args[0]</span>
+		<<set $_modifierEffect to !hasSexStat("exhibitionism", _args[0], false) and $drunk gte 1 ? " drunk-text" : "">>
+		<<set _color += $_modifierEffect>>
+		<<if _args[0] is 6>>
+			<span @class="_color">!Exhibitionism 6!</span>
+		<<else>>
+			<span @class="_color">Exhibitionism _args[0]</span>
+		<</if>>
 	<</if>>
 <</widget>>
 
 <<widget "exhibitionist1">>
-	<<if $statdisable is "f">> |
-		<span class="teal">Exhibitionism 1</span>
-	<</if>>
+	<<exhibitionist 1>>
 <</widget>>
 
 <<widget "exhibitionist2">>
-	<<if $statdisable is "f">> |
-		<span class="lblue">Exhibitionism 2</span>
-	<</if>>
+	<<exhibitionist 2>>
 <</widget>>
 
 <<widget "exhibitionist3">>
-	<<if $statdisable is "f">> |
-		<span class="blue">Exhibitionism 3</span>
-	<</if>>
+	<<exhibitionist 3>>
 <</widget>>
 
 <<widget "exhibitionist4">>
-	<<if $statdisable is "f">> |
-		<span class="purple">Exhibitionism 4</span>
-	<</if>>
+	<<exhibitionist 4>>
 <</widget>>
 
 <<widget "exhibitionist5">>
-	<<if $statdisable is "f">> |
-		<span class="pink">Exhibitionism 5</span>
-	<</if>>
+	<<exhibitionist 5>>
 <</widget>>
 
 <<widget "exhibitionist6">>
-	<<if $statdisable is "f">> |
-		<span class="red">!Exhibitionism 6!</span>
-	<</if>>
+	<<exhibitionist 6>>
 <</widget>>
 
 <<widget "combatexhibitionist">>
 	<<if $statdisable is "f">>
 		<<set _color to ["","teal","lblue","blue","purple","pink","red"][_args[0]]>>
-		<span @class="_color">Exhibitionism _args[0]</span>
+		<<set $_modifierEffect to !hasSexStat("exhibitionism", _args[0], false) and $drunk gte 1 ? " drunk-text" : "">>
+		<<set _color += $_modifierEffect>>
+		<<if _args[0] is 6>>
+			<span @class="_color">!Exhibitionism 6!</span>
+		<<else>>
+			<span @class="_color">Exhibitionism _args[0]</span>
+		<</if>>
 	<</if>>
 <</widget>>
 
 <<widget "combatexhibitionist1">>
-	<<if $statdisable is "f">>
-		<span class="teal">Exhibitionism 1</span>
-	<</if>>
+	<<combatexhibitionist 1>>
 <</widget>>
 
 <<widget "combatexhibitionist2">>
-	<<if $statdisable is "f">>
-		<span class="lblue">Exhibitionism 2</span>
-	<</if>>
+	<<combatexhibitionist 2>>
 <</widget>>
 
 <<widget "combatexhibitionist3">>
-	<<if $statdisable is "f">>
-		<span class="blue">Exhibitionism 3</span>
-	<</if>>
+	<<combatexhibitionist 3>>
 <</widget>>
 
 <<widget "combatexhibitionist4">>
-	<<if $statdisable is "f">>
-		<span class="purple">Exhibitionism 4</span>
-	<</if>>
+	<<combatexhibitionist 4>>
 <</widget>>
 
 <<widget "combatexhibitionist5">>
-	<<if $statdisable is "f">>
-		<span class="pink">Exhibitionism 5</span>
-	<</if>>
+	<<combatexhibitionist 5>>
 <</widget>>
 
 <<widget "combatexhibitionist6">>
-	<<if $statdisable is "f">>
-		<span class="red">!Exhibitionism 6!</span>
-	<</if>>
+	<<combatexhibitionist 6>>
 <</widget>>
 
 <!-- Promiscuity -->
@@ -1921,87 +1924,76 @@
 <<widget "promiscuous">>
 	<<if $statdisable is "f">> |
 		<<set _color to ["","teal","lblue","blue","purple","pink","red"][_args[0]]>>
-		<span @class="_color">Promiscuity _args[0]</span>
+		<<set $_modifierEffect to !hasSexStat("promiscuity", _args[0], false) and $drunk gte 1 ? " drunk-text" : "">>
+		<<set _color += $_modifierEffect>>
+		<<if _args[0] is 6>>
+			<span @class="_color">!Promiscuity 6!</span>
+		<<else>>
+			<span @class="_color">Promiscuity _args[0]</span>
+		<</if>>
 	<</if>>
 <</widget>>
 
 <<widget "promiscuous1">>
-	<<if $statdisable is "f">> |
-		<span class="teal">Promiscuity 1</span>
-	<</if>>
+	<<promiscuous 1>>
 <</widget>>
 
 <<widget "promiscuous2">>
-	<<if $statdisable is "f">> |
-		<span class="lblue">Promiscuity 2</span>
-	<</if>>
+	<<promiscuous 2>>
 <</widget>>
 
 <<widget "promiscuous3">>
-	<<if $statdisable is "f">> |
-		<span class="blue">Promiscuity 3</span>
-	<</if>>
+	<<promiscuous 3>>
 <</widget>>
 
 <<widget "promiscuous4">>
-	<<if $statdisable is "f">> |
-		<span class="purple">Promiscuity 4</span>
-	<</if>>
+	<<promiscuous 4>>
 <</widget>>
 
 <<widget "promiscuous5">>
-	<<if $statdisable is "f">> |
-		<span class="pink">Promiscuity 5</span>
-	<</if>>
+	<<promiscuous 5>>
 <</widget>>
 
 <<widget "promiscuous6">>
-	<<if $statdisable is "f">> |
-		<span class="red">!Promiscuity 6!</span>
-	<</if>>
+	<<promiscuous 6>>
 <</widget>>
 
 <<widget "combatpromiscuous">>
-	<<if $consensual is 1 and !$promiscuityIgnore and $statdisable is "f">>
+	<<if ($consensual is 1 or _args[0] is 6) and !$promiscuityIgnore and $statdisable is "f">>
 		<<set _color to ["","teal","lblue","blue","purple","pink","red"][_args[0]]>>
-		<span @class="_color"><<print ($enemytype is "man" ? "- Promiscuity" : "- Deviancy")>> _args[0]</span>
+		<<set $_stat to $enemytype is "man" ? "promiscuity" : "deviancy">>
+		<<set $_modifierEffect to !hasSexStat($_stat, _args[0], false) and $drunk gte 1 ? " drunk-text" : "">>
+		<<set _color += $_modifierEffect>>
+		<<if _args[0] is 6>>
+			<span @class="_color"><<print ($enemytype is "man" ? "- !Promiscuity 6!" : "- !Deviancy 6!")>></span>
+		<<else>>
+			<span @class="_color"><<print ($enemytype is "man" ? "- Promiscuity" : "- Deviancy")>> _args[0]</span>
+		<</if>>
 	<</if>>
 <</widget>>
 
 <<widget "combatpromiscuous1">>
-	<<if $consensual is 1 and !$promiscuityIgnore and $statdisable is "f">>
-		<span class="teal"><<print ($enemytype is "man" ? "- Promiscuity" : "- Deviancy")>> 1</span>
-	<</if>>
+	<<combatpromiscuous 1>>
 <</widget>>
 
 <<widget "combatpromiscuous2">>
-	<<if $consensual is 1 and !$promiscuityIgnore and $statdisable is "f">>
-		<span class="lblue"><<print ($enemytype is "man" ? "- Promiscuity" : "- Deviancy")>> 2</span>
-	<</if>>
+	<<combatpromiscuous 2>>
 <</widget>>
 
 <<widget "combatpromiscuous3">>
-	<<if $consensual is 1 and !$promiscuityIgnore and $statdisable is "f">>
-		<span class="blue"><<print ($enemytype is "man" ? "- Promiscuity" : "- Deviancy")>> 3</span>
-	<</if>>
+	<<combatpromiscuous 3>>
 <</widget>>
 
 <<widget "combatpromiscuous4">>
-	<<if $consensual is 1 and !$promiscuityIgnore and $statdisable is "f">>
-		<span class="purple"><<print ($enemytype is "man" ? "- Promiscuity" : "- Deviancy")>> 4</span>
-	<</if>>
+	<<combatpromiscuous 4>>
 <</widget>>
 
 <<widget "combatpromiscuous5">>
-	<<if $consensual is 1 and !$promiscuityIgnore and $statdisable is "f">>
-		<span class="pink"><<print ($enemytype is "man" ? "- Promiscuity" : "- Deviancy")>> 5</span>
-	<</if>>
+	<<combatpromiscuous 5>>
 <</widget>>
 
 <<widget "combatpromiscuous6">>
-	<<if !$promiscuityIgnore and $statdisable is "f">>
-		<span class="red">!<<print ($enemytype is "man" ? "Promiscuity" : "Deviancy")>> 6!</span>
-	<</if>>
+	<<combatpromiscuous 6>>
 <</widget>>
 
 <!-- Deviancy -->
@@ -2009,44 +2001,38 @@
 <<widget "deviant">> |
 	<<if $statdisable is "f">> |
 		<<set _color to ["","teal","lblue","blue","purple","pink","red"][_args[0]]>>
-		<span @class="_color">Deviancy _args[0]</span>
+		<<set $_modifierEffect to !hasSexStat("deviancy", _args[0], false) and $drunk gte 1 ? " drunk-text" : "">>
+		<<set _color += $_modifierEffect>>
+		<<if _args[0] is 6>>
+			<span @class="_color">!Deviancy 6!</span>
+		<<else>>
+			<span @class="_color">Deviancy _args[0]</span>
+		<</if>>
 	<</if>>
 <</widget>>
 
 <<widget "deviant1">>
-	<<if $statdisable is "f">> |
-		<span class="teal">Deviancy 1</span>
-	<</if>>
+	<<deviant 1>>
 <</widget>>
 
 <<widget "deviant2">>
-	<<if $statdisable is "f">> |
-		<span class="lblue">Deviancy 2</span>
-	<</if>>
+	<<deviant 2>>
 <</widget>>
 
 <<widget "deviant3">>
-	<<if $statdisable is "f">> |
-		<span class="blue">Deviancy 3</span>
-	<</if>>
+	<<deviant 3>>
 <</widget>>
 
 <<widget "deviant4">>
-	<<if $statdisable is "f">> |
-		<span class="purple">Deviancy 4</span>
-	<</if>>
+	<<deviant 4>>
 <</widget>>
 
 <<widget "deviant5">>
-	<<if $statdisable is "f">> |
-		<span class="pink">Deviancy 5</span>
-	<</if>>
+	<<deviant 5>>
 <</widget>>
 
 <<widget "deviant6">>
-	<<if $statdisable is "f">> |
-		<span class="red">!Deviancy 6!</span>
-	<</if>>
+	<<deviant 6>>
 <</widget>>
 
 <<widget "crime">>
@@ -2251,6 +2237,14 @@
 	<</if>>
 <</silently>>_text_output<</widget>>
 
+<<widget "privates">><<silently>>
+	<<outfitChecks>>
+	<<if !_bottomExposed>>
+		<<set _text_output to either("genitals", "groin", "crotch", "privates")>>
+	<<else>>
+		<<genitals>>
+	<</if>>
+<</silently>>_text_output<</widget>>
 <!--
 	Optional parameter [0] possible values:
 	0 or omitted or null - display full name of undies or full genital description

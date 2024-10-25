@@ -122,10 +122,11 @@ setup.debugMenu.eventList = {
 		},
 		{
 			link: [`Roll Over`, stayOnPassageFn],
-			widgets: [() => `<<set $position to ` + (V.position === "doggy" ? "doggy" : "missionary") + `>>`],
-			condition() {
-				return V.position === "doggy" || V.position === "missionary" ? 1 : 0;
-			},
+			widgets: [
+				() => {
+					V.position = V.position === "doggy" ? "missionary" : "doggy";
+				},
+			],
 		},
 		{
 			link: [`Replay current passage with new RNG`, ""],
@@ -670,12 +671,7 @@ setup.debugMenu.eventList = {
 		},
 		{
 			link: [`Great Hawk Hunt Capture`, `Moor`],
-			widgets: [
-				`<<set $moor to 50>>`,
-				`<<set $eventskip to 1>>`,
-				`<<moor_hunt_start>>`,
-				`<<set $moor_hunt to 10>>`,
-			],
+			widgets: [`<<set $moor to 50>>`, `<<set $eventskip to 1>>`, `<<moor_hunt_start>>`, `<<set $moor_hunt to 10>>`],
 		},
 		{
 			link: [`Police Pillory Start`, `Police Pillory Start`],
@@ -1260,7 +1256,7 @@ setup.debugMenu.eventList = {
 		},
 		{
 			link: [`Money`, stayOnPassageFn],
-			widgets: [`<<set $money += 500000>>`],
+			widgets: [`<<money 500000 "debug">>`],
 		},
 		{
 			link: [`Grow hair`, stayOnPassageFn],
@@ -1689,8 +1685,9 @@ window.changeBorderColor = changeBorderColor;
 // const categories = ["debugEventsMain", "debugEventsCharacter", "debugEventsEvents"];
 const categories2 = ["debugMain", "debugCharacter", "debugEvents", "debugFavourites", "debugAdd"];
 
-function researchEvents(defaultValue) {
+function researchEvents(defaultValue, event) {
 	$(function () {
+		if (event != null) event.preventDefault();
 		let needle = defaultValue != null ? defaultValue : document.getElementById("searchEvents").value;
 		const eventsList = [
 			document.getElementById("debugEventsMain").getElementsByTagName("div"),

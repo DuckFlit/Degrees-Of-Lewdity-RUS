@@ -132,10 +132,6 @@
 		<</if>>
 		/*Prevent equip when the ear slime doesn't allow it*/
 		<<if _slimePrevent.includes(_slot) and $wardrobeOption is "wear" and $earSlime.corruption gte 10>>
-			<<if $daily.corruptionSlimeClothes is undefined>>
-				<<set _baseCorruption to (($earSlime.corruption / 2) + ($earSlime.growth / 2))>>
-				<<set $daily.corruptionSlimeClothes to random(_baseCorruption * 5, _baseCorruption * 25) - currentSkillValue('willpower')>>
-			<</if>>
 			<<if $earSlime.forcedCommando isnot undefined and (_slot is "under_lower" or (_item.outfitPrimary and _item.outfitPrimary.under_lower and !["broken","split"].includes(_item.outfitPrimary.under_lower)))>>
 				<<if _item.type.includes("naked") or (_earSlimeEnableSwimwear and _item.type.includes("swim")) or (_earSlimeEnableDancewear and _item.type.includes("dance"))>>
 				<<elseif $earSlime.forcedCommando gt 0>>
@@ -145,7 +141,7 @@
 				<<else>>
 					<<run delete $earSlime.forcedCommando>>
 				<</if>>
-			<<elseif ((["prison", "asylum"].includes($location) and _item.reveal lt Math.clamp($daily.corruptionSlimeClothes, 0, 1000)) or (_item.reveal lt Math.clamp($daily.corruptionSlimeClothes, 0, 500)) and !(_item.type.includesAny("school") and Time.schoolDay)) and !_item.type.includesAny("event")>>
+			<<elseif _item.reveal lt earSlimeCorruptionClothes() and !(!["prison", "asylum"].includes($location) and _item.type.includesAny("school") and Time.schoolDay) and !_item.type.includesAny("event")>>
 				<span class="red">You were unable to equip your _item.name as the slime in your ear did not permit it.</span>
 				<br>
 				<<continue>>
@@ -1822,7 +1818,7 @@ It will earn you <<printmoney `_value + 5000`>>.
 	<</for>>
 <</for>>
 The driver takes the crate away, leaving <<printmoney `_value + 5000`>> in its place.
-<<set $money += Math.floor(_value + 5000)>>
+<<money `Math.floor(_value + 5000)` "tailor">>
 <br><br>
 <<link [[Continue|$wardrobeReturnLink]]>>
 	<<unset $wardrobeReturnLink>>
@@ -1926,7 +1922,7 @@ It will cost you
 	<</for>>
 <</for>>
 <<if _value gt 5000>>
-	<<set $money -= _value - 5000>>
+	<<money `-_value - 5000` "tailor">>
 	The driver takes <<printmoney `_value - 5000`>> and the crate away.
 <<else>>
 	The driver takes the crate away.

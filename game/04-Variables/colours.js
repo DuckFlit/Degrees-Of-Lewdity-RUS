@@ -103,6 +103,11 @@ setup.colours = {
 	condom_default: {
 		blendMode: "hard-light",
 	},
+	tentacle: [],
+	tentacle_map: {},
+	tentacle_default: {
+		blendMode: "hard-light",
+	},
 
 	skin_options: {
 		light: {
@@ -145,17 +150,15 @@ setup.colours = {
 			blendMode: "multiply",
 			desaturate: false,
 		},
-		wraith: {
+		ghost: {
 			gradient: ["#ffffff", "#ffffff"],
 			blendMode: "multiply",
+			alpha: 0.6,
 			desaturate: true,
-		}
+		},
 	},
-	/**
+	/*
 	 * Get canvas filter for skin of given type and tan progression (0..1).
-	 *
-	 * @param {any} type
-	 * @param {any} tan
 	 */
 	getSkinFilter(type, tan) {
 		const options = setup.colours.skin_options[type];
@@ -163,10 +166,11 @@ setup.colours = {
 			blend: setup.colours.getSkinRgb(options, tan / 100),
 			blendMode: options.blendMode,
 			desaturate: options.desaturate,
+			alpha: options.alpha ? options.alpha : 1,
 		};
 	},
 	getSkinRgb(type, tan) {
-		tan = Math.clamp(0, tan, 1);
+		tan = Math.clamp(tan, 0, 1);
 		if (!type.gradient) {
 			Errors.report("Unknown skin gradient " + type);
 			return "#ffffff";
@@ -650,6 +654,24 @@ setup.colours.hairgradients_prototypes = {
 			mohawk: {
 				gradient: "radial",
 				values: [93, 60, 0, 93, 100, 202],
+				lengthFunctions: [(length, value) => value, (length, value) => value],
+				colors: [
+					[0.155, "rgba(0, 0, 0, 1)"],
+					[0.16, "rgba(0, 0, 0, 1)"],
+				],
+			},
+			combatMohawkDoggy: {
+				gradient: "radial",
+				values: [69, 84, 0, 130, 115, 187],
+				lengthFunctions: [(length, value) => value, (length, value) => value],
+				colors: [
+					[0.155, "rgba(0, 0, 0, 1)"],
+					[0.16, "rgba(0, 0, 0, 1)"],
+				],
+			},
+			combatMohawk: {
+				gradient: "radial",
+				values: [30, 142, 0, 130, 115, 184],
 				lengthFunctions: [(length, value) => value, (length, value) => value],
 				colors: [
 					[0.155, "rgba(0, 0, 0, 1)"],
@@ -1575,7 +1597,67 @@ setup.colours.condom = [
 		},
 	},
 ];
-
+setup.colours.tentacle = [
+	{
+		variable: "tentacles-blue",
+		canvasfilter: {
+			blend: "#1431dc",
+			brightness: 0.15,
+		},
+	},
+	{
+		variable: "tentacles-vines",
+		canvasfilter: {
+			blend: "#18a058",
+			brightness: 0.1,
+			contrast: 0.9,
+		},
+	},
+	{
+		variable: "tentacles-roots",
+		canvasfilter: {
+			blend: "#8d4d19",
+			brightness: 0.15,
+		},
+	},
+	{
+		variable: "tentacles-red",
+		canvasfilter: {
+			blend: "#d80e04",
+			brightness: 0.1,
+		},
+	},
+	{
+		variable: "tentacles-purple",
+		canvasfilter: {
+			blend: "#b509a8",
+			brightness: 0.15,
+		},
+	},
+	{
+		variable: "tentacles-peach",
+		canvasfilter: {
+			blend: "#e67056",
+			contrast: 0.6,
+		},
+	},
+	{
+		variable: "tentacles-wraith",
+		canvasfilter: {
+			blend: "#BBBBBB",
+			brightness: 0.25,
+			contrast: 0.9,
+		},
+	},
+	{
+		variable: "tentacles-wraith-penetrated",
+		canvasfilter: {
+			blend: "#BBBBBB",
+			brightness: -0.5,
+			contrast: 0.7,
+		},
+	},
+];
 /*
  * Maps to easily access colour record by its variable code, ex. setup.colours.hair_map[$haircolour]
  */
@@ -1594,7 +1676,6 @@ function buildColourMap(name, mode) {
 	}
 	return map;
 }
-
 window.buildColourMap = buildColourMap;
 
 buildColourMap("hair");
@@ -1604,6 +1685,7 @@ buildColourMap("lipstick");
 buildColourMap("mascara");
 buildColourMap("eyeshadow");
 buildColourMap("condom");
+buildColourMap("tentacle");
 
 /**
  * Tries to guess colour in the map by removing spaces or replacing them with '-' and checking against name.
@@ -1641,6 +1723,7 @@ setup.colourName = function (colour) {
 		setup.colours.lipstick_map,
 		setup.colours.eyeshadow_map,
 		setup.colours.condom_map,
+		setup.colours.tentacle_map,
 	]) {
 		if (colour in map) return map[colour].name;
 	}

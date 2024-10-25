@@ -150,9 +150,9 @@ An assortment of colourful contact lenses is displayed behind the glass. You can
 	<br><br>
 
 	<<if $money gte 20000>>
-		<<link [[Buy and send home|Pharmacy Lenses]]>><<set $money -= 20000>><<set $makeup.owned.eyelenses.push(_lensChoice)>><</link>>
+		<<link [[Buy and send home|Pharmacy Lenses]]>><<money -20000 "pharmacyContacts">><<set $makeup.owned.eyelenses.push(_lensChoice)>><</link>>
 		<br>
-		<<link [[Buy and wear|Pharmacy]]>><<set $money -= 20000>><<set $makeup.owned.eyelenses.push(_lensChoice)>><<set $makeup.eyelenses = {"left":_lensChoice, "right":_lensChoice}>><</link>>
+		<<link [[Buy and wear|Pharmacy]]>><<money -20000 "pharmacyContacts">><<set $makeup.owned.eyelenses.push(_lensChoice)>><<set $makeup.eyelenses = {"left":_lensChoice, "right":_lensChoice}>><</link>>
 		<br>
 	<<else>>
 		<span class="purple">You can't afford the purchase.</span>
@@ -200,11 +200,11 @@ An assortment of colourful contact lenses is displayed behind the glass. You can
 <<run colorWheelContactLenses()>>
 <br><br>
 <<link [[Order it|Pharmacy Order Custom Lenses]]>>
-	<<set $money -= 50000>>
+	<<money -50000 "pharmacyContacts">>
 	<<set $custom_lenses_already_ordered to 1>>
 	<<run $lenses_ordered.push([window.colorNamer(_color_lenses_temp[0].hexString), Time.monthDay.toString() + Time.month + Time.year.toString(), [_color_lenses_temp[0].hexString, _color_lenses_temp[0].hsl["l"] / 500]])>>
 	<<if $pharmacy_order_colours is 2>>
-		<<set $money -= 45000>>
+		<<money -45000 "pharmacyContacts">>
 		<<run $lenses_ordered.push([window.colorNamer(_color_lenses_temp[1].hexString), Time.monthDay.toString() + Time.month + Time.year.toString(), [_color_lenses_temp[1].hexString, _color_lenses_temp[1].hsl["l"] / 500]])>>
 	<</if>>
 <</link>>
@@ -342,13 +342,13 @@ The <<person>> looks at the <<print $pharmacyItem.name>> you're holding.
 		<<case "Breast Pump">>
 			<<link [[Hand over the money|Pharmacy]]>><<run sexShopOnBuyClick(11, false, V.worn.handheld.colour.replace(" ","-"), false)>><<handheldon>><</link>>
 		<<case "condoms">>
-			<<link [[Hand over the money|Pharmacy]]>><<handheldon>><<set $money -= $pharmacyItem.price>><<gcondoms 3>><</link>>
+			<<link [[Hand over the money|Pharmacy]]>><<handheldon>><<money `-$pharmacyItem.price` "pharmacyCondoms">><<gcondoms 3>><</link>>
 		<<case "pregnancy test">>
-			<<link [[Hand over the money|Pharmacy]]>><<handheldon>><<set $money -= $pharmacyItem.price>><<set $pregnancyTest += 2>><</link>>
+			<<link [[Hand over the money|Pharmacy]]>><<handheldon>><<money `-$pharmacyItem.price` "pharmacyPregnancyTest">><<set $pregnancyTest += 2>><</link>>
 		<<case "Anti-Parasite Cream">>
-			<<link [[Hand over the money|Pharmacy]]>><<handheldon>><<set $money -= $pharmacyItem.price>><<set $sexStats.pills.pills[$pharmacyItem.type].owned += 1>><<boughtOnce>><</link>>
+			<<link [[Hand over the money|Pharmacy]]>><<handheldon>><<money `-$pharmacyItem.price` "pharmacyCream">><<set $sexStats.pills.pills[$pharmacyItem.type].owned += 1>><<boughtOnce>><</link>>
 		<<default>>
-			<<link [[Hand over the money|Pharmacy]]>><<handheldon>><<set $money -= $pharmacyItem.price>><<set $sexStats.pills.pills[$pharmacyItem.type].owned += 14>><<boughtOnce>><</link>>
+			<<link [[Hand over the money|Pharmacy]]>><<handheldon>><<money `-$pharmacyItem.price` "pharmacyPills">><<set $sexStats.pills.pills[$pharmacyItem.type].owned += 14>><<boughtOnce>><</link>>
 	<</switch>>
 <<else>>
 	<span class="purple">You cannot afford them.</span>
@@ -418,7 +418,7 @@ The <<person>> looks at the <<print $pharmacyItem.name>> you're holding.
 		You hand over the money in awkward silence, take your box of pills, and leave.
 		<br><br>
 
-		<<set $money -= $pharmacyItem.price>><<set $sexStats.pills.pills[$pharmacyItem.type].owned += 14>><<boughtOnce>>
+		<<money `-$pharmacyItem.price` "pharmacy">><<set $sexStats.pills.pills[$pharmacyItem.type].owned += 14>><<boughtOnce>>
 		<<link [[Next|Hospital Foyer]]>><<endevent>><</link>>
 <</switch>>
 <<unset $pharmacyItem>>
@@ -543,7 +543,7 @@ The <<person>> looks at the <<print $pharmacyItem.name>> you're holding.
 		<<if $money gte $pharmacyItem.price>>
 			<<pillicon>><<link [["Buy " + $pharmacyItem.name + " for " + _printmoney|Pharmacy]]>>
 				<<set $eventskip to 1>><<set $daily.pharm.sexResult to "buy">>
-				<<set $money -= $pharmacyItem.price>><<set $sexStats.pills.pills[$pharmacyItem.type].owned += 14>><<boughtOnce>>
+				<<money `-$pharmacyItem.price` "pharmacy">><<set $sexStats.pills.pills[$pharmacyItem.type].owned += 14>><<boughtOnce>>
 			<</link>>
 		<<else>>
 			<span class="purple">You cannot afford them.</span>
@@ -560,7 +560,7 @@ The <<person>> looks at the <<print $pharmacyItem.name>> you're holding.
 			<<formatmoney $pharmacyItem.price>>
 			<<pillicon>><<link [["Buy growth blocker pills for " + _printmoney|Pharmacy]]>>
 				<<set $eventskip to 1>><<set $daily.pharm.sexResult to "buy">>
-				<<set $money -= $pharmacyItem.price>><<set $sexStats.pills.pills["penis blocker"].owned += 14>><<boughtOnce>>
+				<<money `-$pharmacyItem.price` "pharmacy">><<set $sexStats.pills.pills["penis blocker"].owned += 14>><<boughtOnce>>
 			<</link>>
 		<<else>>
 			<span class="purple">You cannot afford them.</span>
@@ -611,7 +611,7 @@ The <<person>> looks at the <<print $pharmacyItem.name>> you're holding.
 				<<formatmoney $pharmacyItem.price>>
 				<<pillicon>><<link [["Pay " + _printmoney + " for " + $pharmacyItem.name|Pharmacy]]>>
 					<<set $eventskip to 1>>
-					<<set $money -= $pharmacyItem.price>><<set $sexStats.pills.pills[$pharmacyItem.type].owned += 14>><<boughtOnce>>
+					<<money `-$pharmacyItem.price` "pharmacy">><<set $sexStats.pills.pills[$pharmacyItem.type].owned += 14>><<boughtOnce>>
 				<</link>>
 				<br>
 			<<else>>
@@ -671,7 +671,7 @@ You ask the nurse for after morning pills.
 
 :: Pharmacy Morning After pill 2
 <<set $outside to 0>><<set $location to "hospital">><<effects>>
-<<set $money -= 50000>>
+<<money -50000 "pharmacyAfterPill">>
 <<set $pregnancyStats.aftermorningpills++>>
 <<pregnancyMorningAfterPill>>
 
@@ -843,7 +843,7 @@ I'll send these out to be delivered. Thanks for your purchase."
 <br><br>
 You count the money and give it to <<him>>.
 <br><br>
-<<set $money -= _price>>
+<<money `-_price` "pharmacyCondoms">>
 <<set $brothelVending.condoms += $condomsBought>>
 <<set $brothelVending.condomsToRefill -= $condomsBought>>
 <<set $brothelVending.weeksEmpty to 0>>

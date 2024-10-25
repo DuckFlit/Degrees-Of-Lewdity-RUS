@@ -60,6 +60,9 @@ Renderer.Stats = {
 	nlayers: 0,
 	ncached: 0,
 };
+/**
+ * @type {Renderer.RendererListener}
+ */
 Renderer.defaultListener = {
 	error(error) {
 		// strip source data
@@ -141,7 +144,7 @@ Renderer.defaultListener = {
 
 function refreshCanvas(model) {
 	const canvasModel = Renderer.locateModel(model, "sidebar");
-	if (model.canvas) {
+	if (canvasModel.canvas) {
 		Renderer.invalidateLayerCaches(canvasModel.layerList);
 		canvasModel.redraw();
 	}
@@ -167,3 +170,22 @@ $(document).on(":enginerestart", () => {
 	Skin.recache();
 });
 $(document).on(":oncloseoverlay", refreshModels);
+
+/**
+ * @param {"new" | "old"} type
+ */
+function isCombatRendererEnabled(type) {
+	if (V.options.combatRendererMode == null) {
+		return true;
+	}
+	switch (type) {
+		case "new":
+			return [1, 2].includes(V.options.combatRendererMode);
+		case "old":
+			return [1, 3].includes(V.options.combatRendererMode);
+		default:
+			console.error("isCombatRendererEnabled given incorrect parameter:", type, "should be ['new' or 'old']");
+			return false;
+	}
+}
+window.isCombatRendererEnabled = isCombatRendererEnabled;

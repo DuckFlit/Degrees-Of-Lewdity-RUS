@@ -1,6 +1,9 @@
 :: Ocean Breeze
 
 <<set $outside to 0>><<set $location to "cafe">><<effects>>
+
+<<if $oceanbreezejob>><<timeTrackingEndCafe>><</if>>
+
 You are in the Ocean Breeze Cafe.
 <<if $openinghours is 1>>
 	<<if Weather.precipitation is "rain">>
@@ -171,7 +174,10 @@ You are in the Ocean Breeze Cafe.
 			<<ind>><<link [["Accept Sam's offer"|Chef Photographer]]>><</link>>
 			<br>
 		<</if>>
-		<<skinicon "waiter">><<link [[`Work as a ${$player.gender_appearance is "m" ? "waiter" : "waitress"} (1:00)`|Ocean Breeze Work]]>><<set $tablesservedstat += random(10,30)>><</link>>
+		<<skinicon "waiter">><<link [[`Work as a ${$player.gender_appearance is "m" ? "waiter" : "waitress"} (1:00)`|Ocean Breeze Work]]>>
+			<<set $tablesservedstat += random(10,30)>>
+			<<timeTrackingStart "cafe">><<timeTrackingStart "cafeWaiter">>
+		<</link>>
 		<br>
 	<</if>>
 
@@ -179,7 +185,7 @@ You are in the Ocean Breeze Cafe.
 
 	<<if $money gte 200>>
 		<<foodicon "coffee">><<link [[Buy coffee (0:02 £2)|Cafe Coffee]]>>
-			<<set $daily.cafeEaten to 1>><<set $money -= 200>><<stress -3>><<tiredness -4>><<pass 2>>
+			<<set $daily.cafeEaten to 1>><<money -200 "cafe">><<stress -3>><<tiredness -4>><<pass 2>>
 		<</link>><<lstress>><<ltiredness>>
 		<br>
 	<</if>>
@@ -189,28 +195,28 @@ You are in the Ocean Breeze Cafe.
 			<<if playerIsPregnant() and playerAwareTheyArePregnant()>>
 				<span class="blue">You can't bring yourself to drink winter ale while you know you're with child.</span>
 			<<else>>
-				<<link [[Buy winter ale (0:10 £7)|Cafe Eat]]>><<set $phase to "winter ale">><<set $daily.cafeEaten to 1>><<set $money -= 700>><<stress -6>><<alcohol 100>><<pass 10>><</link>><<lstress>><<galcohol>>
+				<<link [[Buy winter ale (0:10 £7)|Cafe Eat]]>><<set $phase to "winter ale">><<set $daily.cafeEaten to 1>><<money -700 "cafe">><<stress -6>><<alcohol 100>><<pass 10>><</link>><<lstress>><<galcohol>>
 			<</if>>
 			<br>
 		<<elseif Time.season is "spring">>
 			<<if playerIsPregnant() and playerAwareTheyArePregnant()>>
 				<span class="blue">You can't bring yourself to drink fruity ale while you know you're with child.</span>
 			<<else>>
-				<<link [[Buy fruity ale (0:10 £7)|Cafe Eat]]>><<set $phase to "fruity ale">><<set $daily.cafeEaten to 1>><<set $money -= 700>><<stress -6>><<alcohol 60>><<pass 10>><</link>><<lstress>><<galcohol>>
+				<<link [[Buy fruity ale (0:10 £7)|Cafe Eat]]>><<set $phase to "fruity ale">><<set $daily.cafeEaten to 1>><<money -700 "cafe">><<stress -6>><<alcohol 60>><<pass 10>><</link>><<lstress>><<galcohol>>
 			<</if>>
 			<br>
 		<<elseif Time.season is "summer">>
 			<<if playerIsPregnant() and playerAwareTheyArePregnant()>>
 				<span class="blue">You can't bring yourself to drink shandy while you know you're with child.</span>
 			<<else>>
-				<<link [[Buy shandy (0:10 £7)|Cafe Eat]]>><<set $phase to "shandy">><<set $daily.cafeEaten to 1>><<set $money -= 700>><<stress -6>><<alcohol 40>><<pass 10>><</link>><<lstress>><<galcohol>>
+				<<link [[Buy shandy (0:10 £7)|Cafe Eat]]>><<set $phase to "shandy">><<set $daily.cafeEaten to 1>><<money -700 "cafe">><<stress -6>><<alcohol 40>><<pass 10>><</link>><<lstress>><<galcohol>>
 			<</if>>
 			<br>
 		<<else>>
 			<<if playerIsPregnant() and playerAwareTheyArePregnant()>>
 				<span class="blue">You can't bring yourself to drink autumn ale while you know you're with child.</span>
 			<<else>>
-				<<link [[Buy autumn ale (0:10 £7)|Cafe Eat]]>><<set $phase to "autumn ale">><<set $daily.cafeEaten to 1>><<set $money -= 700>><<stress -6>><<alcohol 80>><<pass 10>><</link>><<lstress>><<galcohol>>
+				<<link [[Buy autumn ale (0:10 £7)|Cafe Eat]]>><<set $phase to "autumn ale">><<set $daily.cafeEaten to 1>><<money -700 "cafe">><<stress -6>><<alcohol 80>><<pass 10>><</link>><<lstress>><<galcohol>>
 			<</if>>
 			<br>
 		<</if>>
@@ -218,28 +224,28 @@ You are in the Ocean Breeze Cafe.
 	<<if $money gte 300>>
 		<<if ndef $milkshake>><<set $milkshake to 0>><</if>>
 		<<if $milkshake lt 2>>
-			<<foodicon "milkshake">><<link [[Buy milkshake to go (0:02 £3)|Ocean Breeze]]>><<set $money -= 300>> <<set $milkshake +=1>> <<pass 2>><</link>>
+			<<foodicon "milkshake">><<link [[Buy milkshake to go (0:02 £3)|Ocean Breeze]]>><<money -300 "cafe">> <<set $milkshake +=1>> <<pass 2>><</link>>
 			<br>
 		<</if>>
 	<</if>>
 	<<if $money gte 500>>
 		<<foodicon "fruitsalad">>
-		<<link [[Buy fruit salad (0:20 £5)|Cafe Eat]]>><<set $phase to "fruit salad">><<set $daily.cafeEaten to 1>><<set $money -= 500>><<stress -6>><<pass 20>><</link>><<lstress>>
+		<<link [[Buy fruit salad (0:20 £5)|Cafe Eat]]>><<set $phase to "fruit salad">><<set $daily.cafeEaten to 1>><<money -500 "cafe">><<stress -6>><<pass 20>><</link>><<lstress>>
 		<br>
 	<</if>>
 	<<if $money gte 600 and Time.season is "winter">>
 		<<foodicon "gingerbread">>
-		<<link [[Buy gingerbread (0:20 £6)|Cafe Eat]]>><<set $phase to "gingerbread">><<set $daily.cafeEaten to 1>><<set $money -= 600>><<stress -8>><<pass 20>><</link>><<lstress>>
+		<<link [[Buy gingerbread (0:20 £6)|Cafe Eat]]>><<set $phase to "gingerbread">><<set $daily.cafeEaten to 1>><<money -600 "cafe">><<stress -8>><<pass 20>><</link>><<lstress>>
 		<br>
 	<</if>>
 	<<if $money gte 1000>>
 		<<foodicon "pancakes">>
-		<<link [[Buy pancakes (0:20 £10)|Cafe Pancakes]]>><<set $daily.cafeEaten to 1>><<set $money -= 1000>><<tiredness -6>><<pass 20>><</link>><<ltiredness>>
+		<<link [[Buy pancakes (0:20 £10)|Cafe Pancakes]]>><<set $daily.cafeEaten to 1>><<money -1000 "cafe">><<tiredness -6>><<pass 20>><</link>><<ltiredness>>
 		<br>
 	<</if>>
 	<<if $money gte 5000>>
 		<<foodicon "creambun">>
-		<<link [[Buy Deluxe Cream Bun (0:20 £50)|Cafe Cream Bun]]>><<set $daily.cafeEaten to 1>><<transform cat 1>><<set $money -= 5000>><<pass 20>><<stress -18>><</link>><<llstress>>
+		<<link [[Buy Deluxe Cream Bun (0:20 £50)|Cafe Cream Bun]]>><<set $daily.cafeEaten to 1>><<transform cat 1>><<money -5000 "cafe">><<pass 20>><<stress -18>><</link>><<llstress>>
 		<br>
 	<</if>>
 <</if>>
@@ -372,7 +378,7 @@ Please be patient with them; they don't mean nothing by it! We're always underst
 		<<if $robinmoney gte 5>>
 			<<set $tip to 500>>
 			<<set $robinmoney -= 5>>
-			The rest of the shift passes uneventfully. Robin left you a tip.<<tipreceive>>
+			The rest of the shift passes uneventfully. Robin left you a tip.<<tipreceive "cafeWaiter">>
 
 		<<else>>
 			The rest of the shift passes uneventfully.
@@ -417,7 +423,7 @@ Please be patient with them; they don't mean nothing by it! We're always underst
 			<<lstress>><<stress -4>>
 			<br><br>
 
-			The rest of the shift passes uneventfully. You earn <<moneyGain 5>>.
+			The rest of the shift passes uneventfully. You earn <<money 500 "cafeWaiter">><<printmoney 500>>.
 			<<pass 1 hour>>
 			<br><br>
 
@@ -427,7 +433,7 @@ Please be patient with them; they don't mean nothing by it! We're always underst
 		You spend most of the shift serving the tables outside, overlooking the ocean.
 		<br><br>
 
-		The rest of the shift passes uneventfully. You earn <<moneyGain 5>>.
+		The rest of the shift passes uneventfully. You earn <<money 500 "cafeWaiter">><<printmoney 500>>.
 		<<pass 1 hour>>
 		<br><br>
 
@@ -470,7 +476,7 @@ Please be patient with them; they don't mean nothing by it! We're always underst
 		<<generate1>><<person1>>You serve a <<person>> who orders a bun. <<He>> stares at you as <<he>> licks the cream.
 		<br><br>
 
-		The rest of the shift passes uneventfully. You earn <<moneyGain 5>>.
+		The rest of the shift passes uneventfully. You earn <<money 500 "cafeWaiter">><<printmoney 500>>.
 		<<pass 1 hour>>
 		<br><br>
 
@@ -507,7 +513,7 @@ Please be patient with them; they don't mean nothing by it! We're always underst
 	<</if>>
 
 	<br><br>
-	The rest of the shift passes uneventfully. You earn <<moneyGain 5>>.
+	The rest of the shift passes uneventfully. You earn <<money 500 "cafeWaiter">><<printmoney 500>>.
 	<<pass 1 hour>>
 	<br><br>
 
@@ -566,7 +572,7 @@ Please be patient with them; they don't mean nothing by it! We're always underst
 		You think you catch the <<person1>><<person>> checking you out, but they don't say anything.
 		<br><br>
 
-		The rest of the shift passes uneventfully. You earn <<moneyGain 5>>.
+		The rest of the shift passes uneventfully. You earn <<money 500 "cafeWaiter">><<printmoney 500>>.
 		<<pass 1 hour>>
 		<br><br>
 
@@ -614,7 +620,7 @@ Please be patient with them; they don't mean nothing by it! We're always underst
 			"the ultimate unity of life", "their plans for next weekend", "the political situation"
 		)>>.
 		<br><br>
-		The rest of the shift passes uneventfully. You earn <<moneyGain 5>>.
+		The rest of the shift passes uneventfully. You earn <<money 500 "cafeWaiter">><<printmoney 500>>.
 		<<pass 1 hour>>
 		<br><br>
 
@@ -648,7 +654,7 @@ Please be patient with them; they don't mean nothing by it! We're always underst
 	<<else>>
 		<<He>> keeps stealing glances at you. However, <<he>> refuses to make eye contact when you take <<his>> order.
 		<br><br>
-		The rest of the shift passes uneventfully. You earn <<moneyGain 5>>.
+		The rest of the shift passes uneventfully. You earn <<money 500 "cafeWaiter">><<printmoney 500>>.
 		<<pass 1 hour>>
 		<br><br>
 
@@ -682,7 +688,7 @@ Please be patient with them; they don't mean nothing by it! We're always underst
 		A <<person>> almost collides with you as you exit the kitchen.
 		<br><br>
 
-		The rest of the shift passes uneventfully. You earn <<moneyGain 5>>.
+		The rest of the shift passes uneventfully. You earn <<money 500 "cafeWaiter">><<printmoney 500>>.
 		<<pass 1 hour>>
 		<br><br>
 
@@ -707,7 +713,7 @@ Please be patient with them; they don't mean nothing by it! We're always underst
 	<<else>>
 		A large group enters the cafe, taking up several tables by themselves. They don't give you any trouble though.
 		<br><br>
-		The rest of the shift passes uneventfully. You earn <<moneyGain 5>>.
+		The rest of the shift passes uneventfully. You earn <<money 500 "cafeWaiter">><<printmoney 500>>.
 		<<pass 1 hour>>
 		<br><br>
 
@@ -734,7 +740,7 @@ Please be patient with them; they don't mean nothing by it! We're always underst
 		<i>Perhaps Sam would be willing to give you a chance if <<he>> liked you more.</i>
 		<br><br>
 
-		The rest of the shift passes uneventfully. You earn <<moneyGain 5>>.
+		The rest of the shift passes uneventfully. You earn <<money 500 "cafeWaiter">><<printmoney 500>>.
 		<<pass 1 hour>>
 		<br><br>
 
@@ -771,7 +777,7 @@ Please be patient with them; they don't mean nothing by it! We're always underst
 <<if $phase is 0>>
 	It takes a few minutes, but you manage to get everything to the table.
 	<br><br>
-	The rest of the shift passes uneventfully. You earn <<moneyGain 5>>.
+	The rest of the shift passes uneventfully. You earn <<money 500 "cafeWaiter">><<printmoney 500>>.
 	<br><br>
 <<elseif $phase is 1>>
 	<<if $danceSuccess>>
@@ -784,14 +790,14 @@ Please be patient with them; they don't mean nothing by it! We're always underst
 		<br><br>
 		<<npc Sam>><<person1>>Sam gives you a thumbs-up as <<he>> walks by.<<npcincr Sam love 1>><<glove>>
 		<br><br>
-		The rest of the shift passes uneventfully. Someone left you a tip.<<tipreceive>>
+		The rest of the shift passes uneventfully. Someone left you a tip.<<tipreceive "cafeWaiter">>
 		<br><br>
 	<<else>>
 		You load the plates onto serving trays and <<dancetext>> balance them on your shoulders, careful not to let anything spill. You lose your balance on your way out of the kitchen, however, <span class="red">and accidentally dump several plates' worth of food onto the floor.</span> Sam gives you a disapproving look.<<npcincr Sam love -1>><<llove>><<stress 6>><<gstress>>
 		<br><br>
 		You sigh as you begin cleaning up your mess.
 		<br><br>
-		The rest of the shift passes uneventfully. You earn <<moneyGain 5>>.
+		The rest of the shift passes uneventfully. You earn <<money 500 "cafeWaiter">><<printmoney 500>>.
 		<br><br>
 	<</if>>
 <</if>>
@@ -814,7 +820,7 @@ The <<personsimple>> nods and disappears into the kitchen while you dry off.
 "You handled that well," Sam says from behind the till.
 <br><br>
 
-The rest of the shift passes uneventfully. You earn <<moneyGain 5>>.
+The rest of the shift passes uneventfully. You earn <<money 500 "cafeWaiter">><<printmoney 500>>.
 <<pass 1 hour>>
 <br><br>
 
@@ -833,7 +839,7 @@ The rest of the shift passes uneventfully. You earn <<moneyGain 5>>.
 <<He>> bows <<his>> head while the audience whisper and chuckle amongst themselves. Sam gives you a disapproving look.
 <br><br>
 
-The rest of the shift passes uneventfully. You earn <<moneyGain 5>>.
+The rest of the shift passes uneventfully. You earn <<money 500 "cafeWaiter">><<printmoney 500>>.
 <<pass 1 hour>>
 <br><br>
 
@@ -853,7 +859,7 @@ The <<personsimple>> averts <<his>> eyes and a customer whistles, but you manage
 <<set $tip += 500>>
 <<set $tip += 100>>
 
-The rest of the shift passes uneventfully. Someone left you a tip.<<tipreceive>><<pass 1 hour>>
+The rest of the shift passes uneventfully. Someone left you a tip.<<tipreceive "cafeWaiter">><<pass 1 hour>>
 <br><br>
 
 <<link [[Next|Ocean Breeze]]>><<clotheson>><<endevent>><</link>>
@@ -874,7 +880,7 @@ A customer whistles. Another cheers. You manage to dry off without hassle.
 <<set $tip += 500>>
 
 The rest of the shift passes uneventfully. Someone left you a tip.
-<<tipreceive>><<pass 1 hour>>
+<<tipreceive "cafeWaiter">><<pass 1 hour>>
 <br><br>
 
 <<link [[Next|Ocean Breeze]]>><<clotheson>><<endevent>><</link>>
@@ -888,7 +894,7 @@ The grin falls off <<his>> face. "Just having a laugh. No need to pout." Sam loo
 <<llove>>
 <br><br>
 
-The rest of the shift passes uneventfully. You earn <<moneyGain 5>>.
+The rest of the shift passes uneventfully. You earn <<money 500 "cafeWaiter">><<printmoney 500>>.
 <<pass 1 hour>>
 <br><br>
 
@@ -907,7 +913,7 @@ The rest of the shift passes uneventfully. You earn <<moneyGain 5>>.
 	<<set $tip += 100>>
 
 	The rest of the shift passes uneventfully. Someone left you a tip.
-	<<tipreceive>>
+	<<tipreceive "cafeWaiter">>
 	<br><br>
 
 <<elseif $phase is 1>>
@@ -920,7 +926,7 @@ The rest of the shift passes uneventfully. You earn <<moneyGain 5>>.
 	<<set $tip += 200>>
 
 	The rest of the shift passes uneventfully. Someone left you a tip.
-	<<tipreceive>>
+	<<tipreceive "cafeWaiter">>
 	<br><br>
 
 <<else>>
@@ -933,7 +939,7 @@ The rest of the shift passes uneventfully. You earn <<moneyGain 5>>.
 	<<set $tip += 500>>
 
 	The rest of the shift passes uneventfully. Someone left you a tip.
-	<<tipreceive>>
+	<<tipreceive "cafeWaiter">>
 	<br><br>
 
 <</if>>
@@ -975,7 +981,7 @@ The rest of the shift passes uneventfully. You earn <<moneyGain 5>>.
 You tell the <<person>> that this establishment doesn't serve anything not found on the menu, and leave to fetch <<his>> water. When you return, <<hes>> already gone.
 <br><br>
 
-The rest of the shift passes uneventfully. You earn <<moneyGain 5>>.
+The rest of the shift passes uneventfully. You earn <<money 500 "cafeWaiter">><<printmoney 500>>.
 <<pass 1 hour>>
 <br><br>
 
@@ -990,8 +996,7 @@ The rest of the shift passes uneventfully. You earn <<moneyGain 5>>.
 
 		"Here's your pay, whore." <<He>> drops some cash on you as <<he>> leaves. <<tearful>> you hurry back inside before you're missed.
 		<br><br>
-		<<tipreceive>>
-		<br><br>
+		<<tipreceive "prostitution">>
 
 	<<else>>
 		"Fine. I hope you don't expect anything." <<He>> looks at you with disgust as <<he>> leaves. <<tearful>> you hurry back inside before you're missed.
@@ -1003,8 +1008,7 @@ The rest of the shift passes uneventfully. You earn <<moneyGain 5>>.
 		<<ejaculation>><<fameprostitution 1>><<set $prostitutionstat += 1>>
 		"Here's your pay, whore." <<He>> drops some cash on you as <<he>> leaves. <<tearful>> you hurry back inside before you're missed.
 		<br><br>
-		<<tipreceive>>
-		<br><br>
+		<<tipreceive "prostitution">>
 
 	<<elseif $enemyhealth lte 0>>
 		You manage to knock the <<person>> backwards, giving you time to escape. <<tearful>> you flee back into the cafe.
@@ -1023,7 +1027,7 @@ The rest of the shift passes uneventfully. You earn <<moneyGain 5>>.
 
 <<endcombat>>
 
-The rest of the shift passes uneventfully. You earn <<moneyGain 5>>.
+The rest of the shift passes uneventfully. You earn <<money 500 "cafeWaiter">><<printmoney 500>>.
 <<pass 53>>
 <br><br>
 
@@ -1059,7 +1063,7 @@ The rest of the shift passes uneventfully. You earn <<moneyGain 5>>.
 :: Ocean Breeze Dance Refuse
 <<set $outside to 0>><<set $location to "cafe">><<effects>>
 
-The rest of the shift passes uneventfully. You earn <<moneyGain 5>>.
+The rest of the shift passes uneventfully. You earn <<money 500 "cafeWaiter">><<printmoney 500>>.
 <<pass 1 hour>>
 <br><br>
 
@@ -1071,7 +1075,7 @@ The rest of the shift passes uneventfully. You earn <<moneyGain 5>>.
 You rush to a back room, out of sight. <<clotheson>> The rest of the shift passes uneventfully, though many of the patrons who saw you dance throw glances your way.
 <br><br>
 
-You earn <<moneyGain 5>>.
+You earn <<money 500 "cafeWaiter">><<printmoney 500>>.
 
 <<set _pass to 5 * Math.clamp($timer, 0, 12)>>
 <<pass _pass>>
@@ -1097,7 +1101,7 @@ You earn <<moneyGain 5>>.
 	You decide you're being paranoid, and walk over to the dumpster. The pair check you out as you walk by, but don't say anything.
 	<br><br>
 
-	The rest of the shift passes uneventfully. You earn <<moneyGain 5>>.
+	The rest of the shift passes uneventfully. You earn <<money 500 "cafeWaiter">><<printmoney 500>>.
 	<<pass 1 hour>>
 	<br><br>
 
@@ -1111,7 +1115,7 @@ You earn <<moneyGain 5>>.
 <<npcincr Sam love -1>><<llove>>
 <br><br>
 
-The rest of the shift passes uneventfully. You earn <<moneyGain 5>>.
+The rest of the shift passes uneventfully. You earn <<money 500 "cafeWaiter">><<printmoney 500>>.
 <<pass 1 hour>>
 <br><br>
 
@@ -1166,7 +1170,7 @@ The rest of the shift passes uneventfully. You earn <<moneyGain 5>>.
 
 <<endcombat>>
 
-The rest of the shift passes uneventfully. You earn <<moneyGain 5>>.
+The rest of the shift passes uneventfully. You earn <<money 500 "cafeWaiter">><<printmoney 500>>.
 <<pass 53>>
 <br><br>
 
@@ -1187,7 +1191,7 @@ The rest of the shift passes uneventfully. You earn <<moneyGain 5>>.
 	You decide you're being paranoid, and walk over to the dumpster. The <<beasttype>> runs away as you draw closer.
 	<br><br>
 
-	The rest of the shift passes uneventfully. You earn <<moneyGain 5>>.
+	The rest of the shift passes uneventfully. You earn <<money 500 "cafeWaiter">><<printmoney 500>>.
 	<<pass 1 hour>>
 	<br><br>
 
@@ -1246,7 +1250,7 @@ The rest of the shift passes uneventfully. You earn <<moneyGain 5>>.
 
 <<endcombat>>
 
-The rest of the shift passes uneventfully. You earn <<moneyGain 5>>.
+The rest of the shift passes uneventfully. You earn <<money 500 "cafeWaiter">><<printmoney 500>>.
 <<pass 53>>
 <br><br>
 
@@ -1265,7 +1269,7 @@ The rest of the shift passes uneventfully. You earn <<moneyGain 5>>.
 	<<set $tip += 200>>
 
 	The rest of the shift passes uneventfully. Someone left you a tip.
-	<<tipreceive>>
+	<<tipreceive "cafeWaiter">>
 	<br><br>
 <<else>>
 	You press down on the front of your skirt to cover your <<genitals>> but lean forward as you do, sticking your bare butt out while feigning embarrassment. <<exhibitionism3>>
@@ -1276,7 +1280,7 @@ The rest of the shift passes uneventfully. You earn <<moneyGain 5>>.
 	<<set $tip += 500>>
 
 	The rest of the shift passes uneventfully. Someone left you a tip.
-	<<tipreceive>>
+	<<tipreceive "cafeWaiter">>
 	<br><br>
 <</if>>
 
@@ -1298,7 +1302,7 @@ Cheeks flushing, you press down on your skirt to cover your dignity before the s
 <<set $tip += 500>>
 <<set $tip += 100>>
 
-The rest of the shift passes uneventfully. Someone left you a tip.<<tipreceive>>
+The rest of the shift passes uneventfully. Someone left you a tip.<<tipreceive "cafeWaiter">>
 <br><br>
 
 <<link [[Next|Ocean Breeze]]>><<endevent>><<pass 1 hour>><</link>>
@@ -1340,7 +1344,7 @@ You press the spoon into the bun, but are interrupted by the <<person>> appearin
 "You're missing out," the <<person>> says, pulling the bun back. "It tastes so good."
 <br><br>
 
-The rest of the shift passes uneventfully. You earn <<moneyGain 5>>.
+The rest of the shift passes uneventfully. You earn <<money 500 "cafeWaiter">><<printmoney 500>>.
 <br><br>
 
 <<link [[Next|Ocean Breeze]]>><<endevent>><<pass 1 hour>><</link>>
@@ -1354,7 +1358,7 @@ You drop the spoon and stand up before <<he>> can take it further.
 The <<person>> climbs back out from under the table. "Not hungry?" <<he>> says. "You're so cute."
 <br><br>
 
-The rest of the shift passes uneventfully. You earn <<moneyGain 5>>.
+The rest of the shift passes uneventfully. You earn <<money 500 "cafeWaiter">><<printmoney 500>>.
 <br><br>
 
 <<link [[Next|Ocean Breeze]]>><<endevent>><<pass 1 hour>><</link>>
@@ -1448,7 +1452,7 @@ You let the <<person>> continue.
 
 <<set $tipmod to 0.2>><<tipset "serving">>
 
-The rest of the shift passes uneventfully. Someone left you a tip.<<tipreceive>>
+The rest of the shift passes uneventfully. Someone left you a tip.<<tipreceive "cafeWaiter">>
 <br><br>
 
 <<link [[Next|Ocean Breeze]]>><<endevent>><<pass 1 hour>><</link>>
@@ -1485,7 +1489,7 @@ Sam walks past you. "They sure sounded angry, thanks for dealing with them. Reme
 <<set $tip += 500>>
 <<set $tip += 100>>
 
-The rest of the shift passes uneventfully. Someone left you a tip. <<tipreceive>><<pass 1 hour>>
+The rest of the shift passes uneventfully. Someone left you a tip. <<tipreceive "cafeWaiter">><<pass 1 hour>>
 <br><br>
 
 <<link [[Next|Ocean Breeze]]>><<clotheson>><<endevent>><</link>>
@@ -1499,7 +1503,7 @@ You shake your head and walk away from them. "Hey, I'm talking to you, <<bitch>>
 You do your best to ignore <<him>>. Sam hears the yelling from across the cafe, and stares at you in disappointment before moving on.
 <br><br>
 
-The rest of the shift passes uneventfully. You earn <<moneyGain 5>>.
+The rest of the shift passes uneventfully. You earn <<money 500 "cafeWaiter">><<printmoney 500>>.
 <<pass 1 hour>>
 <br><br>
 
@@ -2325,10 +2329,10 @@ The rest of the shift passes uneventfully.
 <<if $tip gt 0>>
 	<<set $tip += 500>>
 	Someone left you a tip.
-	<<tipreceive>><<pass 1 hour>>
+	<<tipreceive "cafeWaiter">><<pass 1 hour>>
 	<br><br>
 <<else>>
-	You earn <<moneyGain 5>>.
+	You earn <<money 500 "cafeWaiter">><<printmoney 500>>.
 	<<pass 1 hour>>
 	<br><br>
 <</if>>
@@ -2340,7 +2344,7 @@ The rest of the shift passes uneventfully.
 Sam nods, but looks exasperated. <<He>> approaches another member of staff, and asks them for help instead.
 <br><br>
 
-The rest of the shift passes uneventfully. You earn <<moneyGain 5>>.
+The rest of the shift passes uneventfully. You earn <<money 500 "cafeWaiter">><<printmoney 500>>.
 <br><br>
 
 <<link [[Next|Ocean Breeze]]>><<endevent>><</link>>

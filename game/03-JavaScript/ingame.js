@@ -366,9 +366,11 @@ function hairdressersResetAlt() {
 DefineMacro("hairdressersResetAlt", hairdressersResetAlt);
 
 function browsDyeReset() {
-	jQuery(document).on("change", "#listbox-browsdyeoption", function (e) {
-		Wikifier.wikifyEval("<<replace #browsColourPreview>><<browsColourPreview>><</replace>>");
-	});
+	$(() =>
+		jQuery(document).on("change", "#listbox-browsdyeoption", function (e) {
+			Wikifier.wikifyEval("<<replace #browsColourPreview>><<browsColourPreview>><</replace>>");
+		})
+	);
 }
 DefineMacro("browsDyeReset", browsDyeReset);
 
@@ -543,6 +545,22 @@ function toTitleCase(str) {
 	});
 }
 window.toTitleCase = toTitleCase;
+
+function camelCaseToTitle(str) {
+	return str.replace(/([A-Z])/g, " $1").toUpperFirst();
+}
+window.camelCaseToTitle = camelCaseToTitle;
+
+function toCamelCase(str) {
+	return str
+		.split(/[ _-]/g)
+		.map((str, index) => {
+			if (index) return str.toLocaleUpperFirst();
+			return str;
+		})
+		.join("");
+}
+window.toCamelCase = toCamelCase;
 
 function numbersBetween(start, end, step = 1) {
 	return Array.from({ length: (end - start) / step + 1 }, (_, i) => start + i * step);
@@ -1343,9 +1361,11 @@ window.hasSexStatMapper = hasSexStatMapper;
 /**
  * @param {string} input
  * @param {number} required
+ * @param {boolean} modifiers
  */
-function hasSexStat(input, required) {
+function hasSexStat(input, required, modifiers = true) {
 	const stat = hasSexStatMapper(input);
+	// check if stat name is valid.
 	if (stat == null) {
 		Errors.report(`[hasSexStat]: input '${stat}' null.`, {
 			Stacktrace: Utils.GetStack(),
@@ -1353,7 +1373,8 @@ function hasSexStat(input, required) {
 		});
 		return false;
 	}
-	const statValue = V[stat];
+	let statValue = V[stat];
+	// check if value of stat is valid.
 	if (!Number.isFinite(statValue)) {
 		Errors.report(`[hasSexStat]: sex stat '${stat}' unknown.`, {
 			Stacktrace: Utils.GetStack(),
@@ -1361,6 +1382,22 @@ function hasSexStat(input, required) {
 		});
 		return false;
 	}
+	if (modifiers) {
+		// modify effective stat value based on inebriation.
+		if (V.drunk > 0) {
+			const maxValue = 40; // The maximum value of the curve.
+			const valueAdjust = Math.clamp(maxValue - Math.floor(statValue / 4), 0, maxValue); // The curve is less effective with higher base stat.
+			const growthRate = 3; // How fast the curve grows as the drunk value increases.
+			const midpoint = 500; // Needs to be half of the max drunk value.
+			const shifter = 0.85; // Decreases this value to make lower drunk values give higher results and higher drunk values give lower results.
+			const drunkMod = (V.drunk - midpoint) / 500; // Adjusts the drunk values to be scaled correctly with the equation and max stat value.
+
+			const denominator = 1 + shifter * Math.E ** (-1 * growthRate * drunkMod);
+			statValue += Math.floor(valueAdjust / denominator);
+		}
+	}
+	statValue = Math.clamp(statValue, 0, 100);
+
 	switch (required) {
 		case 6:
 			/* self-destructive, extreme actions, like leglocking a rapist unprotected or provoking a group for no sane benefit. */
@@ -2115,6 +2152,18 @@ function earSlimeMakingMundaneRequests() {
 }
 window.earSlimeMakingMundaneRequests = earSlimeMakingMundaneRequests;
 
+function earSlimeCorruptionClothes() {
+	if (!numberOfEarSlime()) return 0;
+	if (!V.daily.corruptionSlimeClothes) {
+		const baseCorruption = V.earSlime.corruption + V.earSlime.growth;
+		// Reduced from the origonal equivalent of *2.5 and *12.5, still want it to have SOME effect, but this should hopefully soften it enough
+		V.daily.corruptionSlimeClothes = Math.clamp(random(baseCorruption, baseCorruption * 5) - currentSkillValue("willpower"), 0, 1000);
+	}
+	const cap = ["prison", "asylum"].includes(V.location) ? 1000 : 500;
+	return Math.clamp(V.daily.corruptionSlimeClothes + (V.earSlime.growth >= 100 && V.earSlime.defyCooldown ? V.earSlime.defyCooldown * 25 : 0), 0, cap);
+}
+window.earSlimeCorruptionClothes = earSlimeCorruptionClothes;
+
 function fixIntegrityUpdater() {
 	Object.entries(V.worn).forEach(([slot, item]) => fixIntegrityMax(slot, item));
 	Object.entries(V.store).forEach(([slot, items]) => items.forEach(item => fixIntegrityMax(slot, item)));
@@ -2142,6 +2191,40 @@ function fixIntegrityUpdater() {
 	Object.entries(V.carried).forEach(([slot, item]) => fixIntegrityMax(slot, item));
 }
 window.fixIntegrityUpdater = fixIntegrityUpdater;
+
+// Set plots to watered if it rains
+// Temporary solution until a rework
+$(document).on(":onWeatherChange", () => {
+	if (V.daily?.plotsRain || Weather.precipitation !== "rain") return;
+	V.daily.plotsRain = true;
+	Object.entries(V.plots).forEach(([location, plots]) => {
+		// Don't water greenhouse plants from rain - disabled for now
+		// if (location === "garden" && V.alex_greenhouse === 3) return;
+		plots.forEach(plot => (plot.water = 1));
+	});
+});
+
+// Temporary until a rework
+// Apparently the sugarcube <<script>> parser don't parse the following correctly - so made it a function instead
+function tendingDay() {
+	Object.entries(V.plots).forEach(([location, plots]) => {
+		let irrigation = location === "farm" ? V.farm.irrigation || 0 : 0;
+
+		plots.forEach(plot => {
+			// Growth check
+			if (plot.stage >= 1 && (plot.water === 1 || plot.bed === "water")) {
+				plot.days += 1;
+				if (plot.days >= setup.plants[plot.plant].days * ((plot.stage + 1) / 5)) {
+					plot.stage += 1;
+				}
+			}
+
+			// Rain check moved to event in ingame.js
+			plot.water = irrigation >= 1 ? (irrigation--, 1) : 0;
+		});
+	});
+}
+window.tendingDay = tendingDay;
 
 /**
  * @param {string} slot

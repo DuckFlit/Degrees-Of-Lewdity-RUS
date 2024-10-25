@@ -94,11 +94,6 @@ setup.shopDetails = {
 		desc: "Protects you from the rain.",
 		details: "Prevents your clothes from becoming soaked by rain and snow.",
 	},
-	tanLines: {
-		name: "Tan lines",
-		desc: "Shields your skin from the sun while tanning.",
-		details: `Will leave behind tan lines. "Visual representation of the player's and NPCs' skin colour" and "Tanning changes due to sun exposure" must be enabled in the Options menu.`,
-	},
 	bimbo: {
 		name: "Special",
 		desc: "Something seems special about this set of clothing.",

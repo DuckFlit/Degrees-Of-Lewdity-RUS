@@ -103,6 +103,11 @@ declare interface CompositeLayerParams {
 	dx?: number;
 	dy?: number;
 	/**
+	 * Subsprite position on target canvas
+	 */
+	frameDx?: number;
+	frameDy?: number;
+	/**
 	 * Animation name
 	 */
 	animation?: string;
@@ -137,7 +142,9 @@ declare interface KeyframeSpec {
 }
 
 declare type AnimationSpec = KeyframeAnimationSpec | SimpleAnimationSpec;
+
 declare interface KeyframeAnimationSpec {
+	frameCount: number;
 	keyframes: KeyframeSpec[];
 }
 declare interface SimpleAnimationSpec {
