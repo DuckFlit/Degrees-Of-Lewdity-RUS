@@ -925,7 +925,6 @@ function moneyStatsProcess(stats) {
 		if (stat.earnedTimeStamp) total.earnedTimeStamp = Math.max(stat.earnedTimeStamp, total.earnedTimeStamp || 0);
 		if (stat.spentTimeStamp) total.spentTimeStamp = Math.max(stat.spentTimeStamp, total.spentTimeStamp || 0);
 	});
-	console.log(stats, total);
 
 	return [keys, stats, total];
 }
