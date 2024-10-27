@@ -30,6 +30,7 @@
  * @property {string} playerSprite
  * @property {string} tentacleColour
  * @property {number} size
+ * @property {boolean} doublePen
  * @property {string | 0} state
  * @property {Condom} condom
  * @property {number} cum
@@ -106,6 +107,7 @@ class XrayCombatMapper {
 				penetrated: "vaginal",
 				penetratedType: "",
 				playerSprite: "",
+				doublePen: false,
 				showCum: false,
 				state: "",
 				type: "",
@@ -251,7 +253,7 @@ class XrayCombatMapper {
 				}
 
 				this.mapXrayHumanPenis("npc", slot, options);
-				if (penetrator.npc2) {
+				if (penetrator.npc2 !== undefined) {
 					this.mapXrayHumanPenis("npc2", slot, options);
 
 					/* size 1 and 5 penises are supposed to be impossible to dp with, so just in case, make sure sprites don't error out */
@@ -353,8 +355,8 @@ class XrayCombatMapper {
 
 		penetrator.isCumActive = false;
 		if (V.ejaculating === 1 || V[slot + "state"] === "tentacledeep") {
-			const npc1HasSperm = wearingCondom(penetrator.npc) !== "worn" && !npcHasStrapon(penetrator.npc);
-			const npc2HasSperm = wearingCondom(penetrator.npc2) !== "worn" && !npcHasStrapon(penetrator.npc2);
+			const npc1HasSperm = V[slot + "state"] === "tentacledeep" || (wearingCondom(penetrator.npc) !== "worn" && !npcHasStrapon(penetrator.npc));
+			const npc2HasSperm = V[slot + "state"] === "tentacledeep" || (wearingCondom(penetrator.npc2) !== "worn" && !npcHasStrapon(penetrator.npc2));
 			// Should this also check if NCPs are ejaculating? Or does $ejaculating = 1 do that
 			penetrator.isCumActive = npc1HasSperm || npc2HasSperm || V[slot + "state"] === "tentacledeep";
 		}
@@ -375,7 +377,7 @@ class XrayCombatMapper {
 		const penetrator = options[slot];
 		if (npcHasStrapon(options[slot][npc])) {
 			penetrator[npc + "Strapon"] = true;
-			if (V.NPCList[penetrator[npc]].penisdesc.includes("horse")) {
+			if (V.NPCList[penetrator[npc]].penisdesc.includes("horse") && !penetrator.doublePen) {
 				penetrator["penetratorSprite" + index] = "horseGray";
 				penetrator["size" + index] = 5;
 			} else if (V.NPCList[penetrator[npc]].penisdesc.includes("knotted")) {

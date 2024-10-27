@@ -121,7 +121,7 @@ function xrayArseCondom(npc, overrideOptions = {}) {
 		},
 		showfn(options) {
 			const target = npc === "npc2" ? V.anusdoubletarget : V.anustarget;
-			return !!options.showNpcPenis && !!options.anus[npc] && !!V.NPCList[target].condom.worn;
+			return !!options.showNpcPenis && options.anus[npc] !== undefined && !!V.NPCList[target].condom.worn;
 		},
 		animationfn(options) {
 			return options.animKeyArse;
