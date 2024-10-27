@@ -30,6 +30,7 @@
  * @property {string} hairLength The named stage of the hair length.
  * @property {string} leftEye
  * @property {string} rightEye
+ * @property {boolean} trauma Empty eyes
  * @property {LegPositions} legBackPosition The position the back leg is in.
  * @property {LegPositions} legFrontPosition The position the front leg is in.
  * @property {"default" | "bound" | "handjob"} armBackPosition The position the back arm is in.
@@ -270,6 +271,7 @@ class PlayerCombatMapper {
 			hairLength: "short",
 			leftEye: "blue",
 			rightEye: "blue",
+			trauma: false,
 			skinTone: 0,
 			skinType: "light",
 			tears: 0,
@@ -343,8 +345,16 @@ class PlayerCombatMapper {
 
 		CombatRenderer.generateBodyFilters(options);
 
-		options.leftEye = V.makeup.eyelenses.left || V.leftEyeColour || "blue";
-		options.rightEye = V.makeup.eyelenses.right || V.rightEyeColour || "blue";
+		// Eyes
+		if (V.possessed) {
+			options.trauma = V.possessed;
+			options.leftEye = ["haunt", "despair"].includes(V.wraith.state) ? "red possessed" : "blue possessed";
+			options.rightEye = ["haunt", "despair"].includes(V.wraith.state) ? "red possessed" : "blue possessed";
+		} else {
+			options.trauma = V.trauma >= V.traumamax * 0.9;
+			options.leftEye = V.makeup.eyelenses.left || V.leftEyeColour || "blue";
+			options.rightEye = V.makeup.eyelenses.right || V.rightEyeColour || "blue";
+		}
 
 		options.filters.leftEye = CombatRenderer.lookupColour(setup.colours.eyes_map, options.leftEye, "leftEye", undefined, "eyes");
 		options.filters.rightEye = CombatRenderer.lookupColour(setup.colours.eyes_map, options.rightEye, "rightEye", undefined, "eyes");
