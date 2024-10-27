@@ -3042,7 +3042,7 @@ function initUpper() {
 			type: ["normal", "athletic", "school"],
 			set: "upper",
 			gender: "n",
-			femininity: 200,
+			femininity: 0,
 			warmth: 5,
 			cost: 3000,
 			description: "PE shirt from a foreign land.",
