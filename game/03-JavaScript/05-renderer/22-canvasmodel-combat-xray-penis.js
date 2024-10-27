@@ -32,7 +32,7 @@ const combatXrayPenis = {
 			animationfn(options) {
 				return options.animKeyPenis;
 			},
-			filters: ["penisPenetrator"],
+			filters: ["penisPenetrated"],
 			z: CombatRenderer.indices.xrayBase,
 		},
 		playerPenis: {

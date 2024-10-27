@@ -675,7 +675,7 @@ Macro.add("icon", {
 		if (!V.options.images) return;
 		const name = typeof this.args[0] === "string" ? this.args[0] : "error";
 		const iconImg = document.createElement("img");
-		iconImg.className = "icon" + (this.args.includes("infront") ? " infront" : "");
+		iconImg.className = "icon" + (this.args.includes("infront") ? " infront" : "") + (this.args.includes("flip") ? " flip" : "");
 		iconImg.src = "img/misc/icon/" + name;
 		this.output.append(iconImg);
 		// append a whitespace for compatibility with old icon behavior

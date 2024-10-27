@@ -222,7 +222,7 @@ function settingsNudeGenderAppearance() {
 		switch (val) {
 			case -1:
 				text =
-					"NPCs <span class='blue inline-colour'>ignore</span> genitals when perceiving gender. <span class='purple inline-colour'>Overrides some player descriptions and gender appearance modifiers.</span> <span class='red inline-colour'>Disables crossdressing warnings.</span>";
+					"NPCs <span class='blue inline-colour'>ignore</span> genitals when perceiving gender. <span class='purple inline-colour'>Overrides some gender appearance modifiers, including the femininity factor of pregnant bellies. Player descriptions will match the behaviour chosen in the bedroom mirror.</span> <span class='red inline-colour'>Disables crossdressing warnings. NPCs will still judge gender based on your manner of dress.</span>";
 				break;
 			case 0:
 				text = "NPCs will <span class='blue inline-colour'>ignore</span> your genitals when perceiving your gender.";
@@ -925,7 +925,6 @@ function moneyStatsProcess(stats) {
 		if (stat.earnedTimeStamp) total.earnedTimeStamp = Math.max(stat.earnedTimeStamp, total.earnedTimeStamp || 0);
 		if (stat.spentTimeStamp) total.spentTimeStamp = Math.max(stat.spentTimeStamp, total.spentTimeStamp || 0);
 	});
-	console.log(stats, total);
 
 	return [keys, stats, total];
 }

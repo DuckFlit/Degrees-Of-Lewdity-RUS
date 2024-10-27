@@ -694,7 +694,7 @@ const combatMainPc = {
 		},
 		frontEye: {
 			srcfn(options) {
-				return `${options.src}body/head/eyes.png`;
+				return options.trauma ? `${options.src}body/head/eyesempty.png` : `${options.src}body/head/eyes.png`;
 			},
 			showfn(options) {
 				return !!options.showPlayer && !!options.showFace;

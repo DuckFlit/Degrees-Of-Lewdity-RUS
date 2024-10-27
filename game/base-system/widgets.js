@@ -267,7 +267,7 @@ function genderappearancecheck() {
 	/* Bottom */
 	addfemininityfromfactor(Math.trunc(V.player.bottomsize * T.bottom_visibility * 50), "Bottom size (" + Math.trunc(T.bottom_visibility * 100) + "% visible)");
 	/* Pregnant Belly */
-	if (V.sexStats === undefined || !playerBellyVisible()) {
+	if (V.sexStats === undefined || !playerBellyVisible() || V.NudeGenderDC === -1) {
 		// do glorious nothing
 	} else if (V.NudeGenderDC <= 1) {
 		addfemininityfromfactor(
@@ -441,6 +441,20 @@ function bodywritingExposureCheck(overwrite, skipRng) {
 	if (!skipRng) T.bodypart = T.skin_array.random();
 }
 DefineMacro("bodywritingExposureCheck", bodywritingExposureCheck);
+
+/* Checks if PC has bodywriting or tattoos that are not visible to NPCs. */
+function bodywritingHiddenCheck(overwrite, skipRng) {
+	if (!T.hidden || overwrite) {
+		bodywritingExposureCheck(true);
+		T.bodywriting_hidden = 0;
+
+		T.hidden_writing = Object.keys(V.skin).filter(loc => V.skin[loc].writing && !T.skin_array.includes(loc));
+
+		if (T.hidden_writing.length >= 1) T.bodywriting_hidden = 1;
+	}
+	if (!skipRng) T.bodypart = T.hidden_writing.random();
+}
+DefineMacro("bodywritingHiddenCheck", bodywritingHiddenCheck);
 
 /**
  * Turns an array into a formatted list for printing.

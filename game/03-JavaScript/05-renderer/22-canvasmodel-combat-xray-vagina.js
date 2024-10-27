@@ -122,7 +122,7 @@ function xrayVaginaCondom(npc, overrideOptions = {}) {
 		},
 		showfn(options) {
 			const target = npc === "npc2" ? V.vaginadoubletarget : V.vaginatarget;
-			return !!options.showNpcPenis && !!options.vagina[npc] && !!V.NPCList[target].condom.worn;
+			return !!options.showNpcPenis && options.vagina[npc] !== undefined && !!V.NPCList[target].condom.worn;
 		},
 		animationfn(options) {
 			return options.animKeyVagina;
