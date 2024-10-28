@@ -1648,7 +1648,7 @@ class PlayerCombatMapper {
 						type: sanitise(id),
 					};
 				});
-				options.bodywriting.backShoulder = getState("right_shoulder", (id, bodywriting) => {
+				options.bodywriting.frontShoulder = getState("right_shoulder", (id, bodywriting) => {
 					if (bodywriting.type === "text" || bodywriting.special === "islander") {
 						return {
 							show: true,
@@ -1672,15 +1672,15 @@ class PlayerCombatMapper {
 						type: sanitise(id),
 					};
 				});
-				options.bodywriting.frontShoulder = getState("left_shoulder", (id, bodywriting) => {
+				options.bodywriting.backShoulder = getState("left_shoulder", (id, bodywriting) => {
 					return {
 						show: false,
 						area: bodywriting.writing,
 						type: sanitise(id),
 					};
 				});
-				options.bodywriting.backBottom = getState("right_bottom", hidden);
-				options.bodywriting.frontBottom = getState("left_bottom", hidden);
+				options.bodywriting.frontBottom = getState("right_bottom", hidden);
+				options.bodywriting.backBottom = getState("left_bottom", hidden);
 				options.bodywriting.pubic = getState("pubic", (id, bodywriting) => {
 					if (bodywriting.type === "text") {
 						return {
@@ -1690,30 +1690,6 @@ class PlayerCombatMapper {
 						};
 					}
 					if (bodywriting.type === "object" && bodywriting.special !== "islander") {
-						return {
-							show: true,
-							area: bodywriting.writing,
-							type: sanitise(id),
-						};
-					}
-					return null;
-				});
-				options.bodywriting.backThigh = getState("left_thigh", (id, bodywriting) => {
-					if (bodywriting.type === "text" || bodywriting.special === "islander") {
-						let type = id;
-						if (["up", "down"].includes(options.legBackPosition)) {
-							type += "-" + options.legBackPosition;
-						}
-						if (bodywriting.arrow === 1) {
-							type += "-arrow";
-						}
-						return {
-							show: true,
-							area: "text",
-							type: sanitise(type),
-						};
-					}
-					if (bodywriting.type === "object") {
 						return {
 							show: true,
 							area: bodywriting.writing,
@@ -1746,16 +1722,40 @@ class PlayerCombatMapper {
 					}
 					return null;
 				});
+				options.bodywriting.backThigh = getState("left_thigh", (id, bodywriting) => {
+					if (bodywriting.type === "text" || bodywriting.special === "islander") {
+						let type = id;
+						if (["up", "down"].includes(options.legBackPosition)) {
+							type += "-" + options.legBackPosition;
+						}
+						if (bodywriting.arrow === 1) {
+							type += "-arrow";
+						}
+						return {
+							show: true,
+							area: "text",
+							type: sanitise(type),
+						};
+					}
+					if (bodywriting.type === "object") {
+						return {
+							show: true,
+							area: bodywriting.writing,
+							type: sanitise(id),
+						};
+					}
+					return null;
+				});
 				break;
 			case "doggy":
-				options.bodywriting.frontCheek = getState("right_cheek", (id, bodywriting) => {
+				options.bodywriting.frontCheek = getState("left_cheek", (id, bodywriting) => {
 					return {
 						show: false,
 						area: bodywriting.writing,
 						type: sanitise(id),
 					};
 				});
-				options.bodywriting.backCheek = getState("left_cheek", (id, bodywriting) => {
+				options.bodywriting.backCheek = getState("right_cheek", (id, bodywriting) => {
 					if (bodywriting.type === "text" || bodywriting.special === "islander") {
 						return {
 							show: true,
@@ -1772,7 +1772,7 @@ class PlayerCombatMapper {
 					}
 					return null;
 				});
-				options.bodywriting.backShoulder = getState("left_shoulder", (id, bodywriting) => {
+				options.bodywriting.frontShoulder = getState("left_shoulder", (id, bodywriting) => {
 					if (bodywriting.type === "text" || bodywriting.special === "islander") {
 						return {
 							show: true,
@@ -1796,15 +1796,15 @@ class PlayerCombatMapper {
 						type: sanitise(id),
 					};
 				});
-				options.bodywriting.frontShoulder = getState("right_shoulder", (id, bodywriting) => {
+				options.bodywriting.backShoulder = getState("right_shoulder", (id, bodywriting) => {
 					return {
 						show: false,
 						area: bodywriting.writing,
 						type: sanitise(id),
 					};
 				});
-				options.bodywriting.backBottom = getState("left_bottom", simpleText);
-				options.bodywriting.frontBottom = getState("right_bottom", (id, bodywriting) => {
+				options.bodywriting.frontBottom = getState("left_bottom", simpleText);
+				options.bodywriting.backBottom = getState("right_bottom", (id, bodywriting) => {
 					return {
 						show: false,
 						area: bodywriting.writing,
@@ -1828,6 +1828,7 @@ class PlayerCombatMapper {
 					}
 					return null;
 				});
+				options.bodywriting.frontThigh = getState("left_thigh", simpleText);
 				options.bodywriting.backThigh = getState("right_thigh", (id, bodywriting) => {
 					if (bodywriting.type === "text" || bodywriting.special === "islander") {
 						return {
@@ -1845,7 +1846,6 @@ class PlayerCombatMapper {
 					}
 					return null;
 				});
-				options.bodywriting.frontThigh = getState("left_thigh", simpleText);
 				break;
 		}
 		return options;

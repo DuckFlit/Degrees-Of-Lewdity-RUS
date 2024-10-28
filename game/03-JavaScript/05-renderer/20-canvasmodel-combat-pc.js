@@ -935,7 +935,7 @@ const combatMainPc = {
 			z: CombatRenderer.indices.base - 1,
 		}),
 		bodywritingFrontBottom: PlayerCanvasHelper.genBodywritingLayer("frontBottom", {
-			z: CombatRenderer.indices.base + 1,
+			z: CombatRenderer.indices.frontLeg + 1,
 		}),
 		bodywritingPubic: PlayerCanvasHelper.genBodywritingLayer("pubic", {
 			z: CombatRenderer.indices.base + 1,
