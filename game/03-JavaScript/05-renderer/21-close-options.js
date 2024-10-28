@@ -106,13 +106,12 @@ class CloseCombatMapper {
 		}
 
 		// Set animation speed
-		const speedChest = combat.isRapid() ? "vfast" : combat.isChestActive("close") ? "mid" : "slow";
-		const framesChest = V.player.breastsize >= 8 ? 10 : 6;
-		options.animKeyChest = `sex-${framesChest}f-${speedChest}`;
+		const framesChest = combat.isChestActive("close") ? (V.player.breastsize >= 8 ? 10 : 6) : 1;
+		options.animKeyChest = `sex-${framesChest}f-${combat.isChestActive("close") ? this.getCloseAnimationSpeed() : "idle"}`;
 
-		options.animKeyVagina = `sex-${combat.isVaginaActive("close") ? (combat.isRapid() ? "6f-vfast" : "6f-mid") : "1f-idle"}`;
-		options.animKeyArse = `sex-${combat.isAnusActive("close") ? (combat.isRapid() ? "6f-vfast" : "6f-mid") : "1f-idle"}`;
-		options.animKeyPenis = `sex-${combat.isPenisActive("close") ? (combat.isRapid() ? "6f-vfast" : "6f-mid") : "1f-idle"}`;
+		options.animKeyVagina = `${combat.isVaginaActive("close") ? this.getCloseAnimation() : "sex-1f-idle"}`;
+		options.animKeyArse = `${combat.isAnusActive("close") ? this.getCloseAnimation() : "sex-1f-idle"}`;
+		options.animKeyPenis = `${combat.isPenisActive("close") ? this.getCloseAnimation() : "sex-1f-idle"}`;
 
 		return options;
 	}
@@ -309,6 +308,47 @@ class CloseCombatMapper {
 		if (breastsNpc) {
 			options.filters.chestNpc = NpcCombatMapper.getNpcSkinFilter(breastsNpc);
 			options.filters.breastsCondom = CombatRenderer.getCondomOptions(breastsNpc.condom);
+		}
+	}
+
+	/**
+	 * @returns {string}
+	 */
+	static getCloseAnimation() {
+		const speed = this.getCloseAnimationSpeed();
+		if (combat.isRapid()) {
+			return "sex-6f-vfast";
+		}
+		return `sex-6f-${speed}`;
+	}
+
+	/**
+	 * @returns {string}
+	 */
+	static getCloseAnimationSpeed() {
+		if (T.crOverrides?.animSpeed) {
+			return T.crOverrides.animSpeed;
+		}
+		if (combat.isRapid()) {
+			return "vfast";
+		}
+		if (V.enemytype === "machine") {
+			switch (V.machine?.speed) {
+				case 1:
+					return "slow";
+				case 2:
+					return "fast";
+				case 3:
+					return "vfast";
+				default:
+					return "vfast";
+			}
+		} else {
+			if (T.knotted || T.knotted_short) return "mid";
+			if (V.enemyarousal >= (V.enemyarousalmax / 5) * 4) return "vfast";
+			if (V.enemyarousal >= (V.enemyarousalmax / 5) * 3) return "fast";
+			if (V.enemyarousal >= (V.enemyarousalmax / 5) * 1) return "mid";
+			return "slow";
 		}
 	}
 }

@@ -132,7 +132,24 @@ class NpcCombatMapper {
 			return "vfast";
 		}
 		if (combat.isActive()) {
-			return "mid";
+			if (V.enemytype === "machine") {
+				switch (V.machine?.speed) {
+					case 1:
+						return "slow";
+					case 2:
+						return "fast";
+					case 3:
+						return "vfast";
+					default:
+						return "vfast";
+				}
+			} else {
+				if (T.knotted || T.knotted_short) return "mid";
+				if (V.enemyarousal >= (V.enemyarousalmax / 5) * 4) return "vfast";
+				if (V.enemyarousal >= (V.enemyarousalmax / 5) * 3) return "fast";
+				if (V.enemyarousal >= (V.enemyarousalmax / 5) * 1) return "mid";
+				return "slow";
+			}
 		}
 		return "idle";
 	}
