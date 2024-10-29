@@ -201,63 +201,67 @@ Debugging:
 	<<canvasCombatEditor>>
 
 	<!-- Centres the inner grid -->
-	<div class="d-flex flex-row flex-centre">
+	<div class="d-flex flex-row flex-centre flex-wrap">
 		<!-- Organises canvas windows into a grid -->
-		<div class="combat-grid">
-			<!-- Top row - Contains miniture viewports -->
-			<div class="combat-close d-flex flex-row justify-content-center">
-				<div class="combat-close-chest">
-					<<selectmodel "combatCloseChest" "divCloseChest">>
-					<<animatemodel "">>
+		<div class="combat-grid d-grid">
+
+			<div class="combat-centre">
+				<!-- Top row - Contains miniture viewports -->
+				<div class="combat-close d-flex flex-row justify-content-center">
+					<div class="combat-close-chest">
+						<<selectmodel "combatCloseChest" "divCloseChest">>
+						<<animatemodel "">>
+					</div>
+					<div class="combat-close-penis">
+						<<selectmodel "combatClosePenis" "divClosePenis">>
+						<<animatemodel "">>
+					</div>
+					<div class="combat-close-vagina">
+						<<selectmodel "combatCloseVagina" "divCloseVagina">>
+						<<animatemodel "">>
+					</div>
+					<div class="combat-close-arse">
+						<<selectmodel "combatCloseArse" "divCloseArse">>
+						<<animatemodel "">>
+					</div>
 				</div>
-				<div class="combat-close-penis">
-					<<selectmodel "combatClosePenis" "divClosePenis">>
-					<<animatemodel "">>
-				</div>
-				<div class="combat-close-vagina">
-					<<selectmodel "combatCloseVagina" "divCloseVagina">>
-					<<animatemodel "">>
-				</div>
-				<div class="combat-close-arse">
-					<<selectmodel "combatCloseArse" "divCloseArse">>
-					<<animatemodel "">>
+		
+				<!-- Main canvas container. -->
+				<div class="combat-main d-flex justify-content-center position-relative">
+
+					<<setup-multi-canvas "combatMain" "combatMainPc" "combatMainPc0">>
+
+					<<for $_npcIndex, $_npc range $NPCList>>
+						<<if CombatRenderer.npcTypes.includes($_npc.type)>>
+							<<set _metadata to { index: $_npcIndex }>>
+							<<add-multi-canvas "combatMain" "combatMainNpc" `"combatMainNpc" + $_npcIndex` _metadata>>
+						<</if>>
+					<</for>>
+
+					<<add-multi-canvas "combatMain" "combatMainSwarm" "combatMainSwarm0">>
+
+					<<reset-multi-canvas "combatMain">>
+					<<start-multi-canvas-rendering "combatMain">>
+
+					<<set _animspeed to NpcCombatMapper.getNpcAnimationSpeed()>>
 				</div>
 			</div>
-			<!-- Main canvas container. -->
-			<div class="combat-main d-flex justify-content-center position-relative">
 
-				<<setup-multi-canvas "combatMain" "combatMainPc" "combatMainPc0">>
-
-				<<for $_npcIndex, $_npc range $NPCList>>
-					<<if CombatRenderer.npcTypes.includes($_npc.type)>>
-						<<set _metadata to { index: $_npcIndex }>>
-						<<add-multi-canvas "combatMain" "combatMainNpc" `"combatMainNpc" + $_npcIndex` _metadata>>
-					<</if>>
-				<</for>>
-
-				<<add-multi-canvas "combatMain" "combatMainSwarm" "combatMainSwarm0">>
-
-				<<reset-multi-canvas "combatMain">>
-				<<start-multi-canvas-rendering "combatMain">>
-
-				<<set _animspeed to NpcCombatMapper.getNpcAnimationSpeed()>>
+			<div class="combat-xray-penis">
+				<<selectmodel "combatXrayPenis" "divXrayPenis">>
+				<<animatemodel "w-100">>
 			</div>
 
-			<!-- Xrays thrown here for now because I have no idea how we want this to look and I'm very tired -->
-			<div class="combat-xray d-flex flex-row justify-content-center">
-				<div class="combat-xray-penis">
-					<<selectmodel "combatXrayPenis" "divXrayPenis">>
-					<<animatemodel "">>
-				</div>
-				<div class="combat-xray-vagina">
-					<<selectmodel "combatXrayVagina" "divXrayVagina">>
-					<<animatemodel "">>
-				</div>
-				<div class="combat-xray-arse">
-					<<selectmodel "combatXrayArse" "divXrayArse">>
-					<<animatemodel "">>
-				</div>
+			<div class="combat-xray-vagina">
+				<<selectmodel "combatXrayVagina" "divXrayVagina">>
+				<<animatemodel "w-100">>
 			</div>
+
+			<div class="combat-xray-arse">
+				<<selectmodel "combatXrayArse" "divXrayArse">>
+				<<animatemodel "w-100">>
+			</div>
+
 		</div>
 
 		<<if $debug>>
