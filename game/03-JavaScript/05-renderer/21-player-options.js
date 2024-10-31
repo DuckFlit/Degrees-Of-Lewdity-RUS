@@ -88,6 +88,7 @@
 
 /**
  * @typedef {object} Props
+ * @property {Prop} wall
  * @property {Prop} bench
  * @property {Prop} examTable
  * @property {Prop} haybale
@@ -516,13 +517,22 @@ class PlayerCombatMapper {
 		}
 
 		/**
+		 * @returns {Prop}
+		 */
+		function createWall() {
+			return {
+				show: V.position === "wall" && V.walltype === "wall",
+			};
+		}
+
+		/**
 		 * @returns {PilloryProp}
 		 */
 		function createPillory() {
 			const audience = V.pilloryaudience || 0;
 			const tomatoes = V.walltype === "pillory" ? Math.clamp(audience - 1, 1, 4) : 0;
 			return {
-				show: V.position === "wall" && !!V.walltype,
+				show: V.position === "wall" && !!V.walltype && ["cleanpillory", "horse_pillory", "pillory"].includes(V.walltype),
 				isDirty: V.walltype === "pillory",
 				hasHorse: V.walltype === "horse_pillory",
 				tomatoes,
@@ -530,6 +540,7 @@ class PlayerCombatMapper {
 		}
 
 		options.props = {
+			wall: createWall(),
 			bench: createProp("bench"),
 			examTable: createProp("examtable"),
 			haybale: createProp("haybale"),

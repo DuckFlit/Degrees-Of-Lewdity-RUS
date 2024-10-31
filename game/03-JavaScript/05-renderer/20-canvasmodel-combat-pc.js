@@ -95,6 +95,15 @@ const combatMainPc = {
 		 *    ██      ██   ██ ██    ██ ██           ██
 		 *    ██      ██   ██  ██████  ██      ███████
 		 */
+		wall: {
+			srcfn(options) {
+				return `${options.root}prop/wall/wall.png`;
+			},
+			showfn(options) {
+				return !!options.props.wall.show;
+			},
+			z: CombatRenderer.indices.near,
+		},
 		bench: {
 			srcfn(options) {
 				return `${options.root}prop/bench/${options.position}.png`;
