@@ -3,7 +3,7 @@ declare module "twine-sugarcube" {
 		combat: boolean;
 		position: 0 | "doggy" | "missionary" | "wall" | "stalk" | "wall";
 
-		walltype?: "pillory" | "cleanpillory" | "horse_pillory";
+		walltype?: "pillory" | "cleanpillory" | "horse_pillory" | "wall";
 		pilloryaudience?: number;
 
 		arousalmax: number;
