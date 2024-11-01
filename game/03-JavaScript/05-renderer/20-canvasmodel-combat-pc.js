@@ -245,7 +245,7 @@ const combatMainPc = {
 			animationfn(options) {
 				return options.animKey;
 			},
-			z: CombatRenderer.indices.head - 1,
+			z: 74,
 		},
 		pilloryFront: {
 			srcfn(options) {
@@ -264,7 +264,7 @@ const combatMainPc = {
 			animationfn(options) {
 				return options.animKey;
 			},
-			z: CombatRenderer.indices.head + 1,
+			z: 80,
 		},
 		pilloryTomatoes: {
 			srcfn(options) {
@@ -593,6 +593,9 @@ const combatMainPc = {
 			},
 			filters: ["body"],
 			zfn(options) {
+				if (options.props.pillory.show) {
+					return CombatRenderer.indices.frontArm - 2;
+				}
 				if (options.armFrontPosition === "bound") {
 					return CombatRenderer.indices.frontBoundArms;
 				}
@@ -1322,6 +1325,9 @@ const combatMainPc = {
 				return !!show;
 			},
 			zfn(options) {
+				if (options.props.pillory.show) {
+					return CombatRenderer.indices.frontArm - 2;
+				}
 				if (options.armFrontPosition === "bound") {
 					return CombatRenderer.indices.frontBoundArms + 1;
 				}
@@ -1339,6 +1345,9 @@ const combatMainPc = {
 				return !!show;
 			},
 			zfn(options) {
+				if (options.props.pillory.show) {
+					return CombatRenderer.indices.frontArm - 2;
+				}
 				if (options.armFrontPosition === "bound") {
 					return CombatRenderer.indices.frontBoundArms + 1;
 				}
