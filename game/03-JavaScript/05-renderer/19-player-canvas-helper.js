@@ -292,6 +292,9 @@ class PlayerCanvasHelper {
 				return path;
 			},
 			showfn(options) {
+				if (options.props.pillory.show) {
+					return false;
+				}
 				const clothes = options.clothes[slot];
 				const show = options.showClothing && clothes != null && clothes.show && clothes.sleeves.show;
 				return !!show;
