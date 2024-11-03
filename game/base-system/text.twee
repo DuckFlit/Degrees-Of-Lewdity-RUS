@@ -5879,6 +5879,7 @@ Argument 2, where appropriate, determines whether it's the player undressing the
 	/* Example: <<insufficientStat "custom" "to be worthy" "pink" "pious or gracefull">> 	---------->	would print (in pink): 	'You are not pious or graceful enough to be worthy' */
 	/* Example: <<insufficientStat "custom" "to be noticed" "green" "beautiful, alluring, or skilled">> would print (in green): 'You are not beautiful, alluring, or skilled enough to be noticed' */
 
+	<<set $_color to _args[2] ? _args[2] : "blue">>
 	<<set $_text_output to "You are not ">>
 	<<switch _args[0]>>
 		<<case "promiscuity">>
@@ -5927,12 +5928,13 @@ Argument 2, where appropriate, determines whether it's the player undressing the
 			<<set $_text_output += "lewd enough">>
 	<</switch>>
 	<<set $_text_output += " _args[1].">>
-	<<set $_text_output to "<span @class='_args[2] ? _args[2] : blue'>" + $_text_output + "</span>">>
 
 	/* Throws an error if 'custom' stat input is being used incorrectly */
 	<<if _args[3] and _args[0] is not "custom">>
-		<<set $_text_output to "<span class='red'> Syntax Error: Inputted custom stat '_args[3]' without using the 'custom' stat argument.</span>">>
+		<<set $_color to "red">>
+		<<set $_text_output to "Syntax Error: Inputted custom stat '_args[3]' without using the 'custom' stat argument in the \"insufficientStat\" widget. Please report this.">>
 	<<elseif _args[0] is "custom" and !_args[3]>>
-		<<set $_text_output to "<span class='red'> Syntax Error: Used 'custom' stat argument without inputing a custom stat.</span>">>
+			<<set $_color to "red">>
+		<<set $_text_output to "Syntax Error: Used 'custom' stat argument without inputing a custom stat in the \"insufficientStat\" widget. Please report this.">>
 	<</if>>
-<</silently>><<print $_text_output>><</widget>>
+<</silently>><<if $_text_output>><span @class="$_color"><<print $_text_output>></span><</if>><</widget>>
