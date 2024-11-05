@@ -6,8 +6,8 @@
  */
 const combatXrayPenis = {
 	name: "combatXrayPenis",
-	width: 128,
-	height: 60,
+	width: 256,
+	height: 120,
 	scale: true,
 	frames: 8,
 	generatedOptions() {

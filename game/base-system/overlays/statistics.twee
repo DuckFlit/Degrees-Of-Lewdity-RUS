@@ -2,22 +2,40 @@
 <<widget "statistics">>
 	<<foldout false "_virginitiesFoldout">>
 		<span class="gold">Virginities</span>
+		<<run ["vaginal", "penile", "anal", "oral", "handholding", "kiss"].forEach(type => {
+			if ($player.virginity[type] is true) {
+				T[type + "VirginityColour"] = "gold";
+			} else if (setup.loveInterestNpc.includes($player.virginity[type])) {
+				T[type + "VirginityColour"] = "lewd";
+				if ($player.virginityDetails and $player.virginityDetails[type].consensual is false) T[type + "VirginityColour"] = "red";
+			} else if ($player.virginityDetails and $player.virginityDetails[type].consensual isnot undefined) {
+				T[type + "VirginityColour"] = $player.virginityDetails[type].consensual ? "green" : "red";
+			} else {
+				T[type + "VirginityColour"] = "";
+			}
+		})>>
 		<<if $player.vaginaExist or $player.virginity.vaginal isnot true>>
-			Vaginal virginity: <<print ($player.virginity.vaginal is true ? "Present" : "Taken by " + ($player.virginity.vaginal is false ? "unknown" : $player.virginity.vaginal))>>
+			Vaginal virginity: <span @class="_vaginalVirginityColour"><<print ($player.virginity.vaginal is true ? "Present" : "Taken by " + ($player.virginity.vaginal is false ? "unknown" : $player.virginity.vaginal))>></span>
+			<<virginityToolTip $player.virginityDetails.vaginal $player.virginity.vaginal>>
 			<br>
 		<</if>>
 		<<if $player.penisExist or $player.virginity.penile isnot true>>
-			Penile virginity: <<print ($player.virginity.penile is true ? "Present" : "Taken by " + ($player.virginity.penile is false ? "unknown" : $player.virginity.penile))>>
+			Penile virginity: <span @class="_penileVirginityColour"><<print ($player.virginity.penile is true ? "Present" : "Taken by " + ($player.virginity.penile is false ? "unknown" : $player.virginity.penile))>></span>
+			<<virginityToolTip $player.virginityDetails.penile $player.virginity.penile>>
 			<br>
 		<</if>>
 
-		Anal virginity: <<print ($player.virginity.anal is true ? "Present" : "Taken by " + ($player.virginity.anal is false ? "unknown" : $player.virginity.anal))>>
+		Anal virginity: <span @class="_analVirginityColour"><<print ($player.virginity.anal is true ? "Present" : "Taken by " + ($player.virginity.anal is false ? "unknown" : $player.virginity.anal))>></span>
+		<<virginityToolTip $player.virginityDetails.anal $player.virginity.anal>>
 		<br>
-		Oral virginity: <<print ($player.virginity.oral is true ? "Present" : "Taken by " + ($player.virginity.oral is false ? "unknown" : $player.virginity.oral))>>
+		Oral virginity: <span @class="_oralVirginityColour"><<print ($player.virginity.oral is true ? "Present" : "Taken by " + ($player.virginity.oral is false ? "unknown" : $player.virginity.oral))>></span>
+		<<virginityToolTip $player.virginityDetails.oral $player.virginity.oral>>
 		<br>
-		Handholding virginity: <<print ($player.virginity.handholding is true ? "Present" : "Taken by " + ($player.virginity.handholding is false ? "unknown" : $player.virginity.handholding))>>
+		Handholding virginity: <span @class="_handholdingVirginityColour"><<print ($player.virginity.handholding is true ? "Present" : "Taken by " + ($player.virginity.handholding is false ? "unknown" : $player.virginity.handholding))>></span>
+		<<virginityToolTip $player.virginityDetails.handholding $player.virginity.handholding>>
 		<br>
-		First kiss: <<print ($player.virginity.kiss is true ? "Present" : "Taken by " + ($player.virginity.kiss is false ? "unknown" : $player.virginity.kiss))>>
+		First kiss: <span @class="_kissVirginityColour"><<print ($player.virginity.kiss is true ? "Present" : "Taken by " + ($player.virginity.kiss is false ? "unknown" : $player.virginity.kiss))>></span>
+		<<virginityToolTip $player.virginityDetails.kiss $player.virginity.kiss>>
 		<br>
 		<<if $temple_rank isnot undefined and $temple_rank isnot "prospective">>
 			Temple vow: <<print ($player.virginity.temple is true ? "Unbroken" : "Broken by " + ($player.virginity.temple is false ? "unknown" : $player.virginity.temple))>>
@@ -35,12 +53,32 @@
 		<br>
 
 		<!-- For each individual virginity type, the number is named and unnamed combined, but the list of names has unnamed npcs filtered out. -->
-		<<set _vaginalNamed to $virginTaken.vaginal.filter(name => $NPCNameList.indexOf(name) isnot -1)>>
-		<<set _penileNamed to $virginTaken.penile.filter(name => $NPCNameList.indexOf(name) isnot -1)>>
-		<<set _analNamed to $virginTaken.anal.filter(name => $NPCNameList.indexOf(name) isnot -1)>>
-		<<set _oralNamed to $virginTaken.oral.filter(name => $NPCNameList.indexOf(name) isnot -1)>>
-		<<set _handholdingNamed to $virginTaken.handholding.filter(name => $NPCNameList.indexOf(name) isnot -1)>>
-		<<set _kissNamed to $virginTaken.kiss.filter(name => $NPCNameList.indexOf(name) isnot -1)>>
+		<<set _vaginalNamed to clone($virginTaken.vaginal.filter(name => $NPCNameList.indexOf(name) isnot -1))>>
+		<<set _penileNamed to clone($virginTaken.penile.filter(name => $NPCNameList.indexOf(name) isnot -1))>>
+		<<set _analNamed to clone($virginTaken.anal.filter(name => $NPCNameList.indexOf(name) isnot -1))>>
+		<<set _oralNamed to clone($virginTaken.oral.filter(name => $NPCNameList.indexOf(name) isnot -1))>>
+		<<set _handholdingNamed to clone($virginTaken.handholding.filter(name => $NPCNameList.indexOf(name) isnot -1))>>
+		<<set _kissNamed to clone($virginTaken.kiss.filter(name => $NPCNameList.indexOf(name) isnot -1))>>
+
+		<<run ["vaginal", "penile", "anal", "oral", "handholding", "kiss"].forEach((virginity) => {
+			const virginityNamed = `${virginity}Named`;
+			T[virginityNamed] = []; /* _vaginalNamed, _penileNamed, ... */
+			for (const name of V.virginTaken[virginity]) {
+				if (!V.NPCNameList.includes(name)) return;
+				const details = C.npc[name].virginityDetails?.[virginity];
+				let colour = '';
+				if (setup.loveInterestNpc.includes(name) && (!details || details.consensual !== false)) {
+					colour = "lewd";
+				} else if (details && details.consensual != null) {
+					colour = details.consensual ? "green" : "red";
+				}
+				const nameText = `<span class="${colour}">${name}</span>`;
+				const detailsArg = details
+					? `\`C.npc['${name}'].virginityDetails.${virginity}\`` 
+					: '';
+				T[virginityNamed].push(`${nameText} <<virginityToolTip ${detailsArg} ${name}>>`);
+			}
+		})>>
 
 		Vaginal: $virginTaken.vaginal.length<<print (_vaginalNamed.length gte 1 ? ", including: " + _vaginalNamed.join(', ') : "")>>
 		<br>
@@ -1514,4 +1552,38 @@
 		<<set $_text_output to `<span class="dash">-</span>`>>
 	<</if>>
 <</silently>><<if $_text_output>><<print $_text_output>><</if>>
+<</widget>>
+
+<<widget "virginityToolTip">><<silently>>
+	<<if _args[0]?.timestamp and _args[1] isnot true>>
+		<<set $_time to new DateTime(_args[0].timestamp)>>
+		<<switch $options.dateFormat>>
+			<<case "en-US">>
+				<<set $_text_output to `Taken on: ${$_time.day}/${$_time.month}/${$_time.year}`>>
+			<<case "zh-CN">>
+				<<set $_text_output to `Taken on: ${$_time.day}/${$_time.month}/${$_time.year}`>>
+			<<default>>
+				<<set $_text_output to `Taken on: ${$_time.day}/${$_time.month}/${$_time.year}`>>
+		<</switch>>
+		<<set $_text_output += ` - ${ampm($_time.hour, $_time.minute)}<br>How recent: <<statisticsTimeCompare _args[0].timestamp>>`>>
+		<<set $_linkColour to "linkBlue">>
+		<<if _args[0].consensual isnot undefined>>
+			<<set $_text_output += "<br>Consensual: _args[0].consensual">>
+			<<set $_linkColour to _args[0].consensual ? "green" : "red">>
+		<</if>>
+		<<if _args[0].position>>
+			<<set $_text_output += "<br>Sex Position: _args[0].position">>
+		<</if>>
+		<<if _args[0].playerPenisSize>>
+			<<set $_penisSize to ["micro", "mini", "tiny", "small", "normal", "large", "enormous"]>>
+			<<set $_text_output += "<br>Penis size: <<print $_penisSize[_args[0].playerPenisSize + 2]>>">>
+		<<elseif _args[0].npcPenisSize>>
+			<<set $_penisSize to ["tiny", "average", "thick", "huge"]>>
+			<<set $_text_output += "<br>Penis size: <<print $_penisSize[_args[0].npcPenisSize]>>">>
+		<</if>>
+		<<if setup.loveInterestNpc.includes(_args[1]) and $_linkColour isnot "red">>
+			<<set $_linkColour to "lewd">>
+		<</if>>
+	<</if>>
+<</silently>><<if $_text_output>><mouse @class="'tooltip ' + $_linkColour">(?)<span><<print $_text_output>></span></mouse><</if>>
 <</widget>>

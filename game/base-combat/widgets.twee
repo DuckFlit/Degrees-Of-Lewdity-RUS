@@ -40,6 +40,34 @@
 						<<case "Morgan">><<earnFeat "Morgan the Lost">>
 					<</switch>>
 				<</if>>
+				
+				<<if !$player.virginityDetails>>
+					<<set $player.virginityDetails to {}>>
+				<</if>>
+				<<set $player.virginityDetails[_args[1]] to {
+					timestamp: Time.date.timeStamp,
+					taker: _args[0],
+				}>>
+				<<if $combat>>
+					<<set $player.virginityDetails[_args[1]].consensual to !!$consensual>>
+					<<set $player.virginityDetails[_args[1]].position to $position>>
+				<<elseif _consensualOverride isnot undefined>>
+					<<set $player.virginityDetails[_args[1]].consensual to _consensualOverride>>
+					<<unset _consensualOverride>>
+				<</if>>
+				<<if _args[1] is "penile">>
+					<<set $player.virginityDetails[_args[1]].playerPenisSize to $player.penissize>>
+				<<elseif ["vaginal", "anal", "oral"].includes(_args[1])>>
+					<<set $_npcIndex to $NPCNameList.indexOf(_args[0])>>
+					<<if $_npcIndex isnot -1>>
+						<<set $player.virginityDetails[_args[1]].npcPenisSize to $NPCName[$_npcIndex].penissize>>
+					<<else>>
+						<<run $NPCList.forEach(npc => {
+							if (npc.fullDescription is _args[0]) $player.virginityDetails[_args[1]].npcPenisSize to npc.penissize;
+						})>>
+					<</if>>
+				<</if>>
+
 				<<if _args[0] isnot undefined and _args[0] isnot 0>>
 					<<set $player.virginity[_args[1]] to _args[0]>>
 					<<if $ironmanmode is true and $passage != "Loveth">>
@@ -94,15 +122,27 @@
 		<<set $_fullDescription to _args[0].fullDescription>>
 		<<set $_type to _args[0].type>>
 	<</if>>
-	<<takeNPCVirginity $_fullDescription "handholding">>
+
+	<<switch _args[1]>>
+		<<case "romantic" "consensual">>
+			<<set _npcConsensualOverride to true>>
+		<<case "rape">>
+			<<set _npcConsensualOverride to true>>
+	<</switch>>
+	<<takeNPCVirginity $_fullDescription "handholding" "pc">>
+	<<unset _npcConsensualOverride>>
+
 	<<if $player.virginity.handholding is true>>
 		<<switch _args[1]>>
 			<<case "romantic">>
 				<span class="lewd">You aren't used to this kind of romantic handholding.</span><<arousal 2000>><<ggarousal>>
+				<<set _consensualOverride to true>>
 			<<case "rape">>
 				<span class="red">You feel horrible, being forced to hold hands like this.</span><<stress 40>><<ggstress>>
+				<<set _consensualOverride to false>>
 			<<case "consensual">>
 				<span class="green">Having your hand held feels nice.</span><<lltrauma>><<trauma -18>>
+				<<set _consensualOverride to true>>
 			<<case "tentacle">>
 				<<set $_handTentacle to _args[2] or "tentacle">>
 				<span class="lewd">You wonder what others would say about a $_handTentacle holding your hand, if they would even believe you.</span><<arousal 1000>>
@@ -128,7 +168,16 @@
 		<<set $_fullDescription to _args[0].fullDescription>>
 		<<set $_type to _args[0].type>>
 	<</if>>
-	<<takeNPCVirginity $_fullDescription "kiss">>
+
+	<<switch _args[1]>>
+		<<case "loveInterest" "romantic">>
+			<<set _npcConsensualOverride to true>>
+		<<case "rape" "loveRape">>
+			<<set _npcConsensualOverride to true>>
+	<</switch>>	
+	<<takeNPCVirginity $_fullDescription "kiss" "pc">>
+	<<unset _npcConsensualOverride>>
+
 	<<if $player.virginity.kiss is true>>
 		<<if _args[0].type is "plant" and $backgroundTraits.includes("plantlover") and $nectar_timer lte 14>>
 			<<set $_kissType to "addiction">>
@@ -139,12 +188,16 @@
 			<<case "loveInterest">>
 				<span class="lewd">You're happy your first kiss went to a love interest.</span><<arousal 3000>><<stress -12>><<trauma -12>><<ggarousal>><<llstress>>
 				<<if ($wraith.mimic isnot $_fullDescription)>><<earnFeat "First Kiss">><</if>>
+				<<set _consensualOverride to true>>
 			<<case "romantic">>
 				<span class="lewd">You're happy your first kiss was taken in such a romantic way.</span><<arousal 1500>><<stress -6>><<trauma -6>><<garousal>><<lstress>>
+				<<set _consensualOverride to true>>
 			<<case "rape">>
 				<span class="red">They stole your first kiss. You feel horrible.</span><<stress 40>><<gggstress>>
+				<<set _consensualOverride to false>>
 			<<case "loveRape">>
 				<span class="red">You didn't want your first kiss with <<nnpc_him $_fullDescription>> to be like this.</span><<stress 40>><<gggstress>>
+				<<set _consensualOverride to false>>
 			<<case "tentacle">>
 				<span class="lewd">You wonder what others would say about giving a tentacle your first kiss, if they would even believe you.</span><<arousal 3000>>
 			<<case "addiction">>
@@ -258,6 +311,27 @@
 						<<earnFeat "Sydney the Pure Hearted">>
 					<</if>>
 					<<set $NPCName[$_i].virginity to $_npc.virginity>>
+					<<if !$NPCName[$_i].virginityDetails>>
+						<<set $NPCName[$_i].virginityDetails to {}>>
+					<</if>>
+					<<set $NPCName[$_i].virginityDetails[$_vType] to {
+						timestamp: Time.date.timeStamp,
+						taker: "pc",
+					}>>
+					<<if $combat>>
+						<<set $NPCName[$_i].virginityDetails[$_vType].consensual to !!$consensual>>
+						<<set $NPCName[$_i].virginityDetails[$_vType].position to $position>>
+					<<elseif _npcConsensualOverride isnot undefined>>
+						<<set $NPCName[$_i].virginityDetails[$_vType].consensual to _npcConsensualOverride>>
+						<<unset _npcConsensualOverride>>
+					<</if>>
+					<<if $_vType is "penile">>
+						<<set $player.virginityDetails[$_vType].npcPenisSize to $NPCName[$_i].penissize>>
+					<<elseif ["vaginal", "anal", "oral"].includes($_vType)>>
+						<<if playerHasStrapon() or $player.penisExist>>
+							<<set $NPCName[$_i].virginityDetails[$_vType].playerPenisSize to playerPenisSize()>>
+						<</if>>
+					<</if>>
 				<</if>>
 			<</if>>
 		<</if>>
@@ -291,12 +365,58 @@
 		<!-- note: virginity must be exactly equal to true; only true means that they still have their virginity. -->
 		<!-- note: NTR is never going to be a thing, but we record this bc it might be useful to remember HOW an npc's virginity was lost, and to what. beast/tentacle/etc -->
 		<<set $_npc.virginity[$_vType] to $_takerDesc>>
+		<<if !$_npc.virginityDetails>>
+			<<set $_npc.virginityDetails to {}>>
+		<</if>>
+		<<set $_npc.virginityDetails[$_vType] to {
+			timestamp: Time.date.timeStamp,
+			taker: $_takerDesc,
+		}>>
+		<<if $combat>>
+			<<set $_npc.virginityDetails[$_vType].consensual to !!$consensual>>
+			<<set $_npc.virginityDetails[$_vType].position to $position>>
+		<</if>>
+		<<if $_vType is "penile">>
+			<<set $_npc.virginityDetails[$_vType].npcPenisSize to $_npc.penissize>>
+		<<elseif ["vaginal", "anal", "oral"].includes($_vType)>>
+			<<set $_npcIndex to $NPCNameList.indexOf($_takerDesc)>>
+			<<if $_npcIndex isnot -1>>
+				<<set $_npc.virginityDetails[$_vType].npcPenisSize to $NPCName[$_npcIndex].penissize>>
+			<<else>>
+				<<run $NPCList.forEach(npc => {
+					if (npc.fullDescription is $_takerDesc) $_npc.virginityDetails[$_vType].npcPenisSize to npc.penissize;
+				})>>
+			<</if>>
+		<</if>>
 
 		<!-- if the npc is named, this will find and update their entry in $NPCName -->
 		<<if !$_isNamedOnly>>
 			<<set $_i to $NPCNameList.indexOf($_npc.fullDescription)>>
 			<<if $_i isnot -1>>
 				<<set $NPCName[$_i].virginity to $_npc.virginity>>
+
+				<!-- Doubled up due to the way this widget works -->
+				<<set $NPCName[$_i].virginityDetails[$_vType] to {
+					timestamp: Time.date.timeStamp,
+					taker: $_takerDesc,
+				}>>
+				<<if $combat>>
+					<<set $NPCName[$_i].virginityDetails[$_vType].consensual to !!$consensual>>
+					<<set $NPCName[$_i].virginityDetails[$_vType].position to $position>>
+				<</if>>
+				<<if $_vType is "penile">>
+					<<set $NPCName[$_i].virginityDetails[$_vType].npcPenisSize to $NPCName[$_i].penissize>>
+				<<elseif ["vaginal", "anal", "oral"].includes($_vType)>>
+					<<run console.log($_takerDesc)>>
+					<<set $_npcIndex to $NPCNameList.indexOf($_takerDesc)>>
+					<<if $_npcIndex isnot -1>>
+						<<set $NPCName[$_i].virginityDetails[$_vType].npcPenisSize to $NPCName[$_npcIndex].penissize>>
+					<<else>>
+						<<run $NPCList.forEach(npc => {
+							if (npc.fullDescription is $_takerDesc) $NPCName[$_i].virginityDetails[$_vType].npcPenisSize to npc.penissize;
+						})>>
+					<</if>>
+				<</if>>
 			<</if>>
 		<</if>>
 

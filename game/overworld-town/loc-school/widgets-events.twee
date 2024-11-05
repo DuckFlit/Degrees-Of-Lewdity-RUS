@@ -482,7 +482,7 @@
 			<<link [[Next|Hallways]]>><<endevent>><<set $eventskip to 1>><</link>>
 			<br>
 		<</if>>
-	<<elseif $rng gte 51 and $schoolrep.herm gte 5 and !$worn.face.type.includes("mask")>>
+	<<elseif $rng gte 56 and $schoolrep.herm gte 5 and !$worn.face.type.includes("mask")>>
 		<<generatey1>><<generatey2>><<generatey3>>
 		You hear whispering behind you.
 		<br>
@@ -774,6 +774,50 @@
 		<br><br>
 		<<link [[Next|Hallways]]>><<endevent>><<set $eventskip to 1>><</link>>
 		<br>
+	<<elseif $rng gte 36>>
+		<<generatey1>><<generatey2>>
+		As you walk down the school hallways, you
+		<<if $cool gte 160>> /* "Cool" or higher */
+			<<generateyv3>> /* Makes the third a victim */
+			are joined by a group of popular students. They chat loudly with you about their classes, the latest gossip, and how their days are going.
+			<<if $speech_attitude is "meek">>
+				You let them do most of the talking.
+			<<elseif $speech_attitude is "bratty">>
+				You do the same, sharing your opinions and laughing along.
+			<<else>>
+				You nod along and make a few comments of your own.
+			<</if>>
+			<br><br>
+			After a minute, your group spots a lone dorky student up ahead as <<person3>><<he>> closes <<his>> locker. The <<person1>><<person>> next to you points to <<person3>><<him>>, and <<person1>><<he>> and the others quickly come up with a plan to humiliate the <<person3>><<person>>.
+			<br><br>
+			<span class="blue">You recognise their target from the orphanage.</span>
+			<br><br>
+			/* $phase is base-1 here so that it can properly carry over into End passage */
+			<<if random(1,2) is 1>>
+				<<link [[Join in on their prank|Hallways Group Popular]]>><<set $phase to 1>><<hope -2>><<status 2>><<stress -12>><</link>><<llhope>><<gcool>><<llstress>>
+				<br>
+				<<link [[Watch it play out|Hallways Group Popular]]>><<set $phase to 2>><<hope -1>><<stress 2>><</link>><<lhope>><<gstress>>
+				<br>
+			<<else>>
+				<<link [[Join in on their prank|Hallways Group Popular]]>><<set $phase to 3>><<hope -2>><<status 2>><<stress -12>><</link>><<llhope>><<gcool>><<llstress>>
+				<br>
+				<<link [[Watch it play out|Hallways Group Popular]]>><<set $phase to 4>><<hope -1>><<stress 2>><</link>><<lhope>><<gstress>>
+				<br>
+			<</if>>
+			<<link [[Stop them|Hallways Group Popular]]>><<set $phase to 5>><<hope 3>><<status -5>><<stress -6>><</link>><<gghope>><<lcool>><<lstress>>
+			<br>
+		<<else>>
+			<<generatey3>> /* Makes the third a bully */
+			<<outfitChecks>>
+			pass a group of popular students chatting and gossiping loudly. Their conversation dies down as you walk by, and you glance over your shoulder to see <span class="purple">that they've begun to follow you.</span>
+			<br><br>
+			You could lose them by taking off down a side hallway and looping around, but it would take some time.
+			<br><br>
+			<<link [[Lose them (0:06)|Hallways Group Escape]]>><<pass 6>><</link>>
+			<br>
+			<<link [[Just keep walking|Hallways Group Unpopular]]>><<set $phase to (_underwear ? random(0,1) : 0)>><</link>>
+			<br>
+		<</if>>
 	<<elseif $rng gte 31>>
 		<<generatey1>><<person1>>
 		<<rng>>
@@ -2652,13 +2696,7 @@
 			<</if>>
 			<br>
 		<<else>>
-			"Bad <<girl>>," Whitney chides, smiling. "I'll have to take everything now."
-			<br><br>
-
-			<<link [[Let it happen|Bully Panties]]>><<trauma 6>><<stress 3>><<sub 1>><<npcincr Whitney dom 1>><</link>><<gtrauma>><<gstress>><<garousal>><<gdom>>
-			<br>
-			<<link [[Fight|Bully Fight]]>><<set $fightstart to 1>><<def 1>><<npcincr Whitney dom -1>><</link>><<ldom>>
-			<br>
+			<<WhitneyRulePunishment true>>
 		<</if>>
 	<<elseif $whitneypantiescheck is 2>>
 		<<set _skirt to clothingData('lower', $worn.lower, "skirt") is 1>>
@@ -2667,22 +2705,15 @@
 		})>>
 		<<if $forcedcrossdressingdisable is "f" and $whitneyCrossdressSchool gte 1 and _maleClothes.length>>
 			Whitney and <<his>> friends surround you. <<He>> frowns when <<he>> notices your <<print $worn[_maleClothes[0]].name>>.
-			"<<if !_skirt>>Ignoring the lack of a skirt, thought<<else>>Thought<</if>> I asked you to not wear any boy's clothes. Bad <<girl>>," Whitney chides. "I'll have to take everything now."
-			<br><br>
-
-			<<link [[Let it happen|Bully Panties]]>><<trauma 6>><<stress 3>><<sub 1>><<npcincr Whitney dom 1>><</link>><<gtrauma>><<gstress>><<garousal>><<gdom>>
-			<br>
-			<<link [[Fight|Bully Fight]]>><<set $fightstart to 1>><<def 1>><<npcincr Whitney dom -1>><</link>><<ldom>>
-			<br>
+			"<<if !_skirt>>Ignoring the lack of a skirt, thought<<else>>Thought<</if>> I asked you to not wear any boy's clothes. Bad <<girl>>," Whitney chides.
+			
+			<<WhitneyRulePunishment>>
 		<<elseif $forcedcrossdressingdisable is "f" and $whitneyskirtcheck gte 1 and (!_skirt or $worn.lower.reveal lte 200)>>
 			Whitney and <<his>> friends surround you. <<He>> frowns when <<he>> notices your $worn.lower.name.
-			"Thought I asked you to wear a <<print (_skirt ? "shorter " : "")>> skirt. Bad <<girl>>," Whitney chides. "I'll have to take everything now."
-			<br><br>
+			"Thought I asked you to wear a <<print (_skirt ? "shorter " : "")>> skirt. Bad <<girl>>," Whitney chides.
+			
 
-			<<link [[Let it happen|Bully Panties]]>><<trauma 6>><<stress 3>><<sub 1>><<npcincr Whitney dom 1>><</link>><<gtrauma>><<gstress>><<garousal>><<gdom>>
-			<br>
-			<<link [[Fight|Bully Fight]]>><<set $fightstart to 1>><<def 1>><<npcincr Whitney dom -1>><</link>><<ldom>>
-			<br>
+			<<WhitneyRulePunishment>>
 		<<else>>
 			Whitney and <<his>> friends surround you. "Time for an inspection," <<he>> says, smiling as <<he>> feels beneath your $worn.lower.name.
 
@@ -2705,13 +2736,7 @@
 				<<link [[Next|Hallways]]>><<endevent>><<set $eventskip to 1>><</link>>
 				<br>
 			<<else>>
-				"Bad <<girl>>," Whitney chides, smiling. "I'll have to take everything now."
-				<br><br>
-
-				<<link [[Let it happen|Bully Panties]]>><<trauma 6>><<stress 3>><<sub 1>><<npcincr Whitney dom 1>><</link>><<gtrauma>><<gstress>><<garousal>><<gdom>>
-				<br>
-				<<link [[Fight|Bully Fight]]>><<set $fightstart to 1>><<def 1>><<npcincr Whitney dom -1>><</link>><<ldom>>
-				<br>
+				<<WhitneyRulePunishment true>>
 			<</if>>
 		<</if>>
 		<br><br>
@@ -2809,5 +2834,41 @@
 		<br>
 	<</addinlineevent>>
 	<<runeventpool>>
+<</widget>>
+
+<<widget "WhitneyRulePunishment">>
+	<<cleareventpool>>
+	<<addinlineevent "whitney_rulePunishment_1">>
+		<<if _args[0]>>"Bad <<girl>>," Whitney chides. <</if>><<He>> grins. "Guess I'll just have to take everything now."
+		<<set $bullyPunishment to "Bully Panties">>
+	<</addinlineevent>>
+	<<if $whitneypantiescheck>>
+		<<if $worn.under_lower.name isnot "naked" and $bullyPunishment isnot "Bully Panties Wedgie">>
+			<<addinlineevent "whitney_rulePunishment_2">>
+				<<if _args[0]>>"Oh, you naughty <<girl>>," Whitney chides. <</if>>"I'm gonna make you regret wearing those."
+				<<set $bullyPunishment to "Bully Panties Wedgie">>
+			<</addinlineevent>>
+		<</if>>
+		<<if $adultshopunlocked and $bullyPunishment isnot "Bully Panties Vibrator">>
+			<<addinlineevent "whitney_rulePunishment_3">>
+				<<if _args[0]>>"What a naughty <<girl>>," Whitney chides. <</if>>"If you want to
+				<<if $whitneyCrossdressSchool>>
+					wear boy clothes
+				<<elseif $whitneypantiescheck is 2>>
+					wear boy undies
+				<<else>>
+					cover your crotch
+				<</if>>
+				so bad, let me give you something else to wear down there."
+				<<set $bullyPunishment to "Bully Panties Vibrator">>
+			<</addinlineevent>>
+		<</if>>
+	<</if>>
+	<<runeventpool>>
+	<br><br>
+	<<link [[Let it happen|$bullyPunishment]]>><<trauma 6>><<stress 3>><<sub 1>><<npcincr Whitney dom 1>><<if $whitneypantiescheck is 0>><</if>><</link>><<gtrauma>><<gstress>><<garousal>><<gdom>>
+	<br>
+	<<link [[Fight|Bully Panties Fight]]>><<set $fightstart to 1>><<def 1>><<npcincr Whitney dom -1>><</link>><<ldom>>
+	<br>
 <</widget>>
 

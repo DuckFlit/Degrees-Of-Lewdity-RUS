@@ -18,15 +18,16 @@
 	<<set _id to `stats${_type}virginity`>>
 	<<capture _type _id>>
 		<span @id="_id"><<= ($player.virginity[_type] is true ? "Present" : "Taken by " + ($player.virginity[_type] is false ? "unknown" : $player.virginity[_type]))>></span> |
-		<span @id="_id + 'link'"><<link `($player.virginity[_type] is true ? "Take" : "Restore")`>>
+		<span @id="_id + 'link'"><<link `($player.virginity[_type] is true and !$player?.virginityDetails[_type]?.taker ? "Take" : "Restore")`>>
 			<<if $player.virginity[_type] is true>>
 				<<set $player.virginity[_type] to (_virginity[_type] is true ? false : _virginity[_type])>>
+				<<if $player.virginity[_type] is false and $player?.virginityDetails[_type]?.taker>><<set $player.virginity[_type] to $player.virginityDetails[_type].taker>><</if>>
 				<<if $player.virginity.temple isnot false and ["penile", "vaginal"].includes(_type)>><<set $player.virginity.temple to "unknown">><</if>>
 			<<else>>
 				<<set $player.virginity[_type] to true>>
 				<<if $player.virginity.temple isnot false and ["penile", "vaginal"].includes(_type)>><<set $player.virginity.temple to true>><</if>>
 			<</if>>
-			<<run $(`#${_id}link .link-internal`).html($player.virginity[_type] is true ? "Take" : "Restore")>>
+			<<run $(`#${_id}link .link-internal`).html($player.virginity[_type] is true and !$player?.virginityDetails[_type]?.taker ? "Take" : "Restore")>>
 			<<run $(`#${_id}`).html($player.virginity[_type] is true ? "Present" : "Taken by " + ($player.virginity[_type] is false ? "unknown" : $player.virginity[_type]))>>
 		<</link>></span>
 	<</capture>>

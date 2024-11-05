@@ -95,6 +95,15 @@ const combatMainPc = {
 		 *    ██      ██   ██ ██    ██ ██           ██
 		 *    ██      ██   ██  ██████  ██      ███████
 		 */
+		wall: {
+			srcfn(options) {
+				return `${options.root}prop/wall/wall.png`;
+			},
+			showfn(options) {
+				return !!options.props.wall.show;
+			},
+			z: CombatRenderer.indices.near,
+		},
 		bench: {
 			srcfn(options) {
 				return `${options.root}prop/bench/${options.position}.png`;
@@ -236,7 +245,7 @@ const combatMainPc = {
 			animationfn(options) {
 				return options.animKey;
 			},
-			z: CombatRenderer.indices.head - 1,
+			z: 74,
 		},
 		pilloryFront: {
 			srcfn(options) {
@@ -255,7 +264,7 @@ const combatMainPc = {
 			animationfn(options) {
 				return options.animKey;
 			},
-			z: CombatRenderer.indices.head + 1,
+			z: 80,
 		},
 		pilloryTomatoes: {
 			srcfn(options) {
@@ -584,6 +593,9 @@ const combatMainPc = {
 			},
 			filters: ["body"],
 			zfn(options) {
+				if (options.props.pillory.show) {
+					return CombatRenderer.indices.frontArm - 2;
+				}
 				if (options.armFrontPosition === "bound") {
 					return CombatRenderer.indices.frontBoundArms;
 				}
@@ -935,7 +947,7 @@ const combatMainPc = {
 			z: CombatRenderer.indices.base - 1,
 		}),
 		bodywritingFrontBottom: PlayerCanvasHelper.genBodywritingLayer("frontBottom", {
-			z: CombatRenderer.indices.base + 1,
+			z: CombatRenderer.indices.frontLeg + 1,
 		}),
 		bodywritingPubic: PlayerCanvasHelper.genBodywritingLayer("pubic", {
 			z: CombatRenderer.indices.base + 1,
@@ -1313,6 +1325,9 @@ const combatMainPc = {
 				return !!show;
 			},
 			zfn(options) {
+				if (options.props.pillory.show) {
+					return CombatRenderer.indices.frontArm - 2;
+				}
 				if (options.armFrontPosition === "bound") {
 					return CombatRenderer.indices.frontBoundArms + 1;
 				}
@@ -1330,6 +1345,9 @@ const combatMainPc = {
 				return !!show;
 			},
 			zfn(options) {
+				if (options.props.pillory.show) {
+					return CombatRenderer.indices.frontArm - 2;
+				}
 				if (options.armFrontPosition === "bound") {
 					return CombatRenderer.indices.frontBoundArms + 1;
 				}

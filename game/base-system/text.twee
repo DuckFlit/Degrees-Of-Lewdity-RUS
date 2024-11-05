@@ -1549,7 +1549,7 @@
 <</widget>>
 
 <<widget "personpenis">><<silently>>
-	<<if $NPCList[0].penis isnot "none">>
+	<<if $NPCList[$index].penis isnot "none">>
 		<<set _text_output to "penis">>
 	<<else>>
 		<<set _text_output to "clit">>
@@ -3841,7 +3841,7 @@
 	<<elseif !_top.type.includes("naked")>>
 		pull up
 	<<else>>
-		bare
+		remove
 	<</if>>
 <</widget>>
 
@@ -3852,7 +3852,7 @@
 	<<elseif _middleOutfit is false>>
 		pull down
 	<<else>>
-		bare
+		remove
 	<</if>>
 <</widget>>
 
@@ -3863,7 +3863,7 @@
 	<<elseif !_top.type.includes("naked")>>
 		pulls up
 	<<else>>
-		bares
+		removes
 	<</if>>
 <</widget>>
 
@@ -3874,7 +3874,7 @@
 	<<elseif _middleOutfit is false>>
 		pulls down
 	<<else>>
-		bares
+		removes
 	<</if>>
 <</widget>>
 
@@ -3885,7 +3885,7 @@
 	<<elseif !$worn.over_upper.type.includes("naked")>>
 		pull up
 	<<else>>
-		bare
+		remove
 	<</if>>
 <</widget>>
 
@@ -3896,7 +3896,7 @@
 	<<elseif _overOutfit is false>>
 		pull down
 	<<else>>
-		bare
+		remove
 	<</if>>
 <</widget>>
 
@@ -3907,7 +3907,7 @@
 	<<elseif !$worn.over_upper.type.includes("naked")>>
 		pulls up
 	<<else>>
-		bares
+		removes
 	<</if>>
 <</widget>>
 
@@ -3918,7 +3918,7 @@
 	<<elseif _overOutfit is false>>
 		pulls down
 	<<else>>
-		bares
+		removes
 	<</if>>
 <</widget>>
 
@@ -5870,3 +5870,71 @@ Argument 2, where appropriate, determines whether it's the player undressing the
 		});
 	<</script>>
 <</widget>>
+
+<<widget "insufficientStat">><<silently>>
+	/* Args 0-3 are Stat, Task, Color (optional), and Custom Stat (optional, only use when Star arg is 'custom')*/
+	/* Example: <<insufficientStat "promiscuity" "to accept such an offer">> 	---------------------->	would print (in blue): 	'You are not promiscuous enough to accept such an offer'*/
+	/* Example: <<insufficientStat "deviancy" "to do as you were told" "red">> 		------------------>	would print (in red): 	'You are not deviant enough to do as you were told' */
+	/* Example: <<insufficientStat "housekeeping" "to make arrangements" "purple">> 	-------------->	would print (in purple):'You are not a skilled enough housekeeper to make arrangements' */
+	/* Example: <<insufficientStat "custom" "to be worthy" "pink" "pious or gracefull">> 	---------->	would print (in pink): 	'You are not pious or graceful enough to be worthy' */
+	/* Example: <<insufficientStat "custom" "to be noticed" "green" "beautiful, alluring, or skilled">> would print (in green): 'You are not beautiful, alluring, or skilled enough to be noticed' */
+
+	<<set $_color to _args[2] ? _args[2] : "blue">>
+	<<set $_text_output to "You are not ">>
+	<<switch _args[0]>>
+		<<case "promiscuity">>
+			<<set $_text_output += "promiscuous enough">>
+		<<case "exhibitionism">>
+			<<set $_text_output += "exhibitionistic enough">>
+		<<case "deviancy">>
+			<<set $_text_output += "deviant enough">>
+		<<case "purity">>
+			<<set $_text_output += "pure enough">>
+		<<case "beauty">>
+			<<set $_text_output += "beautiful enough">>
+		<<case "physique">>
+			<<set $_text_output += "strong enough">>
+		<<case "willpower">>
+			<<set $_text_output += "strong willed enough">>
+		<<case "awareness">>
+			<<set $_text_output += "knowledgeable enough">>
+		<<case "skullduggery">>
+			<<set $_text_output += "a skilled enough thief">>
+		<<case "dancing">>
+			<<set $_text_output += "a skilled enough dancer">>
+		<<case "swimming">>
+			<<set $_text_output += "a strong enough swimmer">>
+		<<case "athletics">>
+			<<set $_text_output += "athletic enough">>
+		<<case "tending">>
+			<<set $_text_output += "a skilled enough farmer">>
+		<<case "housekeeping">>
+			<<set $_text_output += "a skilled enough housekeeper">>
+		<<case "science">>
+			<<set $_text_output += "educated enough about science">>
+		<<case "maths">>
+			<<set $_text_output += "educated enough about maths">>
+		<<case "english">>
+			<<set $_text_output += "educated enough about English">>
+		<<case "history">>
+			<<set $_text_output += "educated enough about history">>
+		<<case "submissive">>
+			<<set $_text_output += "defiant enough">>
+		<<case "trust">>
+			<<set $_text_output += "trusted enough">>
+		<<case "custom">> /* Only use this for explicitly non-standard cases, like those that need multiple stats printed */
+			<<set $_text_output +="_args[3] enough">>
+		<<default>>
+			<<set $_text_output += "lewd enough">>
+	<</switch>>
+	<<set $_text_output += " _args[1].">>
+
+	/* Throws an error if 'custom' stat input is being used incorrectly */
+	<<if _args[3] and _args[0] is not "custom">>
+		<<set $_color to "red">>
+		<<set $_text_output to "Syntax Error: Inputted custom stat '_args[3]' without using the 'custom' stat argument in the \"insufficientStat\" widget. Please report this.">>
+	<<elseif _args[0] is "custom" and !_args[3]>>
+			<<set $_color to "red">>
+		<<set $_text_output to "Syntax Error: Used 'custom' stat argument without inputing a custom stat in the \"insufficientStat\" widget. Please report this.">>
+	<</if>>
+<</silently>><<if $_text_output>><span @class="$_color"><<print $_text_output>></span><</if>><</widget>>

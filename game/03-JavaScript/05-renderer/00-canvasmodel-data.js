@@ -215,12 +215,12 @@ Renderer.Animations["sex-8f-slow"] = {
 
 Renderer.Animations["sex-8f-mid"] = {
 	frames: 8,
-	duration: 77,
+	duration: 80,
 };
 
 Renderer.Animations["sex-8f-fast"] = {
 	frames: 8,
-	duration: 58,
+	duration: 60,
 };
 
 Renderer.Animations["sex-8f-vfast"] = {
