@@ -1547,7 +1547,7 @@ setup.debugMenu.eventList = {
 		},
 		{
 			link: [`Drench me`, stayOnPassageFn],
-			widgets: [`<<set $upperwet to 200>>`, `<<set $lowerwet to 200>>`, `<<set $underupperwet to 200>>`, `<<set $underlowerwet to 200>>`],
+			widgets: [`<<upperwet 200>>`, `<<lowerwet 200>>`, `<<underupperwet 200>>`, `<<underlowerwet 200>>`],
 		},
 		{
 			link: [`Drench over-outfit only`, stayOnPassageFn],
@@ -1555,11 +1555,11 @@ setup.debugMenu.eventList = {
 		},
 		{
 			link: [`Drench middle-outfit only`, stayOnPassageFn],
-			widgets: [`<<set $upperwet to 200>>`, `<<set $lowerwet to 200>>`],
+			widgets: [`<<upperwet 200>>`, `<<lowerwet 200>>`],
 		},
 		{
 			link: [`Drench under-outfit only`, stayOnPassageFn],
-			widgets: [`<<set $underupperwet to 200>>`, `<<set $underlowerwet to 200>>`],
+			widgets: [`<<underupperwet 200>>`, `<<underlowerwet 200>>`],
 		},
 		{
 			link: [`Soak me in water`, stayOnPassageFn],
