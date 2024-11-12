@@ -604,6 +604,33 @@ class PlayerCombatMapper {
 	}
 
 	/**
+	 * @param {...Object<string, string>} parts
+	 * @returns {string?}
+	 */
+	static getTentacleHeadPosition(...parts) {
+		const count = V.tentacles.max;
+		// const count = V.tentacles.active;
+		for (let i = 0; i < count; i++) {
+			/** @type {TentacleState?} */
+			const tentacle = V.tentacles[i];
+
+			if (tentacle == null) {
+				continue;
+			}
+
+			if (tentacle.tentaclehealth <= 0) {
+				continue;
+			}
+
+			const part = parts.find(part => tentacle.head in part);
+			if (part) {
+				return part[tentacle.head];
+			}
+		}
+		return null;
+	}
+
+	/**
 	 *
 	 * @param {CombatPlayerOptions} options
 	 * @returns {CombatPlayerOptions}
@@ -611,37 +638,10 @@ class PlayerCombatMapper {
 	static mapToTentacleOptions(options) {
 		/**
 		 * @param {...Object<string, string>} parts
-		 * @returns {string?}
-		 */
-		function getTentacleHeadPosition(...parts) {
-			const count = V.tentacles.max;
-			// const count = V.tentacles.active;
-			for (let i = 0; i < count; i++) {
-				/** @type {TentacleState?} */
-				const tentacle = V.tentacles[i];
-
-				if (tentacle == null) {
-					continue;
-				}
-
-				if (tentacle.tentaclehealth <= 0) {
-					continue;
-				}
-
-				const part = parts.find(part => tentacle.head in part);
-				if (part) {
-					return part[tentacle.head];
-				}
-			}
-			return null;
-		}
-
-		/**
-		 * @param {...Object<string, string>} parts
 		 * @returns {Tentacle}
 		 */
 		function getState(...parts) {
-			const state = getTentacleHeadPosition(...parts);
+			const state = PlayerCombatMapper.getTentacleHeadPosition(...parts);
 			return {
 				state,
 				show: state != null,
@@ -651,7 +651,7 @@ class PlayerCombatMapper {
 		options.filters.tentacles = PlayerCombatMapper.getTentacleFilter();
 
 		const tentacles = {
-			mouth: getState({ mouthentrance: "oral-entrance" }, { mouthimminent: "oral-imminent" }, { mouth: "oral" }),
+			mouth: getState({ mouthentrance: "oral-entrance" }, { mouthimminent: "oral-imminent" }, { mouth: "oral" }, { mouthdeep: "oral" }),
 			breasts: getState(),
 			backArm: getState({ leftarm: "handjob-left" }),
 			frontArm: getState({ rightarm: "handjob-right" }),
@@ -663,18 +663,22 @@ class PlayerCombatMapper {
 				{ penisrub: "penis" }
 			),
 			vagina: getState({ vaginaentrance: "vagina-entrance" }, { vaginaimminent: "vagina-imminent" }, { vagina: "vagina" }, { vaginadeep: "vagina" }),
-			anus: getState({ anusentrance: "anal-entrance" }, { anusimminent: "anal-imminent" }, { anus: "anal" }, { anusrub: "anal-rub" }),
+			anus: getState(
+				{ anusentrance: "anal-entrance" },
+				{ anusimminent: "anal-imminent" },
+				{ anus: "anal" },
+				{ anusrub: "anal-rub" },
+				{ anusdeep: "anal" }
+			),
 			backLeg: getState(),
 			frontLeg: getState({ feet: "footjob" }, { leftlegentrance: "footjob" }),
 			feet: getState(),
 		};
 
-		if (V.anusstate === "tentacledeep") {
-			tentacles.anus = getState({ finished: "anal" });
-		}
 		if (V.feetstate === "tentacle") {
 			tentacles.feet = getState({ finished: "footjob" });
 		}
+
 		switch (options.position) {
 			case "doggy":
 				tentacles.backArm = getState({ rightarm: "handjob-right" });
@@ -1652,13 +1656,7 @@ class PlayerCombatMapper {
 					}
 					return null;
 				});
-				options.bodywriting.backCheek = getState("left_cheek", (id, bodywriting) => {
-					return {
-						show: false,
-						area: bodywriting.writing,
-						type: sanitise(id),
-					};
-				});
+				options.bodywriting.backCheek = getState("left_cheek", hidden);
 				options.bodywriting.frontShoulder = getState("right_shoulder", (id, bodywriting) => {
 					if (bodywriting.type === "text" || bodywriting.special === "islander") {
 						return {
@@ -1683,13 +1681,7 @@ class PlayerCombatMapper {
 						type: sanitise(id),
 					};
 				});
-				options.bodywriting.backShoulder = getState("left_shoulder", (id, bodywriting) => {
-					return {
-						show: false,
-						area: bodywriting.writing,
-						type: sanitise(id),
-					};
-				});
+				options.bodywriting.backShoulder = getState("left_shoulder", hidden);
 				options.bodywriting.frontBottom = getState("right_bottom", hidden);
 				options.bodywriting.backBottom = getState("left_bottom", hidden);
 				options.bodywriting.pubic = getState("pubic", (id, bodywriting) => {
@@ -1759,30 +1751,8 @@ class PlayerCombatMapper {
 				});
 				break;
 			case "doggy":
-				options.bodywriting.frontCheek = getState("left_cheek", (id, bodywriting) => {
-					return {
-						show: false,
-						area: bodywriting.writing,
-						type: sanitise(id),
-					};
-				});
-				options.bodywriting.backCheek = getState("right_cheek", (id, bodywriting) => {
-					if (bodywriting.type === "text" || bodywriting.special === "islander") {
-						return {
-							show: true,
-							area: "text",
-							type: sanitise(id),
-						};
-					}
-					if (bodywriting.type === "object") {
-						return {
-							show: true,
-							area: bodywriting.writing,
-							type: sanitise(id),
-						};
-					}
-					return null;
-				});
+				options.bodywriting.frontCheek = getState("left_cheek", hidden);
+				options.bodywriting.backCheek = getState("right_cheek", hidden);
 				options.bodywriting.frontShoulder = getState("left_shoulder", (id, bodywriting) => {
 					if (bodywriting.type === "text" || bodywriting.special === "islander") {
 						return {
@@ -1807,21 +1777,9 @@ class PlayerCombatMapper {
 						type: sanitise(id),
 					};
 				});
-				options.bodywriting.backShoulder = getState("right_shoulder", (id, bodywriting) => {
-					return {
-						show: false,
-						area: bodywriting.writing,
-						type: sanitise(id),
-					};
-				});
+				options.bodywriting.backShoulder = getState("right_shoulder", hidden);
 				options.bodywriting.frontBottom = getState("left_bottom", simpleText);
-				options.bodywriting.backBottom = getState("right_bottom", (id, bodywriting) => {
-					return {
-						show: false,
-						area: bodywriting.writing,
-						type: sanitise(id),
-					};
-				});
+				options.bodywriting.backBottom = getState("right_bottom", hidden);
 				options.bodywriting.pubic = getState("pubic", (id, bodywriting) => {
 					if (bodywriting.type === "text") {
 						return {
