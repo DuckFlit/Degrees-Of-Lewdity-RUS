@@ -33,7 +33,7 @@ class CombatEditor {
 		const fragment = document.createDocumentFragment();
 
 		const container = document.createElement("div");
-		container.classList.add("d-flex", "flex-column");
+		container.classList.add("d-grid", "grid-auto-3");
 		const layers = CombatEditor.getModelLayers(key);
 		const items = layers.map(function (layer) {
 			const btn = document.createElement("button");

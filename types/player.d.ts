@@ -181,6 +181,10 @@ declare module "twine-sugarcube" {
 
 		earSlime: EarSlimeState;
 
+		wraith: {
+			state: string;
+		};
+
 		parasite: {
 			nipples: any;
 			bottom: any;

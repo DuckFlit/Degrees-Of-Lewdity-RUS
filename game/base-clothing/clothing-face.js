@@ -147,6 +147,10 @@ function initFace() {
 			name: "gag",
 			name_cap: "Gag",
 			variable: "gag",
+			combat: {
+				accessory: true,
+				mainColour: "#ff0000",
+			},
 			integrity: 20,
 			state: 0,
 			state_base: 0,

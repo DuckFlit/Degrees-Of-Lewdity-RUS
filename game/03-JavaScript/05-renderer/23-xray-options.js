@@ -116,6 +116,34 @@ class XrayCombatMapper {
 	}
 
 	/**
+	 * @returns {boolean}
+	 */
+	static isPcBlowjobVisible() {
+		return V.player.penisExist && combat.isPenisPenetrated() && V.penisstate !== "othermouth";
+	}
+
+	/**
+	 * @returns {boolean}
+	 */
+	static isPcVaginaVisible() {
+		return V.player.vaginaExist && (combat.isVaginaPenetrated() || T.pullOutVagina);
+	}
+
+	/**
+	 * @returns {boolean}
+	 */
+	static isPcAnusVisible() {
+		return combat.isAnusPenetrated() || T.pullOutAnus;
+	}
+
+	/**
+	 * @returns {boolean}
+	 */
+	static isNpcBlowjobVisible() {
+		return XrayCombatMapper.isPcVaginaVisible() || XrayCombatMapper.isPcAnusVisible();
+	}
+
+	/**
 	 * @param {XrayOptions} options
 	 * @returns {XrayOptions}
 	 */
@@ -128,10 +156,10 @@ class XrayCombatMapper {
 
 		// Show Conditions
 		// If penis-to-mouth xrays ever become a thing, adjust this check
-		options.showPcPenis = V.player.penisExist && combat.isPenisPenetrated() && V.penisstate !== "othermouth";
-		options.showPcVagina = V.player.vaginaExist && (combat.isVaginaPenetrated() || T.pullOutVagina);
-		options.showPcArse = combat.isAnusPenetrated() || T.pullOutAnus;
-		options.showNpcPenis = options.showPcVagina || options.showPcArse;
+		options.showPcPenis = XrayCombatMapper.isPcBlowjobVisible();
+		options.showPcVagina = XrayCombatMapper.isPcVaginaVisible();
+		options.showPcArse = XrayCombatMapper.isPcAnusVisible();
+		options.showNpcPenis = XrayCombatMapper.isNpcBlowjobVisible();
 
 		// Genitals
 		if (options.showPcPenis) {
@@ -422,6 +450,7 @@ class XrayCombatMapper {
 		penetrator.type = playerPenisType;
 		penetrator.playerSprite = penetrator.type === "parasite" ? "parasite" : "penis";
 		penetrator.size = playerHasStrapon() && V.worn.under_lower.size !== undefined ? V.worn.under_lower.size : V.player.penissize;
+		penetrator.size = Math.clamp(penetrator.size, 1, 5);
 		penetrator.state = V.penisstate;
 
 		if (V.player.condom) {
