@@ -204,7 +204,7 @@ Macro.add("numberStepper", {
 					button.prop("disabled", disabled);
 				});
 			});
-			titleText.fontResizer({ margin: 28 });
+			titleText.fontResizer({ margin: 18 });
 		};
 
 		const createButton = (classes, iconClasses, clickHandler) => {
@@ -275,10 +275,9 @@ Macro.add("numberStepper", {
 		}
 
 		// Title
-		const numberText = $("<span>", { class: "red" });
-		const titleInline = $("<span>", { class: "titleInline" }).append(Wikifier.wikifyEval(title));
-		const divider = $("<span>", { class: "numberStepperDivider" }).append(":");
-		const titleText = $("<div>", { class: "titlePercentage" }).append(titleInline).append(divider).append(numberText).appendTo(group);
+		const numberText = $("<span>", { class: "red percentage" });
+		const divider = $("<span>", { class: "numberStepperDivider" }).append(Wikifier.wikifyEval(title)).append(": ");
+		const titleText = $("<div>", { class: "titlePercentage" }).append(divider).append(numberText).appendTo(group);
 
 		// Tooltip
 		if (tooltip) {
