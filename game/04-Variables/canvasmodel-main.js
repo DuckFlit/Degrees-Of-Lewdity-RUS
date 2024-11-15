@@ -78,6 +78,7 @@ replace (?<!["'\w])_(?=\w) with T.
  *
  * FACE OPTIONS:
  * -------------
+ * "facevariant:" "default"|"catty"|"aloof" - $facevariant variable, the img/face/{facestyle}/{facevariant} one.
  * "facestyle": "default" - $facestyle variable, the img/face/XXXX one.
  * "freckles": boolean
  * "trauma": boolean - traumatised state (empty eyes, less blinking)
@@ -252,7 +253,7 @@ Renderer.CanvasModels.main = {
 			"clit_parasite": "",
 			"arm_left": "idle",
 			"arm_right": "idle",
-			"body_type": "m",
+			"body_type": "classic",
 			// Skin & tan
 			"skin_type": "light",
 			"skin_tone": 0,
@@ -283,6 +284,7 @@ Renderer.CanvasModels.main = {
 			"pbhair_balls": 0,
 			// Face
 			"facestyle": "default",
+			"facevariant": "default",
 			"ears_position": "back",
 			"freckles": false,
 			"trauma": false,
@@ -764,7 +766,7 @@ Renderer.CanvasModels.main = {
 			}
 		}
 
-		const notMasc = ["f", "a"].includes(options.body_type);
+		const notMasc = ["curvy", "slender"].includes(options.body_type);
 		if (notMasc && options.breasts === "cleavage") {
 			const suffix = between(options.breast_size, 3, 4) ? "-mid.png" : ".png";
 			options.breasts_mask_src = `img/body/breasts/breasts-${options.body_type}${suffix}`
@@ -1120,7 +1122,7 @@ Renderer.CanvasModels.main = {
 			animation: "idle",
 
 			srcfn(options) {
-				return `img/face/${options.facestyle}/base.png`;
+				return `img/face/${options.facestyle}/${options.facevariant}/base.png`;
 			},
 			showfn(options) {
 				return options.show_face;
@@ -1131,7 +1133,7 @@ Renderer.CanvasModels.main = {
 			z: ZIndices.freckles,
 
 			srcfn(options) {
-				return `img/face/${options.facestyle}/freckles.png`;
+				return `img/face/${options.facestyle}/${options.facevariant}/freckles.png`;
 			},
 			showfn(options) {
 				return options.show_face && !!options.freckles;
@@ -1142,7 +1144,7 @@ Renderer.CanvasModels.main = {
 			z: ZIndices.ears,
 
 			srcfn(options) {
-				return `img/face/${options.facestyle}/ears.png`;
+				return `img/face/${options.facestyle}/${options.facevariant}/ears.png`;
 			},
 			showfn(options) {
 				return options.show_face && options.ears_position === "front";
@@ -1153,7 +1155,7 @@ Renderer.CanvasModels.main = {
 			z: ZIndices.eyes,
 
 			srcfn(options) {
-				return `img/face/${options.facestyle}/eyes.png`;
+				return `img/face/${options.facestyle}/${options.facevariant}/eyes.png`;
 			},
 			showfn(options) {
 				return options.show_face;
@@ -1163,7 +1165,7 @@ Renderer.CanvasModels.main = {
 			z: ZIndices.sclera,
 
 			srcfn(options) {
-				return `img/face/${options.facestyle}/${options.eyes_bloodshot ? "sclerabloodshot" : "sclera"}.png`;
+				return `img/face/${options.facestyle}/${options.facevariant}/${options.eyes_bloodshot ? "sclerabloodshot" : "sclera"}.png`;
 			},
 			showfn(options) {
 				return options.show_face;
@@ -1177,7 +1179,7 @@ Renderer.CanvasModels.main = {
 			srcfn(options) {
 				const iris = options.trauma ? "irisempty" : "iris";
 				const half = options.eyes_half ? "_halfclosed" : "";
-				return `img/face/${options.facestyle}/${iris}${half}_left.png`;
+				return `img/face/${options.facestyle}/${options.facevariant}/${iris}${half}_left.png`;
 			},
 			showfn(options) {
 				return options.show_face;
@@ -1191,7 +1193,7 @@ Renderer.CanvasModels.main = {
 			srcfn(options) {
 				const iris = options.trauma ? "irisempty" : "iris";
 				const half = options.eyes_half ? "_halfclosed" : "";
-				return `img/face/${options.facestyle}/${iris}${half}_right.png`;
+				return `img/face/${options.facestyle}/${options.facevariant}/${iris}${half}_right.png`;
 			},
 			showfn(options) {
 				return options.show_face;
@@ -1204,7 +1206,7 @@ Renderer.CanvasModels.main = {
 
 			srcfn(options) {
 				const half = options.eyes_half ? "_halfclosed" : "";
-				return `img/face/${options.facestyle}/eyelids${half}.png`;
+				return `img/face/${options.facestyle}/${options.facevariant}/eyelids${half}.png`;
 			},
 			animationfn(options) {
 				return options.blink_animation;
@@ -1215,7 +1217,7 @@ Renderer.CanvasModels.main = {
 
 			srcfn(options) {
 				const half = options.eyes_half ? "_halfclosed" : "";
-				return `img/face/${options.facestyle}/lashes${half}.png`;
+				return `img/face/${options.facestyle}/${options.facevariant}/lashes${half}.png`;
 			},
 			showfn(options) {
 				return options.show_face;
@@ -1230,7 +1232,7 @@ Renderer.CanvasModels.main = {
 
 			srcfn(options) {
 				const half = options.eyes_half ? "_halfclosed" : "";
-				return `img/face/${options.facestyle}/makeup/eyeshadows${half}.png`;
+				return `img/face/${options.facestyle}/${options.facevariant}/makeup/eyeshadows${half}.png`;
 			},
 			animationfn(options) {
 				return options.blink_animation;
@@ -1245,7 +1247,7 @@ Renderer.CanvasModels.main = {
 
 			srcfn(options) {
 				const half = options.eyes_half ? "_halfclosed" : "";
-				return `img/face/${options.facestyle}/makeup/mascara${half}.png`;
+				return `img/face/${options.facestyle}/${options.facevariant}/makeup/mascara${half}.png`;
 			},
 			animationfn(options) {
 				return options.blink_animation;
@@ -1259,7 +1261,7 @@ Renderer.CanvasModels.main = {
 			z: ZIndices.brow,
 
 			srcfn(options) {
-				return `img/face/${options.facestyle}/brow${options.brows}.png`;
+				return `img/face/${options.facestyle}/${options.facevariant}/brow${options.brows}.png`;
 			},
 			zfn(options) {
 				return options.brows_position === "back" ? ZIndices.backbrow : ZIndices.brow;
@@ -1273,7 +1275,7 @@ Renderer.CanvasModels.main = {
 			z: ZIndices.mouth,
 
 			srcfn(options) {
-				return `img/face/${options.facestyle}/mouth${options.mouth}.png`;
+				return `img/face/${options.facestyle}/${options.facevariant}/mouth${options.mouth}.png`;
 			},
 			showfn(options) {
 				return options.show_face && options.mouth !== "none";
@@ -1284,7 +1286,7 @@ Renderer.CanvasModels.main = {
 			z: ZIndices.mouth,
 
 			srcfn(options) {
-				return `img/face/${options.facestyle}/makeup/lipstick_${options.mouth}.png`;
+				return `img/face/${options.facestyle}/${options.facevariant}/makeup/lipstick_${options.mouth}.png`;
 			},
 			showfn(options) {
 				return options.show_face && !!options.lipstick_colour;
@@ -1295,7 +1297,7 @@ Renderer.CanvasModels.main = {
 			z: ZIndices.blush,
 
 			srcfn(options) {
-				return `img/face/${options.facestyle}/blush${options.blush}.png`;
+				return `img/face/${options.facestyle}/${options.facevariant}/blush${options.blush}.png`;
 			},
 			showfn(options) {
 				return options.show_face && options.blush > 0;
@@ -1306,7 +1308,7 @@ Renderer.CanvasModels.main = {
 			animation: "idle",
 
 			srcfn(options) {
-				return `img/face/${options.facestyle}/tear${options.tears}.png`;
+				return `img/face/${options.facestyle}/${options.facevariant}/tear${options.tears}.png`;
 			},
 			showfn(options) {
 				return options.show_face && options.tears > 0;
@@ -1317,7 +1319,7 @@ Renderer.CanvasModels.main = {
 			z: ZIndices.mascara_running,
 
 			srcfn(options) {
-				return `img/face/${options.facestyle}/makeup/mascara${options.mascara_running}.png`;
+				return `img/face/${options.facestyle}/${options.facevariant}/makeup/mascara${options.mascara_running}.png`;
 			},
 			showfn(options) {
 				return options.show_face && options.mascara_running > 0 && !!options.mascara_colour;
@@ -4170,7 +4172,7 @@ function genlayer_clothing_fitted_left(slot, overrideOptions) {
 				&& options.worn[slot].index > 0
 				&& options.worn[slot].setup.mainImage !== 0
 				&& options.worn[slot].setup.formfitting === 1
-				&& ["f", "a"].includes(options.body_type);
+				&& ["curvy", "slender"].includes(options.body_type);
 		},
 	}, overrideOptions));
 }
@@ -4182,7 +4184,7 @@ function genlayer_clothing_fitted_right(slot, overrideOptions) {
 				&& options.worn[slot].index > 0
 				&& options.worn[slot].setup.mainImage !== 0
 				&& options.worn[slot].setup.formfitting === 1
-				&& options.body_type == "f";
+				&& options.body_type == "curvy";
 		},
 	}, overrideOptions));
 }
@@ -4194,7 +4196,7 @@ function genlayer_clothing_fitted_left_acc(slot, overrideOptions) {
 				&& options.worn[slot].setup.accImage !== 0
 				&& options.worn[slot].setup.accessory === 1
 				&& options.worn[slot].setup.formfitting === 1
-				&& ["f", "a"].includes(options.body_type);
+				&& ["curvy", "slender"].includes(options.body_type);
 		},
 
 		srcfn(options) {
@@ -4223,7 +4225,7 @@ function genlayer_clothing_fitted_right_acc(slot, overrideOptions) {
 				&& options.worn[slot].setup.accImage !== 0
 				&& options.worn[slot].setup.accessory === 1
 				&& options.worn[slot].setup.formfitting === 1
-				&& options.body_type == "f";
+				&& options.body_type == "curvy";
 		},
 
 		srcfn(options) {
@@ -4625,7 +4627,7 @@ function genlayer_clothing_arm_fitted(arm, slot, overrideOptions) {
 			return options.show_clothes
 				&& options.worn[slot].index > 0
 				&& options.worn[slot].setup.sleeve_img === 1
-				&& ["f", "a"].includes(options.body_type)
+				&& ["curvy", "slender"].includes(options.body_type)
 				&& options.arm_left === "idle"
 				&& !(options.belly > 7)
 				&& options["arm_" + arm] !== "none";
@@ -4708,7 +4710,7 @@ function genlayer_clothing_arm_acc_fitted(arm, slot, overrideOptions) {
 				&& options.worn[slot].index > 0
 				&& options.worn[slot].setup.sleeve_img === 1
 				&& options.worn[slot].setup.sleeve_acc_img === 1
-				&& ["f", "a"].includes(options.body_type)
+				&& ["curvy", "slender"].includes(options.body_type)
 				&& options.arm_left === "idle"
 				&& !(options.belly > 7)
 				&& options[`arm_${arm}`] !== "none";

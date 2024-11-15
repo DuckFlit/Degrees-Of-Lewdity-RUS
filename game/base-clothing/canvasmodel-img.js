@@ -44,7 +44,7 @@ DefineMacro("modelprepare-player-body", function () {
 			██████  ██   ██ ███████ ███████
 		*/
 
-	T.modeloptions.body_type = V.options.genderBody && V.options.genderBody !== "default" ? V.options.genderBody : V.player.gender_body;
+	T.modeloptions.body_type = V.player.bodyshape;
 
 	apparentbreastsizecheck();
 	const breastSizeMap = {
@@ -256,8 +256,9 @@ DefineMacro("modelprepare-player-body", function () {
 			██      ██   ██ ██      ██
 			██      ██   ██  ██████ ███████
 		*/
-
+	
 	T.modeloptions.facestyle = V.facestyle;
+	T.modeloptions.facevariant = V.facevariant;
 	T.modeloptions.freckles = V.player.freckles === true && V.makeup.concealer !== 1;
 	T.modeloptions.ears_position = V.earsposition;
 	T.modeloptions.toast = T.toast === true;
