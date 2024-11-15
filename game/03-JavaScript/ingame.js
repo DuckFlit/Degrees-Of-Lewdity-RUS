@@ -1338,7 +1338,7 @@ window.currentSkillValue = currentSkillValue;
 /**
  * @param {string} input
  */
-function hasSexStatMapper(input) {
+function sexStatNameMapper(input) {
 	switch (input) {
 		case "p":
 		case "promiscuity":
@@ -1356,7 +1356,59 @@ function hasSexStatMapper(input) {
 	}
 	return null;
 }
-window.hasSexStatMapper = hasSexStatMapper;
+window.sexStatNameMapper = sexStatNameMapper;
+
+/**
+ * @param {number} statValue
+ */
+function drunkSexStatModifier(statValue) {
+	if (V.drunk === 0) return 0;
+
+	const maxValue = 40; // The maximum value of the curve.
+	const valueAdjust = Math.clamp(maxValue - Math.floor(statValue / 4), 0, maxValue); // The curve is less effective with higher base stat.
+	const growthRate = 3; // How fast the curve grows as the drunk value increases.
+	const midpoint = 500; // Needs to be half of the max drunk value.
+	const shifter = 0.85; // Decreases this value to make lower drunk values give higher results and higher drunk values give lower results.
+	const drunkMod = (V.drunk - midpoint) / 500; // Adjusts the drunk values to be scaled correctly with the equation and max stat value.
+	const denominator = 1 + shifter * Math.E ** (-1 * growthRate * drunkMod);
+
+	return Math.floor(valueAdjust / denominator);
+}
+window.drunkSexStatModifier = drunkSexStatModifier;
+
+/**
+ * Returns the modifier for a sexStat based on heat/rut/minArousal and the stat provided. 
+ * 
+ * @param {string} input 
+ * @returns {number}
+ */
+function heatRutSexStatModifier(input) {
+	const maxMinArousal = 5000; // Maximum value for minArousal.
+	const minArousal = Math.clamp(playerHeatMinArousal() + playerRutMinArousal(), 0, maxMinArousal);
+	if (minArousal === 0) return 0;
+	
+	const statName = sexStatNameMapper(input);
+	if (statName == null) {
+		Errors.report(`[heatRutSexStatModifier]: input '${statName}' null.`, {
+			Stacktrace: Utils.GetStack(),
+			statName,
+		});
+		return 0;
+	}
+
+	if (statName === "exhibitionism") return 0;
+
+	const maxHeatRutSexStatModifier = 40; // Maximum modifier for sexStat() from minArousal.
+	const heatRutSexStatModifierExponent = .6; // Lower to raise the final modifier at lower levels of minArousal.
+	const heatRutSexStatModifier = maxHeatRutSexStatModifier / (maxMinArousal ** heatRutSexStatModifierExponent) * minArousal ** heatRutSexStatModifierExponent;
+
+	if (statName === "promiscuity") {
+		return Math.floor(heatRutSexStatModifier * .75);
+	} else {
+		return Math.floor(heatRutSexStatModifier);
+	}
+}
+window.heatRutSexStatModifier = heatRutSexStatModifier;
 
 /**
  * @param {string} input
@@ -1364,37 +1416,30 @@ window.hasSexStatMapper = hasSexStatMapper;
  * @param {boolean} modifiers
  */
 function hasSexStat(input, required, modifiers = true) {
-	const stat = hasSexStatMapper(input);
+	const statName = sexStatNameMapper(input);
 	// check if stat name is valid.
-	if (stat == null) {
-		Errors.report(`[hasSexStat]: input '${stat}' null.`, {
+	if (statName == null) {
+		Errors.report(`[hasSexStat]: input '${statName}' null.`, {
 			Stacktrace: Utils.GetStack(),
-			stat,
+			statName,
 		});
 		return false;
 	}
-	let statValue = V[stat];
+	let statValue = V[statName];
 	// check if value of stat is valid.
 	if (!Number.isFinite(statValue)) {
-		Errors.report(`[hasSexStat]: sex stat '${stat}' unknown.`, {
+		Errors.report(`[hasSexStat]: sex stat '${statName}' unknown.`, {
 			Stacktrace: Utils.GetStack(),
-			stat,
+			statName,
 		});
 		return false;
 	}
 	if (modifiers) {
 		// modify effective stat value based on inebriation.
-		if (V.drunk > 0) {
-			const maxValue = 40; // The maximum value of the curve.
-			const valueAdjust = Math.clamp(maxValue - Math.floor(statValue / 4), 0, maxValue); // The curve is less effective with higher base stat.
-			const growthRate = 3; // How fast the curve grows as the drunk value increases.
-			const midpoint = 500; // Needs to be half of the max drunk value.
-			const shifter = 0.85; // Decreases this value to make lower drunk values give higher results and higher drunk values give lower results.
-			const drunkMod = (V.drunk - midpoint) / 500; // Adjusts the drunk values to be scaled correctly with the equation and max stat value.
+		statValue += drunkSexStatModifier(statValue);
 
-			const denominator = 1 + shifter * Math.E ** (-1 * growthRate * drunkMod);
-			statValue += Math.floor(valueAdjust / denominator);
-		}
+		// modify effective stat value based on heat/rut/minArousal.
+		statValue += heatRutSexStatModifier(statName);
 	}
 	statValue = Math.clamp(statValue, 0, 100);
 
@@ -1420,13 +1465,64 @@ function hasSexStat(input, required, modifiers = true) {
 		default:
 			Errors.report(`[hasSexStat]: sex stat requirement outside of possible value range: '${required}' (must be between 1 and 6!).`, {
 				Stacktrace: Utils.GetStack(),
-				stat,
+				statName,
 				required,
 			});
 			return false;
 	}
 }
 window.hasSexStat = hasSexStat;
+
+/**
+ * If hasSexStat() modifiers are allowing the player to see an aditional option, return the css class for the largest individual modifier.
+ * If the modifiers are not high enough to show a new option, don't return a class. 
+ * Passing in 0 or nothing for requiredLevel returns the classes for the largest modifier regardless of if the player is being shown an aditional option.
+ * 
+ * @param {string} input
+ * @param {number} requiredLevel
+ */
+function getLargestSexStatModifierCssClasses(input, requiredLevel = 0) {
+	const statName = sexStatNameMapper(input);
+	// check if stat name is valid.
+	if (statName == null) {
+		Errors.report(`[getLargestSexStatModifierCssClasses]: input '${statName}' null.`, {
+			Stacktrace: Utils.GetStack(),
+			statName,
+		});
+		return "";
+	}
+
+	const drunkSexStatModifierValue = drunkSexStatModifier(V[statName]);
+	const heatRutSexStatModifierValue = heatRutSexStatModifier(statName);
+
+	// If there is a modifier, and either requiredLevel is 0 or the modifiers put the player up a level of the sexStat.
+	if ((drunkSexStatModifierValue + heatRutSexStatModifierValue) > 0 && (requiredLevel === 0 || (!hasSexStat(statName, requiredLevel, false) && hasSexStat(statName, requiredLevel, true)))) {
+		const modifiers = [
+			{ value: drunkSexStatModifierValue, class: "drunk" },
+			{ value: heatRutSexStatModifierValue, class: "jitter" },
+		];
+
+		// Gets the largest modifier.
+		const largestModifier = modifiers.reduce((max, current) => current.value > max.value ? current : max, modifiers[0]);
+
+		// Gets the base class for animation.
+		let modifierClasses = largestModifier.class + "-text";
+
+		// Sets the animation based on how large the modifier is.
+		if (largestModifier.value > 20) {
+			modifierClasses += " " + largestModifier.class + "-3";
+		} else if (largestModifier.value > 10) {
+			modifierClasses += " " + largestModifier.class + "-2";
+		} else {
+			modifierClasses += " " + largestModifier.class + "-1";
+		}  
+
+		return modifierClasses;
+	} else {
+		return "";
+	}
+}
+window.getLargestSexStatModifierCssClasses = getLargestSexStatModifierCssClasses;
 
 function playerIsPenetrated() {
 	return [V.mouthstate, V.vaginastate, V.anusstate].some(s => ["penetrated", "doublepenetrated", "tentacle", "tentacledeep"].includes(s));
