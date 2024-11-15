@@ -1,0 +1,94 @@
+:: Visual Settings Widgets [widget]
+
+<<widget "visual-settings">>
+	<div class="settingsGrid">
+
+		<div class="settingsHeader">Facial Settings</div>
+		<div id="visualsFaceStyle" class="settingsToggleItem">
+			<span class="gold bold">Face style:</span><br>
+			<<faceStyleOptions>>
+		</div>
+		
+		<div id="visualsFaceVariants" class="settingsToggleItem">
+			<span class="gold bold">Demeanour:</span>
+			<br>
+			<div id="visualsFaceVariantRadios">
+				<<faceVariantOptions>>
+			</div>
+		</div>
+		
+	</div>
+	<hr>
+		
+	<div class="settingsGrid">
+		<div class="settingsHeader">Body Settings</div>
+		<div class="settingsToggleItem">
+			<span class="gold bold">Body shape:</span>
+			<mouse class="tooltip-small linkBlue">(?)<span>This is a cosmetic change that does not contribute towards gender appearance.</span></mouse>
+			<br>
+			Your chosen body shape is:
+			<<set _bodyOptions to {
+				"Classic": "classic",
+				"Slender": "slender",
+				"Curvy": "curvy"
+			}>>
+			<<listbox "$player.bodyshape" autoselect>>
+				<<optionsfrom _bodyOptions>>
+			<</listbox>>
+			<br>
+			<<link "Apply">>
+				<<updatesidebarimg true>>
+			<</link>>
+		</div>
+
+		<div class="settingsToggleItem">
+			<span class="gold bold">Other settings:</span><br>
+
+			<label data-target="options.images" data-disabledif="V.options.images===0">
+				<<checkbox "$options.bodywritingImages" false true autocheck>> Enable bodywriting images
+			</label>
+			<span class="tooltip-anchor linkBlue" tooltip="Disabling may improve performance and potentially prevent images from not loading correctly.">(?)</span>
+			<br>
+			<label data-target="options.images" data-disabledif="V.options.images===0">
+				<<checkbox "$options.tanLines" false true autocheck>> Enable tanning lines from clothing
+			</label>
+			<span class="tooltip-anchor linkBlue" tooltip="Disables the visual aspect of tanning lines. Only for sidebar.">(?)</span>
+		</div>
+	</div>
+	<br>
+
+<</widget>>
+
+<<widget "faceStyleOptions">>
+	Your currently selected style is:
+	<<listbox "$facestyle" autoselect>>
+		<<optionsfrom setup.faceStyleOptions>>
+	<</listbox>>
+	<br>
+	<<link "Apply">>
+		<<set $facevariant to "default">>
+		<<replace "#visualsFaceVariantRadios">><<faceVariantOptions>><</replace>>
+		<<updatesidebarimg true>>
+	<</link>>
+<</widget>>
+
+<<widget "faceVariantOptions">>
+	<<if Object.keys(setup.faceVariantOptions[$facestyle]).length gt 1>>
+		Your current demeanour is set to:
+		<<listbox "$facevariant" autoselect>>
+			<<optionsfrom setup.faceVariantOptions[$facestyle]>>
+		<</listbox>>
+		<br>
+		<<link "Apply">>
+			<<updatesidebarimg true>>
+		<</link>>
+	<<else>>
+		There are 
+		<mouse class = "gold tooltip-small" style="border-bottom-color:white">
+			no alternative demeanours available.
+			<span class="blue">
+				Selecting a different face style may make additional demeanours available to you.
+			</span>
+		</mouse>
+	<</if>>
+<</widget>>
