@@ -92,7 +92,6 @@ class NpcCombatMapper {
 		if (options.state == null) {
 			options.show = false;
 		}
-
 		return options;
 	}
 

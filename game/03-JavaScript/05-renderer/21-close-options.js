@@ -199,8 +199,10 @@ class CloseCombatMapper {
 				const targetNpc = V.NPCList[V[`${slot}target`]];
 
 				/* filters for npc targeting vagina/anus */
-				options.filters[`${slot}Npc`] = NpcCombatMapper.getNpcPenetratorFilter(targetNpc);
-				options.filters[`${slot}Condom`] = CombatRenderer.getCondomOptions(targetNpc.condom).colour;
+				if (options[slot].npc !== "machine") {
+					options.filters[`${slot}Npc`] = NpcCombatMapper.getNpcPenetratorFilter(targetNpc);
+					options.filters[`${slot}Condom`] = CombatRenderer.getCondomOptions(targetNpc.condom).colour;
+				}
 			}
 			if (options[slot].npc2) {
 				const targetNpc2 = V.NPCList[V[`${slot}doubletarget`]];

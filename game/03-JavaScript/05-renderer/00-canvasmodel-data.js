@@ -170,6 +170,22 @@ Renderer.Animations["machine-4f-slow"] = {
 	duration: 200,
 };
 
+Renderer.Animations["machine-4f-mid"] = {
+	frames: 4,
+	duration: 170,
+};
+
+Renderer.Animations["machine-4f-fast"] = {
+	frames: 4,
+	duration: 110,
+};
+
+Renderer.Animations["machine-4f-vfast"] = {
+	frames: 4,
+	duration: 80,
+};
+
+
 Renderer.Animations["machine-2f-slow"] = {
 	keyframes: [
 		{

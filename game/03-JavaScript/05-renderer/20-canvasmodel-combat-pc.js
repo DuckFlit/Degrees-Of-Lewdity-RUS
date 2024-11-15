@@ -230,6 +230,52 @@ const combatMainPc = {
 			},
 			z: CombatRenderer.indices.base,
 		},
+		neck_shackle: {
+			srcfn(options) {
+				return `${options.root}prop/shackles/${options.position}/neck.png`;
+			},
+			showfn(options) {
+				return !!options.props.neck_shackle.show;
+			},
+			animationfn(options) {
+				return options.animKey;
+			},
+			z: CombatRenderer.indices.base,
+		},
+		arm_shackle: {
+			srcfn(options) {
+				if (options.armBackPosition === "bound") return `${options.root}prop/shackles/${options.position}/arms_bound.png`;
+				return `${options.root}prop/shackles/${options.position}/arms.png`;
+			},
+			showfn(options) {
+				return !!options.props.arm_shackle.show || !!options.machines.arm_chains.show;
+			},
+			animationfn(options) {
+				return options.animKey;
+			},
+			z: CombatRenderer.indices.frontArm + 1,
+		},
+		leg_shackle: {
+			srcfn(options) {
+				return `${options.root}prop/shackles/${options.position}/legs_${options.legFrontPosition}.png`;
+			},
+			showfn(options) {
+				return !!options.props.leg_shackle.show || !!options.machines.leg_chains.show;
+			},
+			animationfn(options) {
+				return options.animKey;
+			},
+			z: CombatRenderer.indices.frontLeg + 1,
+		},
+		rail: {
+			srcfn(options) {
+				return `${options.root}prop/rail/rails.png`;
+			},
+			showfn(options) {
+				return !!options.props.rail.show;
+			},
+			z: CombatRenderer.indices.base,
+		},
 		pilloryBack: {
 			srcfn(options) {
 				const pillory = options.props.pillory;
@@ -346,6 +392,42 @@ const combatMainPc = {
 				return options.machineAnimKey;
 			},
 			z: CombatRenderer.indices.base + 4,
+		},
+		tattooMachine: {
+			srcfn(options) {
+				return `${options.root}machine/tattoo/${options.position}/${options.machines.tattoo.state}.png`;
+			},
+			showfn(options) {
+				return !!options.machines.tattoo.show;
+			},
+			animationfn(options) {
+				return options.machineAnimKey;
+			},
+			z: CombatRenderer.indices.base + 4,
+		},
+		dildoVaginal: {
+			srcfn(options) {
+				return `${options.root}machine/z-vaginal/${options.position}/${options.machines.vaginal.state}.png`;
+			},
+			showfn(options) {
+				return !!options.machines.vaginal.show;
+			},
+			animationfn(options) {
+				return options.machineAnimKey;
+			},
+			z: CombatRenderer.indices.backLowerOverwear + 1,
+		},
+		dildoAnal: {
+			srcfn(options) {
+				return `${options.root}machine/z-anal/${options.position}/${options.machines.anal.state}.png`;
+			},
+			showfn(options) {
+				return !!options.machines.anal.show;
+			},
+			animationfn(options) {
+				return options.machineAnimKey;
+			},
+			z: CombatRenderer.indices.backLowerOverwear + 1,
 		},
 		/*
 		 *    ████████ ███████ ███    ██ ████████  █████   ██████ ██      ███████ ███████
@@ -935,7 +1017,7 @@ const combatMainPc = {
 			z: CombatRenderer.indices.base - 1,
 		}),
 		bodywritingFrontShoulder: PlayerCanvasHelper.genBodywritingLayer("frontShoulder", {
-			z: CombatRenderer.indices.base + 1,
+			z: CombatRenderer.indices.frontArm + 1,
 		}),
 		bodywritingBreasts: PlayerCanvasHelper.genBodywritingLayer("breasts", {
 			z: CombatRenderer.indices.base + 11,
