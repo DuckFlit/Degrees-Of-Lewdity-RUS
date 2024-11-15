@@ -535,6 +535,10 @@ setup.debugMenu.eventList = {
 			widgets: [`<<endcombat>>`],
 		},
 		{
+			link: [`Virginity Show Test`, `Virginity Show Test`],
+			widgets: [],
+		},
+		{
 			link: [`Eels Swarm Me`, `Sea Eels`],
 			widgets: [`<<endcombat>>`, `<<set $molestationstart to 1>>`],
 		},

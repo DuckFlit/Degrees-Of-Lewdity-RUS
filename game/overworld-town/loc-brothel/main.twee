@@ -1344,8 +1344,13 @@ You are led down a dim corridor. You can hear music playing somewhere above. The
 
 <<brothelshowintro>>
 <br><br>
-
-Briar sips <<his>> wine. "So, what takes your fancy?"
+<<if $brothelVirginityIntro is undefined and ($player.virginity.penile is true and $player.virginity.vaginal is true) and !unableTakeVirginity() and fameSum('sex', 'prostitution', 'rape') gte 100>>
+	"I have also heard some rumours about you. If true, I have a <span class="gold">'special'</span> show for you." Briar sips <<his>> wine. "So, what takes your fancy?"
+	<br><br>
+	<<askicon>><<link [[Ask about special show|Briar's Office Virginity Show Ask]]>><<set $brothelVirginityIntro to true>><</link>>
+<<else>>
+	Briar sips <<his>> wine. "So, what takes your fancy?"
+<</if>>
 
 <<brothelshowoptions>>
 <br><br>
@@ -1415,6 +1420,94 @@ I'm sure your fans will be excited." <<He>> escorts you to the top of the stairs
 <<link [[Leave|Brothel]]>><<endevent>><</link>>
 <br><br>
 
+:: Briar's Office Virginity Show Ask
+<<set $outside to 0>><<set $location to "brothel">><<effects>>
+
+"Well, now it depends on if the rumours are true or not first. Rumour has it you're still a virgin. I find that hard to believe."
+<br><br>
+<<if $awarelevel gte 1>>
+	<<if $speech_attitude is "meek">>
+		You blush and smile.
+	<<elseif $speech_attitude is "bratty">>
+		You smirk but blush all the same.
+	<<else>>
+		You attempt to keep a straight face but blush all the same.
+	<</if>>
+	Even you find it hard to believe, considering what you have been through.<<stress -6>><<trauma -6>><<lstress>><<ltrauma>>
+<<else>>
+	You tilt your head in confusion. Why would anyone care about that?
+<</if>>
+<br><br>
+Briar continues, "But if you pass a virginity test, I am willing to pay for you to give that virginity up on stage. And I'm not the only one willing to spend money on this. Do you realise how many of your fans would be willing to pay for just the chance to be the one to deflower you? Who knows how much you could make. Put on a good enough show, you could easily make a few grand."
+<br><br>
+
+<<if hasSexStat("promiscuity", 2)>>
+	<<link [[Agree to sell your virginity|Briar's Office Virginity Show]]>><<set $phase to 0>><<acceptbrothelshow "virginity">><</link>><<promiscuous2>>
+<<else>>
+	<span class="blue">You aren't promiscuous enough to take up <<his>> offers.</span>
+<</if>>
+<br>
+<<link [[Refuse|Briar's Office Virginity Show]]>><<set $phase to 1>><</link>>
+<br>
+<<link [[Say you're not a virgin (Lie)|Briar's Office Virginity Show]]>><<set $phase to 2>><</link>>
+<br>
+
+:: Briar's Office Virginity Show
+<<set $outside to 0>><<set $location to "brothel">><<effects>>
+
+<<if $phase is 0>> /* Sell your virginity */
+	You agree to sell your virginity. "Excellent. You are going to make one lucky <<man>> happy," <<he>> says as <<he>> walks around the desk. "I will be sure to have it well-publicised. <<if Time.weekDay is 6>>There's no time to set it up for today.<span class="gold"> We'll be ready next Friday.</span><</if>> Your fans will want to remember this."
+	<br><br>
+	<<He>> escorts you to the top of the stairs. "Just make sure to show up. People are coming to see you specifically. I won't be able to placate them with some random whore." You are about to leave when <<he>> calls back to you. "For your own sake, I hope you're not lying. You better still be a virgin when you show up."
+<<elseif $phase is 1>> /* Refuse */
+	<<set $brothelVirginityState to "refuse">>
+
+	<<if $awarelevel gte 1>>
+		<<if $speech_attitude is "meek">>
+			You quickly shake your head, blushing at the thought. "I-I can't do that."
+		<<elseif $speech_attitude is "bratty">>
+			"Yeah right, like I would ever take you up on that," you scoff with a scowl.
+		<<else>>
+			"I'm not sure I could do that." You shake your head at the thought.
+		<</if>>
+	<<else>>
+		You scratch your head, still confused at what <<he>> is asking you to do. "I think I'll decline."
+	<</if>>
+	<br><br>
+	Briar gives a noncommittal hum, but it's clear <<hes>> displeased. "The rumours must not be true after all. My other offers still stand."
+<<else>> /* Say you're not a virgin (Lie) */
+	<<set $brothelVirginityState to "lie">>
+
+	<<if $awarelevel gte 1>>
+		<<if $speech_attitude is "meek">>
+			You quietly shake your head, demurely looking away from Briar. "B-but I'm not a virgin." It's a lie,
+		<<elseif $speech_attitude is "bratty">>
+			You crack a smile. "I'm no virgin though." It's a baldfaced lie,
+		<<else>>
+			You clear your throat awkwardly. "I'm not a virgin though." It's a lie,
+		<</if>>
+		but Briar doesn't need to know the truth.
+	<<else>>
+		You recall
+		<<if $player.virginity.anal isnot true>>
+			the time you lost your anal virginity.
+		<<elseif $player.virginity.oral isnot true>>
+			the time you lost your oral virginity.
+		<<elseif $player.virginity.handholding isnot true>>
+			the first time you held someone's hand.
+		<<else>>
+			all the assaults you've endured.
+		<</if>>
+		"I don't think I'm a virgin anymore," you say.
+	<</if>>
+	<br><br>
+	Briar nods. <<He>> seems disappointed, but not surprised. "Well, I didn't believe the rumours either, but I had to ask. Too bad; it would have been a good money-maker. My other offers still stand."
+<</if>>
+<br><br>
+
+<<link [[Leave|Brothel]]>><<endevent>><</link>>
+<br>
+
 :: Brothel Stage
 <<set $outside to 0>><<set $location to "brothel">><<effects>>
 
@@ -1454,6 +1547,9 @@ You are behind the largest stage in the brothel. This is where the more involved
 			<span class="blue">You're booked to star in a show with a horse, but you haven't saddled one!</span>
 			<br>
 		<</if>>
+	<<elseif $brothelshowdata.type is "virginity" and unableTakeVirginity()>>
+		<span class="red">Current gameplay settings incompatible for the show. NPC setting must allow the option for virginity to be taken to continue.</span>
+		<br>
 	<<else>>
 		<img class="icon" src="img/ui/gold_star.png"><<link [[Star in show|Brothel Show]]>><</link>>
 		<br>
@@ -3025,3 +3121,5 @@ With a smile <<he>> hands you another <<moneyGain 200>>.
 
 	<<link [[Next|Domus Street]]>><<endevent>><<set $weekly.escortjob to 1>><<run delete $brothel_escortjob.accept>><<set $brothel_escortjob.escape to true>><</link>>
 <</if>>
+
+
