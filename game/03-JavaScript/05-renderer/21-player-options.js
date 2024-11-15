@@ -98,7 +98,9 @@
  * @property {PilloryProp} pillory
  * @property {TankProp} semenTank
  * @property {Prop} rail
- * @property {Prop} shakles
+ * @property {Prop} neck_shackle
+ * @property {Prop} arm_shackle
+ * @property {Prop} leg_shackle
  * @property {Prop} table
  * @property {Prop} web
  * @property {Prop} leash
@@ -126,10 +128,13 @@
 
 /**
  * @typedef {object} Machines
- * @property {DildoMachine} dildo
+ * @property {MachinePart} vaginal
+ * @property {MachinePart} anal
+ * @property {MachinePart} tattoo
+ * @property {MachinePart} arm_chains
+ * @property {MachinePart} leg_chains
  * @property {Machine} breastMilker
  * @property {Machine} penisMilker
- * @property {Machine} tattoo
  */
 
 /**
@@ -138,9 +143,13 @@
  */
 
 /**
- * @typedef {object} DildoMachine
+ * @typedef {object} MachinePart
  * @property {boolean} show
- * @property {"entrance" | "penetrated"} state
+ * @property {number} health
+ * @property {number} ammo
+ * @property {number} hack
+ * @property {string} state
+ * @property {string} use
  */
 
 /**
@@ -455,7 +464,16 @@ class PlayerCombatMapper {
 			return "machine-2f-slow";
 		}
 		if (combat.isActive()) {
-			return "machine-4f";
+			switch (V.machine?.speed) {
+				case 1:
+					return "machine-4f-slow";
+				case 2:
+					return "machine-4f-fast";
+				case 3:
+					return "machine-4f-vfast";
+				default:
+					return "machine-4f-vfast";
+			}
 		}
 		return "machine-4f-slow";
 	}
@@ -550,7 +568,9 @@ class PlayerCombatMapper {
 			pillory: createPillory(),
 			semenTank: createTank("semen", T.barn_semen),
 			rail: createProp("rails"),
-			shakles: createProp("arm_shackle"), // Neck and leg shackle?
+			neck_shackle: createProp("neck_shackle"),
+			arm_shackle: createProp("arm_shackle"),
+			leg_shackle: createProp("leg_shackle"),
 			table: createProp("table"),
 			web: createProp("web"),
 			leash: {
@@ -571,20 +591,44 @@ class PlayerCombatMapper {
 		 * @param {string} id
 		 * @returns {Prop}
 		 */
-		function createMachine(id) {
+		function createMachineProp(id) {
 			return {
 				show: V.prop.includes(id),
 			};
 		}
 
-		options.machines = {
-			dildo: {
+		/**
+		 * @param {string} id
+		 * @returns {MachinePart}
+		 */
+		function createMachinePart(id) {
+			const defaults = {
 				show: false,
-				state: "entrance",
-			},
-			penisMilker: createMachine("penis_pump"),
-			breastMilker: createMachine("breast_pump"),
-			tattoo: createMachine("tattoo"),
+				health: 0,
+				ammo: 0,
+				hack: 0,
+				state: "",
+				use: "",
+			};
+			if (!V.machine) return defaults;
+			return {
+				show: !!V.machine[id],
+				health: V.machine[id].health || defaults.health,
+				ammo: V.machine[id].ammo || defaults.ammo,
+				hack: V.machine[id].hack || defaults.hack,
+				state: V.machine[id].state || defaults.state,
+				use: V.machine[id].use || defaults.use,
+			};
+		}
+
+		options.machines = {
+			penisMilker: createMachineProp("penis_pump"),
+			breastMilker: createMachineProp("breast_pump"),
+			vaginal: createMachinePart("vaginal"),
+			anal: createMachinePart("anal"),
+			tattoo: createMachinePart("tattoo"),
+			arm_chains: createMachinePart("arm_chains"),
+			leg_chains: createMachinePart("leg_chains"),
 		};
 
 		return options;
@@ -725,7 +769,7 @@ class PlayerCombatMapper {
 				};
 			case "tentacles-peach":
 				return {
-					blend: "#e67056",
+					blend: "#f99889",
 					blendMode: "hard-light",
 				};
 			case "tentacles-wraith":
