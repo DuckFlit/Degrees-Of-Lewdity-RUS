@@ -170,7 +170,46 @@
 	<br>
 	<<ind>><<link [[Spank your ass|Brothel Show Bukkake Intro]]>><<set $phase to 1>><</link>>
 	<br>
+<<elseif $brothelshowdata.type is "virginity">>
+	<<if $worn.face.type.includes("mask")>>
+		"You can't go out there wearing a mask. Your fans are paying good money to see you lose your virginity. They'll want to see your face when you lose it."
+		<br><br>
 
+		<<link [[Next|Brothel]]>><<endevent>><</link>>
+		<<exit>>
+	<</if>>
+
+	<<startbrothelshow "virginity">>
+	Briar turns to you. "We're all set and ready. Just waiting for the star. We've brought in a medical professional to check if you're still a virgin, then we'll be auctioning off your virginity to the highest bidder."
+
+	<<if ($leftarm is "bound" and $rightarm is "bound") or ($leftleg is "bound" and $rightleg is "bound")>>
+		<<He>>looks at your bindings and smirks. "Good idea, I'm sure they'll enjoy that."
+	<</if>>
+	<br><br>
+	<<He>> escorts you into a separate room off the main stage.
+
+	<<if playerChastity()>>
+		<<if $exposed gte 2>>
+			<<set $brothelVirginityState to "chastity">>
+			"What the hell is that?" Briar approaches, glaring at the <<= $worn.genitals.name>>. "You're here to sell your virginity, not lock it away."
+			<br><br>
+			Before you have a chance to react, Briar attempts to shove you inside a room back stage.
+			<br><br>
+
+			<<link [[Resist|Brothel Show Virginity Fight]]>><<set $fightstart to 1>><</link>>
+			<br>
+			<<link [[Comply|Brothel Show Virginity Chastity]]>><<set $phase to 0>><</link>>
+			<<exit>>
+		<<else>>
+			You walk inside, feeling nervous. You are wearing a <<= $worn.genitals.name>>. Is that against the rules? You are almost certain it is, but it is too late to back out now.<<stress 6>><<gstress>>
+		<</if>>
+	<<elseif $player.virginity.penile isnot true or $player.virginity.vaginal isnot true>>
+		You walk inside, feeling tense. You are not a virgin. What will happen when they find out? You briefly contemplate running, but it is too late to back out now.<<stress 6>><<gstress>>
+	<</if>>
+	<br><br>
+
+	<<link [[Next|Brothel Show Virginity Intro]]>><</link>>
+	<br>
 <</if>>
 
 :: Brothel Show Gangbang
@@ -1306,3 +1345,974 @@ You make <<printmoney `($brothel_show_bukkake * 5000) + 100000`>><<money `($brot
 <<link [[Next|Brothel Dressing Room]]>><<endevent>><<brothel_bukkake_end>><</link>>
 <br>
 
+:: Brothel Show Virginity Intro
+<<effects>><<outfitChecks>>
+<<npc Harper 2>><<person2>>
+
+In the middle of the room is what looks like a medical chair. Upon entering, you see
+<<if $hospitalintro is 0>><<set $hospitalintro to 1>>
+	a <<personsimple>>. <<He>> smiles at you. "Hello, I'm Doctor Harper." <<he>> says, brushing <<his>> blond fringe away from <<his>> eyes. <<He>> looks young, can't be older than 25.
+<<else>>
+	Doctor Harper.
+<</if>>
+<<He>> wears a white medical coat and white surgical gloves. <<He>> stands to meet you.
+<br><br>
+"Nothing to be nervous about. It is a simple procedure.<<if !_fullyNaked>> Please take off your clothes.<</if>>"
+<br><br>
+<<if playerChastity()>>
+	<<if !_fullyNaked>>
+		You do so reluctantly but have little choice. Once you are fully naked, an angry growl can be heard from Briar when <<person1>><<he>> sees your <<= $worn.genitals.name>>. Doctor Harper frowns but says nothing.
+		<br><br>
+	<</if>>
+	<<set $brothelVirginityState to "chastity">>
+	"What the hell is that?" Briar approaches, glaring at the <<= $worn.genitals.name>>. "You're here to sell your virginity, not lock it away."
+	<br><br>
+	Before you have a chance to react, Briar attempts to force you into a seat.
+	<br><br>
+
+	<<link [[Resist|Brothel Show Virginity Fight]]>><<endevent>><<set $fightstart to 1>><<npc Briar>><<person1>><</link>>
+	<br>
+	<<link [[Comply|Brothel Show Virginity Chastity]]>><<set $phase to 0>><</link>>
+	<br>
+<<else>>
+	<<if !_fullyNaked>>
+		You take a deep breath before getting undressed. Harper guides you to the chair.
+	<<else>>
+		Harper guides you to the chair. "Please, have a seat."
+	<</if>>
+	<br><br>
+	Your heart pounds as Harper spreads your legs. "I'm going to examine you, so just relax." <<He>> smiles. "I promise I'll be gentle."
+	<br><br>
+	You instinctively cover your <<genitals>> but as soon as you do, Harper asks, "Could you move your hands, please? I will need full access for this." <<= $player.virginity.penile is true and $player.virginity.vaginal is true ? "You comply, a tremor of excitement running through you.<<arousal 200 >><<garousal>>" : "You comply, with some trepidation.<<stress 6>><<gstress>>">>
+	<br><br>
+
+	<<link [[Next|Brothel Show Virginity Examination]]>><</link>>
+	<br>
+<</if>>
+<<upperstrip>><<lowerstrip>><<underlowerstrip>>
+
+:: Brothel Show Virginity Fight
+<<if $fightstart is 1>>
+	<<set $fightstart to 0>>
+	<<neutral 1>>
+	<<maninit>>
+	<<set $enemytrust -= 100>>
+	<<set $enemyanger += 200>>
+	<<npcidlegenitals>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<man>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend or ($pain gte 100 and $willpowerpain is 0)>>
+	<span id="next"><<link [[Next|Brothel Show Virginity Fight Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Brothel Show Virginity Fight]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Brothel Show Virginity Fight Finish
+<<effects>>
+
+<<if $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>>
+	With a final shove, you manage to throw Briar off.
+<<elseif $enemyhealth lte 0>>
+	Briar moans in orgasmic bliss and loses <<his>> grip just enough for you to wiggle free.
+<<else>>
+	Overcome with pain, you flail helplessly as Briar drags you to a chair and forces you to sit.<<pain 4>><<gpain>>
+	<br><br>
+
+	<<endcombat>>
+	<<npc Briar>><<person1>>
+	<<npc Harper 2>><<person2>>
+
+	<<link [[Next|Brothel Show Virginity Chastity]]>><<set $phase to 1>><</link>>
+	<<exit>>
+<</if>>
+
+As you run for the exit, you hear <<him>> shout, "Don't come back unless you're willing to pay!"<<npcincr Briar love -1>><<llove "Briar">>
+<<set $brothelshowdata.missed to true>>
+
+<br><br>
+<<clotheson>>
+<<endcombat>>
+
+<<link [[Next|Harvest Street]]>><<endevent>><<set $eventskip to 1>><</link>>
+
+:: Brothel Show Virginity Chastity
+<<effects>><<person1>>
+
+<<if $phase is 0>> /* Comply */
+	You are forced into a seat as Briar goes to a shelf and picks up a vicious-looking device that looks like a giant wrench.
+<<else>> /* Resist and Fight */
+	<<He>> picks up a vicious-looking device that looks like a giant wrench.
+<</if>>
+With rough hands, <<he>> works on the <<= $worn.genitals.name>>.<<pain 2>><<gpain>>
+<br><br>
+<<set $worn.genitals.integrity -= 1800>>
+<<effects>>
+<<if playerChastity()>>
+	After several minutes, Briar gives up and throws the wrench to the floor with a loud clang. The <<= $worn.genitals.name>> is practically falling apart but remains intact. "I've had enough of this." <<He>> grabs your hand and drags you to the stage.<<pain 8>><<npcincr Briar love -1>><<ggpain>><<llove "Briar">>
+	<br><br>
+
+	<<link [[Next|Brothel Show Virginity Stage]]>><<set $phase to 1>><</link>>
+	<br>
+<<else>>
+	With a final loud clank, the <<= $worn.genitals.name>> falls to the floor. "Now that that's taken care of, let's continue with the examination." <<He>> doesn't smile as <<he>> backs away and allows Dr. Harper to continue.
+	<br><br>
+
+	<<link [[Next|Brothel Show Virginity Examination]]>><</link>>
+	<br>
+<</if>>
+
+:: Brothel Show Virginity Examination
+<<effects>><<person2>>
+
+<<if $player.penisExist>>
+	<<He>> systematically but gently lifts and inspects your penis<<if $player.vaginaExist>> while probing your pussy with <<his>> other hand<</if>>.
+<<else>>
+	<<He>> systematically but gently probes your pussy with <<his>> fingers.
+<</if>>
+
+<<if setup.bodyliquid.combined("penis") gte 2 or setup.bodyliquid.combined("vagina") gte 2>>
+	<<if setup.bodyliquid.combined("vagina") gte 2>>
+		<<His>> hand snaps back when <<= setup.bodyliquid.combined("vagina") gte 5 ? "upon copious amounts cum and other lewd fluids gush" : "cum and other lewd fluids dribble">> out of your pussy.
+	<<else>>
+		<<His>> hand quickly withdraws when it makes contact with your penis<<= setup.bodyliquid.combined("penis") gte 5 ? " drenched with" : ", covered in">> cum and other lewd fluids.
+	<</if>>
+	<br><br>
+	"Sexual activity is perfectly normal, but not for virgins." Harper sounds worried<<= setup.bodyliquid.combined("penis") gte 5 or setup.bodyliquid.combined("vagina") gte 5 ? ". <<He>> needs to use a moist towel to clean your <<genitals>> before resuming" : " but resumes">> the exam.
+<</if>>
+
+<<if $player.penisExist>>
+	<<if $player.vaginaExist>>
+		Unable to restrain yourself, you grow aroused at <<his>> touch.
+	<<else>>
+		You become visibly erect at <<his>> touch, droplets leaking from the head of your cock.
+	<</if>>
+<<else>>
+	You feel fluid leaking from your slit at <<his>> touch.
+<</if>>
+<br><br>
+"There's no need to be ashamed. This is a perfectly natural and normal response," <<he>> says in a dry tone. The examination and probing of your <<genitals>> continues longer than you believe necessary, causing another shiver of pleasure.<<arousal 1000 "genitals">><<ggarousal>>
+<br><br>
+<<if $player.virginity.penile is true and $player.virginity.vaginal is true>>
+	<span class="green">Finally, Doctor Harper lifts <<his>> head with a satisfied look.</span>
+	<br><br>
+	Harper stands and turns to Briar. "<<pShe>> is a virgin." Satisfied, Briar nods.
+	<br><br>
+	<<outfitChecks>><<silently>><<clotheson>><</silently>>
+	<<= _fullyNaked ? "You stand" : "You get dressed">>, and a satisfied Briar leads you to the stage.
+	<br><br>
+
+	<<link [[Next|Brothel Show Virginity Stage]]>><<set $phase to 0>><</link>>
+	<br>
+<<else>>
+	<span class="red">Finally, Doctor Harper lifts <<his>> head with a look of concern.</span>
+	<br><br>
+	You know you are not a virgin, and now Harper does too. You look into the doctor's eyes, begging <<him>> not to tell. He remains unmoved.
+	Harper stands and turns to Briar. "<<pShe>> is not a virgin."
+	<br><br>
+	There is a moment of silence as Briar's eyes narrow. "I told you, for your own sake, not to lie about that." Briar advances on you with a glare. "You were here to sell your virginity. Now it looks like you'll need to sell something else."
+	<br><br>
+	Before you have a chance to react, Briar grabs your wrist, trying to yank you from the room and out onto stage.
+	<br><br>
+
+	<<link [[Resist|Brothel Show Virginity Lost]]>><<set $phase to 0>><</link>>
+	<br>
+	<<link [[Comply|Brothel Show Virginity Lost]]>><<set $phase to 1>><</link>>
+	<br>
+<</if>>
+
+:: Brothel Show Virginity Lost
+<<effects>>
+
+<<if $phase is 0>> /* Resist */
+	You struggle to pull your hand away from Briar, but <<his>> grip is too strong. <<= $leftarm is "bound" and $rightarm is "bound" ? "You gear up to kick <<him>>" : "You wind up for a punch">> but are stopped by a sharp pain in your shoulder. Turning, you panic as you see Doctor Harper injecting you with a syringe. "It's for your own good," <<he>> says.
+	<br><br>
+	Your body goes limp, and Briar drags you out onto the stage.<<pain 4>><<drugs 240>><<gpain>><<ggdrugged>>
+<<else>> /* Comply */
+	You stumble to keep up with Briar as <<he>> drags you out on the stage.
+<</if>>
+<br><br>
+
+<<link [[Next|Brothel Show Virginity Stage]]>><<set $phase to 1>><<set $brothelVirginityState to "lost">><</link>>
+<br>
+
+:: Brothel Show Virginity Stage
+<<effects>>
+
+<<if $phase is 0>> /* Virginity Show Continue */
+	<<He>> turns to you. "This is it. Your virginity will go to the highest bidder." A single white light turns on above you, and the din of the dark room falls quiet. You can't see beyond the edge of the stage, but you can feel the eyes on you.
+	<br><br>
+	You walk out onto the stage.
+	<br><br>
+	"Ladies and gentleman, have we got a treat for you."
+	<br><br>
+	The audience clamor with excitement, as Briar continues. "One fresh virgin for the taking, and not just any virgin, but the <span class="pink"><<underworld_nickname>></span>, and today <<pher>> cherry could be yours!"
+	<br><br>
+	<<outfitChecks>>
+	<<if $leftarm is "bound" and $rightarm is "bound">>
+		<<if $exposed gte 1>>
+			<<set _exhibitionist to _fullyNaked ? 5 : 3>>
+			<<if hasSexStat("exhibitionism", _exhibitionist)>>
+				<<link [[Show off bindings|Brothel Show Virginity Start]]>><<set $phase to 3>><</link>><<= _fullyNaked ? "<<exhibitionist5>>" : "<<exhibitionist3>>">>
+			<<else>>
+				<span class="blue">You aren't exhibitionist enough to flaunt your nudity at them.</span>
+			<</if>>
+		<<else>>
+			<<link [[Show off bindings|Brothel Show Virginity Start]]>><<set $phase to 3>><</link>>
+		<</if>>
+	<<else>>
+		<<if hasSexStat("exhibitionism", 5)>>
+			<<if _fullyNaked>>
+				<<link [[Flaunt|Brothel Show Virginity Start]]>><<set $phase to 1>><</link>><<exhibitionist5>>
+			<<else>>
+				<<link [[Strip tease|Brothel Show Virginity Start]]>><<set $phase to 2>><</link>><<exhibitionist5>>
+			<</if>>
+		<<else>>
+			<span class="blue">You aren't exhibitionist enough to flaunt your nudity at them.</span>
+		<</if>>
+	<</if>>
+	<br>
+	<<link [[Do nothing|Brothel Show Virginity Start]]>><<set $phase to 0>><</link>>
+	<br>
+<<else>> /* Change rape show */
+	A single white light turns on above you and Briar, and the din of the dark room falls quiet. You can't see beyond the edge of the stage, but you can feel the eyes on you.
+	<br><br>
+	Briar calls out to the crowd. "Looks like we have a change of plans, folks. We have an improv rape show for you tonight.
+	<<endevent>>
+	<<generatetakevirginity 1>><<generatetakevirginity 2>><<generatetakevirginity 3>><<generatetakevirginity 4>>
+	<<if playerChastity()>>
+		<<if $player.virginity.penile isnot true or $player.virginity.vaginal isnot true>>
+			<<set $brothelVirginityState to "chastitylost">>
+		<</if>>
+		Seems our star thought it'd be funny to wear a <<= $worn.genitals.name>>."
+		<br><br>
+		The crowd becomes hostile. A <<person1>><<person>> scowls. "We came to see <<phim>> lose <<pher>> virginity!"
+		<br><br>
+		Another <<person2>><<personsimple>>  joins in, "I didn't pay for a chance at a virgin slut for <<phim>> to deny me the goods with a fucking <<= $worn.genitals.name>>."
+		<br><br>
+		"Take it off!" a <<person3>><<person>> yells.
+		<br><br>
+		"Rape <<phim>>!" a <<person4>><<person>> shouts.
+	<<else>> /* Lost virginity */
+		Seems our star is not a virgin after all and would like to offer a formal apology with <<pher>> body. Do whatever you want with <<phim>>."
+		<br><br>
+		A <<person1>><<person>> protests, "I paid for the chance at a virgin, not a loose whore!"
+		<br><br>
+		"Lying skank!" a <<person2>><<person>> yells.
+		<br><br>
+		"Rape <<phim>>!" another <<person3>><<personsimple>> shouts.
+		<br><br>
+		"<<pShe>>'ll be sorry by the time we're done with <<phim>>," hollers a <<person4>><<person>>.
+	<</if>>
+	<br><br>
+	The crowd boos and hisses and surges forward.
+	<br><br>
+
+	<<link [[Next|Brothel Show Virginity Rape]]>><<set $molestationstart to 1>><<set $virginityRapeShowPhase to 0>><</link>>
+	<br>
+<</if>>
+
+:: Brothel Show Virginity Start
+<<effects>><<outfitChecks>>
+<<set $virginitytip to 0>>
+<<if [1, 2, 3].includes($phase)>><<set $virginitytip += 50000>><</if>> /* Bonus for showing off your body before the show. */
+
+<<if $phase is 0>> /* Do nothing */
+	Mesmerised by the cheering of the crowd, you smile awkwardly, unsure what to do next. You do not need to wait long.
+	<br><br>
+<<else>>
+		You may be a virgin, but you might as well have some fun before you lose it. You turn to the audience, heart pounding.
+		<br><br>
+	<<if $phase is 1>>/* Flaunt */
+		You rub your hands up and down your body while you strike various poses.
+		<br><br>
+		One hand <<= $player.breastsize is 0 ? "rubs along your chest" : "fondles your <<breasts>>">> while the other traces your contours down to your <<genitals>>.
+
+		<<if ($player.penisExist and !$player.vaginaExist) or ($player.penisExist and $player.vaginaExist and $player.gender_appearance is "m")>>
+			You stroke your penis from the base to the tip.
+		<<else>>
+			You gently part your pussy lips.
+		<</if>>
+		<br><br>
+		You give your admirers a wink, and the cheers grow louder.
+		<<exhibitionism5>>
+	<<elseif $phase is 2>> /* Strip tease */
+		<<if _top is $worn.upper>>
+			You slowly remove your _top.name and toss it to the ground, eliciting a cheer from the crowd.<<upperstrip>><<outfitChecks>>
+		<</if>>
+		<<if _bottom is $worn.lower>>
+			You then delicately step out of your _bottom.name.<<lowerstrip>><<outfitChecks>>
+			<<if $worn.under_lower.name is "naked">>
+				You give your admirers a wink as you finally reveal your <<genitals>>.
+			<</if>>
+		<</if>>
+		<<if _top is $worn.under_upper>>
+			Turning your back to your audience, you unfasten your _top.name before tossing it aside. You hold your hands over your <<breasts>> as you turn back to face your audience before slowly revealing yourself. The crowds redouble their cheers.<<underupperstrip>><<outfitChecks>>
+			<br><br>
+		<</if>>
+		<<if _bottom.name is $worn.under_lower.name>>
+			Your face grows red with excitement as you move your fingers under the hem of your _bottom.name. You pull them down just enough to prevent anyone from seeing anything before hoisting them back up again. The crowd clamours for more. In one quick motion, you pull the _bottom.name down.<<underlowerstrip>>
+			<br><br>
+			You give your admirers a wink as you finally reveal your <<genitals>>.
+		<</if>>
+		The cheers grow louder.
+		<<exhibitionism5>>
+	<<else>> /* Show off bindings */
+		<<if $leftarm is "bound" and $rightarm is "bound">>
+			You turn your back to the audience and strain against the bindings wrapped around your wrists. You struggle in vain for several seconds making sure they all see how tightly bound you are.
+			<<if _fullyNaked or !_top>>
+				You turn back to the audience and shake your <<breasts>> more obviously as you continue a half hearted attempt to free your hands.
+			<</if>>
+			<br><br>
+		<</if>>
+		<<if $leftleg is "bound" and $rightleg is "bound">>
+			You attempt to lift your foot but the bindings resist your movement. It does however demonstrate how powerless you are.
+			<<if _fullyNaked or !_bottom>>
+				You fake a tumble to the stage and stick your <<bottom>> out further highlighting your helplessness.
+			<</if>>
+			<br><br>
+		<</if>>
+		<<if $worn.face.type.includes("gag")>>
+			You try shouting but all that can be heard is a muted mumble.
+			<br><br>
+		<</if>>
+		A wave of excitement moves through the crowed at seeing you so vulnerable.
+		<<if _fullyNaked>><<exhibitionism5>><<elseif $exposed gte 1>><<exhibitionism3>><<else>><br><br><</if>>
+	<</if>>
+<</if>>
+
+<<link [[Next|Brothel Show Virginity Auction]]>><<endevent>><<set $weekly.brothelVirginityShow to 0>><</link>>
+<br>
+
+:: Brothel Show Virginity Auction
+<<effects>>
+<<set $weekly.brothelVirginityShow += 1>>
+
+<<switch $weekly.brothelVirginityShow>>
+	<<case 1>>
+		<<set _fame to fameSum('sex', 'rape', 'prostitution', 'exhibitionism', 'bestiality', 'social', 'model')>>
+		<<set $virginitytip += 50000
+			+ _fame * 50
+			+ $beauty * 20
+		>>
+
+		<<if fameSum('sex', 'rape', 'prostitution') gte 2500>>
+			A <<brothelvirginitybidders>><<person>> rushes the stage. <<He>> is promptly tackled by a nearby bouncer.
+			<br><br>
+			Briar ignores the <<person>> as <<he>> is dragged from the stage.
+			<br><br>
+		<</if>>
+
+		<<set $tip_add to 50000>><<tipset>> /* Base bid. */
+		"One virgin for the taking, starting at <<printmoney $tip>>." Briar looks around the eager crowd.
+		<br><br>
+		A <<brothelvirginitybidders>><<person>> shouts, "<<printmoney $tip>>!" while raising <<his>> hand above the crowd.
+		<br><br>
+
+		<<if _fame/7 gte 500>>
+			A <<brothelvirginitybidders>><<person>> shouts nearby, "<<printmoney $tip>>!"
+			<br><br>
+		<</if>>
+
+		<<if _fame/7 gte 750>>
+			Another <<brothelvirginitybidders>><<person>> calls out, "<<printmoney $tip>>!"
+			<br><br>
+		<</if>>
+
+		<<if _fame/7 gte 1000>>
+			Still another <<brothelvirginitybidders>><<person>> calls out a high price of <<printmoney $tip>>.
+			<br><br>
+		<</if>>
+
+		Briar smiles as the audience continues to bid on your virginity. "Can anyone beat <<printmoney $tip>>?"
+		<br><br>
+
+		<<link [[Seduce|Brothel Show Virginity Auction]]>><<set $phase to 1>><<set $virginitytip += $seductionskill * 50>><<set $seductiondifficulty to 4000>><</link>><<promiscuous1>>
+		<br>
+		<<link [[Do nothing|Brothel Show Virginity Auction]]>><<set $phase to 0>><</link>>
+		<br>
+	<<case 2>>
+		<<if $phase is 0>> /* Do nothing */
+			You are not sure what to do. You give the audience a little wave.
+		<<else>> /* Seduce */
+			<<seductioncheck>>
+			<br><br>
+			<<seductionskilluptext>>
+			<<seductionskilluse>>
+
+			<<if $seductionrating gte $seductionrequired>>
+				<<set $virginitytip += 50000>> /* Success bonus */
+				<<if $worn.face.type.includes("gag")>>
+					You go into a coy crouch and give the audience a glance over your shoulder.
+				<<elseif $speech_attitude is "meek">>
+					"I-it's my first time. P-please be gentle," you say, shifting your feet<<if $leftarm isnot "bound" and $rightarm isnot "bound">> and holding your hands under your chin<</if>>.
+				<<elseif $speech_attitude is "bratty">>
+					"It's my first time. Make it worth it," you say, <<= $leftarm is "bound" and $rightarm is "bound" ? "jutting out one hip" : "holding your hands on your hips">>.
+				<<else>>
+					"It's my first time. I'm ready," you say as you turn around for the audience.
+				<</if>>
+				<br><br>
+				A <<brothelvirginitybidders 'select'>><<person>> throws <<his>> hand in the air. "<<printmoney $tip>>!"
+			<<else>>
+				<<if $worn.face.type.includes("gag")>>
+					You mumble into the gag and raise your eyebrows suggestively, but no one notices.
+				<<elseif $speech_attitude is "meek">>
+					"It's my first time. P-please b-be gentle," you whisper, but it's too soft for anyone to hear.
+				<<elseif $speech_attitude is "bratty">>
+					"It's my first time. Make it worth it," you say. There's an edge to your voice that makes a few bidders take a step back.
+				<<else>>
+					"It's my first time. I'm ready," you say. You try to smile, but it is more of a grimace.
+				<</if>>
+			<</if>>
+		<</if>>
+		<br><br>
+		<<brothelvirginitybidders>>"<<printmoney $tip>>!" calls out a <<person>>.
+		<br><br>
+		Briar points to the <<person>>. "Anyone else?"
+		<br><br>
+
+		<<if hasSexStat("promiscuity", 2)>>
+			<<if $leftarm isnot "bound" and $rightarm isnot "bound">>
+				<<link [[Show off your hands|Brothel Show Virginity Auction]]>><<set $phase to 1>><<set $virginitytip += $handskill * 50>><</link>><<promiscuous2>><<skill_difficulty `currentSkillValue("handskill")` "Hand Skill" 1 800>>
+				<br>
+			<</if>>
+			<<link [[Show off your feet|Brothel Show Virginity Auction]]>><<set $phase to 2>><<set $virginitytip += $feetskill * 50>><</link>><<promiscuous2>><<skill_difficulty `currentSkillValue("feetskill")` "Feet Skill" 1 800>>
+		<<else>>
+			<span class="blue">You aren't promiscuous enough to flaunt your body parts at them.</span>
+		<</if>>
+		<br>
+		<<link [[Do nothing|Brothel Show Virginity Auction]]>><<set $phase to 0>><</link>>
+		<br>
+	<<case 3>>
+		<<if $phase is 0>> /* Do nothing */
+			You look around the audience with a faint smile as they continue to bid.
+		<<elseif $phase is 1>> /* Show off your hands */
+			<<if currentSkillValue("handskill") gte random(1, 800)>>
+				<<set $virginitytip += 50000>>
+				You smoothly run your hands down your body, showing off your curves. You make a heart with your fingers.<<handskill 5>><<ghandskill>>
+				<br><br>
+				A <<brothelvirginitybidders "select">><<person>> shouts out a new price. "<<printmoney $tip>>!"
+			<<else>>
+				You try to wave, but it is rather awkward-looking.<<handskill 5>><<ghandskill>>
+			<</if>>
+		<<else>> /* Show off your feet */
+			<<if currentSkillValue("feetskill") gte random(1, 800)>>
+				<<set $virginitytip += 50000>>
+				You angle your body to show off your legs and the soles of your feet.<<feetskill 5>><<gfeetskill>>
+				<br><br>
+				A <<brothelvirginitybidders "select">><<person>> shouts out a new price. "<<printmoney $tip>>!"
+			<<else>>
+				You awkwardly lift one foot to show it to the audience. No one seems impressed.<<feetskill 5>><<gfeetskill>>
+			<</if>>
+		<</if>>
+		<br><br>
+		A <<brothelvirginitybidders>><<person>> waves a wad of cash in the air. "<<printmoney $tip>>!"
+		<br><br>
+
+		<<if hasSexStat("promiscuity", 3)>>
+			<<link [[Flaunt your chest|Brothel Show Virginity Auction]]>><<set $phase to 1>><<set $virginitytip += $chestskill * 50>><</link>><<promiscuous3>><<skill_difficulty `currentSkillValue("chestskill")` "Chest Skill" 1 800>>
+			<<if !$worn.face.type.includes("gag")>>
+				<br>
+				<<link [[Show off your tongue|Brothel Show Virginity Auction]]>><<set $phase to 2>><<set $virginitytip += $oralskill * 50>><</link>><<promiscuous3>><<skill_difficulty `currentSkillValue("oralskill")` "Oral Skill" 1 800>>
+			<</if>>
+		<<else>>
+			<span class="blue">You aren't promiscuous enough to flaunt your body parts at them.</span>
+		<</if>>
+		<br>
+		<<link [[Do nothing|Brothel Show Virginity Auction]]>><<set $phase to 0>><</link>>
+		<br>
+	<<case 4>>
+		<<if $phase is 0>> /* Do nothing */
+			You shift your weight from side to side as you wait for the auction to continue.
+		<<elseif $phase is 1>> /* Flaunt your chest */
+			<<if currentSkillValue("chestskill") gte random(1, 800)>>
+				<<set $virginitytip += 50000>>
+				You puff out your chest and shake your <<breasts>>.<<chestskill 5>><<gchestskill>>
+				<br><br>
+				The <<brothelvirginitybidders "select">><<person>> increases <<his>> bid. "<<printmoney $tip>>!"
+			<<else>>
+				You try to puff out your chest, but it just looks awkward.<<chestskill 5>><<gchestskill>>
+			<</if>>
+		<<else>> /* Show off your tongue */
+			<<if currentSkillValue("oralskill") gte random(1, 800)>>
+				<<set $virginitytip += 50000>>
+				You flick your tongue suggestively before licking your lips.<<oralskill 5>><<goralskill>>
+				<br><br>
+				The <<brothelvirginitybidders "select">><<person>> increases <<his>> bid. "<<printmoney $tip>>!"
+			<<else>>
+				You try showing off your tongue, but accidentally end up drooling.<<oralskill 5>><<goralskill>>
+			<</if>>
+		<</if>>
+		<br><br>
+		The <<brothelvirginitybidders>><<person>> shoves their way to the front of the crowd for a better look. "<<printmoney $tip>>!" <<he>> shouts.
+		<br><br>
+
+		<<if hasSexStat("promiscuity", 4)>>
+			<<link [[Offer your ass|Brothel Show Virginity Auction]]>><<set $phase to 1>><<set $virginitytip += $bottomskill * 50>><</link>><<promiscuous4>><<skill_difficulty `currentSkillValue("bottomskill")` "Bottom Skill" 1 800>>
+			<br>
+			<<link [[Pat your thighs|Brothel Show Virginity Auction]]>><<set $phase to 2>><<set $virginitytip += $thighskill * 50>><</link>><<promiscuous4>><<skill_difficulty `currentSkillValue("thighskill")` "Thigh Skill" 1 800>>
+		<<else>>
+			<span class="blue">You aren't promiscuous enough to flaunt your body parts at them.</span>
+		<</if>>
+		<br>
+		<<link [[Do nothing|Brothel Show Virginity Auction]]>><<set $phase to 0>><</link>>
+		<br>
+	<<case 5>>
+		<<if $phase is 0>> /* Do nothing */
+			Unsure of what to do, you spin around for the audience.
+		<<elseif $phase is 1>> /* Offer your ass */
+			<<if currentSkillValue("bottomskill") gte random(1, 800)>>
+				<<set $virginitytip += 50000>>
+				You turn around, stick out your <<bottom>>, and give it a slap.<<bottomskill 5>><<gbottomskill>>
+				<br><br>
+				Briar smiles as the <<brothelvirginitybidders "select">><<person>> calls out a new price. "<<printmoney $tip>>"
+			<<else>>
+				You turn around and give your <<bottom>> a slap, but only end up hurting yourself.<<bottomskill 5>><<gbottomskill>><<pain 2>><<gpain>>
+			<</if>>
+		<<else>> /* Pat your thighs */
+			<<if currentSkillValue("thighskill") gte random(1, 800)>>
+				<<set $virginitytip += 50000>>
+				You spread your legs, pat your thighs, and stroke your hands along the inside of your leg.<<thighskill 5>><<gthighskill>>
+				<br><br>
+				Briar smiles as the <<brothelvirginitybidders "select">><<person>> calls out a new price. "<<printmoney $tip>>"
+			<<else>>
+				You slap the inside of your thigh much harder than intended.<<thighskill 5>><<gthighskill>><<pain 2>><<gpain>>
+			<</if>>
+		<</if>>
+		<br><br>
+		A <<brothelvirginitybidders>><<person>> shouts above the cheers. "<<printmoney $tip>>!"
+		<br><br>
+
+		<<link [[Belly dance|Brothel Show Virginity Auction]]>><<set $phase to 1>><<set $virginitytip += $danceskill * 50>><</link>><<dancedifficulty 1 800>>
+		<br>
+		<<if $leftleg isnot "bound" and $rightleg isnot "bound">>
+			<<link [[Stretch|Brothel Show Virginity Auction]]>><<set $phase to 2>><<set $virginitytip += $athletics * 50>><</link>><<athleticsdifficulty 1 800>>
+			<br>
+		<</if>>
+		<<link [[Do nothing|Brothel Show Virginity Auction]]>><<set $phase to 0>><</link>>
+		<br>
+	<<case 6>>
+		<<if $phase is 0>> /* Do nothing */
+			Your fidget with your hands as the bidding continues.
+		<<elseif $phase is 1>> /* Belly dance */
+			<<if currentSkillValue("danceskill") gte random(1, 800)>>
+				<<set $virginitytip += 50000>>
+				You sway your hips in time to an imaginary beat. You give a skillful roll of your belly.<<danceskill 5>><<gdanceskill>>
+				<br><br>
+				The <<brothelvirginitybidders "select">><<person>> whistles appreciatively. "<<printmoney $tip>>!"
+			<<else>>
+				You stiffly shuffle your feet in a graceless dance.<<danceskill 5>><<gdanceskill>>
+			<</if>>
+		<<else>> /* Stretch */
+			<<if currentSkillValue("athletics") gte random(1, 800)>>
+				<<set $virginitytip += 50000>>
+				You spread your legs apart and stretch to the ground, jutting your <<bottom>> high in the air.<<athletics 5>><<gathletics>>
+				<br><br>
+				The <<brothelvirginitybidders "select">><<person>> whistles appreciatively. "<<printmoney $tip>>!"
+			<<else>>
+				You try to lift your foot over your head, but you stumble.<<athletics 5>><<gathletics>>
+			<</if>>
+		<</if>>
+		<br><br>
+		<<brothelvirginitybidders>>"<<printmoney $tip>>," a <<person>> calls out from among the enamoured crowd.
+		<br><br>
+
+		<<if hasSexStat("promiscuity", 5)>>
+			<<if $player.penisExist>>
+				<<link [[Show off your penis|Brothel Show Virginity Auction]]>><<set $phase to 1>><<set $virginitytip += $penileskill * 50>><</link>><<promiscuous5>><<skill_difficulty `currentSkillValue("penileskill")` "Penile Skill" 1 800>>
+				<br>
+			<</if>>
+			<<if $player.vaginaExist>>
+				<<link [[Show off your pussy|Brothel Show Virginity Auction]]>><<set $phase to 2>><<set $virginitytip += $vaginalskill * 50>><</link>><<promiscuous5>><<skill_difficulty `currentSkillValue("vaginalskill")` "Vaginal Skill" 1 800>>
+				<br>
+			<</if>>
+		<<else>>
+			<span class="blue">You aren't promiscuous enough to flaunt your body parts at them.</span>
+			<br>
+		<</if>>
+
+		<<link [[Do nothing|Brothel Show Virginity Auction]]>><<set $phase to 0>><</link>>
+		<br>
+	<<case 7>>
+		<<outfitChecks>>
+		<<if $phase is 0>> /* Do nothing */
+			You give the audience a nervous smile as you wait for the auction to end.
+
+		<<elseif $phase is 1>> /* Show off your penis */
+			<<if currentSkillValue("penileskill") gte random(1, 800)>>
+				<<set $virginitytip += 50000>>
+				<<if _bottomless>>
+					<<if $leftarm is "bound" and $rightarm is "bound">>
+						You lay on your back and thrust your hips high into the air, pointing your <<penis>> straight up.
+					<<else>>
+						You stroke your <<penis>> leisurely, causing precum to bead at the tip.
+					<</if>>
+				<<else>>
+					<<if $leftarm is "bound" and $rightarm is "bound">>
+						Although tied behind your back, you manage to work your hand into your _bottom.name. With some finesse, you pull them aside enough for your <<penis>> to spring free.
+					<<else>>
+						You pull your _bottom.name aside, revealing your <<penis>>.
+					<</if>>
+				<</if>>
+				<<penileskill 5>><<gpenileskill>>
+				<br><br>
+				A bouncer has to keep the <<brothelvirginitybidders "select">><<person>> from climbing on the stage as <<he>> makes <<his>> bid. "<<printmoney $tip>>!"
+			<<else>>
+				<<if _bottomless>>
+					You wiggle your hips back and forth, causing your <<penis>> to slap your thighs. The effect is more silly than seductive.
+				<<else>>
+					<<if $leftarm is "bound" and $rightarm is "bound">>
+						Try as you might, you cannot free your <<penis>> with your hands bound behind your back.
+					<<else>>
+						You attempt to pull your _bottom.name aside with one hand, but you fumble in your haste. The effect isn't as dramatic as you hoped.
+					<</if>>
+				<</if>>
+				<<penileskill 5>><<gpenileskill>>
+			<</if>>
+		<<else>> /* Show off your pussy */
+			<<if currentSkillValue("vaginalskill") gte random(1, 800)>>
+				<<set $virginitytip += 50000>>
+				<<if _bottomExposed>>
+					<<if $leftleg is "bound" and $rightleg is "bound">>
+						You kneel and part your knees.
+					<<else>>
+						You sit down and spread your legs wide.
+					<</if>>
+				<<else>>
+					You pull your _bottom.name aside, revealing your <<pussy>>.
+				<</if>>
+				You run a finger between your labia, showing off a glistening pearl of lewd fluid.<<vaginalskill 5>><<gvaginalskill>>
+				<br><br>
+				A bouncer has to keep the <<brothelvirginitybidders "select">><<person>> from climbing on the stage as <<he>> makes <<his>> bid. "<<printmoney $tip>>!"
+			<<else>>
+				<<if $leftleg is "bound" and $rightleg is "bound">>
+					You sit down and try spreading your legs, but your bindings make it difficult. Your clumsy act fails to impress anyone.
+				<<else>>
+					You go to sit down but end up slipping. Your legs spread as you do so, but it was not how you had envisioned showing off.
+				<</if>>
+				<<vaginalskill 5>><<gvaginalskill>>
+			<</if>>
+		<</if>>
+		<br><br>
+		<<set $tip_add to $virginitytip>><<tipset>>
+		"I'll take <<pher>> for <<brothelvirginitybidders "select">><<printmoney $tip>>!" calls out a <<person>>.
+		<<saveNPC $lastBidder "highestBidder">><<set _highestBidder to $lastBidder>>
+		<br><br>
+		Briar looks around the audience, waiting for anyone to make a better offer. "Going once."
+		<br><br>
+		The <<brothelvirginitybidders "select">><<person>> thumbs through <<his>> wad of cash in contemplation.
+		<br><br>
+		"Going twice."
+		<br><br>
+		The <<brothelvirginitybidders "select">><<person>> scratches the back of <<his>> neck, trying to make up <<his>> mind.
+		<br><br>
+		<<endevent>><<loadNPC 0 "highestBidder">><<person1>>
+		"Sold!" Briar calls out to the <<person>>.
+		<br><br>
+		The audience roars with approval as the <<person>> rushes the stage. <<He>> hardly glances back as <<he>> throws the wad of cash to Briar.
+		<br><br>
+
+		<<link [[Next|Brothel Show Virginity Sex]]>><<set $sexstart to 1>><<unset $numberBidder>><<unset $lastBidder>><<unset $tip_add>><<unset $virginitytip>><</link>>
+		<br>
+<</switch>>
+
+:: Brothel Show Virginity Sex
+<<if $sexstart is 1>>
+	<<set $sexstart to 0>>
+	<<consensual>>
+	<<set $consensual to 1>>
+	<<neutral 1>>
+
+	<<maninit>>
+	<<npctakevirginity>>
+	<<set $NPCList[0].pregnancyAvoidance to 0>>
+	<<set $encounterDialogue to "brothelVirginityShow">>
+<</if>>
+
+<<if $mouthaction is "ask" and (["condoms", "finish", "novaginal", "nopenile"].includes($askAction))>>
+	<<set $consensual to 0>><<controlloss>><<violence 1>><<molested>>
+	<<set $enemytrust -= 200>>
+	<<set $enemyanger += 200>>
+	<br><br>
+	<<if $askAction is "condoms">>
+		<<set $phase2 to "condoms">>
+	<<else>>
+		<<set $phase2 to "stop">>
+	<</if>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<if $phase2 is "stop">>
+	"I didn't just pay a fortune to take your cherry and not get it."
+	<<set $phase2 to 0>>
+<<elseif $phase2 is "condoms">>
+	"I didn't pay to fuck a virgin with a rubber, you stupid slut."
+	<<set $phase2 to 0>>
+<</if>>
+<<man>>
+<<audience>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Brothel Show Virginity Sex Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Brothel Show Virginity Sex]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Brothel Show Virginity Sex Finish
+<<effects>>
+
+<<if $player.virginity.penile is true and $player.virginity.vaginal is true>>
+	<<if $enemyarousal gte $enemyarousalmax>>
+		<<ejaculation>>
+
+		You sigh in relief as the <<person>> cums. <<= $player.vaginaExist ? "You managed to keep the <<person>> out of your pussy" : "You managed to keep your <<penis>> out of the <<person>>">>. <<He>> is not as pleased, but is too tired to continue. <<He>> leaves the stage, shaking <<his>> head in defeat. "I was so close..."
+	<<else>>
+		You back away quickly and sigh in relief as the <<person>> recoils in pain.  <<= $player.vaginaExist ? "You managed to keep the <<person>> out of your pussy" : "You managed to keep your <<penis>> out of the <<person>>">>. <<He>> is not as pleased, but is too battered to continue. <<He>> leaves the stage, shaking <<his>> head in defeat. "The fuck is your problem?"
+	<</if>>
+	<br><br>
+	The audience murmurs for a moment. You hear someone say, "But <<pshes>> still a virgin."
+	<br><br>
+	Before the crowd can turn hostile, you hear Briar's voice. "It was a splendid show, but I guess you'll have to wait until next time." The audience seems satisfied, but Briar gives you a cold stare.<<stress 6>><<gstress>>
+<<else>>
+	<<if $enemyarousal gte $enemyarousalmax>>
+		<<ejaculation>>
+	<</if>>
+	The <<person1>><<person>> kisses you softly on the cheek. "Wow, I can't believe I was the one to take your virginity. Thank you."
+<</if>>
+<br><br>
+
+<<endcombat>>
+
+<<link [[Cover yourself|Brothel Show Virginity Leave]]>><<set $phase to 0>><</link>>
+<br>
+<<link [[Show off|Brothel Show Virginity Leave]]>><<set $phase to 1>><</link>>
+<br>
+
+:: Brothel Show Virginity Leave
+<<effects>>
+<<loadNPC 0 "highestBidder">><<clearNPC "highestBidder">><<person1>>
+
+<<if $phase is 0>> /* Cover yourself */
+	<<if $player.virginity.penile is true and $player.virginity.vaginal is true>>
+		As the audience's cameras continue to flash, you cover your face and your <<genitals>>. It does little to hide what's happened.
+		<br><br>
+		Still trying to conceal yourself, you make a break for it. You can hear the cheers of the crowd as you flee.<<stress 6>><<gstress>><<trauma 6>><<gtrauma>>
+	<<else>>
+		The crowd cheers as the <<person>> pulls
+		<<if $player.virginity.vaginal is false>>
+			out of your no longer virgin <<pussy>>
+		<<else>>
+			your no longer virgin <<penis>> out of <<his>> <<= $NPCList[0].penis isnot "none" ? "anus" : "pussy">>
+		<</if>>
+		You move a hand to your face, blushing while concealing your dripping <<genitals>> with the other. It does little to hide what has happened, and cum drips <<= $player.virginity.vaginal is false ? "out of your <<pussy>>" : "from your <<penis>>">>.
+		<br><br>
+		Still trying to conceal yourself, you make a break for it. You can hear the cheers of the crowd as you flee, leaving a sticky trail in your wake.<<stress 6>><<gstress>><<trauma 6>><<gtrauma>>
+	<</if>>
+	<br><br>
+<<else>> /* Show off */
+	<<if $player.virginity.penile is true and $player.virginity.vaginal is true>>
+		Some of the people in the crowd pull out their cellphones to snap pictures of your victory. You smile for the camera and pose, letting the crowd enjoy the view of your dripping <<genitals>>. Finally, you bow once more and walk off the stage. You can still hear the crowd cheering as you vacate, leaving a sticky trail in your wake.<<exhibitionism5>>
+	<<else>>
+		The crowd cheers as the <<person>> pulls
+		<<if $player.virginity.vaginal isnot true>>
+			out of your no longer virgin <<pussy>>
+		<<else>>
+			your no longer virgin <<penis>> out of <<his>> <<= $NPCList[0].penis isnot "none" ? "anus" : "pussy">>
+		<</if>>
+		<br><br>
+		Some of the people in the crowd pull out their cellphones to snap pictures. You pose and <<= $player.virginity.vaginal isnot true ? "spread your pussy lips, allowing more cum to seep out" : "fondle your <<penis>>, rubbing the cum up and down your shaft">>. Finally, you bow once more and walk off the stage. You can still hear the crowd cheering as you vacate, leaving a sticky trail in your wake.<<exhibitionism5>>
+	<</if>>
+<</if>>
+
+<<link [[Next|Brothel Show Virginity End]]>><<clotheson>><<endevent>><</link>>
+<br>
+
+:: Brothel Show Virginity End
+<<effects>>
+<<npc Briar>><<person1>>
+
+Leaning against a wall, you catch your breath.You hear footsteps and look up to see Briar approaching.
+<br><br>
+<<if $player.virginity.penile is true and $player.virginity.vaginal is true>>
+	<<set $brothelVirginityState to "virginity">>
+	Briar gives you an inscrutable expression and studies you for a moment.
+	<br><br>
+	<<He>> gestures you to <<his>> office. Once inside, you patiently wait for Briar to speak. "What the hell was that? I had to give a refund because of you."
+	<br><br>
+	<<if $speech_attitude is "meek">>
+		You tremble briefly under Briar's gaze, keeping your head down.
+	<<elseif $speech_attitude is "bratty">>
+		You hold Briar's gaze and wait for <<him>> to continue.
+	<<else>>
+		You hold Briar's gaze for a moment before looking away awkwardly.
+	<</if>>
+	<br><br>
+	Finally Briar speaks. "The show was not a total flop though. There were certainly a lot of happy accidents among the crowd."
+	<br><br>
+	<<He>> hands you <<= C.npc.Briar.love gte 40 ? "<<moneyGain 1000>>" : "<<moneyGain 500>>">>. "Would have been more if you had given your cherry as promised. I expect better next time."
+<<else>>
+	Briar gives you an appreciative smile.
+	<br><br>
+	<<He>> gestures you to <<his>> office. Once inside, you patiently wait for Briar to speak. "That was a very good show. Your fans loved it."
+	<br><br>
+	<<He>> seems satisfied and hands you <<moneyGain $tip/100>><<set $tip to 0>>. "You did well. I almost wish I had..." <<He>> trails off before waving you out.
+<</if>>
+<br><br>
+
+<<link [[Next|Brothel Dressing Room]]>><<endevent>><</link>>
+<br>
+
+:: Brothel Show Virginity Rape
+<<effects>>
+
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<maninit>>
+
+	<<if playerChastity()>>
+		<<set $enemytrust -= 100>>
+		<<set $enemyanger += 250>>
+	<</if>>
+	<<npctakevirginity>>
+	<<set $encounterDialogue to "brothelVirginityRapeShow">>
+<</if>>
+
+<<if $vaginastate is "penetrated" or $penisstate is "penetrated" or $penisstate is "otheranus">>
+	<<set $phase2 to "finish">>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<man>>
+<<audience>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Brothel Show Virginity Rape Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Brothel Show Virginity Rape]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Brothel Show Virginity Rape Finish
+<<effects>>
+
+<<if $phase2 is "finish">>
+	<<if $brothelVirginityState is "chastity">>
+		The <<person1>><<person>> smirks. "One less virgin in the world, and one more slut. You might have even enjoyed your first time if you hadn't tried to deny me with that stupid <<= $worn.genitals.name>>."
+		<br><br>
+		The crowd jeers, pleased to see you get what you deserved. They snap more pictures of your defiled <<genitals>> before dispersing, satisfied with the show.
+	<<elseif $brothelVirginityState is "chastitylost">>
+		The <<person1>><<person>> scowls. "Stupid whore wasn't even a virgin. Tried to hide it behind a <<= $worn.genitals.name>>." The <<person>> punches you in the ribs before spitting in your face as <<he>> stands.<<pain 8>><<ggpain>>
+		<br><br>
+		The crowd jeers, pleased to see you get what you deserved. They snap more pictures of your defiled <<genitals>>. A <<person2>><<person>> gives you a final kick before leaving with the rest.<<pain 8>><<ggpain>>
+	<<else>>
+		The <<person1>><<person>> scowls. "Stupid whore," <<he>> says, spitting in your face as <<he>> stands up.
+		<br><br>
+		The crowd jeers, pleased to see you get what you deserved. They snap more pictures of your defiled <<genitals>>. A <<person2>><<person>> gives you a final kick in the ribs before leaving with the rest, satisfied with the show.<<pain 8>><<ggpain>>
+	<</if>>
+	<br><br>
+	With the crowd finally placated, you crawl from the stage, leaving behind a sticky trail. You are too shaken to even notice Briar's satisfied nod as <<he>> turns and leaves.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<link [[Next|Brothel Show Virginity Rape End]]>><</link>>
+	<br>
+<<else>>
+	<<switch $virginityRapeShowPhase>>
+		<<case 0>>
+			The mob drops you centre stage, humiliated and abused. More surge forward, taking their place. Despair sets in as you realise that this is just the beginning.
+		<<case 1>>
+			As the last of them wipes their cum on you, a new mob joins the stage. Dreading what is to come, you try and prepare for more abuse.
+		<<case 2>>
+			You try to maintain your sanity as more walk on stage ready to break you.
+		<<case 3>>
+			For a brief moment when they finish, you fantasise that they were the last, but a new group soon surrounds you.
+		<<case 4>>
+			You have long since lost count of how many people have violated you and how long you have been on stage.
+		<<case 5>>
+			The angry mob's laughs and jeers die down as they lose interest in the filthy whore on stage. It takes you several minutes to sit up and look around, astounded that no one is trying to rape you. You crawl off stage, leaving behind a sticky trail.
+	<</switch>>
+	<br><br>
+
+	<<if $virginityRapeShowPhase is 5>>
+		<<clotheson>>
+		<<endcombat>>
+
+		<<link [[Next|Brothel Show Virginity Rape End]]>><</link>>
+		<br>
+	<<else>>
+		<<endcombat>>
+		<<set _fame to fameSum('sex', 'rape', 'prostitution', 'exhibitionism', 'bestiality', 'social', 'model')/140>>
+
+		<<generatetakevirginity 1>><<generatetakevirginity 2>><<generatetakevirginity 3>>
+
+		<<if _fame gte random(20, 100)>><<generatetakevirginity 4>><</if>>
+		<<if _fame gte random(40, 100)>><<generatetakevirginity 5>><</if>>
+		<<if _fame gte random(60, 100)>><<generatetakevirginity 6>><</if>>
+
+		<<link [[Next|Brothel Show Virginity Rape]]>><<set $molestationstart to 1>><<set $virginityRapeShowPhase += 1>><</link>>
+		<br>
+	<</if>>
+<</if>>
+
+:: Brothel Show Virginity Rape End
+<<effects>>
+<<npc Briar>><<person1>>
+
+"You're a very stupid whore to
+<<if playerChastity()>>
+	come here wearing that thing,"
+<<elseif $brothelVirginityState is "chastitylost">>
+	come here wearing that thing, and lying about your virginity to boot. You could have made some good money,"
+<<elseif $brothelVirginityState is "chastity" and $player.virginity.penile isnot true or $player.virginity.vaginal isnot true>>
+	come here wearing that thing. You could have made some good money for your virginity,"
+<<elseif $brothelVirginityState is "lost">>
+	lie about your virginity. Too bad it's gone,"
+<<else>>
+	come here wearing that thing. Good thing it's gone,"
+<</if>>
+Briar says, looking down at you.
+<<if !playerChastity() and $brothelVirginityState is "chastity" and ($player.virginity.penile isnot true or $player.virginity.vaginal isnot true)>>
+	"And now it's gone, just like that." <<He>> snaps <<his>> fingers.
+<</if>>
+"I'm not paying you. What the hell were you expecting to get,
+<<if $brothelVirginityState is "lost">>
+	lying about being a virgin?"
+<<elseif !playerChastity() and $brothelVirginityState is "chastitylost">>
+	lying about being a virgin, and locking yourself up to boot?"
+<<else>>
+	agreeing to sell your virginity but locking it away?"
+<</if>>
+Briar departs without another word, leaving you on the floor.<<npcincr Briar love -1>><<llove "Briar">>
+<br><br>
+<<tearful>> you manage to stand and stumble to the dressing room.
+<<if playerChastity()>>
+	Despite it all, you kept your chastity belt. You are not sure that is a good thing.
+<<elseif $brothelVirginityState is "chastity" and ($player.virginity.penile is true and $player.virginity.vaginal is true)>>
+	Despite it all, you managed to hold onto your virginity. You are not sure that is a good thing.
+<<elseif $brothelVirginityState is "chastity">>
+	You wipe away tears, lamenting what you have forever lost.
+<</if>>
+<br><br>
+
+<<link [[Next|Brothel Dressing Room]]>><<endevent>><</link>>
+<br>

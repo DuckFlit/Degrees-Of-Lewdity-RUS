@@ -2350,3 +2350,35 @@ function formatMoney(amount) {
 }
 window.formatMoney = formatMoney;
 DefineMacro("formatmoney", money => formatMoney(money));
+
+function unableTakeVirginity(virginity) {
+	if (!virginity) {
+		if (V.player.penisExist && V.player.vaginaExist) {
+			return unableTakeVirginity("penile") || unableTakeVirginity("vaginal");
+		} else if (V.player.penisExist) {
+			return unableTakeVirginity("penile");
+		} else if (V.player.vaginaExist) {
+			return unableTakeVirginity("vaginal");
+		}
+	}
+
+	switch (virginity) {
+		case "penile":
+			return V.analdisable !== "f" && (
+				(V.cbchance === 0 && V.dgchance === 100)
+				|| (maleChance() === 100 && V.cbchance === 0)
+				|| (maleChance() === 0 && V.dgchance === 100)
+				|| (maleChance() === 100 && V.cbchance === 100 && V.straponchance === 100)
+				|| (maleChance() === 0 && V.dgchance === 0 && V.straponchance === 100)
+			);
+		case "vaginal":
+			return V.straponchance === 0 && (
+				(V.cbchance === 100 && V.dgchance === 0)
+				|| (maleChance() === 100 && V.cbchance === 100)
+				|| (maleChance() === 0 && V.dgchance === 0)
+			);
+		default:
+			return false;
+	}
+}
+window.unableTakeVirginity = unableTakeVirginity;
