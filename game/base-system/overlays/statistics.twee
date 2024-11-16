@@ -7,35 +7,35 @@
 				T[type + "VirginityColour"] = "gold";
 			} else if (setup.loveInterestNpc.includes($player.virginity[type])) {
 				T[type + "VirginityColour"] = "lewd";
-				if ($player.virginityDetails and $player.virginityDetails[type].consensual is false) T[type + "VirginityColour"] = "red";
-			} else if ($player.virginityDetails and $player.virginityDetails[type].consensual isnot undefined) {
-				T[type + "VirginityColour"] = $player.virginityDetails[type].consensual ? "green" : "red";
+				if ($player.virginityDetails and $player.virginityDetails?.[type]?.consensual is false) T[type + "VirginityColour"] = "red";
+			} else if ($player.virginityDetails and $player.virginityDetails?.[type]?.consensual isnot undefined) {
+				T[type + "VirginityColour"] = $player.virginityDetails?.[type]?.consensual ? "green" : "red";
 			} else {
 				T[type + "VirginityColour"] = "";
 			}
 		})>>
 		<<if $player.vaginaExist or $player.virginity.vaginal isnot true>>
 			Vaginal virginity: <span @class="_vaginalVirginityColour"><<print ($player.virginity.vaginal is true ? "Present" : "Taken by " + ($player.virginity.vaginal is false ? "unknown" : $player.virginity.vaginal))>></span>
-			<<virginityToolTip $player.virginityDetails.vaginal $player.virginity.vaginal>>
+			<<virginityToolTip $player.virginityDetails.vaginal $player.virginity.vaginal "pc" "vaginal">>
 			<br>
 		<</if>>
 		<<if $player.penisExist or $player.virginity.penile isnot true>>
 			Penile virginity: <span @class="_penileVirginityColour"><<print ($player.virginity.penile is true ? "Present" : "Taken by " + ($player.virginity.penile is false ? "unknown" : $player.virginity.penile))>></span>
-			<<virginityToolTip $player.virginityDetails.penile $player.virginity.penile>>
+			<<virginityToolTip $player.virginityDetails.penile $player.virginity.penile "pc" "penile">>
 			<br>
 		<</if>>
 
 		Anal virginity: <span @class="_analVirginityColour"><<print ($player.virginity.anal is true ? "Present" : "Taken by " + ($player.virginity.anal is false ? "unknown" : $player.virginity.anal))>></span>
-		<<virginityToolTip $player.virginityDetails.anal $player.virginity.anal>>
+		<<virginityToolTip $player.virginityDetails.anal $player.virginity.anal "pc" "penile">>
 		<br>
 		Oral virginity: <span @class="_oralVirginityColour"><<print ($player.virginity.oral is true ? "Present" : "Taken by " + ($player.virginity.oral is false ? "unknown" : $player.virginity.oral))>></span>
-		<<virginityToolTip $player.virginityDetails.oral $player.virginity.oral>>
+		<<virginityToolTip $player.virginityDetails.oral $player.virginity.oral "pc" "oral">>
 		<br>
 		Handholding virginity: <span @class="_handholdingVirginityColour"><<print ($player.virginity.handholding is true ? "Present" : "Taken by " + ($player.virginity.handholding is false ? "unknown" : $player.virginity.handholding))>></span>
-		<<virginityToolTip $player.virginityDetails.handholding $player.virginity.handholding>>
+		<<virginityToolTip $player.virginityDetails.handholding $player.virginity.handholding "pc" "handholding">>
 		<br>
 		First kiss: <span @class="_kissVirginityColour"><<print ($player.virginity.kiss is true ? "Present" : "Taken by " + ($player.virginity.kiss is false ? "unknown" : $player.virginity.kiss))>></span>
-		<<virginityToolTip $player.virginityDetails.kiss $player.virginity.kiss>>
+		<<virginityToolTip $player.virginityDetails.kiss $player.virginity.kiss "pc" "kiss">>
 		<br>
 		<<if $temple_rank isnot undefined and $temple_rank isnot "prospective">>
 			Temple vow: <<print ($player.virginity.temple is true ? "Unbroken" : "Broken by " + ($player.virginity.temple is false ? "unknown" : $player.virginity.temple))>>
@@ -76,7 +76,7 @@
 				const detailsArg = details
 					? `\`C.npc['${name}'].virginityDetails.${virginity}\`` 
 					: '';
-				T[virginityNamed].push(`${nameText} <<virginityToolTip ${detailsArg} ${name}>>`);
+				T[virginityNamed].push(`${nameText} <<virginityToolTip ${detailsArg} ${name} "npc" ${virginity}>>`);
 			}
 		})>>
 
@@ -1186,7 +1186,7 @@
 
 <<widget "statisticsTimeCompare">><<silently>>
 	<<if $statFreeze is true>>
-		Not avaliable when stats are being frozen
+		<<set $_text_output to "Not avaliable when stats are being frozen">>
 	<<elseif $args[0]>>
 		<<set _difference to new DateTime($args[0]).compareWith(Time.date)>>
 		<<set $_text_output to "">>
@@ -1579,8 +1579,47 @@
 			<<set $_text_output += "<br>Penis size: <<print $_penisSize[_args[0].playerPenisSize + 2]>>">>
 		<<elseif _args[0].npcPenisSize>>
 			<<set $_penisSize to ["tiny", "average", "thick", "huge"]>>
-			<<set $_text_output += "<br>Penis size: <<print $_penisSize[_args[0].npcPenisSize]>>">>
+			<<set $_text_output += "<br>Penis size: <<print $_penisSize[_args[0].npcPenisSize - 1]>>">>
 		<</if>>
+		<<switch _args[0].passage>>
+			<<case "Tutorial">><<set $_special to "Didn't know how to scream">>
+			<<case "Brothel Show Virginity Sex">><<set $_special to "Sold to the highest bidder">>
+			<<case "Brothel Show Virginity Rape">><<set $_special to "Stolen from the highest bidder">>
+			<<case "Sydney Temple Pure Sex">>
+				<<if _args[2] is 'npc' and setup.loveInterestNpc.includes(_args[1])>>
+					<<set $_special to "Given to <<nnpc_his _args[1]>> promised">>
+				<<else>>
+					<<set $_special to "Given to your promised">>
+				<</if>>
+			<<case "Sydney Temple Corrupt Sex">><<set $_special to "Defiled in the temple">>
+			<<case "Estate Cards Sex">><<set $_special to "Gambled away">>
+			<<case "Underground Robin Kiss Intro">>
+				<<set $_special to "Taken when collared together">>
+			<<case "Underground Robin Kiss Molestation">>
+				/* This expected this detail to be only visible for the player's virginity */
+				<<if _args[2] is "pc">>
+					<<set $_sameTime to "">>
+					<<set $_asRobins to "">>
+					<<set $_eachOther to "Robin">>
+					<<set $_otherVirginity to C.npc.Robin?.virginityDetails?.[_args[3]]?.passage is "Underground Robin Kiss Molestation" ? _args[3] : undefined>>
+					<<if !$_otherVirginity>>
+						<<set $_otherVirginity to C.npc.Robin?.virginityDetails?.vaginal?.passage is "Underground Robin Kiss Molestation" ? "vaginal" : (C.npc.Robin?.virginityDetails?.anal?.passage is "Underground Robin Kiss Molestation" ? "anal" : undefined)>>
+					<</if>>
+					<<if $_otherVirginity>>
+						<<if Math.abs(_args[0]?.timestamp - C.npc.Robin.virginityDetails[$_other].timestamp) lte 1000>>
+							<<set $_sameTime to "at the same time ">>
+						<<else>>
+							<<set $_sameTime to "in a similar situation ">>
+						<</if>>
+						<<set $_asRobins to `as Robin's ${$_otherVirginity is _args[3] ? "" : ($_otherVirginity + " virginity ")}`>>
+						<<set $_eachOther to "each other">>
+					<</if>>
+					<<set $_special to `Taken ${$_sameTime}${$_asRobins}while kissing ${$_eachOther}`>>
+				<</if>>
+			<<case "Moor Phallus Plant Masturbation">>
+				<<set $_special to "Driven mad with pleasure">>
+		<</switch>>
+		<<if $_special>><<set $_text_output += `<div class="lewd">Special: ${$_special}</div>`>><</if>>
 		<<if setup.loveInterestNpc.includes(_args[1]) and $_linkColour isnot "red">>
 			<<set $_linkColour to "lewd">>
 		<</if>>
