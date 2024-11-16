@@ -29,20 +29,36 @@
 		<span class="teal">Framing someone</span> will attach all evidence on you to someone else. This should mislead the police.
 		However, you can only attach it to those who already have a record in the system.
 		<br><br>
-		<<link [[Install Wiper (0:10)|Police Computer]]>><<pass 10>><<set $phase to 11>><<crimeDown 0.5 "all">><<set _randomCrime to ((random(5,35) + 20)/100)>><<crimeDown _randomCrime "all">><</link>>
-		<!-- Original crime calculation as follows:
-		<<set $crime /= 2>><<set $crime *= (random(5,35)/100)>> -->
-		<br>
-		<<if C.npc.Whitney.init is 1 and C.npc.Whitney.state isnot "dungeon" and $framed is 0>>
-			<<link [[Frame Whitney (0:10)|Police Computer]]>><<pass 10>><<set $phase to 12>><<crimeClear "all">><</link>>
+		<<if $police_delete gte 5 and random(1,4) is 4>>
+			<<link [[Install Wiper|Police Sneak Caught]]>><</link>>
 			<br>
-		<</if>>
-		<<if $headpolice is 1 and $framed is 0>>
-			<<link [[Frame Leighton (0:10)|Police Computer]]>><<pass 10>><<set $phase to 13>><<crimeClear "all">><</link>>
+			<<if C.npc.Whitney.init is 1 and C.npc.Whitney.state isnot "dungeon" and $framed is 0>>
+				<<link [[Frame Whitney|Police Sneak Caught]]>><</link>>
+				<br>
+			<</if>>
+			<<if $headpolice is 1 and $framed is 0>>
+				<<link [[Frame Leighton|Police Sneak Caught]]>><</link>>
+				<br>
+			<</if>>
+			<<if $framed isnot 0>>
+				<span class="red">You have already framed <<print ($framed.toUpperFirst())>> for your crimes - you cannot do it again until they have paid for your crimes.</span>
+			<</if>>
+		<<else>>
+			<<link [[Install Wiper (0:10)|Police Computer]]>><<pass 10>><<set $phase to 11>><<crimeDown 0.5 "all">><<set _randomCrime to ((random(5,35) + 20)/100)>><<crimeDown _randomCrime "all">><<set $police_delete += 1>><</link>>
+			<!-- Original crime calculation as follows:
+			<<set $crime /= 2>><<set $crime *= (random(5,35)/100)>> -->
 			<br>
-		<</if>>
-		<<if $framed isnot 0>>
-			<span class="red">You have already framed <<print ($framed.toUpperFirst())>> for your crimes - you cannot do it again until they have paid for your crimes.</span>
+			<<if C.npc.Whitney.init is 1 and C.npc.Whitney.state isnot "dungeon" and $framed is 0>>
+				<<link [[Frame Whitney (0:10)|Police Computer]]>><<pass 10>><<set $phase to 12>><<crimeClear "all">><<set $police_delete += 1>><</link>>
+				<br>
+			<</if>>
+			<<if $headpolice is 1 and $framed is 0>>
+				<<link [[Frame Leighton (0:10)|Police Computer]]>><<pass 10>><<set $phase to 13>><<crimeClear "all">><<set $police_delete += 1>><</link>>
+				<br>
+			<</if>>
+			<<if $framed isnot 0>>
+				<span class="red">You have already framed <<print ($framed.toUpperFirst())>> for your crimes - you cannot do it again until they have paid for your crimes.</span>
+			<</if>>
 		<</if>>
 	<<elseif crimeSumCurrent() gte 1000>>
 		Options:
@@ -51,12 +67,19 @@
 		<br>
 		<span class="teal">Installing a Wiper worm</span> will destroy lots of police records on everyone, including you.
 		<br>
-		<<link [[Delete evidence (0:15)|Police Computer]]>><<pass 15>><<set $phase to 10>><<set _randomCrime to ((random(5,35) + 20)/100)>><<crimeDown _randomCrime "all">><</link>>
-		<!-- Original crime calculation as follows:
-		<<set $crime -= $crime * ((random(5,35) + 20)/100)>> -->
-		<br>
-		<<link [[Install Wiper (0:10)|Police Computer]]>><<pass 10>><<set $phase to 11>><<crimeDown 0.5 "all">><</link>>
-		<br>
+		<<if $police_delete gte 5 and random(1,4) is 4>>
+			<<link [[Delete evidence|Police Sneak Caught]]>><</link>>
+			<br>
+			<<link [[Install Wiper|Police Sneak Caught]]>><</link>>
+			<br>
+		<<else>>
+			<<link [[Delete evidence (0:15)|Police Computer]]>><<pass 15>><<set $phase to 10>><<set _randomCrime to ((random(5,35) + 20)/100)>><<crimeDown _randomCrime "all">><<set $police_delete += 1>><</link>>
+			<!-- Original crime calculation as follows:
+			<<set $crime -= $crime * ((random(5,35) + 20)/100)>> -->
+			<br>
+			<<link [[Install Wiper (0:10)|Police Computer]]>><<pass 10>><<set $phase to 11>><<crimeDown 0.5 "all">><<set $police_delete += 1>><</link>>
+			<br>
+		<</if>>
 
 	<</if>>
 <</widget>>
