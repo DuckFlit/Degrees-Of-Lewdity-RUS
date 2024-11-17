@@ -44,7 +44,8 @@ DefineMacro("modelprepare-player-body", function () {
 			██████  ██   ██ ███████ ███████
 		*/
 
-	T.modeloptions.body_type = V.player.bodyshape;
+	T.modeloptions.body_type = V.player.bodyshape || {"a":"slender", "f":"curvy"}[V.player.gender_body] || "classic";
+	if (V.player.bodyshape === undefined) Errors.report("Bodyshape is undefined");
 
 	apparentbreastsizecheck();
 	const breastSizeMap = {
@@ -257,8 +258,11 @@ DefineMacro("modelprepare-player-body", function () {
 			██      ██   ██  ██████ ███████
 		*/
 	
-	T.modeloptions.facestyle = V.facestyle;
-	T.modeloptions.facevariant = V.facevariant;
+	if (V.facestyle === undefined) Errors.report("Facestyle is undefined");
+	if (V.facevariant === undefined) Errors.report("Facevariant is undefined");
+
+	T.modeloptions.facestyle = V.facestyle || "default";
+	T.modeloptions.facevariant = V.facevariant || "default";
 	T.modeloptions.freckles = V.player.freckles === true && V.makeup.concealer !== 1;
 	T.modeloptions.ears_position = V.earsposition;
 	T.modeloptions.toast = T.toast === true;
@@ -333,7 +337,7 @@ DefineMacro("modelprepare-player-body", function () {
 	T.modeloptions.tears = painToTearsLvl(V.pain);
 
 	/*
-			████████ ███████ ███████
+		 ████████ ███████ ███████
 			██    ██      ██
 			██    █████   ███████
 			██    ██           ██
