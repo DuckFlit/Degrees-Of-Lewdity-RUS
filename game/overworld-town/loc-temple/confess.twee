@@ -127,8 +127,8 @@ A <<personsimple>>'s voice greets you.
 	You share your doubts about the temple and its faith with <<him>>.
 <</if>>
 
-<<if _wraithEvent and $wraithIntro>>
-	<<pass 30>>
+<<if _wraithEvent and $wraithIntro and !$daily.wraithConfess>>
+	<<pass 30>><<set $daily.wraithConfess to true>>
 	<br><br>
 	<<if $world_corruption_soft gte 100>>
 		"<span class="wraith">You are right to doubt, <<pcpetname "Wraith">>,</span>"
@@ -1390,7 +1390,11 @@ Jordan places a hand on your head. "You must use your best judgement to properly
 <<if Time.hour gte 6 and Time.hour lt 22>>
 	<<if $exposed gte 1>>
 		You grab a few towels from the shelf above you.
-		<<towelup>>
+		<<dry_full>>
+		<<silently>><<exposure>><</silently>>
+		<<if $exposed gte 1>>
+			<<towelup>>
+		<</if>>
 		<br><br>
 	<</if>>
 
@@ -1410,10 +1414,22 @@ Jordan places a hand on your head. "You must use your best judgement to properly
 <</if>>
 
 :: Temple Confess
-<<set $outside to 0>><<set $location to "temple">><<sydneySchedule>><<temple_effects>><<effects>>
+<<set $outside to 0>><<set $location to "temple">><<sydneySchedule>><<temple_effects>><<effects>><<rngWraith>>
 <<set $confessionsTaken = ($confessionsTaken || 0) + 1>>
-You hear the other door open and greet your attendant.
-"Welcome. Lay your sins bare, so they may be forgiven." You light the incense and do your best to speak outside your usual tone.
+<<if _wraithEvent and $wraithIntro and !$daily.wraithConfess>>
+	<<set _wraithConfess to true>><<set $daily.wraithConfess to true>><<set $attendant to "wraith">><<set _noOptions to true>>
+	You hear the other door open. Before you can greet your penitent, you feel a cold wind blow. It steals your breath.
+
+	<<if $demon gte 6 and $wraith.state isnot "haunt">>
+		You can almost feel what is on the other side of the booth. All that separates you are misunderstandings.
+	<</if>>
+	<br><br>
+		
+	"Welcome. Lay your sins bare, so they may be forgiven," you say. You do your best to keep your voice even. When you go to light the incense, the flame flickers out no matter how many times you try.
+<<else>>
+	You hear the other door open and greet your attendant.
+	"Welcome. Lay your sins bare, so they may be forgiven." You light the incense and do your best to speak outside your usual tone.
+<</if>>
 <br><br>
 
 <<cleareventpool>>
@@ -1940,6 +1956,21 @@ You hear the other door open and greet your attendant.
 		<<link [[Yes|Temple Confess Jordan Yes]]>><</link>>
 		<br>
 		<<link [[No|Temple Confess Jordan No]]>><</link>>
+		<br>
+	<</addinlineevent>>
+<</if>>
+
+<!-- Must be last. -->
+<<if _wraithConfess>>
+	<<cleareventpool>>
+	<<addinlineevent "confession_wraith" 1000>>
+		Water trickles through the metal grate.
+		<br><br>
+
+		"<span class="wraith">Those drowned can only speak the sea.</span>"
+		<br><br>
+
+		<span class="wraith"><<link [[Confess|Temple Confess Wraith]]>><</link>></span>
 		<br>
 	<</addinlineevent>>
 <</if>>
@@ -3120,29 +3151,41 @@ You grab one of the pieces of paper and a pen from the stack and slip them throu
 		<<link [[Next|Temple Confess Sydney Sex]]>><<set $speechdisable to 0>><</link>>
 		<br>
 	<<else>>
-		<<if $NPCList[0].vagina.toString().includes("mouth")>>
+		<<set _sydtext to "Sydney">>
+		<<if $neckuse is "hand">>
+			<<if $NPCList[0].lefthand is "throat">>
+				<<set $NPCList[0].lefthand to 0>>
+			<</if>>
+			<<if $NPCList[0].righthand is "throat">>
+				<<set $NPCList[0].righthand to 0>>
+			<</if>>
+			Sydney releases your <<if $mouthuse>>neck<<else>>neck.<</if>>
+			<<set _sydtext to " and">>
+			<<set $neckuse to 0>>
+		<</if>>
+		<<if $NPCList[0].vagina.toString().includes("facesit") or ($NPCList[0].vagina.toString().includes("mouth") and $NPCList[0].vagina isnot "othermouth")>>
 			<<set $NPCList[0].vagina to 0>>
 			<<set $NPCList[0].location.genitals to 0>>
-			Sydney withdraws from your mouth.
-		<<elseif $NPCList[0].penis.toString().includes("mouth")>>
+			_sydtext withdraws from your mouth.
+		<<elseif $NPCList[0].penis.toString().includes("mouth") and $NPCList[0].penis isnot "othermouth">>
 			<<set $NPCList[0].penis to 0>>
 			<<set $NPCList[0].location.genitals to 0>>
-			Sydney withdraws from your mouth.
-		<<elseif $mouthuse is "kiss" and $NPCList[0].mouth is "kiss">>
+			_sydtext withdraws from your mouth.
+		<<elseif $NPCList[0].mouth.toString().includes("kiss")>>
 			<<set $NPCList[0].mouth to 0>>
 			<<set $NPCList[0].location.head to 0>>
-			Sydney pulls out of the kiss.
+			_sydtext pulls out of the kiss.
 		<<elseif $mouthuse is "breasts">>
 			<<set $NPCList[0].chest to 0>>
 			<<set $NPCList[0].location.head to 0>>
-			<<if $NPCList[0].lefthand is "head_breasts" or $NPCList[0].lefthand is "head_nipples">>
+			<<if [$NPCList[0].lefthand].includesAny("head_breasts", "head_nipples")>>
 				<<set $NPCList[0].lefthand to 0>>
 			<</if>>
-			<<if $NPCList[0].righthand is "head_breasts" or $NPCList[0].righthand is "head_nipples">>
+			<<if [$NPCList[0].righthand].includesAny("head_breasts", "head_nipples")>>
 				<<set $NPCList[0].righthand to 0>>
 			<</if>>
-			Sydney withdraws from your mouth.
-		<<else>>
+			_sydtext withdraws from your mouth.
+		<<elseif _sydtext is "Sydney">>
 			Sydney stops.
 		<</if>>
 		<<set $mouthuse to 0>><<set $mouthstate to 0>><<set $mouthaction to 0>><<set $head to 0>>
@@ -3245,6 +3288,16 @@ You grab one of the pieces of paper and a pen from the stack and slip them throu
 	<<set $enemyanger to -10>>
 	<<temple_effects>><<effects>>
 	<<effectsman>>
+	<<if $neckuse is "hand" and $timer is 4>>
+		<<set _neckused to 1>>
+		<<if $NPCList[0].lefthand is "throat">>
+			<<set $NPCList[0].lefthand to 0>>
+		<</if>>
+		<<if $NPCList[0].righthand is "throat">>
+			<<set $NPCList[0].righthand to 0>>
+		<</if>>
+		<<set $neckuse to 0>>
+	<</if>>
 	<<man>>
 	<<if _sound is 1>>
 		<<set $sydneyConfession.Sound++>>
@@ -3262,28 +3315,33 @@ You grab one of the pieces of paper and a pen from the stack and slip them throu
 		<<set $speechdisable to 1>>
 		<span class="red">The other door opens.</span> You both freeze, and Sydney covers <<his>> mouth.
 		<br><br>
-		<<if $NPCList[0].vagina.toString().includes("mouth")>>
+		<<set _sydtext to "Sydney">>
+		<<if _neckused>>
+			<<set _sydtext to "<<He>>">>
+			Sydney releases your neck. <<gaspair>>
+		<</if>>
+		<<if $NPCList[0].vagina.toString().includes("facesit") or ($NPCList[0].vagina.toString().includes("mouth") and $NPCList[0].vagina isnot "othermouth")>>
 			<<set $NPCList[0].vagina to 0>>
 			<<set $NPCList[0].location.genitals to 0>>
-			Sydney withdraws from your mouth.
-		<<elseif $NPCList[0].penis.toString().includes("mouth")>>
+			_sydtext withdraws from your mouth.
+		<<elseif $NPCList[0].penis.toString().includes("mouth") and $NPCList[0].penis isnot "othermouth">>
 			<<set $NPCList[0].penis to 0>>
 			<<set $NPCList[0].location.genitals to 0>>
-			Sydney withdraws from your mouth.
-		<<elseif $mouthuse is "kiss" and $NPCList[0].mouth is "kiss">>
+			_sydtext withdraws from your mouth.
+		<<elseif $NPCList[0].mouth.toString().includes("kiss")>>
 			<<set $NPCList[0].mouth to 0>>
 			<<set $NPCList[0].location.head to 0>>
-			Sydney pulls out of the kiss.
+			_sydtext pulls out of the kiss.
 		<<elseif $mouthuse is "breasts">>
 			<<set $NPCList[0].chest to 0>>
 			<<set $NPCList[0].location.head to 0>>
-			<<if $NPCList[0].lefthand is "head_breasts" or $NPCList[0].lefthand is "head_nipples">>
+			<<if [$NPCList[0].lefthand].includesAny("head_breasts", "head_nipples")>>
 				<<set $NPCList[0].lefthand to 0>>
 			<</if>>
-			<<if $NPCList[0].righthand is "head_breasts" or $NPCList[0].righthand is "head_nipples">>
+			<<if [$NPCList[0].righthand].includesAny("head_breasts", "head_nipples")>>
 				<<set $NPCList[0].righthand to 0>>
 			<</if>>
-			Sydney withdraws from your mouth.
+			_sydtext withdraws from your mouth.
 		<</if>>
 		<<set $mouthuse to 0>><<set $mouthstate to 0>><<set $mouthaction to 0>><<set $head to 0>>
 		<<switch _sydneyArousal>>
@@ -3585,6 +3643,147 @@ You grab one of the pieces of paper and a pen from the stack and slip them throu
 	Sydney kisses you on the forehead before <<he>> leaves. "See you soon, beloved." <<He>> exits the booth.
 <<else>>
 	You kiss Sydney on the forehead before <<he>> leaves. "S-see you soon, beloved," <<he>> says as <<he>> exits.
+<</if>>
+<br><br>
+
+<<link [[Next|Temple Confess Start]]>><<endconfession>><</link>>
+<br>
+
+:: Temple Confess Wraith
+<<temple_effects>><<effects>><<rainWraith>>
+
+A voice starts to speak. "My faith led me to suffer. I begged my brothers and sisters for aid as the water rose to my head. They turned their backs to me and became shadows. I know they heard me. Could they not feel my lungs burning for air, or the cold rush of water dousing my life? What of the binds around my limbs that yet entomb me in my own demise? Where were they?" 
+<br><br>
+
+You realise that your lips are forming the words as you listen. It's no longer clear who's speaking and who's listening.
+<<if $wraith.state is "haunt">>The voice distorts. "Where were you, <<pcpetname "Wraith">>?"<</if>>
+<br><br>
+
+The voice stops. It awaits its answer. The water rises up to your hips. <<stress 6>><<trauma 12>><<gstress>><<ggtrauma>>
+<br><br>
+
+<span class="wraith"><<link[[Forgive|Temple Confess Wraith Result]]>><<set $phase to 0>><</link>></span>
+<br>
+<span class="wraith"><<link[[Repent|Temple Confess Wraith Result]]>><<set $phase to 1>><</link>></span>
+<br>
+<span class="wraith"><<link[[Contrition|Temple Confess Wraith Result]]>><<set $phase to 2>><</link>></span>
+<br>
+<span class="wraith"><<link[[Purge|Temple Confess Wraith Result]]>><<set $phase to 3>><</link>></span>
+<br>
+<span class="wraith"><<link[[Ring the bell|Temple Confess Wraith Result]]>><<set $phase to 4>><</link>></span>
+<br>
+
+:: Temple Confess Wraith Result
+<<temple_effects>><<effects>>
+<<switch $phase>>
+	<<case 0>>
+		<<if $angel gte 6 or ($confessionsTaken gte 10 and $grace gte 25)>>
+			You stand and draw a shape you have never seen before against the seal of confession. Your hand burns.
+			<<if $wraith.state is "haunt">>
+				"You can never be forgiven by word or action,"
+			<<else>>
+				"You cannot be forgiven by word. Action is your only choice,"
+			<</if>>
+			you say with confidence.
+		<<elseif $speech_attitude is "meek">>
+			<<if $wraith.state is "haunt">>
+				"Y-you can't be forgiven,"
+			<<else>>
+				"You h-have to e-earn forgiveness,"
+			<</if>>
+			you whisper.
+		<<elseif $speech_attitude is "bratty">>
+			<<if $wraith.state is "haunt">>
+				"You'll never be forgiven,"
+			<<else>>
+				"Words won't forgive you. Only actions will,"
+			<</if>>
+			you say.
+		<<else>>
+			<<if $wraith.state is "haunt">>
+				"You won't be forgiven so easily,"
+			<<else>>
+				"You won't be forgiven until you act on your wrongs,"
+			<</if>>
+			you say.
+		<</if>>
+		<br><br>
+
+		"<span class="wraith">Speak the sea,</span>" the voice says.
+	<<case 1>>
+		<<if $angel gte 6 or ($confessionsTaken gte 10 and $grace gte 25)>>
+			You stand and draw a shape you have never seen before against the seal of confession. Your hand burns.
+			<<if $wraith.state is "haunt">>
+				"Repentance won't save you,"
+			<<else>>
+				"Repent through action,"
+			<</if>>
+			you say with confidence.
+		<<elseif $speech_attitude is "meek">>
+			<<if $wraith.state is "haunt">>
+				"T-there is no r-repenting,"
+			<<else>>
+				"Y-you must repent through your a-actions,"
+			<</if>>
+			you say.
+		<<elseif $speech_attitude is "bratty">>
+			<<if $wraith.state is "haunt">>
+				"It's meaningless to repent now,"
+			<<else>>
+				"You can still undo the damage you caused if you repent,"
+			<</if>>
+			you say.
+		<<else>>
+			<<if $wraith.state is "haunt">>
+				"There's no salvation in repenting,"
+			<<else>>
+				"Your only hope is to repent,"
+			<</if>>
+			you say.
+		<</if>>
+		<br><br>
+
+		"<span class="wraith">Take the apple. Smash it. Try to piece it back together,</span>" the voice says.
+	<<case 2>>
+		You grab one of the pieces of paper and a pen from the stack and slip them through the metal shutter. It shrivels into glowing purple dust on the other side.
+		<<if $wraith.state is "haunt">>
+			"You can't make amends. Please write your full name and address here. The specialist will find you when the moon is red."
+		<<else>>
+			"The specialist can't help you make amends. You must do that yourself."
+		<</if>>
+		<br><br>
+
+		"<span class="wraith">How do you restore a broken heart?</span>" the voice asks.
+	<<case 3>>
+		"I name myself <span class="red">corrupted</span>." You remove your clothes, position yourself against the seal, and open the small metal shutter. "You will take my corruption into yourself, <<if $wraith.state is "haunt">>but I will never be forgiven<<else>>and I will be on the path to forgiveness<</if>>."
+		<br><br>
+
+		"<span class="wraith">Light reflects. Darkness absorbs. We are reflections.</span>"
+	<<default>>
+		"I must face my crime. I will exit the booth and won't resist." You pull the rope and ring the bell. Instead of its usual sound, you hear a familiar melody.
+		<br><br>
+
+		"<span class="wraith">Legends begin with a stolen glance.</span>"
+<</switch>>
+<br><br>
+
+The water surges upwards, covering your head before you can react. You hold your breath for as long as you can. Instinct overrides logic, forcing you to open your mouth and let the water rush in.
+<br><br>
+
+<<link [[Next|Temple Confess Wraith End]]>><</link>>
+<br>
+
+:: Temple Confess Wraith End
+<<temple_effects>><<effects>>
+You wake some time later, alone. Water drips from your hair and soaks into your clothes.
+<<silently>><<water>><<effectswater>><<exposure>><<covered>><</silently>>
+Doubts assail you,
+<<if $demon gte 6>>
+	but you think you understand. <<awareness 5>><<gawareness>>
+<<elseif $angel gte 6>>
+	but the purity within you burns them away.
+<<else>>
+	and you are left to face them alone.
 <</if>>
 <br><br>
 
