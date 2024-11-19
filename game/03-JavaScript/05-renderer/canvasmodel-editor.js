@@ -767,6 +767,7 @@ Macro.add("canvasModelEditor", {
 							"bubble tails",
 							"curly side up",
 							"heart braid",
+							"wavy braid",
 							"loop braid",
 							"ruffled",
 							"shaved",
