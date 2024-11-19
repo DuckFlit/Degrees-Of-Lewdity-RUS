@@ -81,12 +81,12 @@ class NpcCombatMapper {
 		options.state = null;
 		options.show = false;
 
-		this.mapNpcToBodyOptions(index, npc, options);
+		NpcCombatMapper.mapNpcToBodyOptions(index, npc, options);
 
 		// Set animation speed
-		options.animKey = this.getNpcAnimation();
-		options.animKeyStill = this.getNpcAnimation();
-		options.speed = this.getNpcAnimationSpeed();
+		options.animKey = NpcCombatMapper.getNpcAnimation();
+		options.animKeyStill = NpcCombatMapper.getNpcAnimation();
+		options.speed = NpcCombatMapper.getNpcAnimationSpeed();
 
 		// Prevent showing if state is not set.
 		if (options.state == null) {
@@ -99,8 +99,8 @@ class NpcCombatMapper {
 	 * @returns {string}
 	 */
 	static getNpcAnimation() {
-		const speed = this.getNpcAnimationSpeed();
-		const frames = this.getNpcAnimationFrameCount();
+		const speed = NpcCombatMapper.getNpcAnimationSpeed();
+		const frames = NpcCombatMapper.getNpcAnimationFrameCount();
 		if (combat.isActive()) {
 			return `sex-${frames}f-${speed}`;
 		}
@@ -169,9 +169,9 @@ class NpcCombatMapper {
 		};
 		options.penetrators = options.penetrators = [];
 
-		options.filters.skin = this.getNpcSkinFilter(npc);
+		options.filters.skin = NpcCombatMapper.getNpcSkinFilter(npc);
 
-		const penetrator = this.mapNpcToPenetratorOptions(npc, options);
+		const penetrator = NpcCombatMapper.mapNpcToPenetratorOptions(npc, options);
 		if (penetrator != null) {
 			options.penetrators.push(penetrator);
 
@@ -200,7 +200,7 @@ class NpcCombatMapper {
 			options.show = penetrator.position != null && ["vagina", "anus", "mouth"].includes(penetrator.position);
 		}
 
-		this.mapNpcTypeToOptions(options, npc, penetrator);
+		NpcCombatMapper.mapNpcTypeToOptions(options, npc, penetrator);
 
 		// If beast, return for now.
 		if (options.category === "beast") {
@@ -503,7 +503,7 @@ class NpcCombatMapper {
 	 * @returns {NpcOptions}
 	 */
 	static mapNpcTypeToOptions(options, npc, penetrator) {
-		const configurations = this.getNpcBeastTypeConfigurations();
+		const configurations = NpcCombatMapper.getNpcBeastTypeConfigurations();
 		const configuration = configurations[npc.type];
 
 		// Humanoid
@@ -522,20 +522,20 @@ class NpcCombatMapper {
 			return options;
 		}
 
-		if (this.hasOverSprite(options.position, configuration) && this.isOverPositioned(npc, penetrator)) {
-			options.drool.show = ["pig", "boar"].includes(npc.type) && this.isOverPositioned(npc, penetrator);
+		if (NpcCombatMapper.hasOverSprite(options.position, configuration) && NpcCombatMapper.isOverPositioned(npc, penetrator)) {
+			options.drool.show = ["pig", "boar"].includes(npc.type) && NpcCombatMapper.isOverPositioned(npc, penetrator);
 			options.show = true;
 			options.state = ["horse", "centaur"].includes(npc.type) && penetrator?.state === "penetrating" ? "over-penetrated" : "over";
 			return options;
 		}
 
-		if (this.hasUnderSprite(options.position, configuration) && this.isUnderPositioned(npc)) {
+		if (NpcCombatMapper.hasUnderSprite(options.position, configuration) && NpcCombatMapper.isUnderPositioned(npc)) {
 			options.show = true;
 			options.state = "under";
 			return options;
 		}
 
-		if (this.hasFrontSprite(options.position, configuration) && this.isFrontPositioned(npc, penetrator)) {
+		if (NpcCombatMapper.hasFrontSprite(options.position, configuration) && NpcCombatMapper.isFrontPositioned(npc, penetrator)) {
 			options.show = true;
 			options.state = "front";
 			return options;
@@ -562,7 +562,7 @@ class NpcCombatMapper {
 			// Figure out a filter for each strapon colour:
 			switch (npc.strapon.color) {
 				case "fleshy":
-					return this.getNpcSkinFilter(npc);
+					return NpcCombatMapper.getNpcSkinFilter(npc);
 				case "black":
 					return {
 						blend: "#504949",
@@ -601,7 +601,7 @@ class NpcCombatMapper {
 					};
 			}
 		}
-		return this.getNpcSkinFilter(npc);
+		return NpcCombatMapper.getNpcSkinFilter(npc);
 	}
 
 	/**
@@ -613,7 +613,7 @@ class NpcCombatMapper {
 		/** @type {Penetrator} */
 		const penetrator = {
 			show: false,
-			type: this.getPenetratorType(npc),
+			type: NpcCombatMapper.getPenetratorType(npc),
 			colour: npc.skincolour,
 			target: combat.target.pc,
 			isEjaculating: combat.isNpcPenetratorEjaculating(npc),
@@ -628,7 +628,7 @@ class NpcCombatMapper {
 
 		Object.assign(penetrator, combat.getNpcPenetratorState(npc));
 
-		options.filters.penetrator = this.getNpcPenetratorFilter(npc);
+		options.filters.penetrator = NpcCombatMapper.getNpcPenetratorFilter(npc);
 		options.filters.condom = penetrator.condom.colour;
 
 		// Pig is in top/top-face position, but combat doesn't say the penis is at the mouth explicitly. This clause forces this state.

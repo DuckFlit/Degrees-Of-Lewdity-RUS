@@ -30,7 +30,8 @@ const combatMainPc = {
 	 *	██████  ███████ ██      ██   ██  ██████  ███████    ██    ███████
 	 */
 	defaultOptions() {
-		return { ...PlayerCombatMapper.generateOptions(), ...this.metadata };
+		const options = { ...PlayerCombatMapper.generateOptions(), ...this.metadata };
+		return options;
 	},
 	/*
 	 *	██████  ██████  ███████ ██████  ██████   ██████   ██████ ███████ ███████ ███████
@@ -41,6 +42,10 @@ const combatMainPc = {
 	 */
 	preprocess(options) {
 		PlayerCombatMapper.mapPlayerToOptions(options);
+		if (V.debug) {
+			// Save options for easy lookup
+			CombatRenderer.options[this.name] = options;
+		}
 	},
 	layers: {
 		/*

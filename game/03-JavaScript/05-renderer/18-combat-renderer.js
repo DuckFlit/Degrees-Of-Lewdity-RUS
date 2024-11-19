@@ -801,4 +801,5 @@ class CombatRenderer {
 		return data.canvasfilter.blend;
 	}
 }
+CombatRenderer.options = {};
 window.CombatRenderer = CombatRenderer;

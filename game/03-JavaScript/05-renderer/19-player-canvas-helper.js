@@ -18,6 +18,18 @@ class PlayerCanvasHelper {
 				const path = `${options.src}bodywriting/${bodywriting.area}/${bodywriting.type}.png`;
 				return path;
 			},
+			masksrcfn(options) {
+				/** @type {BodywritingOption} */
+				const bodywriting = options.bodywriting[id];
+				if (bodywriting.type === "left-shoulder") {
+					// Pull basic mask from arm
+					if (PlayerCanvasHelper.isBestialHandjob(options, "front")) {
+						return `${options.src}body/arms/front-${options.armFrontPosition}-bestial-mask.png`;
+					}
+					return `${options.src}body/arms/front-${options.armFrontPosition}-mask.png`;
+				}
+				return null;
+			},
 			showfn(options) {
 				/** @type {BodywritingOption} */
 				const bodywriting = options.bodywriting[id];

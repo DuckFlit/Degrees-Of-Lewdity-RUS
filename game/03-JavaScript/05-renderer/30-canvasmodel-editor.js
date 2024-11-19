@@ -124,9 +124,22 @@ class CombatEditor {
 		});
 
 		// Filter list
-		const span = document.createElement("span");
-		span.textContent = "Filters: " + layer.filters;
-		container.append(span);
+		const filterSpan = document.createElement("span");
+		// @ts-ignore
+		filterSpan.textContent = "Filters: " + layer.filters;
+		container.append(filterSpan);
+
+		// Animation key
+		const animSpan = document.createElement("span");
+		animSpan.textContent = "Animation: " + layer.animation;
+		container.append(animSpan);
+
+		// Mask src
+		if (typeof layer.masksrc === "string") {
+			CombatEditor.CreateTextboxControl(container, "cr-layer-masksrc", "Mask: ", layer.masksrc, (control, layer) => {
+				layer.masksrc = control.value;
+			});
+		}
 
 		fragment.append(container);
 		return fragment;
@@ -179,7 +192,7 @@ class CombatEditor {
 
 		const control = document.createElement("input");
 		control.id = id;
-		control.classList.add("bg-black", "white");
+		control.classList.add("bg-dark", "text-light", "white");
 		control.type = "text";
 		control.value = value?.toString() || "";
 		control.onfocus = () => {
@@ -217,7 +230,7 @@ class CombatEditor {
 
 		const control = document.createElement("input");
 		control.id = id;
-		control.classList.add("bg-black", "white");
+		control.classList.add("bg-dark", "text-light", "white");
 		control.type = "number";
 		control.value = value?.toString() || "0";
 		control.onfocus = () => {
@@ -324,6 +337,7 @@ class CombatEditor {
 		return model.layers || [];
 	}
 }
+CombatEditor.layersChecked = false;
 window.CombatEditor = CombatEditor;
 
 /** @type {Partial<CompositeLayerSpec>?} */
@@ -347,5 +361,24 @@ Macro.add("addLayerDialog", {
 	handler() {
 		const fragment = CombatEditor.createLayerDialog();
 		this.output.append(fragment);
+	},
+});
+
+Macro.add("bindCombatDebugControls", {
+	handler() {
+		const passages = document.getElementById("passages");
+		passages?.addEventListener("change", ev => {
+			if (ev.target instanceof HTMLInputElement && ev.target.name === "layers") {
+				const containers = document.getElementsByClassName("combat-layers");
+				for (const element of containers) {
+					CombatEditor.layersChecked = ev.target.checked;
+					if (CombatEditor.layersChecked) {
+						element.classList.add("show-first");
+						continue;
+					}
+					element.classList.remove("show-first");
+				}
+			}
+		});
 	},
 });

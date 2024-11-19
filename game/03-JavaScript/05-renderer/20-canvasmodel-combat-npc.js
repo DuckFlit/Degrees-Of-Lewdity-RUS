@@ -17,7 +17,12 @@ const combatMainNpc = {
 		return Object.assign(NpcCombatMapper.generateOptions(), this.metadata);
 	},
 	preprocess(options) {
-		NpcCombatMapper.mapNpcToOptions(options.index || 0, options);
+		const index = options.index || 0;
+		NpcCombatMapper.mapNpcToOptions(index, options);
+		if (V.debug) {
+			// Save options for easy lookup
+			CombatRenderer.options[this.name + index] = options;
+		}
 	},
 	layers: {
 		npcBodyBack: NpcCanvasHelper.genBodyLayer("back"),

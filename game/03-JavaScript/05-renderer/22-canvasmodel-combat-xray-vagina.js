@@ -18,6 +18,10 @@ const combatXrayVagina = {
 	},
 	preprocess(options) {
 		XrayCombatMapper.mapXrayOptions(options);
+		if (V.debug) {
+			// Save options for easy lookup
+			CombatRenderer.options[this.name] = options;
+		}
 	},
 	layers: {
 		vagina: {

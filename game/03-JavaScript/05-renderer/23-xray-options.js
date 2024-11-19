@@ -383,8 +383,12 @@ class XrayCombatMapper {
 
 		penetrator.isCumActive = false;
 		if (V.ejaculating === 1 || V[slot + "state"] === "tentacledeep") {
-			const npc1HasSperm = V[slot + "state"] === "tentacledeep" || (wearingCondom(penetrator.npc) !== "worn" && !npcHasStrapon(penetrator.npc));
-			const npc2HasSperm = V[slot + "state"] === "tentacledeep" || (wearingCondom(penetrator.npc2) !== "worn" && !npcHasStrapon(penetrator.npc2));
+			const npc1HasSperm =
+				V[slot + "state"] === "tentacledeep" ||
+				(combat.isNpcActive(penetrator.npc) && wearingCondom(penetrator.npc) !== "worn" && !npcHasStrapon(penetrator.npc));
+			const npc2HasSperm =
+				V[slot + "state"] === "tentacledeep" ||
+				(combat.isNpcActive(penetrator.npc2) && wearingCondom(penetrator.npc2) !== "worn" && !npcHasStrapon(penetrator.npc2));
 			// Should this also check if NCPs are ejaculating? Or does $ejaculating = 1 do that
 			penetrator.isCumActive = npc1HasSperm || npc2HasSperm || V[slot + "state"] === "tentacledeep";
 		}
