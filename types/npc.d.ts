@@ -168,7 +168,7 @@ declare global {
 		corruption: number;
 
 		/* These options were not found immediately on game start */
-		active?: boolean;
+		active: "active" | boolean | undefined;
 		index?: number;
 
 		mouth?: string | 0;

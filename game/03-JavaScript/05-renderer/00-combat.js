@@ -535,6 +535,18 @@ class CombatSystem {
 	}
 
 	/**
+	 * @param {number=} index
+	 * @returns {boolean}
+	 */
+	isNpcActive(index) {
+		if (index == null) {
+			return false;
+		}
+		const npc = V.NPCList[index];
+		return npc.active != null;
+	}
+
+	/**
 	 * @param {Npc} npc
 	 * @returns {boolean}
 	 */

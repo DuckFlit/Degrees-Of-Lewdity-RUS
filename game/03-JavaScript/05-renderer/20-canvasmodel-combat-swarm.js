@@ -18,6 +18,10 @@ const combatMainSwarm = {
 	},
 	preprocess(options) {
 		SwarmCombatMapper.getOptions(options);
+		if (V.debug) {
+			// Save options for easy lookup
+			CombatRenderer.options[this.name] = options;
+		}
 	},
 	layers: {
 		analImminent: {

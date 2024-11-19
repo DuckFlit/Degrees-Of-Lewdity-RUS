@@ -212,7 +212,8 @@ function initFace() {
 			name_cap: "Gag and blindfold",
 			variable: "gagblindfold",
 			combat: {
-				reference: "blindfold",
+				accessory: true,
+				mainColour: "#ff0000",
 			},
 			state: 0,
 			state_base: 0,

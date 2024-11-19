@@ -18,6 +18,10 @@ const combatCloseArse = {
 	},
 	preprocess(options) {
 		CloseCombatMapper.mapCloseOptions(options);
+		if (V.debug) {
+			// Save options for easy lookup
+			CombatRenderer.options[this.name] = options;
+		}
 	},
 	layers: {
 		arse: {
