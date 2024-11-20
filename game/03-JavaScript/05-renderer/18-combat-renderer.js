@@ -71,6 +71,7 @@ class CombatRenderer {
 	static get npcTypes() {
 		return [
 			"human",
+			"plant",
 			"wolfboy",
 			"wolfgirl",
 			"bearboy",
