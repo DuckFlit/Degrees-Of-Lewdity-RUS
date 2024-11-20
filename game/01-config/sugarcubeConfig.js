@@ -31,6 +31,7 @@ Config.saves.isAllowed = () => {
 	return true;
 };
 
+if (idb.updateSettings) idb.updateSettings("useDelta", true);
 idb.footerHTML = `Special thanks to all those who <a target="_blank" class="link-external" href="https://subscribestar.adult/vrelnir" tabindex="0">Support Degrees of Lewdity</a>`;
 
 function onLoad(save) {
@@ -139,7 +140,8 @@ Save.onSave.add(onSave);
 
 /* convert version string to numeric value */
 const tmpver = StartConfig.version.replace(/[^0-9.]+/g, "").split(".");
-window.StartConfig.version_numeric = tmpver[0] * 1000000 + tmpver[1] * 10000 + tmpver[2] * 100 + tmpver[3] * 1;
+StartConfig.version_numeric = tmpver[0] * 1000000 + tmpver[1] * 10000 + tmpver[2] * 100 + tmpver[3] * 1;
+State.qcadd(StartConfig => StartConfig?.every(version => !version.variables.facevariant));
 
 Config.saves.autosave = "autosave";
 
