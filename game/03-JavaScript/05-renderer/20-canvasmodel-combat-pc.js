@@ -400,7 +400,7 @@ const combatMainPc = {
 		},
 		tattooMachine: {
 			srcfn(options) {
-				return `${options.root}machine/tattoo/${options.position}/${options.machines.tattoo.state}.png`;
+				return `${options.root}machine/tattoo/${options.position}/${options.machines.tattoo.use}.png`;
 			},
 			showfn(options) {
 				return !!options.machines.tattoo.show;
