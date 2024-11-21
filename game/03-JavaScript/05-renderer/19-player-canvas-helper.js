@@ -62,46 +62,7 @@ class PlayerCanvasHelper {
 		 */
 		const defaults = {
 			srcfn(options) {
-				const clothes = options.clothes[slot];
-				if (clothes == null) {
-					Errors.report("Clothing object was undefined", {
-						slot,
-						layer,
-						isAccessory,
-					});
-					return "";
-				}
-				if (clothes?.name == null || clothes.renderStep == null) return "";
-				const step = ClothingRendererStep.instances[clothes.renderStep];
-				if (step == null) {
-					// Fallback
-					Errors.report("Step key not found in ClothingRendererStep", {
-						slot,
-						layer,
-						isAccessory,
-						name: clothes.name,
-					});
-					return "";
-				}
-				const states = [];
-				// @ts-ignore
-				if (step.isStateLayered(options.position, clothes.state)) {
-					states.push(layer);
-				}
-				// @ts-ignore
-				if (clothes.positions != null && step.isStateLegged(options.position, clothes.state)) {
-					states.push(clothes.positions[layer]);
-				}
-				states.push(clothes.state);
-				if (options.position === "doggy" && clothes.isRaised) {
-					states.push("raised");
-				}
-				if (isAccessory) {
-					states.push("acc");
-				}
-				const state = states.join("-");
-				const path = `${options.src}clothing/${slot}/${clothes.name}/${state}.png`;
-				return path;
+				return PlayerCanvasHelper.genClothingLayerLowerSrc(slot, layer, isAccessory, options);
 			},
 			showfn(options) {
 				const clothes = options.clothes[slot];
@@ -157,6 +118,56 @@ class PlayerCanvasHelper {
 			z: CombatRenderer.indices[slot],
 		};
 		return Object.assign(defaults, overrideOptions);
+	}
+
+	/**
+	 * @param {ClothedSlots} slot
+	 * @param {"front" | "back"} layer
+	 * @param {boolean} isAccessory
+	 * @param {object} options
+	 * @returns {string}
+	 */
+	static genClothingLayerLowerSrc(slot, layer, isAccessory, options) {
+		const clothes = options.clothes[slot];
+		if (clothes == null) {
+			Errors.report("Clothing object was undefined", {
+				slot,
+				layer,
+				isAccessory,
+			});
+			return "";
+		}
+		if (clothes?.name == null || clothes.renderStep == null) return "";
+		const step = ClothingRendererStep.instances[clothes.renderStep];
+		if (step == null) {
+			// Fallback
+			Errors.report("Step key not found in ClothingRendererStep", {
+				slot,
+				layer,
+				isAccessory,
+				name: clothes.name,
+			});
+			return "";
+		}
+		const states = [];
+		// @ts-ignore
+		if (step.isStateLayered(options.position, clothes.state)) {
+			states.push(layer);
+		}
+		// @ts-ignore
+		if (clothes.positions != null && step.isStateLegged(options.position, clothes.state)) {
+			states.push(clothes.positions[layer]);
+		}
+		states.push(clothes.state);
+		if (options.position === "doggy" && clothes.isRaised) {
+			states.push("raised");
+		}
+		if (isAccessory) {
+			states.push("acc");
+		}
+		const state = states.join("-");
+		const path = `${options.src}clothing/${slot}/${clothes.name}/${state}.png`;
+		return path;
 	}
 
 	/**

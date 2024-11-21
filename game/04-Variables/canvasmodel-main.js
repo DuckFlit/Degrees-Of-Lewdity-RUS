@@ -4725,7 +4725,7 @@ function genlayer_clothing_arm_acc_fitted(arm, slot, overrideOptions) {
 	}, overrideOptions))
 }
 
-function genlayer_tanning(slot, index, tanningLayer, value, maskdx, animation = "idle") {
+function genlayer_tanning(slot, index, tanningLayer, value, animation = "idle") {
 	return {
 		alphafn() {
 			return value / 100;
