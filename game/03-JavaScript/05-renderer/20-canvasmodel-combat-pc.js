@@ -748,9 +748,15 @@ const combatMainPc = {
 				return options.animKey;
 			},
 			filtersfn(options) {
-				return options.bellyState !== "clothed" ? ["body"] : [{ blend: options.filters.worn_upper_main.blend, blendMode: "multiply" }];
+				return options.bellyState !== "clothed" ? ["body"] : [{ blend: options.filters.worn_upper_main.blend, blendMode: "hard-light" }];
 			},
-			z: CombatRenderer.indices.base + 24,
+			zfn(options) {
+				return options.position === "doggy"
+					? CombatRenderer.indices.base + 24
+					: options.position === "missionary" && options.bellyState === "clothed"
+					? CombatRenderer.indices.base + 24
+					: CombatRenderer.indices.base + 14;
+			},
 		},
 		pregnantBellyOverlay: {
 			srcfn(options) {
@@ -767,9 +773,61 @@ const combatMainPc = {
 				return options.animKey;
 			},
 			filtersfn(options) {
-				return options.bellyState !== "clothed" ? ["body"] : [{ blend: options.filters.worn_upper_main.blend, blendMode: "multiply" }];
+				return options.bellyState !== "clothed" ? ["body"] : [{ blend: options.filters.worn_upper_main.blend, blendMode: "hard-light" }];
 			},
-			z: CombatRenderer.indices.base + 23,
+			zfn(options) {
+				return options.position === "doggy"
+					? CombatRenderer.indices.base + 23
+					: options.position === "missionary" && options.bellyState === "clothed"
+					? CombatRenderer.indices.base + 23
+					: CombatRenderer.indices.base + 13;
+			},
+		},
+		pregnantBellyLowerMask: {
+			srcfn(options) {
+				return PlayerCanvasHelper.genClothingLayerLowerSrc("lower", "back", false, options);
+			},
+			showfn(options) {
+				if (!options.bellySize || !options.bellyState) return false;
+				const clothes = options.clothes.lower;
+				const result = options.showPlayer && options.bellyState !== "hidden" && options.position === "missionary" && (clothes?.isSkirt || options.legFrontPosition === "up");
+				return !!result;
+			},
+			animationfn(options) {
+				return options.animKey;
+			},
+			filtersfn(options) {
+				return [{ blend: options.filters.worn_lower_main.blend, blendMode: "hard-light" }];
+			},
+			zfn(options) {
+				return CombatRenderer.indices.base + 26;
+			},
+			masksrcfn(options) {
+				return `${options.src}body/pregnantBelly/${options.pregnantBellyPath}/${options.bellySize}.png`;
+			},
+		},
+		pregnantBellyLowerMaskOverlay: {
+			srcfn(options) {
+				return PlayerCanvasHelper.genClothingLayerLowerSrc("lower", "back", false, options);
+			},
+			showfn(options) {
+				if (!options.bellySize || !options.bellyState) return false;
+				const clothes = options.clothes.lower;
+				const result = options.showPlayer && options.bellyState !== "hidden" && options.position === "missionary" && (clothes?.isSkirt || options.legFrontPosition === "up");
+				return !!result;
+			},
+			animationfn(options) {
+				return options.animKey;
+			},
+			filtersfn(options) {
+				return [{ blend: options.filters.worn_lower_main.blend, blendMode: "hard-light" }];
+			},
+			zfn(options) {
+				return CombatRenderer.indices.base + 25;
+			},
+			masksrcfn(options) {
+				return `${options.src}body/pregnantBelly/${options.pregnantBellyPath}/overlay.png`;
+			},
 		},
 		/*
 		 *	██   ██ ███████  █████  ██████
