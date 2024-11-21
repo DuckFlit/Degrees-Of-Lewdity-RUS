@@ -110,8 +110,8 @@ declare global {
 		blendModefn?(options: T): string;
 		blend?: string;
 		blendfn?(options: T): string;
-		masksrc?: string;
-		masksrcfn?(options: T): string?;
+		masksrc?: string | HTMLCanvasElement | MaskObject;
+		masksrcfn?(options: T): string | HTMLCanvasElement | MaskObject | null;
 		animation?: string;
 		animationfn?(options: T): string;
 		frames?: number;

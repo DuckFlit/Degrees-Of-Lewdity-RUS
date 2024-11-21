@@ -21,6 +21,21 @@ var Renderer;
         i2.drawImage(image, 0, 0, scaledWidth, scaledHeight);
         return i2.canvas;
     }
+    function isMaskObject(mask) {
+        const maskObj = mask;
+        return maskObj != undefined && maskObj.path !== undefined;
+    }
+    Renderer.isMaskObject = isMaskObject;
+    function isMaskOffsetObject(mask) {
+        const maskObj = mask;
+        return maskObj != undefined && maskObj.path !== undefined && (maskObj.offsetX !== undefined || maskObj.offsetY !== undefined);
+    }
+    Renderer.isMaskOffsetObject = isMaskOffsetObject;
+    function isMaskConvertObject(mask) {
+        const maskObj = mask;
+        return maskObj != undefined && maskObj.path !== undefined && maskObj.convert !== undefined;
+    }
+    Renderer.isMaskConvertObject = isMaskConvertObject;
     Renderer.DefaultImageLoader = {
         loadImage(src, layer, successCallback, errorCallback) {
             if (src instanceof HTMLCanvasElement) {
@@ -611,6 +626,34 @@ var Renderer;
         },
         render(image, compositeLayer, renderContext) {
             const maskCanvas = Renderer.ensureCanvas(image).getContext('2d');
+            // If convert is true, forget about the rest, can't be asked to integrate it atm. Rushed for time.
+            function processConvertStep(image, layer, parentCtx) {
+                let maskImg = layer.mask;
+                // No need to support arrays of masks yet. Can be done later.
+                if (Array.isArray(maskImg)) {
+                    if (maskImg.length === 0) {
+                        return;
+                    }
+                    maskImg = maskImg[0];
+                }
+                console.log(JSON.parse(JSON.stringify(maskImg)));
+                if (!layer.maskOptions?.convert) {
+                    return;
+                }
+                console.log("CanvasImageSource found");
+                // Our mask should be a proper CanvasImageSource by this point.
+                const ctx = Renderer.createCanvas(image.width, image.height);
+                ctx.fillStyle = "#fff";
+                ctx.fillRect(0, 0, image.width, image.height);
+                ctx.globalCompositeOperation = "destination-in";
+                ctx.drawImage(maskImg, 0, 0, image.width, image.height);
+                // Our ctx should be prepared for the final cutout
+                return Renderer.cutoutFrom(maskCanvas, ctx.canvas, layer.maskBlendMode).canvas;
+            }
+            const stepOne = processConvertStep(image, compositeLayer, renderContext);
+            if (stepOne) {
+                return stepOne;
+            }
             let finalMask = compositeLayer.mask;
             if (Array.isArray(compositeLayer.mask)) {
                 const combinedCtx = Renderer.createCanvas(image.width, image.height);
@@ -841,7 +884,13 @@ var Renderer;
             const masksLoaded = [];
             let masksToLoad = layer.masksrc.length;
             layer.masksrc.forEach((src, index) => {
-                Renderer.ImageLoader.loadImage(src, layer, (src, layer, image) => {
+                let imgSrc = src.toString();
+                let convert = false;
+                if (isMaskObject(src)) {
+                    imgSrc = src.path;
+                    convert = !!src.convert;
+                }
+                Renderer.ImageLoader.loadImage(imgSrc, layer, (src, layer, image) => {
                     masksLoaded[index] = image;
                     masksToLoad--;
                     if (!(src instanceof HTMLCanvasElement)) {
@@ -887,10 +936,16 @@ var Renderer;
                 }
             }
             layer.maskOffsets = [];
+            layer.maskOptions = {
+                convert: false,
+            };
             if (Array.isArray(layer.masksrc)) {
                 layer.masksrc = layer.masksrc
                     .map(item => {
-                    if (item?.path) {
+                    if (isMaskConvertObject(item)) {
+                        layer.maskOptions.convert = item.convert;
+                    }
+                    if (isMaskOffsetObject(item)) {
                         layer.maskOffsets.push({ x: item.offsetX || 0, y: item.offsetY || 0 });
                         return item.path;
                     }
@@ -901,9 +956,14 @@ var Renderer;
                     layer.masksrc = null;
                 }
             }
-            else if (layer.masksrc?.path) {
-                layer.maskOffsets.push({ x: layer.masksrc.offsetX || 0, y: layer.masksrc.offsetY || 0 });
-                layer.masksrc = layer.masksrc.path;
+            else {
+                if (isMaskConvertObject(layer.masksrc)) {
+                    layer.maskOptions.convert = layer.masksrc.convert;
+                }
+                if (isMaskOffsetObject(layer.masksrc)) {
+                    layer.maskOffsets.push({ x: layer.masksrc.offsetX || 0, y: layer.masksrc.offsetY || 0 });
+                    layer.masksrc = layer.masksrc.path;
+                }
             }
             let needMask = !!layer.masksrc;
             if (layer.mask) {

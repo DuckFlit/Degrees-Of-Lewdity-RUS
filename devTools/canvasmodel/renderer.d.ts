@@ -1,6 +1,9 @@
 /// <reference path="model.d.ts" />
 /// <reference types="tinycolor2" />
 declare namespace Renderer {
+    export function isMaskObject(mask: string | HTMLCanvasElement | CanvasImageSource | MaskObject | undefined | null): mask is MaskObject;
+    export function isMaskOffsetObject(mask: string | HTMLCanvasElement | CanvasImageSource | MaskObject | undefined | null): mask is MaskObject;
+    export function isMaskConvertObject(mask: string | HTMLCanvasElement | CanvasImageSource | MaskObject | undefined | null): mask is MaskObject;
     export interface LayerImageLoader {
         loadImage(src: string | HTMLCanvasElement, layer: CompositeLayer, successCallback: (src: string | HTMLCanvasElement, layer: CompositeLayer, image: HTMLCanvasElement) => any, errorCallback: (src: string | HTMLCanvasElement, layer: CompositeLayer, error: any) => any): any;
     }
