@@ -24,9 +24,15 @@ class PlayerCanvasHelper {
 				if (bodywriting.type === "left-shoulder") {
 					// Pull basic mask from arm
 					if (PlayerCanvasHelper.isBestialHandjob(options, "front")) {
-						return `${options.src}body/arms/front-${options.armFrontPosition}-bestial-mask.png`;
+						return {
+							path: `${options.src}body/arms/front-${options.armFrontPosition}-bestial.png`,
+							convert: true,
+						};
 					}
-					return `${options.src}body/arms/front-${options.armFrontPosition}-mask.png`;
+					return {
+						path: `${options.src}body/arms/front-${options.armFrontPosition}.png`,
+						convert: true,
+					};
 				}
 				return null;
 			},

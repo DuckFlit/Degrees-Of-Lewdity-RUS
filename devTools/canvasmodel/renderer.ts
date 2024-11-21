@@ -24,6 +24,21 @@ namespace Renderer {
 		return i2.canvas;
 	}
 
+	export function isMaskObject(mask: string | HTMLCanvasElement | CanvasImageSource | MaskObject | undefined | null): mask is MaskObject {
+		const maskObj = mask as MaskObject;
+		return maskObj != undefined && maskObj.path !== undefined;
+	}
+
+	export function isMaskOffsetObject(mask: string | HTMLCanvasElement | CanvasImageSource | MaskObject | undefined | null): mask is MaskObject {
+		const maskObj = mask as MaskObject;
+		return maskObj != undefined && maskObj.path !== undefined && (maskObj.offsetX !== undefined || maskObj.offsetY !== undefined);
+	}
+
+	export function isMaskConvertObject(mask: string | HTMLCanvasElement | CanvasImageSource | MaskObject | undefined | null): mask is MaskObject {
+		const maskObj = mask as MaskObject;
+		return maskObj != undefined && maskObj.path !== undefined && maskObj.convert !== undefined;
+	}
+
 	export interface LayerImageLoader {
 		loadImage(src: string | HTMLCanvasElement,
 			layer: CompositeLayer,
@@ -799,6 +814,36 @@ namespace Renderer {
 
 		render(image: HTMLCanvasElement, compositeLayer: CompositeLayer, renderContext: Renderer.RenderPipelineContext): HTMLCanvasElement {
 			const maskCanvas = Renderer.ensureCanvas(image).getContext('2d');
+			// If convert is true, forget about the rest, can't be asked to integrate it atm. Rushed for time.
+			function processConvertStep(image: HTMLCanvasElement, layer: CompositeLayer, parentCtx: Renderer.RenderPipelineContext): HTMLCanvasElement | undefined {
+				let maskImg = layer.mask;
+				// No need to support arrays of masks yet. Can be done later.
+				if (Array.isArray(maskImg)) {
+					if (maskImg.length === 0) {
+						return;
+					}
+					maskImg = maskImg[0];
+				}
+				console.log(JSON.parse(JSON.stringify(maskImg)));
+				if (!layer.maskOptions?.convert) {
+					return;
+				}
+				console.log("CanvasImageSource found");
+				// Our mask should be a proper CanvasImageSource by this point.
+				const ctx = Renderer.createCanvas(image.width, image.height);
+				ctx.fillStyle = "#fff";
+				ctx.fillRect(0, 0, image.width, image.height);
+				ctx.globalCompositeOperation = "destination-in";
+				ctx.drawImage(maskImg, 0, 0, image.width, image.height);
+				// Our ctx should be prepared for the final cutout
+				return Renderer.cutoutFrom(maskCanvas, ctx.canvas, layer.maskBlendMode).canvas;
+			}
+
+			const stepOne = processConvertStep(image, compositeLayer, renderContext)
+			if (stepOne) {
+				return stepOne;
+			}
+
 			let finalMask = compositeLayer.mask;
 
 			if (Array.isArray(compositeLayer.mask)) {
@@ -1000,7 +1045,7 @@ namespace Renderer {
 					listener.composition(name, targetCanvas.canvas);
 				}
 			}
-	
+
 			if (listener && listener.renderingDone) listener.renderingDone(millitime() - t1);
 		}
 
@@ -1059,8 +1104,14 @@ namespace Renderer {
 			let masksToLoad = layer.masksrc.length;
 
 			layer.masksrc.forEach((src, index) => {
+				let imgSrc = src.toString();
+				let convert = false;
+				if (isMaskObject(src)) {
+					imgSrc = src.path;
+					convert = !!src.convert;
+				}
 				ImageLoader.loadImage(
-					src,
+					imgSrc,
 					layer,
 					(src, layer, image) => {
 						masksLoaded[index] = image;
@@ -1110,25 +1161,36 @@ namespace Renderer {
 				}
 			}
 
-			layer.maskOffsets = [] as MaskObject;
-			
+			layer.maskOffsets = [] as Offset[];
+			layer.maskOptions = {
+				convert: false,
+			};
+
 			if (Array.isArray(layer.masksrc)) {
 				layer.masksrc = layer.masksrc
 					.map(item => {
-						if (item?.path) {
+						if (isMaskConvertObject(item)) {
+							layer.maskOptions.convert = item.convert;
+						}
+						if (isMaskOffsetObject(item)) {
 							layer.maskOffsets.push({ x: item.offsetX || 0, y: item.offsetY || 0 });
 							return item.path;
 						}
 						return item;
 					})
 					.filter(value => value != null);
-		
+
 				if (layer.masksrc.length === 0 || layer.masksrc.every(value => value == null)) {
 					layer.masksrc = null;
 				}
-			} else if (layer.masksrc?.path) {
-				layer.maskOffsets.push({ x: layer.masksrc.offsetX || 0, y: layer.masksrc.offsetY || 0 });
-				layer.masksrc = layer.masksrc.path;
+			} else {
+				if (isMaskConvertObject(layer.masksrc)) {
+					layer.maskOptions.convert = layer.masksrc.convert;
+				}
+				if (isMaskOffsetObject(layer.masksrc)) {
+					layer.maskOffsets.push({ x: layer.masksrc.offsetX || 0, y: layer.masksrc.offsetY || 0 });
+					layer.masksrc = layer.masksrc.path;
+				}
 			}
 
 			let needMask = !!layer.masksrc;
@@ -1221,7 +1283,7 @@ namespace Renderer {
 		model.redraw();
 	}
 
-	export function clearCaches(model: { layerList: CompositeLayerSpec[]}) {
+	export function clearCaches(model: { layerList: CompositeLayerSpec[] }) {
 		ImageCaches = {};
 		ImageErrors = {};
 		invalidateLayerCaches(model.layerList);

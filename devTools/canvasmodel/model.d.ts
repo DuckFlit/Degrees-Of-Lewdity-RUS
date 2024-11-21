@@ -156,9 +156,19 @@ declare interface SimpleAnimationSpec {
 }
 
 declare interface MaskObject {
-	path?: string;
+	path: string;
 	offsetX?: number;
 	offsetY?: number;
+	convert?: boolean;
+}
+
+declare interface Offset {
+	x: number;
+	y: number;
+}
+
+declare interface MaskSpec {
+	convert: boolean;
 }
 
 declare interface CompositeLayer extends CompositeLayerSpec {
@@ -174,11 +184,15 @@ declare interface CompositeLayer extends CompositeLayerSpec {
 	/**
 	 * Loaded/cached mask image
 	 */
-	mask?: CanvasImageSource | MaskObject | (CanvasImageSource | MaskObject)[];
+	mask?: CanvasImageSource | (CanvasImageSource)[];
 	/**
 	 * Offset of mask image
 	 */
-	maskOffsets?: MaskObject;
+	maskOffsets?: Offset[];
+	/**
+	 * Offset of mask image
+	 */
+	maskOptions?: MaskSpec;
 	/**
 	 * Value of `masksrc` corresponding to current `mask` (if masksrc changes mask will be reloaded)
 	 */
