@@ -1199,7 +1199,7 @@ const combatMainPc = {
 				}
 				return ["handjob"].includes(options.armBackPosition);
 			},
-			z: CombatRenderer.indices.backArm + 1,
+			z: CombatRenderer.indices.backArm + 1.5,
 		}),
 		handsBackAcc: PlayerCanvasHelper.genClothingAccLayer("hands", {
 			srcfn(options) {
@@ -1207,7 +1207,7 @@ const combatMainPc = {
 				if (clothes?.name == null) return "";
 				if (options.position === "doggy" && PlayerCanvasHelper.isBestialHandjob(options, "back")) {
 					// return `${options.src}clothing/hands/${clothes.name}/back-handjob-bestial-acc.png`;
-					return `${options.src}clothing/hands/${clothes.name}/back-default.png-acc`;
+					return `${options.src}clothing/hands/${clothes.name}/back-default-acc.png`;
 				}
 				const path = `${options.src}clothing/hands/${clothes.name}/back-${options.armBackPosition}-acc.png`;
 				return path;
@@ -1231,7 +1231,7 @@ const combatMainPc = {
 				}
 				return ["handjob"].includes(options.armBackPosition);
 			},
-			z: CombatRenderer.indices.backArm + 1,
+			z: CombatRenderer.indices.backArm + 1.5,
 		}),
 		handsFront: PlayerCanvasHelper.genClothingLayer("hands", {
 			srcfn(options) {
@@ -1256,9 +1256,9 @@ const combatMainPc = {
 			},
 			zfn(options) {
 				if (options.armFrontPosition === "bound") {
-					return CombatRenderer.indices.frontBoundArms + 1;
+					return CombatRenderer.indices.frontBoundArms + 1.5;
 				}
-				return CombatRenderer.indices.frontArm + 1;
+				return CombatRenderer.indices.frontArm + 1.5;
 			},
 		}),
 		handsFrontAcc: PlayerCanvasHelper.genClothingAccLayer("hands", {
@@ -1277,16 +1277,18 @@ const combatMainPc = {
 					Errors.report("Clothing object was undefined");
 					return false;
 				}
-				const show = options.showClothing && !CombatRenderer.isClothingShown(clothes, options.showClothing) && clothes.hasAccessory;
+				if (!CombatRenderer.isClothingShown(clothes, options.showClothing)) {
+					return false;
+				}
+				if (!clothes.hasAccessory) return false;
 				const available = options.position === "doggy" ? ["default", "handjob"] : ["default", "handjob", "stroke"];
-				const found = available.includes(options.armFrontPosition);
-				return !!show && !!found;
+				return available.includes(options.armFrontPosition);
 			},
 			zfn(options) {
 				if (options.armFrontPosition === "bound") {
-					return CombatRenderer.indices.frontBoundArms + 1;
+					return CombatRenderer.indices.frontBoundArms + 1.5;
 				}
-				return CombatRenderer.indices.frontArm + 1;
+				return CombatRenderer.indices.frontArm + 1.5;
 			},
 		}),
 		headwearBackAcc: PlayerCanvasHelper.genClothingAccLayer("head", {
