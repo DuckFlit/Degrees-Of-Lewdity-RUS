@@ -1034,20 +1034,25 @@
 	<<link [[Next|Hallways]]>><<set $eventskip to 1>><</link>>
 <</widget>>
 
-<<widget "eventscourtyard">>
-	<!-- Jimmy TODO: Convert this to use the macros: <<cleareventpool>>, <<addinlineevent>> and <<runeventpool>>. -->
+<<widget "eventsschoolcourtyard">>
+	<<cleareventpool>>
+
+	/* DEBUG NOTE: Proper indenting will not be adhered to for the initial MR, to provide readability. A second pass after it is aproved will fix formating issues. 
+	Yes, I do know it's utterly terirble. Yes, my eyes are bleeding too. */
 	<<if !["early", "late", "earlynoschool", "latenoschool", "daynoschool"].includes($schoolstate)>>
 		<<set _whitney to C.npc.Whitney>>
 		<<if $exposed gte 1>>
+			<<addinlineevent "exposed_wave">>
 			Some students spot your head poking out and wave. You <<nervously>> wave back, your heart racing. You don't think they noticed anything odd.
 			<<gstress>><<stress 6>><<garousal>><<arousal 600>>
 			<br><br>
 
 			<<endevent>>
-
 			<<courtyard>>
-
-		<<elseif _whitney.love gte 20 and $whitneyromance isnot 1 and !["dungeon", "pillory"].includes(C.npc.Whitney.state)>>
+			<</addinlineevent>>
+		<<else>>
+			<<if _whitney.love gte 20 and $whitneyromance isnot 1 and !["dungeon", "pillory"].includes(C.npc.Whitney.state)>>
+			<<addinlineevent "whitney_confession" 10>>
 			<<set $whitneyromance to 1>>
 			<<npc Whitney>><<person1>>
 
@@ -1076,7 +1081,11 @@
 			<<endevent>>
 
 			<<courtyard>>
-		<<elseif $flyover_caught is "naked">>
+			<</addinlineevent>>
+			<</if>>
+
+			<<if $flyover_caught is "naked">>
+			<<addinlineevent "flyover_naked">>
 			<<unset $flyover_caught>>
 			<<generatey1>><<generatey2>><<generatey3>>
 			You hear laughter from a group of nearby students. A <<person1>><<person>> holds out <<his>> phone. <<His>> friends crowd behind <<him>>.
@@ -1101,8 +1110,11 @@
 				<<link [[Own it|Courtyard Flyover Own]]>><</link>><<exhibitionist5>>
 				<br>
 			<</if>>
-
-		<<elseif $flyover_caught is "mask">>
+			<</addinlineevent>>
+			<</if>>
+			
+			<<if $flyover_caught is "mask">>
+			<<addinlineevent "flyover_mask">>
 			<<unset $flyover_caught>>
 			<<generatey1>><<generatey2>><<generatey3>>
 			You hear laughter from a group of nearby students. A <<person1>><<person>> holds out <<his>> phone. <<His>> friends crowd behind <<him>>.
@@ -1126,13 +1138,18 @@
 
 			<<endevent>>
 			<<courtyard>>
-
-		<<elseif !["dungeon", "pillory"].includes(C.npc.Whitney.state) and $bullytimeroutside gte $rng and Time.hour gte 15 and _whitney.init is 1>>
+			<</addinlineevent>>
+			<</if>>
+			
+			<<if !["dungeon", "pillory"].includes(C.npc.Whitney.state) and $bullytimeroutside gte $rng and Time.hour gte 15 and _whitney.init is 1>>
+			<<addinlineevent "whitney_courtyard">>
 			<<set $bullytimeroutside to 0>>
-
 			<<schoolbullyoutside>>
-
-		<<elseif $panty_thief is undefined and Time.days gte 7>>
+			<</addinlineevent>>
+			<</if>>
+			
+			<<if $panty_thief is undefined and Time.days gte 7>>
+			<<addinlineevent "panty_theif">>
 			<<generate1>><<person1>><<npcClothesType $NPCList[0] "default">>
 			You hear the fence rattle nearby. You turn, and see a <<person>> staring at you. "Hey," <<he>> says. "Wanna make some money?"
 			<br>
@@ -1169,8 +1186,11 @@
 			<br>
 			<<link [[Refuse|Events Panty Refuse]]>><</link>>
 			<br>
-		<<else>>
-			<<if $rng gte 91 and $worn.face.type.includes("cool") and $schoolstate isnot "afternoon">>
+			<</addinlineevent>>
+			<</if>>
+
+			<<if $worn.face.type.includes("cool") and $schoolstate isnot "afternoon">>
+				<<addinlineevent "courtyard_glasses_river">>
 				<<npc River>><<person1>>"You, <<girl>>. Stop." You hear River's voice behind you. You turn to see <<him>> marching closer. "Those are definitely not prescription glasses. Give them to me this instant." A group of students watch nearby.
 				<br><br>
 
@@ -1178,8 +1198,11 @@
 				<br>
 				<<link [[Flip the bird|Events Shades Flip]]>><<status 1>><<trauma -6>><<detention 4>><<npcincr River dom -1>><<npcincr River love -1>><</link>><<gcool>><<ltrauma>><<gdelinquency>>
 				<br>
+				<</addinlineevent>>
+			<</if>>
 
-			<<elseif $rng gte 91 and $worn.face.type.includes("glasses")>>
+			<<if $worn.face.type.includes("glasses")>>
+				<<addinlineevent "courtyard_glasses">>
 				<<generatey1>><<person1>>A hand reaches from behind you and snatches the $worn.face.name from your face.
 				<br><br>
 				<<if $worn.face.name is "monocle">>
@@ -1205,7 +1228,11 @@
 				<</if>>
 				<<link [[Refuse|Glasses Refuse]]>><</link>>
 				<br>
-			<<elseif $rng gte 81 and $player.gender_appearance is "f" and $player.perceived_breastsize gte 3>>
+				<</addinlineevent>>
+			<</if>>
+
+			<<if $player.gender_appearance is "f" and $player.perceived_breastsize gte 3>>
+				<<addinlineevent "courtyard_bra">>
 				<<generates1>><<person1>>Footsteps approach from behind. Before you can turn, someone runs into you, almost pushing you over. Fingers grope at your back.
 				<<if $worn.under_upper.type.includes("naked") or $worn.under_upper.type.includes("sticky")>>
 					"I can't find a strap," the <<person>> responsible exclaims. "She's not wearing a bra or anything." <<He>> runs back to <<his>> giggling friends. Your cheeks flush.
@@ -1213,12 +1240,10 @@
 					<br><br>
 
 					<<endevent>>
-
 					<<courtyard>>
 				<<elseif setup.clothes.under_upper[clothesIndex('under_upper', $worn.under_upper)].strap is 1>>
 					Your $worn.under_upper.name comes loose in your $worn.upper.name. They undid the strap.
 					<br><br>
-
 					The culprit, a <<person>>, runs back to <<his>> giggling friends.
 					<<gpain>><<pain 1>><<trauma 6>><<stress 6>><<gtrauma>><<gstress>>
 					<br><br>
@@ -1239,9 +1264,14 @@
 					<<link [[Get angry|Bra Strap Angry]]>><<stress -6>><<detention 2>><<def 1>><</link>><<gdelinquency>><<lstress>>
 					<br>
 				<</if>>
-			<<elseif $rng gte 71>>
+				<</addinlineevent>>
+			<</if>>
+
+			<<addinlineevent "courtyard_crush">>
+				<<cleareventpool>>
 				<<rng>>
 				<<if $beauty gte random(($beautymax / 2), ($beautymax + 1000))>>
+					<<addinlineevent "courtyard_crush_wingman">>
 					<<generatey1>><<generatey2>><<person2>>
 					A <<person>> approaches you. "My friend likes you," <<he>> says.
 
@@ -1271,7 +1301,11 @@
 					<br>
 					<<link [[Ignore|Courtyard Crush Ignore]]>><</link>>
 					<br>
-				<<elseif $rng gte 61 and $hypnosis gte 1 and $hypnosisdisable is "f">>
+					<</addinlineevent>>
+				<</if>>
+
+				<<if $hypnosis gte 1 and $hypnosisdisable is "f">>
+					<<addinlineevent "courtyard_crush_hypnosis">>
 					<<generatey1>><<person1>>
 					You see a <<person>> watching you from near the bike shed. <<He>> looks away when your eyes meet <<hers>>. It's hard to tell at this distance, but <<he>> might be blushing.
 					<br><br>
@@ -1286,7 +1320,11 @@
 					<br>
 					<<link [[Resist|Courtyard Hypnosis Resist]]>><</link>><<willpowerdifficulty 1 `150 + ($hypnosis * 50)`>>
 					<br>
-				<<elseif $rng gte 56 and $photo and $photo.nude_footage is 1>>
+					<</addinlineevent>>
+				<</if>>
+				
+				<<if $photo and $photo.nude_footage is 1>>
+					<<addinlineevent "courtyard_crush_photo_nude">>
 					<<set $photo.nude_footage to 0>>
 					<<generatey1>><<generatey2>><<generatey3>><<person1>>
 					You notice a <<person>> watching you, an odd smirk on <<his>> face. <<He>> looks away.
@@ -1299,7 +1337,11 @@
 					<br>
 					<<link [[Ignore|Courtyard Footage Ignore]]>><<stress 12>><<status -10>><</link>><<lcool>><<ggstress>>
 					<br>
-				<<elseif $rng gte 51 and $photo and $photo.assault_footage is 1>>
+					<</addinlineevent>>
+				<</if>>
+
+				<<if $photo and $photo.assault_footage is 1>>
+					<<addinlineevent "courtyard_crush_photo_assault">>
 					<<set $photo.assault_footage to 0>>
 					<<generatey1>><<generatey2>><<generatey3>><<person1>>
 					You notice a <<person>> watching you, an odd smirk on <<his>> face. <<He>> looks away.
@@ -1312,11 +1354,17 @@
 					<br>
 					<<link [[Ignore|Courtyard Footage Ignore]]>><<stress 12>><<status -20>><</link>><<llcool>><<ggstress>>
 					<br>
-				<<else>>
+					<</addinlineevent>>
+				<</if>>
+
+				<<addinlineevent "courtyard_crush_share">>
+					<<cleareventpool>>
+					
 					<<generatey1>><<generatey2>>
 					You overhear a <<fullGroup>> sharing their crushes.
 					<<rng>>
-					<<if $rng gte 96 and C.npc.Robin.init is 1>>
+					<<if C.npc.Robin.init is 1>>
+						<<addinlineevent "courtyard_crush_share_robin" 1>>
 						The <<person1>><<person>> admits to having a thing for Robin.
 						<br><br>
 						<<if $robinromance gte 1>>
@@ -1334,7 +1382,11 @@
 							<<endevent>>
 							<<courtyard>>
 						<</if>>
-					<<elseif $rng gte 81 and C.npc.Whitney.init is 1>>
+						<</addinlineevent>>
+					<</if>>
+
+					<<if C.npc.Whitney.init is 1>>
+						<<addinlineevent "courtyard_crush_share_whitney" 3>>
 						The <<person1>><<person>> admits to having a thing for Whitney.
 						<br><br>
 						<<if $whitneyromance gte 1>>
@@ -1352,7 +1404,11 @@
 							<<endevent>>
 							<<courtyard>>
 						<</if>>
-					<<elseif $rng gte 71 and C.npc.Sydney.init is 1>>
+						<</addinlineevent>>
+					<</if>>
+
+					<<if C.npc.Sydney.init is 1>>
+						<<addinlineevent "courtyard_crush_share_sydney" 2>>
 						The <<person1>><<person>> admits to having a thing for Sydney.
 						<br><br>
 						<<if $sydneyromance gte 1>>
@@ -1368,14 +1424,24 @@
 							<br><br>
 							<<courtyard>>
 						<</if>>
-					<<else>>
+						<</addinlineevent>>
+					<</if>>
+
+					<<addinlineevent "courtyard_crush_share_unknown" 4>>
 						They laugh and look around, anxious. They're awful loud for people who don't want to be overheard.
 						<br><br>
 						<<endevent>>
 						<<courtyard>>
-					<</if>>
-				<</if>>
-			<<elseif $rng gte 61 and $schoolrep.herm gte 5 and !$worn.face.type.includes("mask")>>
+					<</addinlineevent>>
+
+					<<runeventpool>>
+				<</addinlineevent>>
+
+				<<runeventpool>>
+			<</addinlineevent>>
+
+			<<if $schoolrep.herm gte 5 and !$worn.face.type.includes("mask")>>
+				<<addinlineevent "fame_herm_group">>
 				<<generatey1>><<generatey2>><<generatey3>>
 				A <<fullGroup>> surround you.
 				<br><br>
@@ -1402,7 +1468,11 @@
 					<<link [[Flaunt|Courtyard Herm Flaunt]]>><</link>><<exhibitionist5>>
 					<br>
 				<</if>>
-			<<elseif $rng gte 61 and $schoolrep.crossdress gte 5 and $player.gender isnot $player.gender_appearance and !$worn.face.type.includes("mask")>>
+				<</addinlineevent>>
+			<</if>>
+
+			<<if $schoolrep.crossdress gte 5 and $player.gender isnot $player.gender_appearance and !$worn.face.type.includes("mask")>>
+				<<addinlineevent "fame_crossdress_group">>
 				<<generatey1>><<generatey2>><<generatey3>>
 				A <<fullGroup>> surround you.
 				<br><br>
@@ -1451,7 +1521,10 @@
 						<br>
 					<</if>>
 				<</if>>
-			<<else>>
+				<</addinlineevent>>
+			<</if>>
+
+			<<addinlineevent "courtyard_recognized" 6>>
 				<<if $cool lt 120>>
 					<<generatey1>><<person1>>A <<person>> points at you and whispers to <<his>> friends. They burst into laughter.
 					<<gstress>><<stress 6>>
@@ -1463,13 +1536,15 @@
 
 				<<endevent>>
 				<<courtyard>>
-			<</if>>
+			<</addinlineevent>>
 		<</if>>
 	<<else>>
-		<<if $rng gte 51>>
+		<<addinlineevent "courtyard_dog">>
 			<<beastNEWinit 1 dog>>
 			<<rng>>
-			<<if $rng gte 61>>
+			<<cleareventpool>>
+
+			<<addinlineevent "courtyard_dog_molest">>
 				<<if $monster is 1 or $bestialitydisable is "f">>
 					You see a <<beasttype>> rummaging in litter behind the kitchen. <<bHis>> ears prick, and <<bhe>> bounds towards you.
 					<br><br>
@@ -1482,19 +1557,25 @@
 
 					You manage to escape, but not unscathed.
 					<<beastescape>>
-					<<endevent>>
 					<br><br>
 
+					<<endevent>>
 					<<courtyard>>
 				<</if>>
-			<<else>>
+			<</addinlineevent>>
+
+			<<addinlineevent "courtyard_dog_flee">>
 				You see a <<beasttype>> rummaging in litter behind the kitchen. <<bHe>> runs away as soon as <<bhe>> hears you.
-				<<endevent>>
 				<br><br>
 
+				<<endevent>>
 				<<courtyard>>
-			<</if>>
-		<<else>>
+			<</addinlineevent>>
+
+			<<runeventpool>>
+		<</addinlineevent>>
+
+		<<addinlineevent "courtyard_guard" 2>>
 			<<generate1>><<person1>>
 			A security guard leans against a wall,
 			<<if Weather.precipitation is "rain">>
@@ -1511,7 +1592,9 @@
 			<br><br>
 
 			<<rng>>
-			<<if $rng gte 81>>
+			<<cleareventpool>>
+
+			<<addinlineevent "courtyard_guard_arrested">>
 				<<He>> spots you, and unfastens a baton while approaching. "Well well," <<he>> says. "You're not supposed to be here. Come with me."<<gstress>><<stress 6>>
 				<br><br>
 
@@ -1521,7 +1604,9 @@
 				<br>
 				<<link [[Fight|Courtyard Guard Fight]]>><<set $fightstart to 1>><</link>>
 				<br>
-			<<elseif $rng gte 41>>
+			<</addinlineevent>>
+
+			<<addinlineevent "couryard_guard_shooed">>
 				<<He>> spots you, and frowns. "I don't think you're supposed to be here," <<he>> says. "Best leave before you get in trouble."
 				<br><br>
 
@@ -1529,14 +1614,20 @@
 				<br>
 				<<link [[Convince|Courtyard Guard Convince]]>><</link>><<englishdifficulty 1 600>>
 				<br>
-			<<else>>
+			<</addinlineevent>>
+
+			<<addinlineevent "courtyard_guard_unnoticed" 2>>
 				You're not supposed to be here, but <<hes>> distracted, and doesn't notice you.<<gstress>><<stress 6>>
 				<br><br>
 				<<endevent>>
 				<<courtyard>>
-			<</if>>
-		<</if>>
+			<</addinlineevent>>
+
+			<<runeventpool>>
+		<</addinlineevent>>
 	<</if>>
+
+	<<runeventpool>>
 <</widget>>
 
 <<widget "schoolbully">>
