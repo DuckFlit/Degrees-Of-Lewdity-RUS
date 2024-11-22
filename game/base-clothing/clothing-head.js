@@ -1089,9 +1089,6 @@ function initHead() {
 			name: "hoodie hood",
 			name_cap: "Hoodie hood",
 			variable: "hoodie",
-			combat: {
-				reference: "naked",
-			},
 			state: 0,
 			state_base: 0,
 			integrity: 180,
@@ -1232,7 +1229,7 @@ function initHead() {
 			name_cap: "Monster hood",
 			variable: "monster",
 			combat: {
-				reference: "naked",
+				reference: "hoodie",
 			},
 			state: 0,
 			state_base: 0,
@@ -1342,7 +1339,7 @@ function initHead() {
 			name_cap: "Cow onesie hood",
 			variable: "cowonesie",
 			combat: {
-				reference: "naked",
+				reference: "hoodie",
 			},
 			state: 0,
 			state_base: 0,
@@ -1823,7 +1820,7 @@ function initHead() {
 			name_cap: "Cat hoodie hood",
 			variable: "cat hoodie",
 			combat: {
-				reference: "naked",
+				reference: "hoodie",
 			},
 			state: 0,
 			state_base: 0,

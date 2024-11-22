@@ -1133,7 +1133,7 @@ class PlayerCombatMapper {
 			hasMainImg: clothing.combat?.hasMainImg !== false,
 			hasBackImg: !!defaults.back_img && [1, "combat"].includes(defaults.back_img),
 			hasBackAccessory: !!defaults.back_img_acc && [1, "combat"].includes(defaults.back_img_acc),
-			hasMaskImg: !!defaults.mask_img && defaults.mask_img === "combat",
+			hasMaskImg: !!defaults.mask_img && [1, "combat"].includes(defaults.mask_img),
 			joined: PlayerCombatMapper.genClothingJoinedLimbs(slot, clothing),
 			breasts: PlayerCombatMapper.genClothingBreastOptions(slot, clothing, options.breastSize),
 			sleeves: PlayerCombatMapper.genClothingSleeveOptions(slot, clothing),
