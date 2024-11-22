@@ -345,14 +345,13 @@ const statChange = (() => {
 					break;
 			}
 
-
 			// Adjusts modifier for body part sensitivity, if applicable
 			if (amount > 0) {
-					let sensitivityMod = (sensitivity - 1) ** 2 / 4;
-					// Halve sensitivity boosts during chef job
-					// todo: rebalance chef job better
-					if (V.masturbation_bowl) sensitivityMod /= 2;
-					mod += sensitivityMod;
+				let sensitivityMod = (sensitivity - 1) ** 2 / 4;
+				// Halve sensitivity boosts during chef job
+				// todo: rebalance chef job better
+				if (V.masturbation_bowl) sensitivityMod /= 2;
+				mod += sensitivityMod;
 			}
 
 			// Reduce the mod if masturbating while in heat and/or rut
@@ -1155,7 +1154,7 @@ const statChange = (() => {
 	DefineMacro("timeTrackingEnd", source => timeTracking(source));
 
 	function timeTrackingManual(source, amount, timeType = "hour") {
-		if (isNaN(amount)) paramError("money", "amount", amount, "Expected a number.");
+		if (isNaN(amount)) paramError("timeTrackingManual", "amount", amount, "Expected a number.");
 		if (!(typeof source === "string" || source instanceof String)) paramError("timeTrackingManual", "source", source, "Expected a string.");
 		if (!["hour", "minute", "second"].includes(timeType))
 			paramError("timeTrackingManual", "timeType", timeType, "Expected a string of either 'hour', 'minute' or 'second'.");
@@ -1175,9 +1174,9 @@ const statChange = (() => {
 	DefineMacro("timeTrackingManual", (source, amount, timeType) => timeTrackingManual(source, amount, timeType));
 
 	function timeTrackingTotal(source, timeType = "hour") {
-		if (!(typeof source === "string" || source instanceof String)) paramError("timeTracking", "source", source, "Expected a string.");
+		if (!(typeof source === "string" || source instanceof String)) paramError("timeTrackingTotal", "source", source, "Expected a string.");
 		if (!["hour", "minute", "second"].includes(timeType))
-			paramError("timeTrackingManual", "timeType", timeType, "Expected a string of either 'hour', 'minute' or 'second'.");
+			paramError("timeTrackingTotal", "timeType", timeType, "Expected a string of either 'hour', 'minute' or 'second'.");
 
 		if (!V.timeStats[source]?.total || (T.timeTrackingSnapshotOveride && !V.moneyStatsSnapshot?.time[source])) return 0;
 
@@ -1190,6 +1189,50 @@ const statChange = (() => {
 
 		return V.timeStats[source].total / multiplier;
 	}
+
+	function badEndTracking(source, optional = {}) {
+		// Disabled during a replay
+		if (V.replayScene) return false;
+		const lastBadEnd = V.badEndStats.last();
+
+		// Attempted to start tracking, but the previous tracking wasn't stopped
+		if (lastBadEnd && !lastBadEnd.trackedEnd) {
+			badEndTracking(lastBadEnd.source, {
+				reason: "unknown",
+				notes: `Not tracked in passage ${V.passage}, likely from an error`,
+			});
+		}
+
+		const newBadEnd = {
+			source,
+			trackedStart: Time.date.timeStamp,
+			trackedEnd: undefined,
+		};
+		if (optional.reason) newBadEnd.reasonStart = optional.reason;
+		if (optional.notes) newBadEnd.notesStart = optional.notes;
+		V.badEndStats.push(newBadEnd);
+	}
+	DefineMacro("badEndTracking", (source, optional) => badEndTracking(source, optional));
+
+	function badEndTrackingEnd(source, optional = {}) {
+		// Disabled during a replay
+		if (V.replayScene) return false;
+		let lastBadEnd = V.badEndStats.last();
+
+		// Attempted to end tracking, but either tracking doesnt exist, the trackingEnd has already been set or the source doesn't match
+		if (!lastBadEnd || lastBadEnd.source !== source || lastBadEnd.trackedEnd) {
+			badEndTracking(source, {
+				reason: "unknown",
+				notes: `Not correctly tracked in passage ${V.passage}, ${V.badEndStats.length ? "likely from an error" : "likely from loading an old save"}`,
+			});
+			lastBadEnd = V.badEndStats.last();
+		}
+
+		lastBadEnd.trackedEnd = Time.date.timeStamp;
+		if (optional.reason) lastBadEnd.reasonEnd = optional.reason;
+		if (optional.notes) lastBadEnd.notesEnd = optional.notes;
+	}
+	DefineMacro("badEndTrackingEnd", (source, optional) => badEndTrackingEnd(source, optional));
 
 	return {
 		trauma,
@@ -1252,6 +1295,8 @@ const statChange = (() => {
 		timeTracking,
 		timeTrackingManual,
 		timeTrackingTotal,
+		badEndTracking,
+		badEndTrackingEnd,
 	};
 })();
 window.statChange = statChange;

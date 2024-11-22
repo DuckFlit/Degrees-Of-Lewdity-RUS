@@ -1377,16 +1377,16 @@ function drunkSexStatModifier(statValue) {
 window.drunkSexStatModifier = drunkSexStatModifier;
 
 /**
- * Returns the modifier for a sexStat based on heat/rut/minArousal and the stat provided. 
- * 
- * @param {string} input 
+ * Returns the modifier for a sexStat based on heat/rut/minArousal and the stat provided.
+ *
+ * @param {string} input
  * @returns {number}
  */
 function heatRutSexStatModifier(input) {
 	const maxMinArousal = 5000; // Maximum value for minArousal.
 	const minArousal = Math.clamp(playerHeatMinArousal() + playerRutMinArousal(), 0, maxMinArousal);
 	if (minArousal === 0) return 0;
-	
+
 	const statName = sexStatNameMapper(input);
 	if (statName == null) {
 		Errors.report(`[heatRutSexStatModifier]: input '${statName}' null.`, {
@@ -1399,11 +1399,11 @@ function heatRutSexStatModifier(input) {
 	if (statName === "exhibitionism") return 0;
 
 	const maxHeatRutSexStatModifier = 40; // Maximum modifier for sexStat() from minArousal.
-	const heatRutSexStatModifierExponent = .6; // Lower to raise the final modifier at lower levels of minArousal.
-	const heatRutSexStatModifier = maxHeatRutSexStatModifier / (maxMinArousal ** heatRutSexStatModifierExponent) * minArousal ** heatRutSexStatModifierExponent;
+	const heatRutSexStatModifierExponent = 0.6; // Lower to raise the final modifier at lower levels of minArousal.
+	const heatRutSexStatModifier = (maxHeatRutSexStatModifier / maxMinArousal ** heatRutSexStatModifierExponent) * minArousal ** heatRutSexStatModifierExponent;
 
 	if (statName === "promiscuity") {
-		return Math.floor(heatRutSexStatModifier * .75);
+		return Math.floor(heatRutSexStatModifier * 0.75);
 	} else {
 		return Math.floor(heatRutSexStatModifier);
 	}
@@ -1475,9 +1475,9 @@ window.hasSexStat = hasSexStat;
 
 /**
  * If hasSexStat() modifiers are allowing the player to see an aditional option, return the css class for the largest individual modifier.
- * If the modifiers are not high enough to show a new option, don't return a class. 
+ * If the modifiers are not high enough to show a new option, don't return a class.
  * Passing in 0 or nothing for requiredLevel returns the classes for the largest modifier regardless of if the player is being shown an aditional option.
- * 
+ *
  * @param {string} input
  * @param {number} requiredLevel
  */
@@ -1496,14 +1496,17 @@ function getLargestSexStatModifierCssClasses(input, requiredLevel = 0) {
 	const heatRutSexStatModifierValue = heatRutSexStatModifier(statName);
 
 	// If there is a modifier, and either requiredLevel is 0 or the modifiers put the player up a level of the sexStat.
-	if ((drunkSexStatModifierValue + heatRutSexStatModifierValue) > 0 && (requiredLevel === 0 || (!hasSexStat(statName, requiredLevel, false) && hasSexStat(statName, requiredLevel, true)))) {
+	if (
+		drunkSexStatModifierValue + heatRutSexStatModifierValue > 0 &&
+		(requiredLevel === 0 || (!hasSexStat(statName, requiredLevel, false) && hasSexStat(statName, requiredLevel, true)))
+	) {
 		const modifiers = [
 			{ value: drunkSexStatModifierValue, class: "drunk" },
 			{ value: heatRutSexStatModifierValue, class: "jitter" },
 		];
 
 		// Gets the largest modifier.
-		const largestModifier = modifiers.reduce((max, current) => current.value > max.value ? current : max, modifiers[0]);
+		const largestModifier = modifiers.reduce((max, current) => (current.value > max.value ? current : max), modifiers[0]);
 
 		// Gets the base class for animation.
 		let modifierClasses = largestModifier.class + "-text";
@@ -1515,7 +1518,7 @@ function getLargestSexStatModifierCssClasses(input, requiredLevel = 0) {
 			modifierClasses += " " + largestModifier.class + "-2";
 		} else {
 			modifierClasses += " " + largestModifier.class + "-1";
-		}  
+		}
 
 		return modifierClasses;
 	} else {
@@ -2364,18 +2367,18 @@ function unableTakeVirginity(virginity) {
 
 	switch (virginity) {
 		case "penile":
-			return V.analdisable !== "f" && (
-				(V.cbchance === 0 && V.dgchance === 100)
-				|| (maleChance() === 100 && V.cbchance === 0)
-				|| (maleChance() === 0 && V.dgchance === 100)
-				|| (maleChance() === 100 && V.cbchance === 100 && V.straponchance === 100)
-				|| (maleChance() === 0 && V.dgchance === 0 && V.straponchance === 100)
+			return (
+				V.analdisable !== "f" &&
+				((V.cbchance === 0 && V.dgchance === 100) ||
+					(maleChance() === 100 && V.cbchance === 0) ||
+					(maleChance() === 0 && V.dgchance === 100) ||
+					(maleChance() === 100 && V.cbchance === 100 && V.straponchance === 100) ||
+					(maleChance() === 0 && V.dgchance === 0 && V.straponchance === 100))
 			);
 		case "vaginal":
-			return V.straponchance === 0 && (
-				(V.cbchance === 100 && V.dgchance === 0)
-				|| (maleChance() === 100 && V.cbchance === 100)
-				|| (maleChance() === 0 && V.dgchance === 0)
+			return (
+				V.straponchance === 0 &&
+				((V.cbchance === 100 && V.dgchance === 0) || (maleChance() === 100 && V.cbchance === 100) || (maleChance() === 0 && V.dgchance === 0))
 			);
 		default:
 			return false;

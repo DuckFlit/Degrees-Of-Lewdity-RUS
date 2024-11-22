@@ -185,7 +185,6 @@ Renderer.Animations["machine-4f-vfast"] = {
 	duration: 80,
 };
 
-
 Renderer.Animations["machine-2f-slow"] = {
 	keyframes: [
 		{

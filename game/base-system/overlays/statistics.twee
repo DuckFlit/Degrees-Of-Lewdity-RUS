@@ -505,6 +505,17 @@
 		</div>
 	<</foldout>>
 
+	<<if $badEndStats.length>>
+		<<foldout false "_badEndFoldout">>
+			<span class="gold">Bad Ends</span>
+			Notes <mouse class="tooltip linkBlue">(?)<span>Adding too many extra colums may make it harder to read on some devices. These were not tracked at all before version '0.5.2.x' and so will be inaccurate. If a bad end stays in progress but you have clearly ended the bad end, please report it as a bug with your save.</span></mouse>
+			<br>
+			<div id="badEndStatsDiv">
+				<<badEndStats>>
+			</div>
+		<</foldout>>
+	<</if>>
+
 	<<foldout false "_miscFoldout">>
 		<span class="gold">Miscellaneous</span>
 		<<if $gamemode isnot "soft">>
@@ -1188,7 +1199,7 @@
 	<<if $statFreeze is true>>
 		<<set $_text_output to "Not avaliable when stats are being frozen">>
 	<<elseif $args[0]>>
-		<<set _difference to new DateTime($args[0]).compareWith(Time.date)>>
+		<<set _difference to new DateTime($args[0]).compareWith($args[1] or Time.date)>>
 		<<set $_text_output to "">>
 		<<if _difference.years>>
 			<<set $_text_output += `${_difference.years} year${_difference.years gt 1 ? "s" : ""}`>>
@@ -1209,7 +1220,9 @@
 			<<if $_text_output>><<set $_text_output += ", ">><</if>>
 			<<set $_text_output += `${_difference.minutes} minute${_difference.minutes gt 1 ? "s" : ""}`>>
 		<</if>>
-		<<if !$_text_output>>
+		<<if $args[1] and !$_text_output>>
+			<<set $_text_output += "no difference">>
+		<<elseif !$_text_output>>
 			<<set $_text_output += "recently">>
 		<<else>>
 			<<set $_text_output += " ago">>
@@ -1338,7 +1351,7 @@
 			}
 		})>>
 	<</if>>
-	<table id="moneyStats">
+	<table class="statsTable">
 		<thead>
 			<tr>
 				<th scope="col"><<moneyStatsTitle "Source">></th>
@@ -1559,9 +1572,9 @@
 		<<set $_time to new DateTime(_args[0].timestamp)>>
 		<<switch $options.dateFormat>>
 			<<case "en-US">>
-				<<set $_text_output to `Taken on: ${$_time.day}/${$_time.month}/${$_time.year}`>>
+				<<set $_text_output to `Taken on: ${$_time.month}/${$_time.day}/${$_time.year}`>>
 			<<case "zh-CN">>
-				<<set $_text_output to `Taken on: ${$_time.day}/${$_time.month}/${$_time.year}`>>
+				<<set $_text_output to `Taken on: ${$_time.year}/${$_time.month}/${$_time.day}`>>
 			<<default>>
 				<<set $_text_output to `Taken on: ${$_time.day}/${$_time.month}/${$_time.year}`>>
 		<</switch>>
@@ -1625,4 +1638,171 @@
 		<</if>>
 	<</if>>
 <</silently>><<if $_text_output>><mouse @class="'tooltip ' + $_linkColour">(?)<span><<print $_text_output>></span></mouse><</if>>
+<</widget>>
+
+<<widget "badEndStats">>
+	<<set $_badEndStats to clone($badEndStats)>>
+	<<run $_badEndStats.forEach(badEnd => {
+		if (badEnd.reasonStart and setup.badEndReasonText[badEnd.reasonStart]) badEnd.reasonStart = setup.badEndReasonText[badEnd.reasonStart];
+		if (badEnd.reasonEnd and setup.badEndReasonText[badEnd.reasonEnd]) badEnd.reasonEnd = setup.badEndReasonText[badEnd.reasonEnd];
+	})>>
+	<span @class="_badEndStatsHowLongAgo ? 'goldLink' : ''">
+		<<link `_badEndStatsTimeSince ? "Hide How Long Ago" : "Show How Long Ago"`>>
+			<<set _badEndStatsHowLongAgo to !_badEndStatsHowLongAgo>>
+			<<if !_badEndStatsHowLongAgo>><<unset _badEndStatsHowLongAgo>><</if>>
+			<<replace "#badEndStatsDiv">><<badEndStats>><</replace>>
+		<</link>>
+	</span> |
+	<span @class="_badEndStatsReasonStart ? 'goldLink' : ''">
+		<<link `_badEndStatsReasonStart ? "Hide Start Reason" : "Show Start Reason"`>>
+			<<set _badEndStatsReasonStart to !_badEndStatsReasonStart>>
+			<<if !_badEndStatsReasonStart>><<unset _badEndStatsReasonStart>><</if>>
+			<<replace "#badEndStatsDiv">><<badEndStats>><</replace>>
+		<</link>>
+	</span> |
+	<span @class="_badEndStatsReasonEnd ? 'goldLink' : ''">
+		<<link `_badEndStatsReasonEnd ? "Hide End Reason" : "Show End Reason"`>>
+			<<set _badEndStatsReasonEnd to !_badEndStatsReasonEnd>>
+			<<if !_badEndStatsReasonEnd>><<unset _badEndStatsReasonEnd>><</if>>
+			<<replace "#badEndStatsDiv">><<badEndStats>><</replace>>
+		<</link>>
+	</span>
+	<<if _badEndStatsSorting>>
+		| <<link "Reset Sorting">>
+			<<unset _badEndStatsSorting>>
+			<<replace "#badEndStatsDiv">><<badEndStats>><</replace>>
+		<</link>>
+		<<run $_badEndStats.sort((a, b) => {
+			if (_badEndStatsSorting.includes("Desc")) {
+				const tempSwap = clone(a);
+				a = clone(b);
+				b = tempSwap;
+			}
+			switch(_badEndStatsSorting.replace("Desc","")) {
+				case "Bad End":
+					if (a.source.toUpperCase() < b.source.toUpperCase()) return -1;
+					return 1;
+				case "Started":
+					return (b.trackedStart || 0) - (a.trackedStart || 0);
+				case "Ended": case "Time since it ended":
+					return (b.trackedEnd || 0) - (a.trackedEnd || 0);
+				case "Duration":
+					return ((b.trackedEnd || 0) - b.trackedStart) - ((a.trackedEnd || 0) - a.trackedStart);
+				case "Start Reason":
+					if ((a.reasonStart || "").toUpperCase() < (b.reasonStart || "").toUpperCase()) return -1;
+					return 1;
+				case "End Reason":
+					if ((a.reasonEnd || "").toUpperCase() < (b.reasonEnd || "").toUpperCase()) return -1;
+					return 1;
+			}
+		})>>
+	<</if>>
+
+	<table class="statsTable">
+		<thead>
+			<tr>
+				<th scope="col"><<badEndStatsTitle "Bad End">></th>
+				<th scope="col"><<badEndStatsTitle "Started">></th>
+				<th scope="col"><<badEndStatsTitle "Ended">></th>
+				<th scope="col"><<badEndStatsTitle "Duration">></th>
+				<<if _badEndStatsHowLongAgo>>
+					<th scope="col"><<badEndStatsTitle "How Long Ago">></th>
+				<</if>>
+				<<if _badEndStatsReasonStart>>
+					<th scope="col"><<badEndStatsTitle "Start Reason">></th>
+				<</if>>
+				<<if _badEndStatsReasonEnd>>
+					<th scope="col"><<badEndStatsTitle "End Reason">></th>
+				<</if>>
+			</tr>
+		</thead>
+			<<for $_badEnd range $_badEndStats>>
+				<tbody class="stat">
+					<td data-label="Bad End">
+						<<print $_badEnd.source>>
+						<<if $_badEnd.notesStart or $_badEnd.notesEnd>>
+							<<set $_includesError to $_badEnd?.notesStart?.includes("Not correctly tracked") or $_badEnd?.notesEnd?.includes("Not correctly tracked")>>
+							<mouse @class="'tooltip ' + ($_includesError ? 'red' : 'linkBlue')">(?)<span>
+								<<if $_badEnd.notesStart>><<print $_badEnd.notesStart>><</if>>
+								<<if $_badEnd.notesEnd>>
+									<<if $_badEnd.notesStart>><hr><</if>>
+									<<print $_badEnd.notesEnd>>
+								<</if>>
+							</span></mouse>
+						<</if>>
+					</td>
+					<td data-label="Started">
+						<<set $_time to new DateTime($_badEnd.trackedStart)>>
+						<<switch $options.dateFormat>>
+							<<case "en-US">>
+								Started: $_time.month/$_time.day/$_time.year
+							<<case "zh-CN">>
+								Started: $_time.year/$_time.month/$_time.day
+							<<default>>
+								Started: $_time.day/$_time.month/$_time.year
+						<</switch>>
+					</td>
+					<td data-label="Ended">
+						<<if $_badEnd.trackedEnd>>
+							<<set $_time2 to new DateTime($_badEnd.trackedEnd)>>
+							<<switch $options.dateFormat>>
+								<<case "en-US">>
+									Ended: $_time2.month/$_time2.day/$_time2.year
+								<<case "zh-CN">>
+									Ended: $_time2.year/$_time2.month/$_time2.day
+								<<default>>
+									Ended: $_time2.day/$_time2.month/$_time2.year
+							<</switch>>
+						<<else>>
+							<span class="dash"></span>
+						<</if>>
+					</td>
+					<td data-label="Duration">
+						<<if $_badEnd.trackedEnd>>
+							<<statisticsTimeCompare $_time $_time2>>
+						<<else>>
+							In progress
+						<</if>>
+					</td>
+					<<if _badEndStatsHowLongAgo>>
+						<td data-label="How Long Ago">
+							<<if $_badEnd.trackedEnd>>
+								<<statisticsTimeCompare $_time2>>
+							<<else>>
+								<span class="dash">-</span>
+							<</if>>
+						</td>
+					<</if>>
+					<<if _badEndStatsReasonStart>>
+						<td data-label="Start Reason">
+							<<if $_badEnd.reasonStart>>
+								<<print $_badEnd.reasonStart>>
+							<<else>>
+								<span class="dash">-</span>
+							<</if>>
+						</td>
+					<</if>>
+					<<if _badEndStatsReasonEnd>>
+						<td data-label="End Reason">
+							<<if $_badEnd.reasonEnd>>
+								<<print $_badEnd.reasonEnd>>
+							<<else>>
+								<span class="dash">-</span>
+							<</if>>
+						</td>
+					<</if>>
+				</tbody>
+			<</for>>
+	</table>
+<</widget>>
+
+<<widget "badEndStatsTitle">><<silently>>
+	<<if _badEndStatsSorting is _args[0]>>
+		<<set $_text_output to ` <<link "${_args[0]}&#x25B2;">><<set _badEndStatsSorting to "${_args[0]}Desc">><<replace "#badEndStatsDiv">><<badEndStats>><</replace>><</link>>`>>
+	<<elseif  _badEndStatsSorting is _args[0] + "Desc">>
+		<<set $_text_output to ` <<link "${_args[0]}&#x25BC;">><<unset _badEndStatsSorting>><<replace "#badEndStatsDiv">><<badEndStats>><</replace>><</link>>`>>
+	<<else>>
+		<<set $_text_output to ` <<link "${_args[0]}">><<set _badEndStatsSorting to "${_args[0]}">><<replace "#badEndStatsDiv">><<badEndStats>><</replace>><</link>>`>>
+	<</if>>
+<</silently>><<if $_text_output>><<print $_text_output>><</if>>
 <</widget>>
