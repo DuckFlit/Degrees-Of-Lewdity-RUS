@@ -790,7 +790,11 @@ const combatMainPc = {
 			showfn(options) {
 				if (!options.bellySize || !options.bellyState) return false;
 				const clothes = options.clothes.lower;
-				const result = options.showPlayer && options.bellyState !== "hidden" && options.position === "missionary" && (clothes?.isSkirt || options.legFrontPosition === "up");
+				const result =
+					options.showPlayer &&
+					options.bellyState !== "hidden" &&
+					options.position === "missionary" &&
+					(clothes?.isSkirt || options.legFrontPosition === "up");
 				return !!result;
 			},
 			animationfn(options) {
@@ -813,7 +817,11 @@ const combatMainPc = {
 			showfn(options) {
 				if (!options.bellySize || !options.bellyState) return false;
 				const clothes = options.clothes.lower;
-				const result = options.showPlayer && options.bellyState !== "hidden" && options.position === "missionary" && (clothes?.isSkirt || options.legFrontPosition === "up");
+				const result =
+					options.showPlayer &&
+					options.bellyState !== "hidden" &&
+					options.position === "missionary" &&
+					(clothes?.isSkirt || options.legFrontPosition === "up");
 				return !!result;
 			},
 			animationfn(options) {
@@ -1120,7 +1128,8 @@ const combatMainPc = {
 			srcfn(options) {
 				const clothes = options.clothes.feet;
 				if (clothes?.name == null || clothes.positions == null) return "";
-				const path = `${options.src}clothing/feet/${clothes.name}/back-${clothes.positions.back}.png`;
+				const joined = clothes.joined.limbs ? `-front-${clothes.positions.front}` : "";
+				const path = `${options.src}clothing/feet/${clothes.name}/back-${clothes.positions.back}${joined}.png`;
 				return path;
 			},
 			z: CombatRenderer.indices.backFootwear,
@@ -1129,7 +1138,8 @@ const combatMainPc = {
 			srcfn(options) {
 				const clothes = options.clothes.feet;
 				if (clothes?.name == null || clothes.positions == null) return "";
-				const path = `${options.src}clothing/feet/${clothes.name}/back-${clothes.positions.back}-acc.png`;
+				const joined = clothes.joined.limbsAccessory ? `-front-${clothes.positions.front}` : "";
+				const path = `${options.src}clothing/feet/${clothes.name}/back-${clothes.positions.back}${joined}-acc.png`;
 				return path;
 			},
 			z: CombatRenderer.indices.backFootwear,
@@ -1138,7 +1148,8 @@ const combatMainPc = {
 			srcfn(options) {
 				const clothes = options.clothes.feet;
 				if (clothes?.name == null || clothes.positions == null) return "";
-				const path = `${options.src}clothing/feet/${clothes.name}/front-${clothes.positions.front}.png`;
+				const joined = clothes.joined.limbs ? `-back-${clothes.positions.back}` : "";
+				const path = `${options.src}clothing/feet/${clothes.name}/front-${clothes.positions.front}${joined}.png`;
 				return path;
 			},
 			z: CombatRenderer.indices.frontFootwear,
@@ -1147,7 +1158,8 @@ const combatMainPc = {
 			srcfn(options) {
 				const clothes = options.clothes.feet;
 				if (clothes?.name == null || clothes.positions == null) return "";
-				const path = `${options.src}clothing/feet/${clothes.name}/front-${clothes.positions.front}-acc.png`;
+				const joined = clothes.joined.limbsAccessory ? `-back-${clothes.positions.back}` : "";
+				const path = `${options.src}clothing/feet/${clothes.name}/front-${clothes.positions.front}${joined}-acc.png`;
 				return path;
 			},
 			z: CombatRenderer.indices.frontFootwear,
@@ -1474,7 +1486,7 @@ const combatMainPc = {
 					return CombatRenderer.indices.frontArm - 2;
 				}
 				if (options.armFrontPosition === "bound") {
-					return CombatRenderer.indices.frontBoundArms + 1;
+					return CombatRenderer.indices.frontBoundArms + 2;
 				}
 				return CombatRenderer.indices.frontArm + 2;
 			},
@@ -1494,7 +1506,7 @@ const combatMainPc = {
 					return CombatRenderer.indices.frontArm - 2;
 				}
 				if (options.armFrontPosition === "bound") {
-					return CombatRenderer.indices.frontBoundArms + 1;
+					return CombatRenderer.indices.frontBoundArms + 2;
 				}
 				return CombatRenderer.indices.frontArm + 2;
 			},

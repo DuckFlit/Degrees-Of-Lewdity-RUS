@@ -53,7 +53,9 @@ function initFeet() {
 			name_cap: "School shoes",
 			variable: "schoolshoes",
 			combat: {
-				reference: "kittenheels",
+				reference: "lightuptrainers",
+				accColour: "#0c0c0c",
+				hasMainImg: false,
 			},
 			state: 0,
 			state_base: 0,
@@ -87,7 +89,9 @@ function initFeet() {
 			name_cap: "Tuxedo shoes",
 			variable: "tuxedoshoes",
 			combat: {
-				reference: "kittenheels",
+				reference: "lightuptrainers",
+				accColour: "#1d191e",
+				hasMainImg: false,
 			},
 			state: 0,
 			state_base: 0,
@@ -123,6 +127,7 @@ function initFeet() {
 			variable: "anklecuffs",
 			combat: {
 				accessory: true,
+				hasJoinedLimbsAcc: true,
 			},
 			state: 0,
 			state_base: 0,
@@ -157,6 +162,7 @@ function initFeet() {
 			variable: "sandals",
 			combat: {
 				reference: "wedgesandals",
+				accColour: "#cdb493",
 			},
 			state: 0,
 			state_base: 0,
@@ -192,7 +198,7 @@ function initFeet() {
 			variable: "dresssandals",
 			combat: {
 				reference: "wedgesandals",
-				accessory: true,
+				accColour: "primary",
 			},
 			state: 0,
 			state_base: 0,
@@ -228,6 +234,8 @@ function initFeet() {
 			variable: "trainers",
 			combat: {
 				reference: "lightuptrainers",
+				hasMainImg: false,
+				accColour: "primary",
 			},
 			state: 0,
 			state_base: 0,
@@ -395,6 +403,9 @@ function initFeet() {
 			name: "wedge sandals",
 			name_cap: "Wedge sandals",
 			variable: "wedgesandals",
+			combat: {
+				accColour: "#a18262",
+			},
 			state: 0,
 			state_base: 0,
 			integrity: 100,
@@ -526,7 +537,9 @@ function initFeet() {
 			name_cap: "Horsebit loafers",
 			variable: "horsebitloafers",
 			combat: {
-				reference: "wedgesandals",
+				reference: "lightuptrainers",
+				accColour: "#171717",
+				hasMainImg: false,
 			},
 			state: 0,
 			state_base: 0,
@@ -561,7 +574,9 @@ function initFeet() {
 			name_cap: "Cordovan loafers",
 			variable: "cordovanloafers",
 			combat: {
-				reference: "wedgesandals",
+				reference: "lightuptrainers",
+				accColour: "#40181f",
+				hasMainImg: false,
 			},
 			state: 0,
 			state_base: 0,
@@ -596,7 +611,9 @@ function initFeet() {
 			name_cap: "Bunny slippers",
 			variable: "bunny",
 			combat: {
-				reference: "wedgesandals",
+				reference: "lightuptrainers",
+				accColour: "#ffffff",
+				hasMainImg: false,
 			},
 			state: 0,
 			state_base: 0,
@@ -632,6 +649,7 @@ function initFeet() {
 			variable: "combat",
 			combat: {
 				reference: "bootheels",
+				mainColour: "#333333",
 			},
 			state: 0,
 			state_base: 0,
@@ -667,6 +685,7 @@ function initFeet() {
 			variable: "field",
 			combat: {
 				reference: "bootheels",
+				mainColour: "#333333",
 			},
 			state: 0,
 			state_base: 0,
@@ -702,6 +721,7 @@ function initFeet() {
 			variable: "paddock",
 			combat: {
 				reference: "bootheels",
+				mainColour: "#333333",
 			},
 			state: 0,
 			state_base: 0,
@@ -737,6 +757,7 @@ function initFeet() {
 			variable: "work",
 			combat: {
 				reference: "bootheels",
+				mainColour: "#b27531",
 			},
 			state: 0,
 			state_base: 0,
@@ -771,7 +792,9 @@ function initFeet() {
 			name_cap: "Flippers",
 			variable: "flippers",
 			combat: {
-				reference: "wedgesandals",
+				reference: "lightuptrainers",
+				hasMainImg: false,
+				accColour: "primary",
 			},
 			state: 0,
 			state_base: 0,
@@ -875,6 +898,9 @@ function initFeet() {
 			name: "light-up trainers",
 			name_cap: "Light-up trainers",
 			variable: "lightuptrainers",
+			combat: {
+				accColour: "#121212",
+			},
 			state: 0,
 			state_base: 0,
 			integrity: 250,
@@ -939,6 +965,7 @@ function initFeet() {
 			variable: "cowboy",
 			combat: {
 				reference: "bootheels",
+				mainColour: "#9a643b",
 			},
 			state: 0,
 			state_base: 0,
@@ -974,6 +1001,8 @@ function initFeet() {
 			variable: "hightops",
 			combat: {
 				reference: "lightuptrainers",
+				accColour: "primary",
+				hasMainImg: false,
 			},
 			state: 0,
 			state_base: 0,
@@ -1150,7 +1179,7 @@ function initFeet() {
 			name_cap: "Mary janes",
 			variable: "maryjanes",
 			combat: {
-				reference: "wedgesandals",
+				reference: "kittenheels",
 			},
 			state: 0,
 			state_base: 0,
@@ -1187,6 +1216,7 @@ function initFeet() {
 			variable: "platformmaryjanes",
 			combat: {
 				reference: "wedgesandals",
+				accColour: "primary",
 			},
 			state: 0,
 			state_base: 0,
@@ -1223,6 +1253,7 @@ function initFeet() {
 			variable: "geta",
 			combat: {
 				reference: "wedgesandals",
+				accColour: "#e49a7d",
 			},
 			state: 0,
 			state_base: 0,
@@ -1257,6 +1288,7 @@ function initFeet() {
 			variable: "zori",
 			combat: {
 				reference: "wedgesandals",
+				accColour: "#e49a7d",
 			},
 			state: 0,
 			state_base: 0,

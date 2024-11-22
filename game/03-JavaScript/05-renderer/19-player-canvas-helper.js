@@ -388,7 +388,7 @@ class PlayerCanvasHelper {
 				return options.animKey;
 			},
 			filtersfn(options) {
-				const filter = `worn_${slot}_acc`;
+				const filter = `worn_${slot}_sleeve_acc`;
 				return [filter];
 			},
 			z: CombatRenderer.indices[slot],

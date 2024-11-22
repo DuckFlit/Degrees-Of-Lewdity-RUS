@@ -110,6 +110,8 @@ declare global {
 			hasSleevesAcc?: boolean;
 			hasBreasts?: boolean;
 			hasBreastsAcc?: boolean;
+			hasJoinedLimbs?: boolean;
+			hasJoinedLimbsAcc?: boolean;
 			accessory?: boolean;
 			mainColour?: string;
 			accColour?: string;
@@ -241,7 +243,7 @@ declare global {
 		 * (For head slots)
 		 * if 1, this item has mask.png image to cut out hair & animal ears layers
 		 */
-		mask_img?: number;
+		mask_img?: 0 | 1 | "combat";
 		collared?: 0 | 1;
 		rearresize?: number;
 		short?: 0 | 1;

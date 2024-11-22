@@ -172,6 +172,7 @@
  * @property {boolean} hasBackImg Whether the clothing has a back img layer, typically for headwear or handhelds.
  * @property {boolean} hasBackAccessory Whether the clothing has a back acc layer, typically for headwear or handhelds.
  * @property {boolean} hasMaskImg Whether the clothing uses a mask, typically for headwear or handhelds.
+ * @property {PlayerJoinedState} joined Whether the clothing requires special sprites for different limb configurations (e.g. chain linking left up-right down legs is different than chain linking left up-right up legs).
  * @property {PlayerBreastState} breasts Breast state.
  * @property {PlayerSleeveState} sleeves Sleeve state.
  */
@@ -180,6 +181,12 @@
  * @typedef PositionStates
  * @property {string} front
  * @property {string} back
+ */
+
+/**
+ * @typedef PlayerJoinedState
+ * @property {boolean} limbs
+ * @property {boolean} limbsAccessory
  */
 
 /**
@@ -1065,6 +1072,10 @@ class PlayerCombatMapper {
 				hasBackImg: false,
 				hasBackAccessory: false,
 				hasMaskImg: false,
+				joined: {
+					limbs: false,
+					limbsAccessory: false,
+				},
 				breasts: {
 					hasAccessory: false,
 					show: false,
@@ -1122,12 +1133,27 @@ class PlayerCombatMapper {
 			hasMainImg: clothing.combat?.hasMainImg !== false,
 			hasBackImg: !!defaults.back_img && [1, "combat"].includes(defaults.back_img),
 			hasBackAccessory: !!defaults.back_img_acc && [1, "combat"].includes(defaults.back_img_acc),
-			hasMaskImg: !!defaults.mask_img && [1, "combat"].includes(defaults.mask_img),
+			hasMaskImg: !!defaults.mask_img && defaults.mask_img === "combat",
+			joined: PlayerCombatMapper.genClothingJoinedLimbs(slot, clothing),
 			breasts: PlayerCombatMapper.genClothingBreastOptions(slot, clothing, options.breastSize),
 			sleeves: PlayerCombatMapper.genClothingSleeveOptions(slot, clothing),
 			renderStep: source.combat?.renderType,
 		};
 		return clothes;
+	}
+
+	/**
+	 * @param {ClothedSlots} slot
+	 * @param {ClothesItem} clothing
+	 */
+	static genClothingJoinedLimbs(slot, clothing) {
+		return {
+			limbs:
+				["lower", "feet", "legs", "under_lower", "upper", "under_upper", "hands"].includes(slot) && PlayerCombatMapper.hasJoinedLimbs(slot, clothing),
+			limbsAccessory:
+				["lower", "feet", "legs", "under_lower", "upper", "under_upper", "hands"].includes(slot) &&
+				PlayerCombatMapper.hasJoinedLimbsAcc(slot, clothing),
+		};
 	}
 
 	/**
@@ -1198,6 +1224,28 @@ class PlayerCombatMapper {
 			return !!found.sleeve_acc_img;
 		}
 		return found.combat.hasSleevesAcc;
+	}
+
+	/**
+	 * @param {ClothedSlots} slot
+	 * @param {ClothesItem} clothing
+	 * @returns {boolean}
+	 */
+	static hasJoinedLimbs(slot, clothing) {
+		const found = CombatRenderer.findClothingByProperty(slot, clothing, item => item.combat?.hasJoinedLimbs === true);
+
+		return found?.combat?.hasJoinedLimbs === true && clothing.combat?.hasMainImg !== false;
+	}
+
+	/**
+	 * @param {ClothedSlots} slot
+	 * @param {ClothesItem} clothing
+	 * @returns {boolean}
+	 */
+	static hasJoinedLimbsAcc(slot, clothing) {
+		const found = CombatRenderer.findClothingByProperty(slot, clothing, item => item.combat?.hasJoinedLimbsAcc === true);
+
+		return found?.combat?.hasJoinedLimbsAcc === true && clothing.combat?.accessory !== false;
 	}
 
 	/**
