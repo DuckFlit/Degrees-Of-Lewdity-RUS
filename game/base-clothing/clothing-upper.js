@@ -2569,6 +2569,7 @@ function initUpper() {
 				reference: "regularshirt",
 				hasBreastsAcc: false,
 				hasSleevesAcc: false,
+				hasBreasts: true,
 				mainColour: "#262626",
 			},
 			integrity: 80,
@@ -3018,7 +3019,6 @@ function initUpper() {
 			variable: "gymshirt",
 			combat: {
 				mainColour: "#ffffff",
-				accColour: "#ff0000",
 			},
 			integrity: 140,
 			integrity_max: 140,

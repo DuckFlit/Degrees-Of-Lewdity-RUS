@@ -833,7 +833,7 @@ function initLower() {
 			name_cap: "Large towel bottom",
 			variable: "towellarge",
 			combat: {
-				reference: "longskirt",
+				reference: "naked",
 			},
 			integrity: 10,
 			integrity_max: 10,
@@ -5866,7 +5866,7 @@ function initLower() {
 			name_cap: "Virgin killer skirt",
 			variable: "virginkillerdress",
 			combat: {
-				reference: "micropleatedskirt",
+				reference: "naked",
 			},
 			integrity: 140,
 			integrity_max: 140,

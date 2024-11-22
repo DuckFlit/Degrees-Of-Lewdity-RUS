@@ -485,6 +485,7 @@ function initLegs() {
 			variable: "anklesocks",
 			combat: {
 				renderType: "ankled",
+				accColour: "#f5f0ee",
 			},
 			integrity: 100,
 			integrity_max: 100,
