@@ -252,41 +252,59 @@
 		<<set _fameRumour.push("bestiality")>>
 	<</if>>
 
-	<<if $schoolfameboard isnot 1 and $schoolfameblackmail gte 3 or $schoolfameboard isnot 1 and $schoolfamerefused is 1>>
+	<<if $halloween is 1 and !$halloween_lake>>
+		<<halloween_lake_invite>>
+	<<else>> /* Note: The closing endif is all the way at the bottom of this widget, and this else case is INTENTIONALLY not indented for readability purposed in the MR */
+	<<cleareventpool>>
+
+	<<if $schoolfameboard is undefined and ($schoolfameblackmail gte 3 or $schoolfamerefused is 1)>>
+		<<addinlineevent "fame_board" 5>>
 		<<set $schoolfameboard to 1>>
-
 		<<schoolfameboard>>
-
-	<<elseif fameSum("sex","rape","prostitution","bestiality") gte 4000 and $schoolfameblackmail is undefined>>
+		<</addinlineevent>>
+	<</if>>
+	
+	<<if fameSum("sex","rape","prostitution","bestiality") gte 4000 and $schoolfameblackmail is undefined>>
+		<<addinlineevent "fame_blackmail" 5>>
 		<<set $schoolfameblackmail to 0>>
 		<<npc Leighton>><<person1>>The headteacher emerges from <<his>> office and motions for you to enter. <<He>> wears a strange smile on <<his>> face.
 		<br><br>
-
 		<<link [[Enter|School Fame Blackmail]]>><</link>>
 		<br>
 		<<link [[Refuse|School Fame Blackmail Refuse]]>><<detention 1>><</link>><<gdelinquency>>
 		<br>
+		<</addinlineevent>>
+	<</if>>
 
-	<<elseif Time.days gte 7 and C.npc.Kylar.init isnot 1 and $kylarignored isnot 1>>
+	<<if Time.days gte 7 and C.npc.Kylar.init isnot 1 and $kylarignored isnot 1>>
+		/* If it's been four weeks, Kylar's primary intro becomes mandatory by eliminatiing all other events as options */
+		<<if Time.days gte 28>> <<cleareventpool>> <</if>>
+
+		<<addinlineevent "kylar_intro" 10>> 
 		<<npc Kylar>><<initnpc Kylar>><<generatey2>><<generatey3>>Someone's bag lands in front of you. It spills its contents, scattering pens and books across the floor. You turn the corner and see its owner, a <<nnpc_gendery "Kylar">> held aloft by <<person1>><<his>> collar and pushed against a locker. <<He>> kicks the <<person2>><<person>> holding <<person1>><<him>>, but the <<person2>><<person>> just laughs. "That your best?" <<he>> says. <<He>> grasps the bullied <<nnpc_gendery "Kylar">>'s unkempt dark hair with <<his>> free hand. "Lucky you. Hurting me would be stupid."
 		<br><br>
-
 		Other students ignore what is happening, or watch in amusement.
 		<br><br>
-
 		<<link [[Intervene|Kylar Intro Intervene]]>><<npcset Kylar state "active">><<status -10>><<npcincr Kylar love 1>><</link>><<glove>><<lcool>>
 		<br>
 		<<link [[Watch but make sure <<he>> is okay after|Kylar Intro Help]]>><<npcset Kylar state "active">><<npcincr Kylar love 1>><</link>><<glove>>
 		<br>
 		<<link [[Ignore|Kylar Intro Ignore]]>><<set $kylarignored to 1>><</link>>
 		<br>
+		<</addinlineevent>>
 
-	<<elseif Time.days gte 14 and $kylarignored is 1 and C.npc.Kylar.state isnot "active" and C.npc.Kylar.state isnot "prison">>
+		/* Run the eventpool with only Kylar's primary intro loaded, effectively giving it 100% weight */
+		<<if Time.days gte 28>> <<runeventpool>> <<exit>> <</if>>
+	<</if>>
+
+	<<if Time.days gte 14 and $kylarignored is 1 and C.npc.Kylar.state isnot "active" and C.npc.Kylar.state isnot "prison">>
+		/* If it's been five weeks, Kylar's secondary intro becomes mandatory by eliminating all other events as options */
+		<<if Time.days gte 35>> <<cleareventpool>> <</if>>
+
+		<<addinlineevent "kylar_intro_ignored" 10>> 
 		<<npcset Kylar state "active">>
-
 		<<npc Kylar>><<person1>>You round a corner and bump into a <<nnpc_gendery "Kylar">>. <<He>> scowls and looks up at you, but then <<his>> face softens and <<his>> mouth gapes.
 		<br><br>
-
 		"I-I'm," <<he>> stutters. "I'm Kylar." You thought <<he>> was a younger student, but <<he>> seems your age.
 		<<switch $bodysize>>
 			<<case 0>>
@@ -303,30 +321,47 @@
 		<<endevent>>
 		<<link [[Next|Hallways]]>><<set $eventskip to 1>><</link>>
 		<br>
+		<</addinlineevent>>
 
-	<<elseif $bullytimer gte $rng and !["dungeon", "pillory"].includes(C.npc.Whitney.state)>>
+		/* Run the eventpool with only Kylar's secondary intro loaded, effectively giving it 100% weight */
+		<<if Time.days gte 35>> <<runeventpool>> <<exit>> <</if>>
+	<</if>>
+
+	<<if $bullytimer gte $rng and !["dungeon", "pillory"].includes(C.npc.Whitney.state)>>
+		/* If Whitney hasn't been introduced, eliminate all other events as options. Note: The intro will become mandatory by day 5 (when $bullytimer hits 100)*/
+		<<if $bullyevent is 0>> <<cleareventpool>> <</if>>
+		
+		<<addinlineevent "whitney_hallways" 10>>
 		<<set $bullytimer to 0>>
 		<<schoolbully>>
+		<</addinlineevent>>
+		
+		/* Run the eventpool with only Whitney's intro loaded, effectively giving it 100% weight */
+		<<if $bullyevent is 0>> <<runeventpool>> <<exit>> <</if>>
+	<</if>>
 
-	<<elseif C.npc.Kylar.state is "active" and $kylar.timer.halls gte $rng>>
+	<<if C.npc.Kylar.state is "active" and $kylar.timer.halls gte $rng>>
+		<<addinlineevent "kylar_hallways" 10>>
 		<<set $kylar.timer.halls to 0>>
 		<<kylarhallways>>
+		<</addinlineevent>>
+	<</if>>
 
-	<<elseif $mathsproject is "ongoing" and $mathsdruggedstudent isnot 1 and $mathsprojectdays lt 20 and $stimdealerknown is 1>>
+	<<if $mathsproject is "ongoing" and $mathsdruggedstudent isnot 1 and $mathsprojectdays lt 20 and $stimdealerknown is 1>>
+		<<addinlineevent "maths_drugged_student" 10>>
 		<<set $mathsdruggedstudent to 1>>
 		<<generatey1>><<person1>>You see a <<person>> you recognise from maths. <<Hes>> sat on the floor, a pen and paper lying beside <<him>>. <<His>> pupils are dilated, and <<he>> stares into space. A partial solution to the maths competition problem is written on the paper.
 		<br><br>
-
 		<<link [[Get help|Maths Drugged Help]]>><<famegood 5>><<detention -6>><<trauma -6>><</link>><<ldelinquency>><<ltrauma>>
 		<br>
 		<<link [[Copy|Maths Drugged Copy]]>><<set $mathsinfo += 1>><</link>><<note "+ Mathematical Insight" "green">>
 		<br>
 		<<link [[Rob|Maths Drugged Rob]]>><<detention 6>><<set $mathsstim += 1>><</link>><<ggdelinquency>><<note "+ Stimulant" "green">>
 		<br>
+		<</addinlineevent>>
+	<</if>>
 
-	<<elseif $halloween is 1 and !$halloween_lake>>
-		<<halloween_lake_invite>>
-	<<elseif $rng gte 100>>
+	<<addinlineevent "hallways_rape">>
 		<<generatey1>><<person1>><<generatey2>>
 		A hand clamps over your mouth from behind, and an arm wraps around your waist. "Don't squirm," says the <<person>> responsible. "I just need your help with something." <<He>> tries to pull you into an empty classroom.
 		<<if $whitneyromance is 1>>
@@ -345,9 +380,10 @@
 			<<link [[Let it happen|Hallways Rape Let]]>><</link>>
 			<br>
 		<</if>>
-	<<elseif $rng gte 91>>
-		<<if $rng % 2 == 0>><<set $lock to 0>>
-
+	<</addinlineevent>>
+	
+	<<addinlineevent "hallways_locker_victim">>
+			<<set $lock to 0>>
 			As you walk down the hallway, you hear something from one of the lockers. Moving closer, you can hear muffled banging and a voice from inside.
 			<span class="yellow">Someone is locked in there.</span>
 			<br><br>
@@ -360,8 +396,10 @@
 				<br>
 			<</if>>
 			<<link [[Ignore them|Hallways Locker Victim]]>><<set $phase to 3>><</link>>
-		<<else>>
-			<<generatey1>><<person1>><<generateyp2>>
+	<</addinlineevent>>
+
+	<<addinlineevent "hallways_stalker">>
+			<<generatey1>><<person1>><<generateyv2>>
 			A <<person>> is stalking a <<person2>><<person>> through the hallway. The <<person1>><<persons>> expression is intense, <<his>> intentions do not look friendly, <<person2>>
 			<<print either("but the <<person>> hasn't noticed. Yet.","and the <<person>> looks terrified.","and the <<person>> looks intimidated.","but the <<person>> seems completely unaware.")>>
 			<span class = "red">There are no teachers in sight.</span>
@@ -372,34 +410,29 @@
 			<br>
 			<<link [[Ignore it|Hallways Stalker Intervention]]>><<set $phase to 2>><</link>>
 			<br>
-		<</if>>
-	<<elseif $rng gte 81>>
+	<</addinlineevent>>
+
+	<<addinlineevent "hallways_students_reputation">>
 		<<bodywritingExposureCheck>>
 		<<if _bodywriting_exposed is 1>>
 			You pass by a group of students. Your face flushes as one points at the <<tattoo _bodypart>> on your <<bodypart _bodypart>>.
 			<<lcool>><<status -10>><<gtrauma>><<trauma 6>><<gstress>><<stress 10>>
 			<br><br>
-
 			<<link [[Next|Hallways]]>><<set $eventskip to 1>><</link>>
 			<br>
-
 		<<else>>
 			<<if $cool gte 400>>
 				You pass by a group of students. They drop their conversation and surround you, vying for your attention, each wanting to be seen with you.
 				<<ltrauma>><<lstress>><<trauma -6>><<stress -12>>
 				<br><br>
-
 				<<link [[Next|Hallways]]>><<set $eventskip to 1>><</link>>
 				<br>
-
 			<<elseif $cool gte 160>>
 				You pass a group of students who smile and greet you.
 				<<ltrauma>><<trauma -6>>
 				<br><br>
-
 				<<link [[Next|Hallways]]>><<set $eventskip to 1>><</link>>
 				<br>
-
 			<<elseif $cool gte 120>>
 				<<if $schoolrep.herm gte 5 and !$worn.face.type.includes("mask")>>
 					You pass by a group of students who break into whispers as you pass by. You hear something about a hermaphrodite.
@@ -409,10 +442,8 @@
 					You pass by a group of students who completely ignore you. You might as well be invisible to them.
 				<</if>>
 				<br><br>
-
 				<<link [[Next|Hallways]]>><<set $eventskip to 1>><</link>>
 				<br>
-
 			<<elseif $cool gte 40>>
 				<<if $schoolrep.herm gte 5 and !$worn.face.type.includes("mask")>>
 					You pass a group of students who mock and call you a freak.
@@ -423,51 +454,50 @@
 				<</if>>
 				<<gstress>><<stress 6>>
 				<br><br>
-
 				<<link [[Next|Hallways]]>><<set $eventskip to 1>><</link>>
 				<br>
-
 			<<else>>
 				You see a group of students up ahead. With your reputation and no teachers near, you're afraid to go near them.
 				<br><br>
-
 				<<link [[Take a detour (0:05)|Hallways]]>><<set $eventskip to 1>><<pass 5>><</link>>
 				<br>
-				<<link [[I can't waste the time. Walk past them.|Hallways Low Status]]>><</link>><<gtrauma>><<gstress>>
+				<<link [[Walk past them anyway|Hallways Low Status]]>><</link>><<gtrauma>><<gstress>>
 				<br>
-
 			<</if>>
 		<</if>>
-	<<elseif $rng gte 71 and $hypnosis gte 1 and $hypnosisdisable is "f">>
+	<</addinlineevent>>
+
+	<<if $hypnosis gte 1 and $hypnosisdisable is "f">>
+		<<addinlineevent "hallways_hypnosis">>
 		<<generatey1>><<person1>>You walk past a <<person>> bent over in front of <<his>> locker. <<hypnosisicon>> <span class="blue">You feel something shift in your consciousness, as if you're entering a trance.</span> <<hypnosisicon>> A lewd thought strikes you.
 		<br><br>
-
 		<<link [[Spank|Hallways Hypnosis Spank]]>><<def 1>><<hypnotised 1>><<trauma -6>><<stress -12>><<detention 3>><</link>><<gdelinquency>><<ltrauma>><<llstress>>
 		<br>
 		<<link [[Resist|Hallways Hypnosis Spank Resist]]>><</link>><<willpowerdifficulty 1 `150 + ($hypnosis * 50)`>>
 		<br>
-	<<elseif $rng gte 61>>
+		<</addinlineevent>>
+	<</if>>
+
+	<<addinlineevent "hallways_students_passing">>
 		<<if playerBellyVisible()>>
 			<<rng>>
 			<<generates1>><<generates2>><<generates3>>
 			A group of students approaches you, their eyes fixated on your belly.
 			<br><br>
-
 			"It's you!" says one of them, a <<person1>><<person>>. "You're that <<girl>> who got pregnant!"
 			<br>
 			"That's amazing," the <<person2>><<person>> adds. "Can I touch it? I'll be really careful, promise!"
 			<br><br>
-
 			<<link [[Let them (0:01)|Hallways Pregnant Touch]]>><<pass 1>><</link>>
 			<br>
 			<<link [[Leave|Hallways Pregnant Leave]]>><</link>>
 			<br>
 		<<elseif $delinquency gte 400>>
-			<<generatey1>><<person1>>A <<person>> gives you a creepy look as you walk by, and starts following you. There's no way <<he>> would try anything with people around, but you come to an empty corridor.
+			<<generatey1>><<person1>>A <<person>> gives you a creepy look as you walk by, and starts following you. There's no way <<he>> would try anything with people around, but you soon come to an empty corridor.
 			<br><br>
 			<<link [[Take a detour (0:05)|Hallways]]>><<set $eventskip to 1>><<endevent>><<pass 5>><</link>>
 			<br>
-			<<link [[I can't waste the time. Keep going.|Hallways High Delinquency]]>><</link>>
+			<<link [[Keep going anyways|Hallways High Delinquency]]>><</link>>
 			<br>
 		<<elseif $delinquency gte 10>>
 			<<generatey1>><<person1>>A <<person>> gives you a creepy look as you walk by, and starts following you. <<He>> stops following when a teacher walks into view.
@@ -482,7 +512,10 @@
 			<<link [[Next|Hallways]]>><<endevent>><<set $eventskip to 1>><</link>>
 			<br>
 		<</if>>
-	<<elseif $rng gte 56 and $schoolrep.herm gte 5 and !$worn.face.type.includes("mask")>>
+	<</addinlineevent>>
+
+	<<if $schoolrep.herm gte 5 and !$worn.face.type.includes("mask")>>
+		<<addinlineevent "fame_herm">>
 		<<generatey1>><<generatey2>><<generatey3>>
 		You hear whispering behind you.
 		<br>
@@ -529,10 +562,13 @@
 			The three glance at you, and hurry away when they notice you looking.<<gtrauma>><<gstress>><<trauma 6>><<stress 6>>
 			<br><br>
 		<</if>>
-
 		<<link [[Next|Hallways]]>><<endevent>><<set $eventskip to 1>><</link>>
 		<br>
-	<<elseif $rng gte 51 and $schoolrep.crossdress gte 5 and !$worn.face.type.includes("mask")>>
+		<</addinlineevent>>
+	<</if>>
+
+	<<if $schoolrep.crossdress gte 5 and !$worn.face.type.includes("mask")>>
+		<<addinlineevent "fame_crossdress">>
 		<<generatey1>><<generatey2>><<generatey3>>
 		You hear whispering behind you.
 		<br>
@@ -700,7 +736,11 @@
 		<br><br>
 		<<link [[Next|Hallways]]>><<endevent>><<set $eventskip to 1>><</link>>
 		<br>
-	<<elseif $rng gte 41 and _fameRumour.length gt 0>>
+		<</addinlineevent>>
+	<</if>>
+
+	<<if _fameRumour.length gt 0>>
+		<<addinlineevent "fame_rumour">>
 		/* Using random in case the player has fame in multiple categories */
 		<<set _selectedRumour to _fameRumour.random()>>
 		<<set _trauma to false>>
@@ -774,7 +814,10 @@
 		<br><br>
 		<<link [[Next|Hallways]]>><<endevent>><<set $eventskip to 1>><</link>>
 		<br>
-	<<elseif $rng gte 36>>
+		<</addinlineevent>>
+	<</if>>
+
+	<<addinlineevent "hallways_students_bullying">>
 		<<generatey1>><<generatey2>>
 		As you walk down the school hallways, you
 		<<if $cool gte 160>> /* "Cool" or higher */
@@ -818,7 +861,9 @@
 			<<link [[Just keep walking|Hallways Group Unpopular]]>><<set $phase to (_underwear ? random(0,1) : 0)>><</link>>
 			<br>
 		<</if>>
-	<<elseif $rng gte 31>>
+	<</addinlineevent>>
+
+	<<addinlineevent "hallways_molestation">>
 		<<generatey1>><<person1>>
 		<<rng>>
 		<<if $rng gte 66>>
@@ -837,31 +882,27 @@
 		<br>
 		<<link [[Ignore|Hallways]]>><<endevent>><<set $eventskip to 1>><<trauma 1>><<stress 1>><</link>><<gtrauma>><<gstress>>
 		<br>
+	<</addinlineevent>>
 
-	<<elseif $rng gte 26>>
-
+	<<addinlineevent "hallways_students_crowd">>
 		Crowds of students move back and forth. You move slowly, navigating through the corridors and trying not to bump into anyone.
 		<br><br>
-
 		<<if $cool gte 160>>
-
 			You are briefly blocked by a larger group. When one of them notices you, they gesture to the others to let you by. You move on when a path is made for you.
 			<br><br>
-
 			<<link [[Next|Hallways]]>><<endevent>><<set $eventskip to 1>><</link>>
-
+			<br>
 		<<else>>
-
 			Eventually you're blocked by a large group of lingering students, loudly talking to each other. You look for a way around them when suddenly you feel <<if setup.clothes.lower[clothesIndex('lower', $worn.lower)].skirt is 1>>a hand on your skirt's zipper.<<else>>hands on the waist of your bottoms.<</if>>
 			<br><br>
-
 			<<link [[Grab them|Hallways Pantsed Grab]]>><</link>><<athleticsdifficulty 1 1000>>
 			<br>
 			<<link [[Do nothing|Hallways Pantsed]]>><<set $phase to 1>><</link>>
-
+			<br>
 		<</if>>
+	<</addinlineevent>>
 
-	<<elseif $rng gte 21>>
+	<<addinlineevent "hallways_catcalled">>
 		<<generatey1>><<person1>>
 		<<if numberOfEarSlime() and $earSlime.growth gte 80 - ($earSlime.promiscuity * 10)>>
 			<<if $player.perceived_breastsize gte 6>>
@@ -870,7 +911,6 @@
 				<br><br>
 				<span class="lewd">You feel the slime in your head command you to bare yourself.</span> It promises rewards if you comply, and threatens consequences if you do not.
 				<br><br>
-
 				<<if hasSexStat("promiscuity", 4) and $submissive gte 1900>>
 					<<link [[Submit willingly|Hallways Slime Breasts Submit willingly]]>><<corruption 3>><<pain -8>><<stress -12>><<trauma -24>><<sub 2>><</link>><<promiscuous4>><<ggcorruption>><<llpain>><<llltrauma>><<llstress>>
 					<br>
@@ -879,14 +919,12 @@
 				<br>
 				<<link [[Defy|Hallways Slime Breasts Defy]]>><<corruption -1>><<pain 8>><<stress 6>><<trauma 6>><<def 1>><</link>><<lcorruption>><<ggpain>><<ggtrauma>><<ggstress>>
 				<br>
-
 			<<else>>
 				A <<person>> shouts at you. <<schoolcatcall>> You feel your cheeks flush in embarrassment.
 				<<gtrauma>><<gstress>><<trauma 2>><<stress 2>>
 				<br><br>
 				<span class="lewd">You feel the slime in your head command you to bare yourself.</span> It promises rewards if you comply, and threatens consequences if you do not.
 				<br><br>
-
 				<<if hasSexStat("promiscuity", 5) and $submissive gte 1900>>
 					<<link [["Submit willingly"|Hallways Slime Strip Submit willingly]]>><<corruption 3>><<pain -8>><<stress -12>><<trauma -24>><<sub 2>><</link>><<promiscuous5>><<ggcorruption>><<llpain>><<llltrauma>><<llstress>>
 					<br>
@@ -895,7 +933,6 @@
 				<br>
 				<<link [[Defy|Hallways Slime Strip Defy]]>><<corruption -1>><<pain 8>><<stress 6>><<trauma 6>><<def 1>><</link>><<lcorruption>><<ggpain>><<ggtrauma>><<ggstress>>
 				<br>
-
 			<</if>>
 		<<else>>
 			<<if $player.perceived_breastsize gte 6>>
@@ -924,7 +961,10 @@
 			<<link [[Ignore|Hallways]]>><<endevent>><<set $eventskip to 1>><</link>>
 			<br>
 		<</if>>
-	<<elseif $rng gte 16 and $whitneyRoofKey is true>>
+	<</addinlineevent>>
+
+	<<if $whitneyRoofKey is true>>
+		<<addinlineevent "whitney_locker_key" 10>>
 		<<unset $whitneyRoofKey>>
 		<<generates1>><<generates2>><<loadNPC 2 locker_key_owner>>
 		You're walking down the halls when you see a <<person1>><<person>> and a <<person2>><<person>> digging through a locker. You recognise them as a couple of Whitney's friends.
@@ -935,23 +975,30 @@
 		<br><br>
 		You remember seeing Whitney on the roof bullying another student, and passing off the <<person>>'s locker key to <<nnpc_his "Whitney">> friends.
 		<br><br>
-
 		<<link [[Intervene|Hallways Delinquent Lockers]]>><<set $phase to 0>><</link>>
 		<br>
 		<<link [[Ignore them|Hallways Delinquent Lockers]]>><<set $phase to 1>><</link>>
 		<br>
-	<<elseif $rng gte 11 and !$worn.lower.type.includes("naked")>>
+		<</addinlineevent>>
+	<</if>>
+
+	<<if !$worn.lower.type.includes("naked")>>
+		<<addinlineevent "hallways_locker">>
 		<<lockerevent>>
-	<<else>>
+		<</addinlineevent>>
+	<</if>>
+
+	<<addinlineevent "hallways_talk">>
 		<<generatey1>>A <<person1>><<person>> walks up to you. "Hi," <<he>> says. Seems <<he>> wants to talk.
 		<br><br>
-
-		<<link [[Hi (0:05)|Hallways Encounter]]>><<pass 5>><<trauma -6>><<stress -12>><</link>><<ltrauma>><<lstress>>
+		<<link [[Chat (0:05)|Hallways Encounter]]>><<pass 5>><<trauma -6>><<stress -12>><</link>><<ltrauma>><<lstress>>
 		<br>
 		<<link [[Ignore|Hallways]]>><<endevent>><<set $eventskip to 1>><</link>>
 		<br>
+	<</addinlineevent>>
 
-	<</if>>
+	<<runeventpool>>
+	<</if>> /* The endif for the halloween if statement. Intentionally unindented */
 <</widget>>
 
 <<widget "courtyard">>
