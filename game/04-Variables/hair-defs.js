@@ -13,7 +13,6 @@ setup.hair = {
 				"drill ringlets",
 				"half-up",
 				"heart braid",
-				"wavy braid",
 				"loose",
 				"messy bun",
 				"neat",
