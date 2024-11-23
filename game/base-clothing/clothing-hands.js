@@ -251,7 +251,7 @@ function initHands() {
 			name_cap: "Cheerleader gloves",
 			variable: "pompoms",
 			combat: {
-				accessory: false,
+				reference: "fingerlessgloves",
 			},
 			state: 0,
 			state_base: 0,
@@ -359,7 +359,8 @@ function initHands() {
 			name_cap: "Work gloves",
 			variable: "workgloves",
 			combat: {
-				reference: "mittens",
+				reference: "longleathergloves",
+				mainColour: "#8c4c00",
 			},
 			state: 0,
 			state_base: 0,
@@ -396,8 +397,9 @@ function initHands() {
 			name_cap: "Sexy nun's gloves",
 			variable: "nunlewd",
 			combat: {
-				reference: "longleathergloves",
+				reference: "armwarmers",
 				mainColour: "#2f2534",
+				accColour: "#2f2534",
 			},
 			state: 0,
 			state_base: 0,
@@ -470,6 +472,9 @@ function initHands() {
 			name: "gold shackles",
 			name_cap: "Gold shackles",
 			variable: "goldshackles",
+			combat: {
+				reference: "gold",
+			},
 			state: 0,
 			state_base: 0,
 			integrity: 200,
