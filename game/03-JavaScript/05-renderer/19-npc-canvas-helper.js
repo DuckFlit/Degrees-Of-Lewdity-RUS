@@ -1,5 +1,5 @@
 // @ts-check
-/* global CanvasModelLayers, KeyframeAnimationSpec, CombatRenderer, KeyframeSpec */
+/* global CanvasModelLayers, KeyframeAnimationSpec, AnimationSpec, CombatRenderer, KeyframeSpec */
 
 class NpcCanvasHelper {
 	/**
@@ -37,6 +37,9 @@ class NpcCanvasHelper {
 			},
 			zfn(options) {
 				if (layer === "front") {
+					if (options.category === "shadow") {
+						return CombatRenderer.indices.frontThigh - 1;
+					}
 					if (options.state === "penis") {
 						return 91;
 					}
@@ -136,6 +139,9 @@ class NpcCanvasHelper {
 				if (penetrator == null) {
 					return 0;
 				}
+				if (penetrator.position === "mouth") {
+					return CombatRenderer.indices.head + 2;
+				}
 				if (penetrator.position === "thighs") {
 					return 30;
 				}
@@ -154,12 +160,6 @@ class NpcCanvasHelper {
 				if (options.position === "missionary" && penetrator.position === "leftarm") {
 					return CombatRenderer.indices.backArm - 1;
 				}
-				if (penetrator.position === "mouth" && penetrator.state !== "penetrating") {
-					return CombatRenderer.indices.head + 1; // Put in front of head
-				}
-				if (penetrator.type === "knotted" && penetrator.position === "mouth") {
-					return CombatRenderer.indices.head + 1;
-				}
 				if (penetrator.position === "vagina" && penetrator.state === null) {
 					return CombatRenderer.indices.frontLowerOverwear + 1;
 				}
@@ -174,12 +174,13 @@ class NpcCanvasHelper {
 				if (penetrator == null) {
 					return options.animKey;
 				}
+				if (penetrator.position === "mouth") {
+					return options.animKey;
+				}
 				if (options.position === "missionary") {
 					switch (penetrator.position) {
 						case "vagina":
 							return `vagina-missionary-${speed}`;
-						case "mouth":
-							return `blowjob-missionary-${speed}`;
 					}
 				}
 				if (penetrator.position != null && ["vagina", "anus", "thighs"].includes(penetrator.position)) {
@@ -187,9 +188,6 @@ class NpcCanvasHelper {
 				}
 				if (penetrator.position === "butt") {
 					return `butt-rubbing-${speed}`;
-				}
-				if (penetrator.position === "mouth") {
-					return `blowjob-${speed}`;
 				}
 				if (penetrator.position === "chest") {
 					return `boobjob-${speed}`;
@@ -545,7 +543,36 @@ function genKeyFrame(duration, dx, dy) {
 }
 
 Renderer.Animations["equal-oscillation-idle"] = genLinearKeyFrames(2, 1000, 0, 12, 0, 0);
-Renderer.Animations["equal-oscillation-slow"] = genFourOffsetKeyFrames(320, 0, 12, 0, 0);
+/** @type {AnimationSpec} */
+const eoSlow = {
+	frameCount: 4,
+	keyframes: [
+		{
+			frame: 0,
+			duration: 330,
+			dx: 0,
+		},
+		{
+			frame: 1,
+			duration: 330,
+			dx: 6,
+			dy: 2,
+		},
+		{
+			frame: 2,
+			duration: 330,
+			dx: 12,
+			dy: 2,
+		},
+		{
+			frame: 3,
+			duration: 330,
+			dx: 8,
+			dy: 2,
+		},
+	],
+};
+Renderer.Animations["equal-oscillation-slow"] = eoSlow;
 Renderer.Animations["equal-oscillation-mid"] = genFourOffsetKeyFrames(170, 0, 12, 0, 0);
 Renderer.Animations["equal-oscillation-fast"] = genFourOffsetKeyFrames(110, 0, 12, 0, 0);
 Renderer.Animations["equal-oscillation-vfast"] = genFourOffsetKeyFrames(80, 0, 12, 0, 0);

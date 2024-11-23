@@ -636,11 +636,9 @@ var Renderer;
                     }
                     maskImg = maskImg[0];
                 }
-                console.log(JSON.parse(JSON.stringify(maskImg)));
                 if (!layer.maskOptions?.convert) {
                     return;
                 }
-                console.log("CanvasImageSource found");
                 // Our mask should be a proper CanvasImageSource by this point.
                 const ctx = Renderer.createCanvas(image.width, image.height);
                 ctx.fillStyle = "#fff";
