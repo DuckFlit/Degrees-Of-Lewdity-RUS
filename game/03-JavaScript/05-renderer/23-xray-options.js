@@ -24,6 +24,7 @@
 /**
  * @typedef XrayPlayerPenetrator
  * @property {string} base
+ * @property {boolean} show
  * @property {string} penetratedType
  * @property {string} type
  * @property {"anal" | "vaginal"} penetrated
@@ -41,6 +42,7 @@
 /**
  * @typedef XrayNpcPenetrator
  * @property {string} base
+ * @property {boolean} show
  * @property {number=} npc
  * @property {number=} npc2
  * @property {string} npcType
@@ -69,6 +71,7 @@ class XrayCombatMapper {
 			// You may want to set these properties as nullable/undefinable in the typings
 			vagina: {
 				base: "",
+				show: true,
 				cum: 0,
 				doublePen: false,
 				isCumActive: false,
@@ -81,6 +84,7 @@ class XrayCombatMapper {
 			},
 			anus: {
 				base: "",
+				show: true,
 				cum: 0,
 				doublePen: false,
 				isCumActive: false,
@@ -93,6 +97,7 @@ class XrayCombatMapper {
 			},
 			penis: {
 				base: "",
+				show: true,
 				cum: 0,
 				isCumActive: false,
 				size: 0,
@@ -225,6 +230,7 @@ class XrayCombatMapper {
 			penetrator.npcType = "none";
 			penetrator.size = 0;
 			penetrator.base = slot === "vagina" && V.orgasmdown >= 1 ? "twitching" : "rest";
+			penetrator.show = false;
 		} else {
 			penetrator.base = "sex";
 			penetrator.npc = V[slot + "target"];
@@ -235,7 +241,7 @@ class XrayCombatMapper {
 			case "none":
 				penetrator.penetratorSprite = "";
 				penetrator.size = 0;
-				options.showNpcPenis = false;
+				penetrator.show = false;
 				options.filters[slot + "Penetrator"] = "";
 				break;
 			case "machine":

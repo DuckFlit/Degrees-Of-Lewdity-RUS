@@ -41,9 +41,18 @@ class CombatEditor {
 			if (layer.show !== true) {
 				btn.classList.add("faded");
 			}
-			btn.addEventListener("click", () => {
-				console.log("Layer", layer.name, "clicked.");
+			btn.addEventListener("click", ev => {
 				CombatEditor.layer = layer;
+				if (ev.shiftKey) {
+					CombatEditor.layer.show = !CombatEditor.layer.show;
+					if (CombatEditor.layer.show) {
+						btn.classList.remove("faded");
+					} else {
+						btn.classList.add("faded");
+					}
+					CombatEditor.refreshCombatCanvas();
+					return;
+				}
 				const dialog = document.getElementById("combatMainLayerDialog");
 				if (dialog && dialog instanceof HTMLDialogElement) {
 					dialog.replaceChildren(CombatEditor.createLayerDialogContent(btn));
@@ -126,7 +135,7 @@ class CombatEditor {
 		// Filter list
 		const filterSpan = document.createElement("span");
 		// @ts-ignore
-		filterSpan.textContent = "Filters: " + layer.filters;
+		filterSpan.textContent = "Filters: " + JSON.stringify(layer.filters);
 		container.append(filterSpan);
 
 		// Animation key
@@ -139,6 +148,39 @@ class CombatEditor {
 			CombatEditor.CreateTextboxControl(container, "cr-layer-masksrc", "Mask: ", layer.masksrc, (control, layer) => {
 				layer.masksrc = control.value;
 			});
+		}
+
+		if (Array.isArray(layer.masksrc)) {
+			layer.masksrc.forEach((src, i) => {
+				if (typeof src === "string") {
+					CombatEditor.CreateTextboxControl(container, "cr-layer-masksrc" + i, "Mask: ", src, (control, layer) => {
+						if (Array.isArray(layer.masksrc) && typeof layer.masksrc[i] === "string") {
+							layer.masksrc[i] = control.value;
+						}
+					});
+				}
+			});
+		}
+
+		if (typeof layer.masksrc === "object") {
+			if (!Array.isArray(layer.masksrc) && Renderer.isMaskObject(layer.masksrc)) {
+				CombatEditor.CreateTextboxControl(container, "cr-layer-masksrc", "Mask: ", layer.masksrc.path, (control, layer) => {
+					if (typeof layer.masksrc === "object" && !Array.isArray(layer.masksrc) && Renderer.isMaskObject(layer.masksrc)) {
+						layer.masksrc.path = control.value;
+					}
+				});
+			}
+			if (Array.isArray(layer.masksrc)) {
+				layer.masksrc.forEach((src, i) => {
+					if (Renderer.isMaskObject(src)) {
+						CombatEditor.CreateTextboxControl(container, "cr-layer-masksrc" + i, `Mask ${i}: `, src.path, (control, layer) => {
+							if (typeof layer.masksrc === "object" && !Array.isArray(layer.masksrc) && Renderer.isMaskObject(layer.masksrc)) {
+								layer.masksrc.path = control.value;
+							}
+						});
+					}
+				});
+			}
 		}
 
 		fragment.append(container);

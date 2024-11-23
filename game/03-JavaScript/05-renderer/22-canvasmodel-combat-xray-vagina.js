@@ -51,7 +51,7 @@ const combatXrayVagina = {
 				return `${options.src}vaginal/cum/${options.vagina.base}${baseSize}${dp}${cumAmt}.png`;
 			},
 			showfn(options) {
-				return !!options.vagina.showCum;
+				return !!options.vagina.showCum && !!options.vagina.show;
 			},
 			animationfn(options) {
 				return options.animKeyVagina;
@@ -92,7 +92,7 @@ function xrayVaginaPenetrator(npc, overrideOptions = {}) {
 			return `${options.src}vaginal/${options.vagina.penetratorSprite}${penSize}${dp}.png`;
 		},
 		showfn(options) {
-			return !!options.showNpcPenis && options.vagina[npc] !== undefined;
+			return !!options.showNpcPenis && !!options.vagina.show && options.vagina[npc] !== undefined;
 		},
 		animationfn(options) {
 			return options.animKeyVagina;
@@ -126,7 +126,7 @@ function xrayVaginaCondom(npc, overrideOptions = {}) {
 		},
 		showfn(options) {
 			const target = npc === "npc2" ? V.vaginadoubletarget : V.vaginatarget;
-			return !!options.showNpcPenis && options.vagina[npc] !== undefined && !!V.NPCList[target].condom.worn;
+			return !!options.showNpcPenis && !!options.vagina.show && options.vagina[npc] !== undefined && !!V.NPCList[target].condom.worn;
 		},
 		animationfn(options) {
 			return options.animKeyVagina;

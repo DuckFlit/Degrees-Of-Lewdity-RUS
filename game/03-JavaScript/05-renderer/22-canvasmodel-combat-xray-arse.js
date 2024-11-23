@@ -50,7 +50,7 @@ const combatXrayArse = {
 				return `${options.src}anal/cum/${options.anus.base}${baseSize}${cumAmt}.png`;
 			},
 			showfn(options) {
-				return !!options.anus.showCum;
+				return !!options.anus.showCum && !!options.anus.show;
 			},
 			animationfn(options) {
 				return options.animKeyArse;
@@ -91,7 +91,7 @@ function xrayArsePenetrator(npc, overrideOptions = {}) {
 			return `${options.src}anal/${options.anus.penetratorSprite}${penSize}${dp}.png`;
 		},
 		showfn(options) {
-			return !!options.showNpcPenis && options.anus[npc] !== undefined;
+			return !!options.showNpcPenis && !!options.anus.show && options.anus[npc] !== undefined;
 		},
 		animationfn(options) {
 			return options.animKeyArse;
@@ -125,7 +125,7 @@ function xrayArseCondom(npc, overrideOptions = {}) {
 		},
 		showfn(options) {
 			const target = npc === "npc2" ? V.anusdoubletarget : V.anustarget;
-			return !!options.showNpcPenis && options.anus[npc] !== undefined && !!V.NPCList[target].condom.worn;
+			return !!options.showNpcPenis && !!options.anus.show && options.anus[npc] !== undefined && !!V.NPCList[target].condom.worn;
 		},
 		animationfn(options) {
 			return options.animKeyArse;
