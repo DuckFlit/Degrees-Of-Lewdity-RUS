@@ -416,15 +416,15 @@
 			{ type: "rape", name: "fucktoy" },
 			{ type: "bestiality", name: $bestialitydisable is "f" ? "bitch" : "monster fucker" },
 			{ type: "exhibitionism", name: "flaunter" },
-			{ type: "pregnancy", name: { 1000: "broodmother", 400: "breeder", 100: "mother" } },
-			{ type: "impreg", name: { 1000: "allfather", 400: "sire", 100: "inseminator" } }
+			{ type: "pregnancy", name: $fame.pregnancy gte 1000 ? "broodmother" : ($fame.pregnancy gte 400 ? "breeder" : "mother") },
+			{ type: "impreg", name: $fame.impreg gte 1000 ? "allfather" : ($fame.impreg gte 400 ? "sire" : "inseminator") },
 		]>>
 		<<set _pos = [
 			{ type: "scrap", name: "scrapper" },
 			{ type: "good", name: "do-gooder" },
 			{ type: "business", name: "entrepreneur" },
-			{ type: "social", name: { 1000: "schmoozer", 100: "socialite" } },
-			{ type: "model", name: { 1000: "show off", 100: "model" } }
+			{ type: "social", name: $fame.social gte 1000 ? "schmoozer" : "socialite" },
+			{ type: "model", name: $fame.model gte 1000 ? "show off" : "model" },
 		]>>
 		<<set _decreaseAllure to _pos.some(fame => (_posLabels.some(status => $fame[fame.type] >= status.threshold)))>>
 
@@ -494,11 +494,7 @@
 				<<for _fame range _neg>>
 					<<set _famous = _negLabels.find(status => $fame[_fame.type] >= status.threshold)>>
 					<<if _famous>>
-						<<if ["pregnancy", "impreg"].includes(_fame.type) && _fame.name[_famous.threshold] >>
-							<span @class="_famous.class"><<= _famous.label>> <<= _fame.name[_famous.threshold]>></span>
-						<<else>>
-							<span @class="_famous.class"><<= _famous.label>> <<= _fame.name>></span>
-						<</if>>
+						<span @class="_famous.class"><<= _famous.label>> <<= _fame.name>></span>
 						<br>
 					<</if>>
 				<</for>>
@@ -509,21 +505,10 @@
 				<span class="gold bold">Decreasing Allure:</span>
 				<br>
 				<<if !["island"].includes("location")>>
-					<<set _pos = [
-						{ type: "scrap", name: "scrapper" },
-						{ type: "good", name: "do-gooder" },
-						{ type: "business", name: "entrepreneur" },
-						{ type: "social", name: { 1000: "schmoozer", 100: "socialite" } },
-						{ type: "model", name: { 1000: "show off", 100: "model" } }
-					]>>
 					<<for _fame range _pos>>
 						<<set _famous = _posLabels.find(status => $fame[_fame.type] >= status.threshold)>>
 						<<if _famous>>
-							<<if ["social", "model"].includes(_fame.type) && _fame.name[_famous.threshold] >>
-								<span @class="_famous.class"><<= _famous.label>> <<= _fame.name[_famous.threshold]>></span>
-							<<else>>
-								<span @class="_famous.class"><<= _famous.label>> <<= _fame.name>></span>
-							<</if>>
+							<span @class="_famous.class"><<= _famous.label>> <<= _fame.name>></span>
 							<br>
 						<</if>>
 					<</for>>
