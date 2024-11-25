@@ -51,7 +51,7 @@ const combatXrayVagina = {
 				return `${options.src}vaginal/cum/${options.vagina.base}${baseSize}${dp}${cumAmt}.png`;
 			},
 			showfn(options) {
-				return !!options.vagina.showCum && !!options.vagina.show;
+				return !!options.vagina.showCum && !!options.vagina.show && options.vagina.base !== "knotting";
 			},
 			animationfn(options) {
 				return options.animKeyVagina;
