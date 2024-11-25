@@ -399,7 +399,7 @@ class XrayCombatMapper {
 			penetrator.isCumActive = npc1HasSperm || npc2HasSperm || V[slot + "state"] === "tentacledeep";
 		}
 
-		if (penetrator.base !== "knotting" && (setup.bodyliquid.combined(slot) >= 1 || penetrator.isCumActive)) {
+		if (setup.bodyliquid.combined(slot) >= 1 || penetrator.isCumActive) {
 			penetrator.cum = Math.clamp(setup.bodyliquid.combined(slot), 1, 5);
 			penetrator.showCum = true;
 		}

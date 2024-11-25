@@ -235,6 +235,7 @@
  * @property {TransformationPartOptions} cheeks
  * @property {TransformationPartOptions} malar
  * @property {TransformationPartOptions} pubes
+ * @property {TransformationPartOptions} pits
  * @property {TransformationPartOptions} plumage
  */
 
@@ -1415,7 +1416,7 @@ class PlayerCombatMapper {
 	static mapToTransformationOptions(options) {
 		/**
 		 * @param {TransformationKeys} type
-		 * @param {"wings" | "halo" | "horns" | "ears" | "tail" | "eyes" | "cheeks" | "malar" | "pubes" | "plumage"} part
+		 * @param {"wings" | "halo" | "horns" | "ears" | "tail" | "eyes" | "cheeks" | "malar" | "pubes" | "pits" | "plumage"} part
 		 */
 		function generateTransformationFilter(type, part) {
 			const parts = V.transformationParts[type];
@@ -1438,6 +1439,7 @@ class PlayerCombatMapper {
 				cheeks: PlayerCombatMapper.mapToTransformationCheekOptions(transformation),
 				malar: PlayerCombatMapper.mapToTransformationMalarOptions(transformation),
 				pubes: PlayerCombatMapper.mapToTransformationPubeOptions(transformation),
+				pits: PlayerCombatMapper.mapToTransformationPitOptions(transformation),
 				plumage: PlayerCombatMapper.mapToTransformationPlumageOptions(transformation),
 			};
 			generateTransformationFilter(transformation, "wings");
@@ -1449,6 +1451,7 @@ class PlayerCombatMapper {
 			generateTransformationFilter(transformation, "cheeks");
 			generateTransformationFilter(transformation, "malar");
 			generateTransformationFilter(transformation, "pubes");
+			generateTransformationFilter(transformation, "pits");
 			generateTransformationFilter(transformation, "plumage");
 		});
 		return options;
@@ -1631,6 +1634,26 @@ class PlayerCombatMapper {
 			show: true,
 			type,
 			style: parts.pubes,
+		};
+	}
+
+	/**
+	 * @param {TransformationKeys} type
+	 * @returns {TransformationPartOptions}
+	 */
+	static mapToTransformationPitOptions(type) {
+		const parts = V.transformationParts[type];
+		if (!("pits" in parts) || parts.pits === "disabled" || parts.pits === "hidden") {
+			return {
+				show: false,
+				type,
+				style: "disabled",
+			};
+		}
+		return {
+			show: true,
+			type,
+			style: parts.pits,
 		};
 	}
 
@@ -1843,7 +1866,23 @@ class PlayerCombatMapper {
 				});
 				break;
 			case "doggy":
-				options.bodywriting.frontCheek = getState("left_cheek", hidden);
+				options.bodywriting.frontCheek = getState("left_cheek", (id, bodywriting) => {
+					if (bodywriting.type === "text" || bodywriting.special === "islander") {
+						return {
+							show: true,
+							area: "text",
+							type: sanitise(id),
+						};
+					}
+					if (bodywriting.type === "object") {
+						return {
+							show: true,
+							area: bodywriting.writing,
+							type: sanitise(id),
+						};
+					}
+					return null;
+				});
 				options.bodywriting.backCheek = getState("right_cheek", hidden);
 				options.bodywriting.frontShoulder = getState("left_shoulder", (id, bodywriting) => {
 					if (bodywriting.type === "text" || bodywriting.special === "islander") {

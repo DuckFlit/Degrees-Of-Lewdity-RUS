@@ -63,6 +63,7 @@
  * @property {80} frontCheeks
  * @property {80} frontMalar
  * @property {50} frontPubes
+ * @property {50} frontPits
  * @property {50} frontPlumage
  */
 
@@ -207,6 +208,7 @@ class CombatRenderer {
 			frontMalar: 80,
 			frontPlumage: 50,
 			frontPubes: 50,
+			frontPits: 50,
 
 			frontThigh: 65,
 			frontFootwear: 70,
@@ -712,7 +714,7 @@ class CombatRenderer {
 
 	/**
 	 * @param {TransformationKeys} transformation
-	 * @param {"wings" | "halo" | "horns" | "ears" | "tail" | "eyes" | "cheeks" | "malar" | "pubes" | "plumage"} part
+	 * @param {"wings" | "halo" | "horns" | "ears" | "tail" | "eyes" | "cheeks" | "malar" | "pubes" | "pits" | "plumage"} part
 	 * @returns {Partial<CompositeLayerSpec>}
 	 */
 	static getTransformationFilter(transformation, part) {
@@ -723,7 +725,7 @@ class CombatRenderer {
 		if (transformation === "bird" && ["tail", "wings", "malar", "plumage", "pubes"].includes(part)) {
 			return CombatRenderer.getHairFilter();
 		}
-		if (["cat", "wolf"].includes(transformation) && ["ears", "tail", "pubes"].includes(part)) {
+		if (["cat", "wolf"].includes(transformation) && ["ears", "tail", "pubes", "pits"].includes(part)) {
 			return CombatRenderer.getHairFilter();
 		}
 		if (transformation === "fox" && ["ears", "tail", "cheeks", "pubes"].includes(part)) {

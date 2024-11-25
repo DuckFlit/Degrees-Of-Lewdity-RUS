@@ -50,7 +50,7 @@ const combatXrayArse = {
 				return `${options.src}anal/cum/${options.anus.base}${baseSize}${cumAmt}.png`;
 			},
 			showfn(options) {
-				return !!options.anus.showCum && !!options.anus.show;
+				return !!options.anus.showCum && !!options.anus.show && options.anus.base !== "knotting";
 			},
 			animationfn(options) {
 				return options.animKeyArse;

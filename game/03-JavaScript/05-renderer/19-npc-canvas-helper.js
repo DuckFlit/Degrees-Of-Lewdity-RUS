@@ -38,6 +38,9 @@ class NpcCanvasHelper {
 				if (layer === "back" && options.category !== "beast") {
 					return false;
 				}
+				if (layer === "outline" && options.type !== "human") {
+					return false;
+				}
 				return true;
 			},
 			animationfn(options) {

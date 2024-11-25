@@ -437,7 +437,7 @@ class PlayerCanvasHelper {
 
 	/**
 	 * @param {TransformationKeys} transformation
-	 * @param {"wings" | "halo" | "horns" | "ears" | "tail" | "eyes" | "cheeks" | "malar" | "pubes" | "plumage"} part
+	 * @param {"wings" | "halo" | "horns" | "ears" | "tail" | "eyes" | "cheeks" | "malar" | "pubes" | "pits" | "plumage"} part
 	 * @param {"front" | "back"} layer
 	 * @param {CanvasModelLayers<CombatPlayerOptions>} overrideOptions
 	 * @returns {CanvasModelLayers<CombatPlayerOptions>}
