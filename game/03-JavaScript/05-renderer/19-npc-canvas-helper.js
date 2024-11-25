@@ -31,6 +31,10 @@ class NpcCanvasHelper {
 				if (options.state == null) {
 					return false;
 				}
+				const penetrator = options.penetrators[0];
+				if (penetrator != null && penetrator.position === "mouth" && penetrator.state !== "penetrating") {
+					return false;
+				}
 				if (layer === "back" && options.category !== "beast") {
 					return false;
 				}
@@ -81,26 +85,6 @@ class NpcCanvasHelper {
 							return 20;
 					}
 				}
-				if (penetrator.position === "mouth") {
-					if (options.position === "doggy") {
-						switch (penetrator.state) {
-							case "penetrating":
-								return 0;
-							case "imminent":
-								return -10;
-							case "entrance":
-								return -20;
-						}
-					}
-					switch (penetrator.state) {
-						case "penetrating":
-							return 0;
-						case "imminent":
-							return 12;
-						case "entrance":
-							return 16;
-					}
-				}
 				return 0;
 			},
 		};
@@ -134,7 +118,8 @@ class NpcCanvasHelper {
 				}
 				// if (penetrator.position === "vagina" && penetrator.state === "penetrated") return false;
 				// Bestial oral penetration sprites are kind of fucked, don't show unless penetrating mouth
-				if (penetrator.type === "knotted" && penetrator.position === "mouth" && penetrator.state !== "penetrating") {
+				// Also, regular humans fallback to use the old 4f sprites, so no showing imminent sprites etc.
+				if (penetrator.position === "mouth" && penetrator.state !== "penetrating") {
 					return false;
 				}
 				return !!penetrator.show;
