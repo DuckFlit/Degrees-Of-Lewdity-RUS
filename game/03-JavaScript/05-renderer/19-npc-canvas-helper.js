@@ -3,7 +3,7 @@
 
 class NpcCanvasHelper {
 	/**
-	 * @param {"front" | "back"} layer
+	 * @param {"front" | "back" | "outline"} layer
 	 * @param {CanvasModelLayers<NpcOptions>} overrideOptions
 	 * @returns {CanvasModelLayers<NpcOptions>}
 	 */
@@ -15,6 +15,10 @@ class NpcCanvasHelper {
 			srcfn(options) {
 				if (layer === "front" && options.category === "shadow") {
 					const path = `${options.src}/${options.category}/${options.type}/${options.state}.png`;
+					return path;
+				}
+				if (layer === "outline" && options.category === "shadow" && options.type === "human") {
+					const path = `${options.src}/${options.category}/${options.type}/${options.state}-outline.png`;
 					return path;
 				}
 				const path = `${options.src}/${options.category}/${options.type}/${layer}-${options.state}.png`;
@@ -49,6 +53,7 @@ class NpcCanvasHelper {
 					}
 					return CombatRenderer.indices.frontLowerOverwear + 1;
 				}
+				if (layer === "outline") return 92;
 				// Back layer
 				if (options.position === "doggy") {
 					return 20;

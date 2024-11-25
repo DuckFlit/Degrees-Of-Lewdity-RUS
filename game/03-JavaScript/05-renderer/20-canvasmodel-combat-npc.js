@@ -27,6 +27,7 @@ const combatMainNpc = {
 	layers: {
 		npcBodyBack: NpcCanvasHelper.genBodyLayer("back"),
 		npcBodyFront: NpcCanvasHelper.genBodyLayer("front"),
+		npcShadowOutline: NpcCanvasHelper.genBodyLayer("outline"),
 		npcDrool: {
 			srcfn(options) {
 				const path = `${options.src}/${options.category}/${options.type}/drool/${options.drool.amount}.png`;
