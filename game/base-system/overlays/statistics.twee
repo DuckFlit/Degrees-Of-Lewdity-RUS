@@ -503,6 +503,16 @@
 		<div id="moneyStatsDiv">
 			<<moneyStats>>
 		</div>
+		<<if $debug is 1>>
+			<<link "Reset Stats (Debug)">>
+				<<set $moneyStats to {}>>
+				<<set $timeStats to {}>>
+				<<unset $moneyStatsSnapshot>>
+				<<unset _showSnapshot>>
+				<<set [_moneyKeys, _moneyStats, _moneyStatsTotal] to moneyStatsProcess(clone($moneyStats))>>
+				<<replace "#moneyStatsDiv">><<moneyStats>><</replace>>
+			<</link>>
+		<</if>>
 	<</foldout>>
 
 	<<if $badEndStats.length>>
@@ -1261,7 +1271,7 @@
 	<<link `_moneyStatsDetailed ? "Reduce details" : "Expand details"`>>
 		<<set _moneyStatsDetailed to !_moneyStatsDetailed>>
 		<<set [_moneyKeys, _moneyStats, _moneyStatsTotal] to moneyStatsProcess(clone($moneyStats))>>
-		<<if $moneyStatsSnapshot?.data>>
+		<<if $moneyStatsSnapshot?.money>>
 			<<set [_moneySnapshotKeys, _moneyStatsSnapshot, _moneyStatsSnapshotTotal] to moneyStatsProcess(clone($moneyStatsSnapshot.money))>>
 		<</if>>
 		<<replace "#moneyStatsDiv">><<moneyStats>><</replace>>
@@ -1459,7 +1469,11 @@
 			<td data-label="Source">Total</td>
 			<td data-label="Spent">
 				<<printmoney $_moneyTotal.spent "red">>
-				<<moneyStatsCompare "total" "spent">>
+				<<if _showSnapshot is "compare">>
+					<<print "+<<printmoney `(_moneyStatsTotal.spent or 0) - (_moneyStatsSnapshotTotal.spent or 0)` 'white'>>">>
+				<<else>>
+					<<moneyStatsCompare "total" "spent">>
+				<</if>>
 			</td>
 			<<if _moneyStatsAverages>>
 				<td data-label="Spent Average"><<printmoney `$_moneyTotal.spent / $_moneyTotal.spentCount or 0` "red">></td>
@@ -1469,7 +1483,11 @@
 			<</if>>
 			<td data-label="Earned">
 				<<printmoney $_moneyTotal.earned>>
-				<<moneyStatsCompare "total" "earned">>
+				<<if _showSnapshot is "compare">>
+					<<print "+<<printmoney `(_moneyStatsTotal.earned or 0) - (_moneyStatsSnapshotTotal.earned or 0)` 'white'>>">>
+				<<else>>
+					<<moneyStatsCompare "total" "earned">>
+				<</if>>
 			</td>
 			<<if _moneyStatsAverages>>
 				<td data-label="Earned Average"><<printmoney `$_moneyTotal.earned / $_moneyTotal.earnedCount or 0`>></td>
