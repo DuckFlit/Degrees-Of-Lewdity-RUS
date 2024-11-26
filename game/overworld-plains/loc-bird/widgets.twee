@@ -1085,6 +1085,9 @@
 	<<else>>
 		<<set _flightTimeBase to 60>>
 	<</if>>
+	<<if _args[1] isnot "silent" and $statdisable is "f">>
+		<<set $_printAlerts to true>>
+	<</if>>
 	<<if $bird.hunts and $bird.hunts.weight>>
 		/* this is not always an integer */
 		<<set _flightTimeBase += $bird.hunts.weight>>
@@ -1095,13 +1098,13 @@
 			<<set _flightTime -= Math.floor(_flightTimeBase / 3)>>
 			<<set _fatigueText to "<<gtiredness>>">>
 			<<set _fatigueMod to 0.5>>
-			<<if _args[1] isnot "silent">><span class="gold">The strong winds will make flight easy and fast.</span><</if>>
+			<<if $_printAlerts>><span class="gold">The strong winds will make flight easy and fast.</span><</if>>
 		<<case "lightPrecipitation" "heavyPrecipitation" "thunderStorm">>
 			<<if Weather.precipitation is "snow">>
 				<<set _flightTime += Math.floor(_flightTimeBase / 6)>>
 				<<set _fatigueText to "<<ggtiredness>>">>
 				<<set _fatigueMod to 2>>
-				<<if _args[1] isnot "silent">><span class="blue">Flying in the snow will obscure your vision and slow you down.</span><</if>>
+				<<if $_printAlerts>><span class="blue">Flying in the snow will obscure your vision and slow you down.</span><</if>>
 			<<else>>
 				<<set _flightTime += 1>>
 				<<for _active_clothes range Object.keys($worn)>>
@@ -1121,32 +1124,32 @@
 					<<if _flightTime gte Math.floor(_flightTimeBase + (_flightTimeBase * 0.5))>>
 						<<set _fatigueText to "<<gggtiredness>>">>
 						<<set _fatigueMod to 3>>
-						<<if _args[1] isnot "silent">><span class="red">Flying in the rain will soak your clothes, heavily slowing you down and exposing you.</span><</if>>
+						<<if $_printAlerts>><span class="red">Flying in the rain will soak your clothes, heavily slowing you down and exposing you.</span><</if>>
 					<<elseif _flightTime gte Math.floor(_flightTimeBase + (_flightTimeBase * 0.25))>>
 						<<set _fatigueText to "<<gggtiredness>>">>
 						<<set _fatigueMod to 3>>
-						<<if _args[1] isnot "silent">><span class="pink">Flying in the rain will soak your clothes, slowing you down and exposing you.</span><</if>>
+						<<if $_printAlerts>><span class="pink">Flying in the rain will soak your clothes, slowing you down and exposing you.</span><</if>>
 					<<elseif _flightTime gt _flightTimeBase>>
 						<<set _fatigueText to "<<ggtiredness>>">>
 						<<set _fatigueMod to 2>>
-						<<if _args[1] isnot "silent">><span class="blue">Flying in the rain will soak your clothes, slightly slowing you down and exposing you.</span><</if>>
+						<<if $_printAlerts>><span class="blue">Flying in the rain will soak your clothes, slightly slowing you down and exposing you.</span><</if>>
 					<<else>>
 						<<set _fatigueText to "<<gtiredness>>">>
 						<<set _fatigueMod to 2>>
-						<<if _args[1] isnot "silent">><span class="green">Flying in the rain won't slow you down at all in your current state of dress.</span><</if>>
+						<<if $_printAlerts>><span class="green">Flying in the rain won't slow you down at all in your current state of dress.</span><</if>>
 					<</if>>
 				<<else>>
 					<<set _fatigueText to "<<gtiredness>>">>
 					<<set _fatigueMod to 2>>
-					<<if _args[1] isnot "silent">><span class="green">Flying in the rain won't slow you down at all in your current state of dress.</span><</if>>
+					<<if $_printAlerts>><span class="green">Flying in the rain won't slow you down at all in your current state of dress.</span><</if>>
 				<</if>>
 			<</if>>
 		<<default>>
 			<<set _fatigueText to "<<gtiredness>>">>
 			<<set _fatigueMod to 1>>
-			<<if _args[1] isnot "silent">><span class="green">The weather shouldn't affect your flight.</span><</if>>
+			<<if $_printAlerts>><span class="green">The weather shouldn't affect your flight.</span><</if>>
 	<</switch>>
-	<<if _args[1] isnot "silent">><br><</if>>
+	<<if $_printAlerts>><br><</if>>
 	<<if currentSkillValue('athletics') gt 0>>
 		<<set _flightTime -= Math.floor((_flightTime / 20) * (currentSkillValue('athletics') / 100))>>
 	<</if>>
