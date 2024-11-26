@@ -44,8 +44,7 @@ DefineMacro("modelprepare-player-body", function () {
 			██████  ██   ██ ███████ ███████
 		*/
 
-	T.modeloptions.body_type = V.player.bodyshape || { a: "slender", f: "curvy" }[V.player.gender_body] || "classic";
-	if (V.player.bodyshape === undefined) Errors.report("Bodyshape is undefined");
+	T.modeloptions.body_type = V.player.bodyshape || {"a":"slender", "f":"curvy"}[V.player.gender_body] || "classic";
 
 	apparentbreastsizecheck();
 	const breastSizeMap = {
@@ -257,9 +256,6 @@ DefineMacro("modelprepare-player-body", function () {
 			██      ██   ██ ██      ██
 			██      ██   ██  ██████ ███████
 		*/
-
-	if (V.facestyle === undefined) Errors.report("Facestyle is undefined");
-	if (V.facevariant === undefined) Errors.report("Facevariant is undefined");
 
 	T.modeloptions.facestyle = V.facestyle || "default";
 	T.modeloptions.facevariant = V.facevariant || "default";
