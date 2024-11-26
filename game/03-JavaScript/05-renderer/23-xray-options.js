@@ -124,7 +124,7 @@ class XrayCombatMapper {
 	 * @returns {boolean}
 	 */
 	static isPcBlowjobVisible() {
-		return V.player.penisExist && combat.isPenisPenetrated() && V.penisstate !== "othermouth";
+		return (V.player.penisExist || playerHasStrapon()) && combat.isPenisPenetrated() && V.penisstate !== "othermouth";
 	}
 
 	/**

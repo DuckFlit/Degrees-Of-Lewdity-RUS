@@ -618,14 +618,20 @@ class PlayerCombatMapper {
 				state: "",
 				use: "",
 			};
-			if (!V.machine) return defaults;
+			if (!V.machine) {
+				return defaults;
+			}
+			const machine = V.machine[id];
+			if (machine == null) {
+				return defaults;
+			}
 			return {
-				show: !!V.machine[id],
-				health: V.machine[id].health || defaults.health,
-				ammo: V.machine[id].ammo || defaults.ammo,
-				hack: V.machine[id].hack || defaults.hack,
-				state: V.machine[id].state || defaults.state,
-				use: V.machine[id].use || defaults.use,
+				show: !!machine,
+				health: machine.health || defaults.health,
+				ammo: machine.ammo || defaults.ammo,
+				hack: machine.hack || defaults.hack,
+				state: machine.state || defaults.state,
+				use: machine.use || defaults.use,
 			};
 		}
 

@@ -31,6 +31,9 @@ class NpcCanvasHelper {
 				if (options.state == null) {
 					return false;
 				}
+				if (options.position === "doggy" && options.category === "shadow" && options.state === "penis") {
+					return false;
+				}
 				const penetrator = options.penetrators[0];
 				if (penetrator != null && penetrator.position === "mouth" && penetrator.state !== "penetrating") {
 					return false;
