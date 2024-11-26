@@ -68,16 +68,16 @@ class CloseCombatMapper {
 
 		// Genitals
 		if (options.showArse) {
-			this.mapClosePenetrators("anus", options);
+			CloseCombatMapper.mapClosePenetrators("anus", options);
 		}
 		if (V.player.vaginaExist) {
-			this.mapClosePenetrators("vagina", options);
+			CloseCombatMapper.mapClosePenetrators("vagina", options);
 		}
-		if (V.player.penisExist) {
-			this.mapClosePenis(options);
+		if (V.player.penisExist || playerHasStrapon()) {
+			CloseCombatMapper.mapClosePenis(options);
 		}
 		if (options.showChest) {
-			this.mapCloseChest(options);
+			CloseCombatMapper.mapCloseChest(options);
 		}
 
 		// Colours
@@ -107,11 +107,11 @@ class CloseCombatMapper {
 
 		// Set animation speed
 		const framesChest = combat.isChestActive("close") ? (V.player.breastsize >= 8 ? 10 : 6) : 1;
-		options.animKeyChest = `sex-${framesChest}f-${combat.isChestActive("close") ? this.getCloseAnimationSpeed() : "idle"}`;
+		options.animKeyChest = `sex-${framesChest}f-${combat.isChestActive("close") ? CloseCombatMapper.getCloseAnimationSpeed() : "idle"}`;
 
-		options.animKeyVagina = `${combat.isVaginaActive("close") ? this.getCloseAnimation() : "sex-1f-idle"}`;
-		options.animKeyArse = `${combat.isAnusActive("close") ? this.getCloseAnimation() : "sex-1f-idle"}`;
-		options.animKeyPenis = `${combat.isPenisActive("close") ? this.getCloseAnimation() : "sex-1f-idle"}`;
+		options.animKeyVagina = `${combat.isVaginaActive("close") ? CloseCombatMapper.getCloseAnimation() : "sex-1f-idle"}`;
+		options.animKeyArse = `${combat.isAnusActive("close") ? CloseCombatMapper.getCloseAnimation() : "sex-1f-idle"}`;
+		options.animKeyPenis = `${combat.isPenisActive("close") ? CloseCombatMapper.getCloseAnimation() : "sex-1f-idle"}`;
 
 		return options;
 	}
@@ -214,6 +214,10 @@ class CloseCombatMapper {
 		}
 	}
 
+	/**
+	 * @param {CloseOptions} options
+	 * @returns {object}
+	 */
 	static mapClosePenis(options) {
 		const chastityTypes = {
 			"chastity belt": "belt",
@@ -317,7 +321,7 @@ class CloseCombatMapper {
 	 * @returns {string}
 	 */
 	static getCloseAnimation() {
-		const speed = this.getCloseAnimationSpeed();
+		const speed = CloseCombatMapper.getCloseAnimationSpeed();
 		if (combat.isRapid()) {
 			return "sex-6f-vfast";
 		}
