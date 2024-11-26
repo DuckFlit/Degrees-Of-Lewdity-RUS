@@ -39,7 +39,6 @@ You are on the beach.
 		It appears deserted.
 	<</if>>
 <</if>>
-You could go for a swim, but make sure to dress appropriately.
 <br><br>
 <<if $exposed gte 1>>
 	<<exhibitionism "beach">>
@@ -54,7 +53,7 @@ You could go for a swim, but make sure to dress appropriately.
 	<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
 	<<if $danger gte (9900 - $allure) and $eventskip is 0>>
 		<<eventsbeach>>
-	<<elseif $robinReunionScene isnot undefined and _robin_location is "beach" and $exposed lte 0>>
+	<<elseif $robinReunionScene isnot undefined and _robin_location is "beach">>
 		<<npc Robin>><<person1>>
 		<<if $robinReunionScene is "dungeon">>
 			<<unset $robinReunionScene>><<set $robinPostMortem to true>>
@@ -134,7 +133,7 @@ You could go for a swim, but make sure to dress appropriately.
 			<<link [[Next|Beach]]>><<set $eventskip to 1>><<endevent>><</link>>
 			<br>
 		<</if>>
-	<<elseif C.npc.Robin.init is 0 and Time.season isnot "winter" and Time.isWeekEnd() and between(Time.hour, 9, 16) and $exposed lte 0>>
+	<<elseif C.npc.Robin.init is 0 and Time.season isnot "winter" and Time.isWeekEnd() and between(Time.hour, 9, 16)>>
 		<<set $robindebt to 0>><<set $robindebtlimit to 5>>
 		<<npc Robin>><<person1>>You see someone familiar working at a stand on the beach. <<He>> notices you at the same time. "Hey!" It's Robin. <<Hes>> another resident at the orphanage. <<Hes>> always looked up to you, despite being about the same age. <<He>> motions you over while cleaning a glass pitcher. <<He>> puts it down and hugs you when you approach.
 		<br><br>
@@ -160,23 +159,17 @@ You could go for a swim, but make sure to dress appropriately.
 		<<set $balloonStand.open to true>>
 		<<link [[Buy something|Balloon Stand]]>><<endevent>><<set $phase to "firstcustomer">><<handheldwear 14>><</link>><br>
 		<<link [[Decline|Balloon Decline]]>><<handheldwear 14>><</link>>
-	<<elseif _robin_location is "beach" and $exposed lte 0 and $balloonStand.open is true and $balloonStand.robin.status is "unaffected">>
+		<br>
+	<<elseif _robin_location is "beach" and $balloonStand.open is true and $balloonStand.robin.status is "unaffected">>
 		<<balloonRobinIntro>>
 	<<else>>
-		<<if $exposed lte 0>>
-			<<if $scienceproject is "ongoing" and $sciencephallusknown is 1 and $sciencephallus lt 10 and Time.dayState isnot "night" and Weather.precipitation is "none" and $exposed lte 0>>
-				<<investigateicon>><<link [[Find participant for phallus project (0:15)|Beach Phallus]]>><<pass 15>><</link>>
-				<br>
-			<</if>>
-			<<swim_check>>
-	        <<if _swim_check isnot 1>>
-				<span class="purple">Swimming in your current state of dress will soak your clothes and expose you.</span>
-				<br>
-			<</if>>
-			<<swimicon>><<link [[Go for a swim (0:02)|Sea Beach]]>><<pass 2>><</link>>
+		<<if $scienceproject is "ongoing" and $sciencephallusknown is 1 and $sciencephallus lt 10 and Time.dayState isnot "night" and Weather.precipitation is "none">>
+			<<investigateicon>><<link [[Find participant for phallus project (0:15)|Beach Phallus]]>><<pass 15>><</link>>
 			<br>
-		<<elseif Time.dayState is "night">>
+		<</if>>
+		<<if $exposed lte 0 or Time.dayState is "night">>
 			<<swimicon>><<link [[Go for a swim (0:02)|Sea Beach]]>><<pass 2>><</link>>
+			<<swim_check>> <<if _swim_check isnot 1 and $statdisable is "f">> | <span class="purple">You are not wearing any swimwear!</span> <</if>>
 			<br>
 		<</if>>
 		<<if Time.dayState is "day" and !Weather.isOvercast>>
@@ -187,47 +180,45 @@ You could go for a swim, but make sure to dress appropriately.
 			<</if>>
 		<</if>>
 		<<if Weather.precipitation is "none" or $worn.handheld.type.includes("rainproof")>>
-			<<if $milkshake gte 1 and $exposed lte 0>>
+			<<if $milkshake gte 1>>
 				<<foodicon "milkshake">><<link [[Drink your milkshake (0:10)|Beach Milkshake]]>><<pass 10>><<set $milkshake -= 1>><<stress -5>><</link>><<lstress>>
 				<br>
 			<</if>>
-			<<if $popcorn gte 1 and $exposed lte 0>>
+			<<if $popcorn gte 1>>
 				<<foodicon "popcorn">><<link [[Eat your popcorn (0:10)|Balloon Consume]]>><<pass 10>><<set $popcorn -= 1>><<wearProp "popcorn">><<trauma -3>><<set $phase to "popcorn">><</link>><<ltrauma>>
 				<br>
 			<</if>>
 		<</if>>
 		<<changingroomicon>><<link [[Changing room|Changing Room]]>><</link>>
-		<<if $exposed lte 0>>
-			<<if $openinghours is 1 and $balloonStand.open is true>>
-				<br>
-				<<stallicon "balloon">><<link [[Balloon stand|Balloon Stand]]>><</link>>
-			<</if>>
-			<<if _robin_location is "beach">>
-				<br>
-				<<robinicon "lemonade">>
-				<<if $balloonStand.robin.status is "closed">>
-					<span class="red">Robin asked you to leave <<nnpc_him "Robin">> alone.</span>
-				<<else>>
-					<<link [[Robin's lemonade stand|Robin's Lemonade]]>><</link>>
-				<</if>>
-			<</if>>
-			<<if $leftleg is "bound" or $rightleg is "bound">>
-				<br>
-				<<set $_boundType to ($leftleg is "bound" ? ($rightleg is "bound" ? "both legs" : "your left leg") : "your right leg")>>
-				You cannot go for a run with $_boundType bound.
-			<<elseif $worn.feet.type.includes("heels")>>
-				<br>
-				<<walkicon>><<link [[Take a walk in heels (0:30)|Beach Heel Walk]]>><</link>><<gtiredness>><<lstress>>
+		<<if $openinghours is 1 and $balloonStand.open is true>>
+			<br>
+			<<stallicon "balloon">><<link [[Balloon stand|Balloon Stand]]>><</link>>
+		<</if>>
+		<<if _robin_location is "beach">>
+			<br>
+			<<robinicon "lemonade">>
+			<<if $balloonStand.robin.status is "closed">>
+				<span class="red">Robin asked you to leave <<nnpc_him "Robin">> alone.</span>
 			<<else>>
-				<br>
-				<<runicon>><<link [[Go for a run (0:30)|Beach Run]]>><</link>><<gtiredness>><<gathletics>><<lstress>>
+				<<link [[Robin's lemonade stand|Robin's Lemonade]]>><</link>>
 			<</if>>
 		<</if>>
-		<<if !Weather.isOvercast and Time.dayState is "night" and $exposed lte 0>>
+		<<if $leftleg is "bound" or $rightleg is "bound">>
+			<br>
+			<<set $_boundType to ($leftleg is "bound" ? ($rightleg is "bound" ? "both legs" : "your left leg") : "your right leg")>>
+			You cannot go for a run with $_boundType bound.
+		<<elseif $worn.feet.type.includes("heels")>>
+			<br>
+			<<walkicon>><<link [[Take a walk in heels (0:30)|Beach Heel Walk]]>><</link>><<gtiredness>><<lstress>>
+		<<else>>
+			<br>
+			<<runicon>><<link [[Go for a run (0:30)|Beach Run]]>><</link>><<gtiredness>><<gathletics>><<lstress>>
+		<</if>>
+		<<if !Weather.isOvercast and Time.dayState is "night">>
 			<br>
 			<<socialiseicon "party">><<link [[Party|Beach Party]]>><</link>>
 		<</if>>
-		<<if !Weather.isOvercast and Time.dayState isnot "night" and $exposed lte 0>>
+		<<if !Weather.isOvercast and Time.dayState isnot "night">>
 			<br>
 			<<socialiseicon "volleyball">><<link [[Volleyball|Beach Volleyball]]>><</link>>
 			<<if hasSexStat("exhibitionism", 5) and $daily.beachStrip isnot 1>>
@@ -239,6 +230,7 @@ You could go for a swim, but make sure to dress appropriately.
 			<br>
 			<span class="red">The slime in your ear refuses to allow you to leave with <<underwearTypeText>> on.</span>
 		<<elseif $exposed gte 1 and Time.dayState isnot "night">>
+			/* Unreachable, as all $exposed gte 1 are caught by the <<exhibitionism "beach">> if statement above */
 		<<else>>
 			<<add_link "Travel<br>">><<hideDisplay>>
 			<<cliff>>
