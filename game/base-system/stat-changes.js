@@ -1118,7 +1118,7 @@ const statChange = (() => {
 			}
 		}
 
-		if (!source) source = "unkown"; // Should be unreachable, but there just in case
+		if (!source) source = "unknown"; // Should be unreachable, but there just in case
 		// eslint-disable-next-line no-undef
 		source = toCamelCase(source);
 
