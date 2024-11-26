@@ -6470,7 +6470,7 @@ function initUpper() {
 			formfitting: 1,
 			warmth: 2,
 			cost: 13000,
-			description: "A little black dress, for making heads turn.",
+			description: "A short form-fitting dress, for making heads turn.",
 			shop: ["clothing", "adult"],
 			accessory: 0,
 			accessory_colour: 0,
