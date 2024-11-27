@@ -89,12 +89,7 @@ declare module "twine-sugarcube" {
 		currentToyAnus: any;
 
 		prop: string[];
-		machine?: {
-			tattoo: {
-				use: string;
-			};
-			speed: any;
-		};
+		machine?: MachineStates;
 		tentacleColour:
 			| "tentacles-blue"
 			| "tentacles-vines"
@@ -172,6 +167,20 @@ declare global {
 		tentaclehealthstart: number;
 		traits: string[];
 		type: "tentacle";
+	}
+
+	export interface MachineStates {
+		tattoo: MachineState;
+		speed: any;
+	}
+
+	export interface MachineState {
+		health: number;
+		hack: number;
+		ammo: number;
+		armed: 1 | 0;
+		state: "ready" | "inert" | "imminent" | "entrance" | "penetrated" | "destroyed";
+		use: string;
 	}
 
 	export interface Swarm {

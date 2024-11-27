@@ -1,5 +1,5 @@
 // @ts-check
-/* global Partial, Dict, Record, CombatRenderer, Player, Bodywriting, ClothedSlots, SkinColours, TotalClothingStates, TransformationKeys, CombatClothingTypes, AnimationSpeed, LegPositions */
+/* global Partial, Dict, Record, CombatRenderer, Player, Bodywriting, ClothedSlots, SkinColours, TotalClothingStates, TransformationKeys, CombatClothingTypes, AnimationSpeed, LegPositions, MachineState */
 
 /**
  * @typedef CombatPlayerOptions
@@ -615,18 +615,23 @@ class PlayerCombatMapper {
 				health: 0,
 				ammo: 0,
 				hack: 0,
-				state: "",
+				state: "ready",
 				use: "",
 			};
 			if (!V.machine) {
 				return defaults;
 			}
+			/** @type {MachineState} */
 			const machine = V.machine[id];
 			if (machine == null) {
 				return defaults;
 			}
+			let show = true;
+			if (["vaginal", "anal"].includes(id) && !["penetrated", "entrance"].includes(machine.state)) {
+				show = false;
+			}
 			return {
-				show: !!machine,
+				show,
 				health: machine.health || defaults.health,
 				ammo: machine.ammo || defaults.ammo,
 				hack: machine.hack || defaults.hack,
