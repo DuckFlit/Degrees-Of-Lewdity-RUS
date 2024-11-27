@@ -53,18 +53,11 @@
 		<br>
 
 		<!-- For each individual virginity type, the number is named and unnamed combined, but the list of names has unnamed npcs filtered out. -->
-		<<set _vaginalNamed to clone($virginTaken.vaginal.filter(name => $NPCNameList.indexOf(name) isnot -1))>>
-		<<set _penileNamed to clone($virginTaken.penile.filter(name => $NPCNameList.indexOf(name) isnot -1))>>
-		<<set _analNamed to clone($virginTaken.anal.filter(name => $NPCNameList.indexOf(name) isnot -1))>>
-		<<set _oralNamed to clone($virginTaken.oral.filter(name => $NPCNameList.indexOf(name) isnot -1))>>
-		<<set _handholdingNamed to clone($virginTaken.handholding.filter(name => $NPCNameList.indexOf(name) isnot -1))>>
-		<<set _kissNamed to clone($virginTaken.kiss.filter(name => $NPCNameList.indexOf(name) isnot -1))>>
-
 		<<run ["vaginal", "penile", "anal", "oral", "handholding", "kiss"].forEach((virginity) => {
 			const virginityNamed = `${virginity}Named`;
 			T[virginityNamed] = []; /* _vaginalNamed, _penileNamed, ... */
 			for (const name of V.virginTaken[virginity]) {
-				if (!V.NPCNameList.includes(name)) return;
+				if (!V.NPCNameList.includes(name)) continue;
 				const details = C.npc[name].virginityDetails?.[virginity];
 				let colour = '';
 				if (setup.loveInterestNpc.includes(name) && (!details || details.consensual !== false)) {
@@ -76,7 +69,7 @@
 				const detailsArg = details
 					? `\`C.npc['${name}'].virginityDetails.${virginity}\`` 
 					: '';
-				T[virginityNamed].push(`${nameText} <<virginityToolTip ${detailsArg} ${name} "npc" ${virginity}>>`);
+				T[virginityNamed].push(`${nameText}<<virginityToolTip ${detailsArg} ${name} "npc" ${virginity}>>`);
 			}
 		})>>
 
@@ -1659,7 +1652,7 @@
 			<<set $_linkColour to "lewd">>
 		<</if>>
 	<</if>>
-<</silently>><<if $_text_output>><mouse @class="'tooltip ' + $_linkColour">(?)<span><<print $_text_output>></span></mouse><</if>>
+<</silently>><<if $_text_output>> <mouse @class="'tooltip ' + $_linkColour">(?)<span><<print $_text_output>></span></mouse><</if>>
 <</widget>>
 
 <<widget "badEndStats">>
