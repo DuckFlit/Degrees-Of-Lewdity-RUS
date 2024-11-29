@@ -1,5 +1,5 @@
 // @ts-check
-/* global Partial, Dict, Record, CombatRenderer, Player, Bodywriting, ClothedSlots, SkinColours, TotalClothingStates, TransformationKeys, CombatClothingTypes, AnimationSpeed, LegPositions, MachineState */
+/* global Partial, Dict, Record, CombatRenderer, Player, Bodywriting, ClothedSlots, SkinColours, TotalClothingStates, TransformationKeys, CombatClothingTypes, AnimationSpeed, LegPositions, MachineState, CondomOptions */
 
 /**
  * @typedef CombatPlayerOptions
@@ -48,6 +48,26 @@
  * @property {BodywritingOptions} bodywriting
  * @property {Dict<TransformationOptions>} transformations
  * @property {Vore} vore
+ * @property {MakeupOptions} makeup
+ */
+
+/**
+ * @typedef MakeupOptions
+ * @property {Lipstick} lipstick
+ * @property {Eyeshadow} eyeshadow
+ */
+
+/**
+ * @typedef Lipstick
+ * @property {boolean} show
+ * @property {"open" | "closed"} state
+ * @property {string} colour
+ */
+
+/**
+ * @typedef Eyeshadow
+ * @property {boolean} show
+ * @property {string} colour
  */
 
 /**
@@ -248,9 +268,252 @@
 
 /** @type {CanvasModelOptions<CombatPlayerOptions>} */
 class PlayerCombatMapper {
+	/** @returns {Penetrator} */
+	static get defaultPenetrator() {
+		/** @type {Penetrator} */
+		const penetrator = {
+			show: false,
+			type: "human",
+			size: 0,
+			colour: "#ffffff",
+			target: 0,
+			isEjaculating: false,
+			ejaculate: {
+				type: "sperm",
+			},
+			position: null,
+			state: null,
+			condom: PlayerCombatMapper.defaultCondom,
+		};
+		return { ...penetrator };
+	}
+
+	/** @returns {CondomOptions} */
+	static get defaultCondom() {
+		/** @type {CondomOptions} */
+		const condom = {
+			show: false,
+			colour: {
+				blend: "#ffffff",
+			},
+			isDefective: false,
+			volume: 0,
+		};
+		return { ...condom };
+	}
+
+	/** @returns {Props} */
+	static get defaultProps() {
+		/** @type {Props} */
+		const props = {
+			arm_shackle: PlayerCombatMapper.defaultProp,
+			bench: PlayerCombatMapper.defaultProp,
+			examTable: PlayerCombatMapper.defaultProp,
+			haybale: PlayerCombatMapper.defaultProp,
+			hospitalBed: PlayerCombatMapper.defaultProp,
+			ivBag: PlayerCombatMapper.defaultProp,
+			leash: PlayerCombatMapper.defaultProp,
+			leg_shackle: PlayerCombatMapper.defaultProp,
+			neck_shackle: PlayerCombatMapper.defaultProp,
+			rail: PlayerCombatMapper.defaultProp,
+			table: PlayerCombatMapper.defaultProp,
+			wall: PlayerCombatMapper.defaultProp,
+			web: PlayerCombatMapper.defaultProp,
+			milkTank: PlayerCombatMapper.defaultTankProp,
+			semenTank: PlayerCombatMapper.defaultTankProp,
+			pillory: PlayerCombatMapper.defaultPilloryProp,
+		};
+		return { ...props };
+	}
+
+	/** @returns {Prop} */
+	static get defaultProp() {
+		/** @type {Prop} */
+		const prop = {
+			show: false,
+		};
+		return { ...prop };
+	}
+
+	/** @returns {TankProp} */
+	static get defaultTankProp() {
+		/** @type {TankProp} */
+		const prop = {
+			show: false,
+			isFull: false,
+			volume: 1,
+		};
+		return { ...prop };
+	}
+
+	/** @returns {PilloryProp} */
+	static get defaultPilloryProp() {
+		/** @type {PilloryProp} */
+		const prop = {
+			show: false,
+			hasHorse: false,
+			isDirty: false,
+			tomatoes: 0,
+		};
+		return { ...prop };
+	}
+
+	/** @returns {Machines} */
+	static get defaultMachines() {
+		/** @type {Machines} */
+		const machines = {
+			anal: PlayerCombatMapper.defaultMachinePart,
+			arm_chains: PlayerCombatMapper.defaultMachinePart,
+			leg_chains: PlayerCombatMapper.defaultMachinePart,
+			tattoo: PlayerCombatMapper.defaultMachinePart,
+			vaginal: PlayerCombatMapper.defaultMachinePart,
+			breastMilker: PlayerCombatMapper.defaultMachine,
+			penisMilker: PlayerCombatMapper.defaultMachine,
+		};
+		return { ...machines };
+	}
+
+	/** @returns {Machine} */
+	static get defaultMachine() {
+		/** @type {Machine} */
+		const machine = {
+			show: false,
+		};
+		return { ...machine };
+	}
+
+	/** @returns {MachinePart} */
+	static get defaultMachinePart() {
+		/** @type {MachinePart} */
+		const part = {
+			ammo: 0,
+			hack: 0,
+			health: 0,
+			show: false,
+			state: "ready",
+			use: "ready",
+		};
+		return { ...part };
+	}
+
+	/** @returns {Tentacles} */
+	static get defaultTentacles() {
+		/** @type {Tentacles} */
+		const tentacles = {
+			anus: PlayerCombatMapper.defaultTentacle,
+			backArm: PlayerCombatMapper.defaultTentacle,
+			backLeg: PlayerCombatMapper.defaultTentacle,
+			breasts: PlayerCombatMapper.defaultTentacle,
+			feet: PlayerCombatMapper.defaultTentacle,
+			frontArm: PlayerCombatMapper.defaultTentacle,
+			frontLeg: PlayerCombatMapper.defaultTentacle,
+			mouth: PlayerCombatMapper.defaultTentacle,
+			penis: PlayerCombatMapper.defaultTentacle,
+			vagina: PlayerCombatMapper.defaultTentacle,
+		};
+		return { ...tentacles };
+	}
+
+	/** @returns {Tentacle} */
+	static get defaultTentacle() {
+		/** @type {Tentacle} */
+		const tentacle = {
+			show: false,
+			state: null,
+		};
+		return { ...tentacle };
+	}
+
+	/** @returns {BodywritingOptions} */
+	static get defaultBodywritings() {
+		/** @type {BodywritingOptions} */
+		const bodywritings = {
+			back: PlayerCombatMapper.defaultBodywriting,
+			breasts: PlayerCombatMapper.defaultBodywriting,
+			backBottom: PlayerCombatMapper.defaultBodywriting,
+			forehead: PlayerCombatMapper.defaultBodywriting,
+			backCheek: PlayerCombatMapper.defaultBodywriting,
+			frontCheek: PlayerCombatMapper.defaultBodywriting,
+			backShoulder: PlayerCombatMapper.defaultBodywriting,
+			frontShoulder: PlayerCombatMapper.defaultBodywriting,
+			frontBottom: PlayerCombatMapper.defaultBodywriting,
+			pubic: PlayerCombatMapper.defaultBodywriting,
+			backThigh: PlayerCombatMapper.defaultBodywriting,
+			frontThigh: PlayerCombatMapper.defaultBodywriting,
+			isEnabled: false,
+		};
+		return { ...bodywritings };
+	}
+
+	/** @returns {BodywritingOption} */
+	static get defaultBodywriting() {
+		/** @type {BodywritingOption} */
+		const bodywriting = {
+			show: false,
+			area: "",
+			type: "",
+		};
+		return { ...bodywriting };
+	}
+
+	/** @returns {ClothingState} */
+	static get defaultClothing() {
+		/** @type {ClothingState} */
+		const clothing = {
+			item: CombatRenderer.emptyClothing,
+			slot: "upper",
+			name: "invalid",
+			positions: null,
+			state: "default",
+			show: false,
+			alpha: 1,
+			isSkirt: false,
+			isRaised: false,
+			isExposed: false,
+			isBoundable: false,
+			hasAccessory: false,
+			hasMainImg: false,
+			hasBackImg: false,
+			hasBackAccessory: false,
+			hasMaskImg: false,
+			joined: {
+				limbs: false,
+				limbsAccessory: false,
+			},
+			breasts: {
+				hasAccessory: false,
+				show: false,
+				size: 0,
+			},
+			sleeves: {
+				hasAccessory: false,
+				show: false,
+				useSecondary: false,
+				state: "default",
+			},
+		};
+		return { ...clothing };
+	}
+
+	/** @returns {MakeupOptions} */
+	static get defaultMakeup() {
+		/** @type {MakeupOptions} */
+		const makeup = {
+			eyeshadow: {
+				show: false,
+				colour: "white",
+			},
+			lipstick: {
+				show: false,
+				state: "closed",
+				colour: "white",
+			},
+		};
+		return { ...makeup };
+	}
+
 	/** @returns {CombatPlayerOptions} */
 	static generateOptions() {
-		// @ts-ignore
 		return {
 			root: "img/newsex/",
 			position: "missionary",
@@ -268,7 +531,6 @@ class PlayerCombatMapper {
 			filters: {
 				worn: {},
 			},
-			clothes: {},
 			showTan: true,
 			src: "img/newsex/missionary/",
 			legBackPosition: "down",
@@ -293,11 +555,18 @@ class PlayerCombatMapper {
 			skinTone: 0,
 			skinType: "light",
 			tears: 0,
-			transformations: {},
 			vore: {
 				stage: 0,
 				show: false,
 			},
+			makeup: PlayerCombatMapper.defaultMakeup,
+			clothes: {},
+			transformations: {},
+			penetrator: PlayerCombatMapper.defaultPenetrator,
+			props: PlayerCombatMapper.defaultProps,
+			machines: PlayerCombatMapper.defaultMachines,
+			tentacles: PlayerCombatMapper.defaultTentacles,
+			bodywriting: PlayerCombatMapper.defaultBodywritings,
 		};
 	}
 
@@ -330,7 +599,7 @@ class PlayerCombatMapper {
 
 		// Mouth configuration
 		options.mouth.inOral = combat.isMouthActive();
-		options.mouth.open = combat.isActive() && V.arousalmax / V.arousal > 0.6;
+		options.mouth.open = PlayerCombatMapper.getMouthState();
 
 		// Set values for freckles, blush, and tears
 		options.freckles = !!V.player.freckles;
@@ -377,6 +646,9 @@ class PlayerCombatMapper {
 		options.filters.leftEye = CombatRenderer.lookupColour(setup.colours.eyes_map, options.leftEye, "leftEye", undefined, "eyes");
 		options.filters.rightEye = CombatRenderer.lookupColour(setup.colours.eyes_map, options.rightEye, "rightEye", undefined, "eyes");
 
+		// Set makeup
+		options.makeup = PlayerCombatMapper.genMakeup();
+
 		// Set props
 		PlayerCombatMapper.mapToPropsOptions(options);
 
@@ -396,7 +668,13 @@ class PlayerCombatMapper {
 		options.machineAnimKey = PlayerCombatMapper.getMachineAnimationSpeed(options);
 		options.speed = PlayerCombatMapper.getPcAnimationSpeed(options);
 
+		PlayerCombatMapper.genMakeupFilters(options);
+
 		return options;
+	}
+
+	static getMouthState() {
+		return combat.isActive() && V.arousalmax / V.arousal > 0.6;
 	}
 
 	/**
@@ -484,6 +762,61 @@ class PlayerCombatMapper {
 			}
 		}
 		return "machine-4f-slow";
+	}
+
+	/**
+	 * @returns {MakeupOptions}
+	 */
+	static genMakeup() {
+		if (V.makeup == null) {
+			return PlayerCombatMapper.defaultMakeup;
+		}
+		return {
+			eyeshadow: PlayerCombatMapper.genEyeshadow(),
+			lipstick: PlayerCombatMapper.genLipstick(),
+		};
+	}
+
+	/**
+	 * @returns {Eyeshadow}
+	 */
+	static genEyeshadow() {
+		const colour = V.makeup.eyeshadow;
+		// Gen filters for eyeshadow
+
+		return {
+			show: !!colour,
+			colour,
+		};
+	}
+
+	/**
+	 * @returns {Lipstick}
+	 */
+	static genLipstick() {
+		const colour = V.makeup.lipstick;
+		return {
+			show: !!colour,
+			state: PlayerCombatMapper.getMouthState() ? "open" : "closed",
+			colour,
+		};
+	}
+
+	/**
+	 * @param {CombatPlayerOptions} options
+	 */
+	static genMakeupFilters(options) {
+		options.filters ||= {};
+
+		const eyeshadow = options.makeup.eyeshadow;
+		options.filters.eyeshadow = eyeshadow.show
+			? CombatRenderer.lookupColour(setup.colours.eyeshadow_map, eyeshadow.colour, "eyeshadow", "eyeshadow_custom", "eyeshadow")
+			: Renderer.emptyLayerFilter();
+
+		const lipstick = options.makeup.lipstick;
+		options.filters.lipstick = lipstick.show
+			? CombatRenderer.lookupColour(setup.colours.lipstick_map, lipstick.colour, "lipstick", "lipstick_custom", "lipstick")
+			: Renderer.emptyLayerFilter();
 	}
 
 	/**
@@ -610,14 +943,7 @@ class PlayerCombatMapper {
 		 * @returns {MachinePart}
 		 */
 		function createMachinePart(id) {
-			const defaults = {
-				show: false,
-				health: 0,
-				ammo: 0,
-				hack: 0,
-				state: "ready",
-				use: "",
-			};
+			const defaults = PlayerCombatMapper.defaultMachinePart;
 			if (!V.machine) {
 				return defaults;
 			}
@@ -1067,39 +1393,7 @@ class PlayerCombatMapper {
 	 */
 	static mapPcToClothingOption(slot, pc, options) {
 		if (!CombatRenderer.clothedSlots.includes(slot)) {
-			return {
-				item: CombatRenderer.emptyClothing,
-				slot,
-				name: "invalid",
-				positions: null,
-				state: "default",
-				show: false,
-				alpha: CombatRenderer.getAlpha(slot),
-				isSkirt: false,
-				isRaised: false,
-				isExposed: false,
-				isBoundable: false,
-				hasAccessory: false,
-				hasMainImg: false,
-				hasBackImg: false,
-				hasBackAccessory: false,
-				hasMaskImg: false,
-				joined: {
-					limbs: false,
-					limbsAccessory: false,
-				},
-				breasts: {
-					hasAccessory: false,
-					show: false,
-					size: 0,
-				},
-				sleeves: {
-					hasAccessory: false,
-					show: false,
-					useSecondary: false,
-					state: "default",
-				},
-			};
+			return PlayerCombatMapper.defaultClothing;
 		}
 		const defaults = setup.clothes[slot][V.worn[slot].index];
 		const clothing = CombatRenderer.getClothingBySlot(slot);
