@@ -1006,6 +1006,59 @@ const combatMainPc = {
 			z: CombatRenderer.indices.hair,
 		},
 		/*
+		 *    ███    ███  █████  ██   ██ ███████ ██    ██ ██████
+		 *    ████  ████ ██   ██ ██  ██  ██      ██    ██ ██   ██
+		 *    ██ ████ ██ ███████ █████   █████   ██    ██ ██████
+		 *    ██  ██  ██ ██   ██ ██  ██  ██      ██    ██ ██
+		 *    ██      ██ ██   ██ ██   ██ ███████  ██████  ██
+		 */
+		// Split eyeshadow into front and back layers
+		eyeshadow: {
+			srcfn(options) {
+				return `${options.src}makeup/eyeshadow.png`;
+			},
+			showfn(options) {
+				return options.makeup.eyeshadow.show;
+			},
+			animationfn(options) {
+				return options.animKey;
+			},
+			filters: ["eyeshadow"],
+			z: CombatRenderer.indices.frontEyes,
+		},
+		eyeshadowEyelid: {
+			srcfn(options) {
+				return `${options.src}makeup/eyeshadow-eyelids.png`;
+			},
+			showfn(options) {
+				return options.makeup.eyeshadow.show;
+			},
+			animationfn(options) {
+				if (PlayerCombatMapper.getPcAnimationFrameCount(options) === 2 && options.position === "doggy") {
+					return "eyelids-doggy-idle";
+				}
+				if (combat.isActive()) {
+					return options.animKey;
+				}
+				return "sex-1f2-idle";
+			},
+			filters: ["eyeshadow"],
+			z: CombatRenderer.indices.frontEyes,
+		},
+		lipstick: {
+			srcfn(options) {
+				return `${options.src}makeup/lipstick-${options.makeup.lipstick.state}.png`;
+			},
+			showfn(options) {
+				return options.makeup.lipstick.show;
+			},
+			animationfn(options) {
+				return options.animKey;
+			},
+			filters: ["lipstick"],
+			z: CombatRenderer.indices.head + 1,
+		},
+		/*
 		 *    ████████ ██████   █████  ███    ██ ███████ ███████  ██████  ██████  ███    ███  █████  ████████ ██  ██████  ███    ██
 		 *       ██    ██   ██ ██   ██ ████   ██ ██      ██      ██    ██ ██   ██ ████  ████ ██   ██    ██    ██ ██    ██ ████   ██
 		 *       ██    ██████  ███████ ██ ██  ██ ███████ █████   ██    ██ ██████  ██ ████ ██ ███████    ██    ██ ██    ██ ██ ██  ██
@@ -1422,16 +1475,16 @@ const combatMainPc = {
 			z: CombatRenderer.indices.frontArm - 1,
 		}),
 		underUpper: PlayerCanvasHelper.genClothingLayer("under_upper", {
-			z: CombatRenderer.indices.frontArm - 4,
+			z: CombatRenderer.indices.frontArm - 5,
 		}),
 		underUpperAcc: PlayerCanvasHelper.genClothingAccLayer("under_upper", {
-			z: CombatRenderer.indices.frontArm - 4,
+			z: CombatRenderer.indices.frontArm - 5,
 		}),
 		underUpperBreasts: PlayerCanvasHelper.genBreastsLayer("under_upper", {
-			z: CombatRenderer.indices.frontArm - 4,
+			z: CombatRenderer.indices.frontArm - 5,
 		}),
 		underUpperBreastsAcc: PlayerCanvasHelper.genBreastsAccLayer("under_upper", {
-			z: CombatRenderer.indices.frontArm - 4,
+			z: CombatRenderer.indices.frontArm - 5,
 		}),
 		upper: PlayerCanvasHelper.genClothingLayer("upper", {
 			z: CombatRenderer.indices.frontArm - 3,

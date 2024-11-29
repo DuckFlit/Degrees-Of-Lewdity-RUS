@@ -47,7 +47,7 @@
  * @property {30} backArm
  * Front arms:
  * @property {75} frontArm
- * @property {82} frontBoundArms
+ * @property {91} frontBoundArms
  * Transformation parts
  * @property {40} backWings
  * @property {40} backHalo
@@ -130,9 +130,10 @@ class CombatRenderer {
 		];
 	}
 
-	/** @type {ClothesItem} */
+	/** @returns {ClothesItem} */
 	static get emptyClothing() {
-		return {
+		/** @type {ClothesItem} */
+		const clothing = {
 			index: 0,
 			name: "naked",
 			name_cap: "Naked",
@@ -162,6 +163,7 @@ class CombatRenderer {
 			accIcon: 0,
 			mainImage: 0,
 		};
+		return { ...clothing };
 	}
 
 	/**
@@ -218,7 +220,7 @@ class CombatRenderer {
 			frontArm: 75,
 
 			hair: 81,
-			frontBoundArms: 82,
+			frontBoundArms: 91,
 
 			near: 100,
 
