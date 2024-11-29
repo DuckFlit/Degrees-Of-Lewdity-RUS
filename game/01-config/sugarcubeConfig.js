@@ -633,6 +633,18 @@ Config.navigation.override = function (dest) {
 			case "Museum Island Arrow":
 				return "Museum Islander Arrow";
 
+			case "Home Leave Undies":
+			case "Home Leave Naked":
+			case "Home Leave Undies Day":
+			case "Home Leave Naked Day":
+				return "Home Leave";
+
+			case "Garden Fence Naked Night":
+			case "Garden Fence Undies Night":
+			case "Garden Fence Naked Day":
+			case "Garden Fence Undies Day":
+				return "Garden Fence";
+
 			case "Street Eden Worried Refuse Cabin":
 			case "Street Eden Worried Leave 2":
 			case "Town Eden Park Flirt Sex":

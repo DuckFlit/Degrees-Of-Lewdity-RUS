@@ -4690,6 +4690,320 @@ You slowly hold out your hands toward the <<beasttype>>, doing your best to appe
 <</if>>
 <br>
 
+:: Moor Horse
+<<effects>>
+
+<<if $phase is 0>> /* Attempt to mount */
+	You run up behind the <<beasttype>> and jump onto <<bhis>> back. <<bHe>> starts thrashing around, trying to throw you off.
+	<<if currentSkillValue("thighskill") gte random(1, 1200)>>
+		Despite <<bhis>> best attempt to get rid of you, <span class="green">you manage to stay on <<bhis>> back</span> until <<bhe>> calms down.
+		<br><br>
+
+		<<link [[Next|Moor Horse Mounting]]>><</link>>
+		<br>
+	<<else>>
+		<<bHis>> movements are too much for you to handle, causing you to lose balance. <span class="red">You fall down onto the ground,</span> as the beast stands over you.<<pain 4>><<gpain>>
+		<br><br>
+
+		<<link [[Next|Moor Horse Rape]]>><<set $molestationstart to 1>><</link>>
+		<br>
+	<</if>>
+<<elseif $phase is 1>> /* Approach carefully and mount */
+	You approach the <<beasttype>>,
+	<<if $tendingSuccess>>
+		<<if $monster is 1>>
+			stroking <<bhis>> coat with care. <span class="green"><<bHe>> gives you a nod and a smile,</span> letting you mount <<bhim>>.
+		<<else>>
+			stroking <<bhis>> coat with care, and kissing <<bhis>> muzzle. <span class="green"><<bHe>> remains calm,</span> letting you mount <<bhim>>.
+		<</if>>
+		<br><br>
+
+		<<link [[Next|Moor Horse Mounting]]>><</link>>
+		<br>
+	<<else>>
+		<<if $monster is 1>>
+			stroking <<bhis>> coat, <span class="red">but this only seems to agitate <<bhim>>.</span> <<bHis>> lips tense into a frown as <<bhe>> stares you down from above.
+		<<else>>
+			stroking <<bhis>> coat, <span class="red">but this only seems to agitate the beast.</span> <<bHis>> lips curl back, showing <<bhis>> teeth. The whites of <<bhis>> eyes are visible.
+		<</if>>
+		<<stress 6>><<gstress>>
+		<br><br>
+
+		<<link [[Next|Moor Horse Rape]]>><<set $molestationstart to 1>><</link>>
+		<br>
+	<</if>>
+<<else>> /* Let horse mount you */
+	<<saveNPC 0 moor_horse>>
+	You bend over, bracing yourself against a tree stump, and shake your hips at the <<beasttype>>. <<bHe>> quickly approaches, standing over you.<<deviancy5>>
+
+	<<link [[Next|Moor Horse Sex]]>><<set $sexstart to 1>><</link>>
+	<br>
+<</if>>
+
+:: Moor Horse Sex
+<<if $sexstart is 1>>
+	<<set $sexstart to 0>>
+	<<consensual>>
+	<<set $consensual to 1>>
+	<<neutral 1>>
+	<<beastCombatInit>>
+
+	<<set $NPCList[0].stance to "top">>
+	<<if $NPCList[0].penis isnot "none">>
+		<<set $position to "doggy">>
+	<<else>>
+		<<set $position to "missionary">>
+	<</if>>
+	<<set $position_lock to 1>>
+	<<hawkRescueSetup>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<alarmstate>>
+<br><br>
+<<beast $enemyno>>
+<br><br>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Moor Horse Sex Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Moor Horse Sex]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Moor Horse Sex Finish
+<<effects>>
+
+<<if $enemyhealth lte 0>>
+	The <<beasttype>> <<= $monster is 1 ? "cries out" : "whinnies">> in pain. <<= $monster is 1 ? '"But I thought we... never mind," <<bhe>> huffs' : '<<bHe>> pins <<bhis>> ears back'>> before galloping off.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<link [[Next|Moor]]>><<set $eventskip to 1>><</link>>
+	<br>
+<<elseif $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>>
+
+	<<if $monster is 1>>
+		"Fuck, that was amazing... Say, do you need a ride?" the <<beasttype>> pants.
+	<<else>>
+		The <<beasttype>> seems satisfied. <<bHis>> tail swings freely, and <<bhe>> lowers <<bhis>> head. <<bHe>> seems open to the idea of being ridden.
+	<</if>>
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<loadNPC 0 moor_horse>><<clearNPC moor_horse>>
+	<<link [[Accept|Moor Horse Mounting]]>><</link>>
+	<br>
+	<<link [[Decline|Moor]]>><<endevent>><<set $eventskip to 1>><</link>>
+	<br>
+<<elseif $alarm is 1 and $rescue is 1>>
+	Your screams have attracted attention. A <<hawkScreechDesc>> rips through the air, causing <<= $monster is 1 ? "the eyes of the <<beasttype>> widen" : "the ears of the <<beasttype>> perk up">>. <<bHe>> gallops off into the distance with a panicked <<= $monster is 1 ? "yell" : "whinny">>.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+	<<npc "Great Hawk">><<person1>>
+	<<= $syndromebird is 1 ? "Your" : "A">> <<if $monster isnot 1>>massive<</if>> <<beasttype>> descends from the sky rapidly.
+	<br><br>
+
+	<<set $phase to 0>>
+	<<if $syndromebird is 1>>
+		<<link [[Next|Bird Rescue Syndrome]]>><</link>>
+	<<else>>
+		<<link [[Next|Bird Rescue No Syndrome]]>><</link>>
+	<</if>>
+<<else>>
+	<<if $monster is 1>>
+		"Oh, so... I guess that's that. Unless you need a ride?" the <<beasttype>> offers.
+	<<else>>
+		The <<beasttype>> looks unsatisfied, <<bhis>> tail swishing. Despite this, <<bhe>> lowers <<bhis>> head, seeming open to the idea of being ridden.
+	<</if>>
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<loadNPC 0 moor_horse>><<clearNPC moor_horse>>
+	<<link [[Accept|Moor Horse Mounting]]>><</link>>
+	<br>
+	<<link [[Decline|Moor]]>><<endevent>><<set $eventskip to 1>><</link>>
+	<br>
+<</if>>
+
+:: Moor Horse Rape
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<beastCombatInit>>
+
+	<<set $NPCList[0].stance to "top">>
+	<<if $NPCList[0].penis isnot "none">>
+		<<set $position to "doggy">>
+	<<else>>
+		<<set $position to "missionary">>
+	<</if>>
+	<<set $position_lock to 1>>
+	<<hawkRescueSetup>>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<alarmstate>>
+<br><br>
+<<beast $enemyno>>
+<br><br>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Moor Horse Rape Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Moor Horse Rape]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Moor Horse Rape Finish
+<<effects>>
+
+<<if $enemyhealth lte 0>>
+	The <<beasttype>> <<= $monster is 1 ? "cries out" : "whinnies">> in pain and gallops away.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<link [[Next|Moor]]>><<set $eventskip to 1>><</link>>
+	<br>
+<<elseif $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>>
+
+	The <<beasttype>> leaves you battered and bruised on the ground. <<bHe>> spits on you before galloping away.<<trauma 6>><<gtrauma>>
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<link [[Next|Moor]]>><<set $eventskip to 1>><</link>>
+	<br>
+<<else>>
+	Your screams have attracted attention. A <<hawkScreechDesc>> rips through the air, causing <<= $monster is 1 ? "the eyes of the <<beasttype>> widen" : "the ears of the <<beasttype>> perk up">>. <<bHe>> gallops off into the distance with a panicked <<= $monster is 1 ? "yell" : "whinny">>.
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<npc "Great Hawk">><<person1>>
+	<<= $syndromebird is 1 ? "Your" : "A">> <<if $monster isnot 1>>massive<</if>> <<beasttype>> descends from the sky rapidly.
+	<br><br>
+
+	<<set $phase to 0>>
+	<<if $syndromebird is 1>>
+		<<link [[Next|Bird Rescue Syndrome]]>><</link>>
+	<<else>>
+		<<link [[Next|Bird Rescue No Syndrome]]>><</link>>
+	<</if>>
+<</if>>
+
+:: Moor Horse Mounting
+<<effects>>
+<<set $horseDifficulty to 0>>
+
+You mount the <<beasttype>>,
+<<if $monster is 1>>
+	placing your hands onto <<bhis>> shoulders. With some care, you manage to hold on and balance on <<bhis>> back.
+<<else>>
+	gripping tightly onto <<bhis>> mane. With some care, you manage to hold on and balance on <<bhis>> back.
+<</if>>
+<br><br>
+
+<<link [[Ride through the moor (0:05)|Moor]]>><<set $eventskip to 1>><<bird_pass 5>><<set $moor += 5>><<set $forestmod to 0>><<set $moormove to "horse">><<if $moor_hunt gte 1>><<set $moor_hunt += 0.5>><</if>><</link>>
+<br>
+<<link [[Hop off|Moor Horse Riding]]>><<set $phase to 3>><</link>>
+<br>
+
+:: Moor Horse Riding
+<<effects>>
+
+<<if $phase is 0>> /* Keep your steed calm */
+	<<if $tendingSuccess>>
+		You gently pet the <<beasttype>>, <span class="green">reminding <<bhim>> to walk carefully.</span>
+	<<else>>
+		<<set _failure to true>>
+		You try to pet the <<beasttype>>, <span class="red">but you just end up aggravating <<bhim>>.</span> <<bHe>> bucks you off <<bhis>> back<<if $monster is 1>> with a curse<</if>>.<<pain 4>><<gpain>>
+	<</if>>
+<<elseif $phase is 1>> /* Get a better grip with your thighs */
+	<<set _difficultyMax to $horseDifficulty*2>>
+	You squeeze your legs against the sides of the <<beasttypes>> body,
+	<<if currentSkillValue("thighskill") gte random($horseDifficulty, _difficultyMax)>>
+		<span class="green">managing to stay on.</span>
+	<<else>>
+		<<set _failure to true>>
+		<span class="red">but your grip isn't strong enough.</span> You end up falling off.<<pain 4>><<gpain>>
+	<</if>>
+<<elseif $phase is 2>> /* Just try to stay on */
+	<<if $athleticsSuccess>>
+		You adjust yourself into a better position, <span class="green">managing to stay on for a bit longer.</span><<tiredness 5>><<gtiredness>>
+	<<else>>
+		<<set _failure to true>>
+		<<if $monster is 1>>
+			You try to adjust yourself into a better position, but just end up grabbing the <<beasttypes>> <<= $pronoun is "f" ? "breasts" : "chest">>.
+			<br><br>
+			Flustered, the <<beasttype>> slaps your hands, <span class="red">causing you to flinch and fall off.</span><<pain 4>><<gpain>>
+		<<else>>
+			You try to adjust yourself to get a better grip, <span class="red">but end up slipping and falling off.</span><<pain 4>><<gpain>>
+		<</if>>
+	<</if>>
+<<else>> /* Hop off */
+	<<if $monster is 1>>
+		You tell the <<beasttype>> that you want to get off here. <<bHe>> nods and comes to a full stop, letting you hop off.
+	<<else>>
+		You motion the <<beasttype>> to slow down until <<bhe>> comes to a full stop, letting you hop off.
+	<</if>>
+	<br><br>
+	The <<beasttype>> <<= $monster is 1 ? "waves at you" : "looks at you">> before <<bhe>> gallops away, leaving you alone in the moor.
+	<br><br>
+
+	<<link [[Next|Moor]]>><<endevent>><<set $eventskip to 1>><<unset $horseDifficulty>><<unset $moormove>><</link>>
+	<<exit>>
+<</if>>
+<br><br>
+
+<<if _failure is true>>
+	<<link [[Next|Moor Horse Riding Failure]]>><<unset $horseDifficulty>><<unset $moormove>><</link>>
+	<br>
+<<else>>
+	<<link [[Go deeper into the moor (0:05)|Moor]]>><<set $eventskip to 1>><<bird_pass 5>><<set $moor += 5>><<set $forestmod to 0>><<set $moormove to "horse">><</link>>
+	<br>
+<</if>>
+
+:: Moor Horse Riding Failure
+<<effects>>
+
+<<if $danger gte (9900 - $allure)>>
+	The <<beasttype>> takes advantage of your position, and positions <<bhimself>> above you.
+	<br><br>
+
+	<<link [[Next|Moor Horse Rape]]>><<set $molestationstart to 1>><</link>>
+	<br>
+<<else>>
+	The <<beasttype>> gallops away, leaving you on the ground. You watch <<bhim>> vanish into the distance as you struggle to your feet.
+	<br><br>
+
+	<<link [[Next|Moor]]>><<endevent>><<set $eventskip to 1>><</link>>
+	<br>
+<</if>>
+
 :: Bird Rescue Syndrome
 <<effects>>
 The <<beasttype>> <<if $phase is 0>>lands in front of you, and <</if>><<if $monster is 1>>darts<<else>>hops<</if>> over to you.
