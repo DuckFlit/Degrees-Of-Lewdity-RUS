@@ -301,7 +301,7 @@ function initUpper() {
 			cursed: 0,
 			location: 0,
 			iconFile: "school_shirt.png",
-			accIcon: 0,
+			accIcon: "school_shirt_acc.png",
 			notuck: 0,
 			pregType: "split",
 		},
