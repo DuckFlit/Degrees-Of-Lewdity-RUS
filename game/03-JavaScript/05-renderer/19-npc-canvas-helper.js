@@ -21,6 +21,9 @@ class NpcCanvasHelper {
 					const path = `${options.src}/${options.category}/${options.type}/${options.state}-outline.png`;
 					return path;
 				}
+				if (options.isBlackWolf) {
+					return `${options.src}/${options.category}/blackwolf/${layer}-${options.state}.png`;
+				}
 				const path = `${options.src}/${options.category}/${options.type}/${layer}-${options.state}.png`;
 				return path;
 			},
@@ -61,7 +64,7 @@ class NpcCanvasHelper {
 						// Sufficiently in front in case of hair accessories/transformation parts
 						return CombatRenderer.indices.frontHalo + 5;
 					}
-					return CombatRenderer.indices.frontLowerOverwear + 1;
+					return CombatRenderer.indices.frontLowerOverwear + 3;
 				}
 				if (layer === "outline") return 92;
 				// Back layer

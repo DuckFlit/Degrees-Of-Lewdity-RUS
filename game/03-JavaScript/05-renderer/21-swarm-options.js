@@ -61,7 +61,7 @@ class SwarmCombatMapper {
 		const hasVagina = V.player.vaginaExist;
 		const hasChastity = V.worn.genitals.name === "chastity belt";
 		return {
-			imminent: (hasVagina || hasChastity) && hasImminent,
+			imminent: (hasVagina || hasChastity) && hasImminent && !hasPenetrating,
 			penetrating: (hasVagina || hasChastity) && hasPenetrating,
 		};
 	}
@@ -73,7 +73,7 @@ class SwarmCombatMapper {
 		const hasPenis = V.player.penisExist;
 		const hasChastity = V.worn.genitals.name === "chastity belt";
 		return {
-			imminent: hasPenis && !hasChastity && hasImminent,
+			imminent: hasPenis && !hasChastity && hasImminent && !hasPenetrating,
 			penetrating: hasPenis && !hasChastity && hasPenetrating,
 		};
 	}
@@ -83,7 +83,7 @@ class SwarmCombatMapper {
 		const hasImminent = V.swarm.amount.butt[0] >= 1;
 		const hasPenetrating = V.swarm.amount.butt[1] >= 1;
 		return {
-			imminent: hasImminent,
+			imminent: hasImminent && !hasPenetrating,
 			penetrating: hasPenetrating,
 		};
 	}

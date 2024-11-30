@@ -316,6 +316,9 @@ class PlayerCanvasHelper {
 			srcfn(options) {
 				const clothes = options.clothes[slot];
 				if (clothes?.name == null) return "";
+				if (layer === "front" && PlayerCanvasHelper.isBestialHandjob(options, "front")) {
+					return `${options.src}clothing/${slot}/${clothes.name}/sleeves/front-stroke.png`;
+				}
 				const position = layer === "front" ? options.armFrontPosition : options.armBackPosition;
 				const path = `${options.src}clothing/${slot}/${clothes.name}/sleeves/${layer}-${position}.png`;
 				return path;

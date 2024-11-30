@@ -41,6 +41,9 @@ declare global {
 		npc: {
 			[key in NpcNames]: Npc;
 		};
+		tiredness: {
+			max: number;
+		};
 	};
 	const DOL: {
 		Stack: string[];
