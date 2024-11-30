@@ -1593,21 +1593,25 @@
 			<<default>>
 				<<set $_text_output to `Taken on: ${$_time.day}/${$_time.month}/${$_time.year}`>>
 		<</switch>>
-		<<set $_text_output += ` - ${ampm($_time.hour, $_time.minute)}<br>How recent: <<statisticsTimeCompare _args[0].timestamp>>`>>
+		<<set $_text_output += ` - ${ampm($_time.hour, $_time.minute)}<br>How recent: <<c>><<statisticsTimeCompare _args[0].timestamp>><</c>>`>>
 		<<set $_linkColour to "linkBlue">>
 		<<if _args[0].consensual isnot undefined>>
-			<<set $_text_output += "<br>Consensual: _args[0].consensual">>
+			<<set $_text_output += `<br>Consensual: ${_args[0].consensual ? "True" : "False"}`>>
 			<<set $_linkColour to _args[0].consensual ? "green" : "red">>
 		<</if>>
 		<<if _args[0].position>>
-			<<set $_text_output += "<br>Sex Position: _args[0].position">>
+			<<set $_text_output += `<br>Sex Position: ${_args[0].position.toUpperFirst()}`>>
 		<</if>>
 		<<if _args[0].playerPenisSize>>
-			<<set $_penisSize to ["micro", "mini", "tiny", "small", "normal", "large", "enormous"]>>
-			<<set $_text_output += "<br>Penis size: <<print $_penisSize[_args[0].playerPenisSize + 2]>>">>
+			<<set $_penisSize to ["Micro", "Mini", "Tiny", "Small", "Normal", "Large", "Enormous"]>>
+			<<set $_text_output += `<br>Penis size: ${$_penisSize[_args[0].playerPenisSize + 2]}`>>
 		<<elseif _args[0].npcPenisSize>>
-			<<set $_penisSize to ["tiny", "average", "thick", "huge"]>>
-			<<set $_text_output += "<br>Penis size: <<print $_penisSize[_args[0].npcPenisSize - 1]>>">>
+			<<set $_penisSize to ["Tiny", "Average", "Thick", "Huge", "Colossal"]>>
+			<<if !_args[0].npcPenisdesc or _args[0].npcPenisdesc is "penis">>
+				<<set $_text_output += `<br>Penis size: ${$_penisSize[_args[0].npcPenisSize - 1]}`>>
+			<<else>>
+				<<set $_text_output += `<br>Penis: ${$_penisSize[_args[0].npcPenisSize - 1]} ${_args[0].npcPenisdesc}`>>
+			<</if>>
 		<</if>>
 		<<switch _args[0].passage>>
 			<<case "Tutorial">><<set $_special to "Didn't know how to scream">>
@@ -1646,6 +1650,8 @@
 				<</if>>
 			<<case "Moor Phallus Plant Masturbation">>
 				<<set $_special to "Driven mad with pleasure">>
+			<<default>>
+				<<if _args[0].npcPenisSize gte 5>><<set $_special to `${_args[3] is "vaginal" ? "Broken" : "Taken"} in the most brutal of ways`>><</if>>
 		<</switch>>
 		<<if $_special>><<set $_text_output += `<div class="lewd">Special: ${$_special}</div>`>><</if>>
 		<<if setup.loveInterestNpc.includes(_args[1]) and $_linkColour isnot "red">>
