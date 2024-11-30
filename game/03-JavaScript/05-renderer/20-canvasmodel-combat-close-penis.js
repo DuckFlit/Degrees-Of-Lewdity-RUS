@@ -56,7 +56,7 @@ const combatClosePenis = {
 					options.pcPenis = V.worn.under_lower.name === "strap-on knotted cock" ? "strapon-knotted" : "strapon-dick";
 				} else if (playerChastity("cage")) {
 					options.pcPenis = options.penis.chastityPenis;
-				} else if (["beast", "beast-oral"].includes(options.penis.npc)) {
+				} else if (["beast-oral"].includes(options.penis.npc)) {
 					options.pcPenis = `${options.penis.size}-${options.penis.type}-${options.penis.state}`;
 				} else {
 					options.pcPenis = `${options.penis.size}-${options.penis.type}`;

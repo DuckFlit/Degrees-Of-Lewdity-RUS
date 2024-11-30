@@ -90,7 +90,7 @@ const combatCloseVagina = {
 			animationfn(options) {
 				return options.animKeyVagina;
 			},
-			filters: ["pbhair"],
+			filters: ["hirsute"],
 			z: CombatRenderer.indices.closeBase + 1,
 		},
 		silhouette: {

@@ -1637,8 +1637,11 @@ setup.colours.tentacle = [
 	{
 		variable: "tentacles-peach",
 		canvasfilter: {
-			blend: "#f99889",
-			contrast: 0.6,
+			blend: "#ff9e75",
+			brightness: 0.3,
+			contrast: 1.6,
+			blendMode: "hard-light",
+			desaturate: false,
 		},
 	},
 	{
