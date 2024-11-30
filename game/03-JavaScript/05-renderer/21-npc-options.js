@@ -45,7 +45,7 @@
  * @property {string} hex
  */
 
-const beastModels = ["bear", "boar", "cat", "creature", "dog", "dolphin", "fox", "horse", "centaur", "lizard", "pig", "wolf"];
+const beastModels = ["bear", "boar", "cat", "creature", "dog", "dolphin", "fox", "hawk", "horse", "centaur", "lizard", "pig", "wolf"];
 
 class NpcCombatMapper {
 	/** @returns {NpcOptions} */

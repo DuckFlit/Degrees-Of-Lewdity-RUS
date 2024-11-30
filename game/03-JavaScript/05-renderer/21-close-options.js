@@ -86,6 +86,7 @@ class CloseCombatMapper {
 
 		options.pbhairColour = V.makeup.pbcolour || V.naturalhaircolour;
 		options.filters.pbhair = CombatRenderer.lookupColour(setup.colours.hair_map, options.pbhairColour, "pbhair", "pbhair_custom", "pbhair");
+		options.filters.hirsute = CombatRenderer.getTransformationFilter("wolf", "pubes");
 
 		if (V.player.condom) {
 			options.condomColour = V.player.condom.colour || "red";
@@ -172,7 +173,7 @@ class CloseCombatMapper {
 
 		if (slot === "vagina") {
 			/* match drippy cum sprites to corresponding vagina state */
-			const entrance = ["entrance", "doubleentrance", "tentacleentrance"].includes(V.vaginastate.toString()) ? "entrance" : "vagina";
+			const entrance = ["entrance", "doubleentrance", "tentacleentrance", "imminent"].includes(V.vaginastate.toString()) ? "entrance" : "vagina";
 			options[slot].cumState = options.vagina.state === "penetrated" ? "penetrated" : entrance;
 			/* select appropriate chastity sprite */
 			if (chastity) {

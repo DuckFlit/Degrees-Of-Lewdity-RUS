@@ -131,14 +131,14 @@ class XrayCombatMapper {
 	 * @returns {boolean}
 	 */
 	static isPcVaginaVisible() {
-		return V.player.vaginaExist && (combat.isVaginaPenetrated() || T.pullOutVagina);
+		return V.player.vaginaExist && combat.isVaginaPenetrated();
 	}
 
 	/**
 	 * @returns {boolean}
 	 */
 	static isPcAnusVisible() {
-		return combat.isAnusPenetrated() || T.pullOutAnus;
+		return combat.isAnusPenetrated();
 	}
 
 	/**
@@ -225,7 +225,7 @@ class XrayCombatMapper {
 			V.NPCList[V[slot + "target"]].penis === slot + "double" &&
 			V.NPCList[V[slot + "doubletarget"]].penis === slot + "double";
 
-		/* If NPC pulled out, show empty xray base for that turn */
+		/* If NPC pulled out, show empty xray base for that turn
 		if (T["pullOut" + slot.toUpperFirst()]) {
 			penetrator.npcType = "none";
 			penetrator.size = 0;
@@ -235,6 +235,9 @@ class XrayCombatMapper {
 			penetrator.base = "sex";
 			penetrator.npc = V[slot + "target"];
 		}
+		*/
+		penetrator.base = "sex";
+		penetrator.npc = V[slot + "target"];
 
 		/* Penetrator control */
 		switch (penetrator.npcType) {
@@ -508,6 +511,12 @@ class XrayCombatMapper {
 			}
 		} else {
 			penetrator.penetrated = penetrator.state === "otheranus" ? "anal" : "vaginal";
+		}
+
+		if (penetrator.type === "parasite") {
+			options.filters.playerPenis = CombatRenderer.lookupColour(setup.colours.tentacle_map, "tentacles-peach", "xrayTentacle", undefined, undefined);
+		} else {
+			options.filters.playerPenis = options.filters.body;
 		}
 		penetrator.base = "sex";
 		options.showNpcVagina = penetrator.penetrated === "vaginal";

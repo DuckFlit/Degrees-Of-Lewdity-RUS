@@ -51,7 +51,7 @@ const combatXrayPenis = {
 			animationfn(options) {
 				return options.animKeyPenis;
 			},
-			filters: ["body"],
+			filters: ["playerPenis"],
 			z: CombatRenderer.indices.xrayPenetrator,
 		},
 		playerCum: {
