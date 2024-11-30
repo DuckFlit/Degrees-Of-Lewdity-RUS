@@ -10,6 +10,7 @@
  * @property {SpritePositions} position
  * @property {"shadow" | "beast"} category
  * @property {CharacterTypes} type
+ * @property {boolean} isBlackWolf Don't want to manipulate type, so using this flag instead
  * @property {Penetrator[]} penetrators
  * @property {Balls} balls
  * @property {Drool} drool
@@ -49,12 +50,30 @@ const beastModels = ["bear", "boar", "cat", "creature", "dog", "dolphin", "fox",
 class NpcCombatMapper {
 	/** @returns {NpcOptions} */
 	static generateOptions() {
-		// @ts-ignore
 		return {
 			position: "missionary",
+			root: "img/newsex",
 			src: "img/newsex/missionary",
 			animKey: "sex-2f-idle",
 			animKeyStill: "sex-2f-idle",
+			speed: "idle",
+			index: 0,
+			type: "human",
+			category: "shadow",
+			show: false,
+			state: null,
+			drool: {
+				show: false,
+				amount: 0,
+			},
+			penetrators: [],
+			balls: {
+				hasBalls: false,
+			},
+			colour: {
+				hex: "#ffffff",
+			},
+			isBlackWolf: false,
 			filters: {},
 		};
 	}
@@ -78,6 +97,9 @@ class NpcCombatMapper {
 		const npc = V.NPCList[index];
 		options.category = beastModels.includes(npc.type) ? "beast" : "shadow";
 		options.type = CombatRenderer.getUnderlyingNpcType(npc);
+		if (npc.fullDescription === "Black Wolf") {
+			options.isBlackWolf = true;
+		}
 		options.state = null;
 		options.show = false;
 
@@ -673,7 +695,7 @@ class NpcCombatMapper {
 	 * @returns {PenetratorTypes}
 	 */
 	static getPenetratorType(npc) {
-		if (["dog", "wolf", "fox"].includes(npc.type)) {
+		if (["dog", "wolf", "fox", "bear"].includes(npc.type)) {
 			return "knotted";
 		}
 		if (["horse", "centaur"].includes(npc.type)) {

@@ -36,6 +36,7 @@ declare module "twine-sugarcube" {
 
 		purity: number;
 		willpower: number;
+		willpowerpain?: 0;
 		willpowermax: number;
 		submissive: number;
 		beauty: number;

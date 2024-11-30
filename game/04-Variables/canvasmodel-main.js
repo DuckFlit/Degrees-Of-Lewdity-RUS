@@ -4027,6 +4027,31 @@ function isPartEnabled(type) {
 }
 window.isPartEnabled = isPartEnabled;
 
+/**
+ * 
+ * @param {TransformationKeys} type 
+ * @param {"halo" | "wings" | "eyes" | "malar" | "plumage" | "pubes" | "tail" | "heterochromia" | "horns" | "wings_colour" | "cheeks" | "ears" | "pits"} part 
+ * @returns {boolean}
+ */
+function isTransformationPartEnabled(type, part) {
+	const transformations = V.transformationParts;
+	if (transformations == null) {
+		return false;
+	}
+	/** @type {AngelTransformationParts=} */
+	const transformation = transformations[type];
+	if (transformation == null) {
+		return false;
+	}
+	/** @type {string=} */
+	const item = transformation[part];
+	if (typeof item !== "string") {
+		return false;
+	};
+	return item !== "disabled" && item !== "hidden";
+}
+window.isTransformationPartEnabled = isTransformationPartEnabled;
+
 function isChimeraEnabled(type, part) {
 	if (typeof V.chimera !== 'object') {
 		/* No need to post errors for $chimera, only user inputs (type&part) */

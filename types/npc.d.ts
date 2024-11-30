@@ -68,6 +68,7 @@ declare global {
 		state: "active" | "prison" | "";
 		type: CharacterTypes;
 		description: string;
+		fullDescription: string;
 		title: string;
 
 		/**

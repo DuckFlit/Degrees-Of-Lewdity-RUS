@@ -1,5 +1,5 @@
 // @ts-check
-/* global Partial, Dict, Record, CombatRenderer, Player, Bodywriting, ClothedSlots, SkinColours, TotalClothingStates, TransformationKeys, CombatClothingTypes, AnimationSpeed, LegPositions, MachineState, CondomOptions */
+/* global Partial, Dict, Record, CombatRenderer, Player, Bodywriting, ClothedSlots, SkinColours, isTransformationPartEnabled, isChimeraEnabled, TotalClothingStates, TransformationKeys, CombatClothingTypes, AnimationSpeed, LegPositions, MachineState, CondomOptions */
 
 /**
  * @typedef CombatPlayerOptions
@@ -30,6 +30,7 @@
  * @property {string} hairLength The named stage of the hair length.
  * @property {string} leftEye
  * @property {string} rightEye
+ * @property {boolean} sclera Only a boolean for now, if we have more than red sclera, this can be changed.
  * @property {boolean} trauma Empty eyes
  * @property {LegPositions} legBackPosition The position the back leg is in.
  * @property {LegPositions} legFrontPosition The position the front leg is in.
@@ -551,6 +552,7 @@ class PlayerCombatMapper {
 			hairLength: "short",
 			leftEye: "blue",
 			rightEye: "blue",
+			sclera: false,
 			trauma: false,
 			skinTone: 0,
 			skinType: "light",
@@ -645,6 +647,8 @@ class PlayerCombatMapper {
 
 		options.filters.leftEye = CombatRenderer.lookupColour(setup.colours.eyes_map, options.leftEye, "leftEye", undefined, "eyes");
 		options.filters.rightEye = CombatRenderer.lookupColour(setup.colours.eyes_map, options.rightEye, "rightEye", undefined, "eyes");
+
+		options.sclera = V.pain >= 100 || V.tiredness >= C.tiredness.max;
 
 		// Set makeup
 		options.makeup = PlayerCombatMapper.genMakeup();
@@ -955,6 +959,9 @@ class PlayerCombatMapper {
 			let show = true;
 			if (["vaginal", "anal"].includes(id) && !["penetrated", "entrance"].includes(machine.state)) {
 				show = false;
+			}
+			if (id === "tattoo") {
+				show = machine.state !== "inert";
 			}
 			return {
 				show,
@@ -1855,10 +1862,19 @@ class PlayerCombatMapper {
 				style: "disabled",
 			};
 		}
+		let style = parts.tail;
+		if (
+			type === "demon" &&
+			isTransformationPartEnabled("demon", "tail") &&
+			isTransformationPartEnabled("cat", "tail") &&
+			isChimeraEnabled("demoncat", "tail")
+		) {
+			style = "default-cat";
+		}
 		return {
 			show: true,
 			type,
-			style: parts.tail,
+			style,
 		};
 	}
 
@@ -2088,12 +2104,8 @@ class PlayerCombatMapper {
 					if (bodywriting.type !== "object") {
 						return null;
 					}
-					if (V.leftarm === "bound" || V.rightarm === "grappled" || V.leftarm === "behind") {
-						return {
-							show: true,
-							area: bodywriting.writing,
-							type: "left-shoulder-bound",
-						};
+					if (V.rightarm === "bound" || V.rightarm === "grappled" || V.rightarm === "behind") {
+						return hidden(id, bodywriting);
 					}
 					return {
 						show: true,

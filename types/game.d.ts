@@ -158,6 +158,10 @@ declare module "twine-sugarcube" {
 		 * Controls when mousetrap should activate or not.
 		 */
 		tempDisable: boolean;
+
+		chimera: ChimeraState;
+
+		facelayer: "back" | "front";
 	}
 
 	export interface SugarCubeSetupObject {
@@ -298,6 +302,18 @@ declare global {
 		pregnancyLockable?: boolean;
 		pregnancySillyLockable?: boolean;
 		softLockable?: boolean;
+	}
+
+	export interface ChimeraState {
+		demoncat?: {
+			tail?: boolean;
+		};
+		demoncow?: {
+			horns?: boolean;
+		};
+		demonharpy?: {
+			wings?: boolean;
+		};
 	}
 }
 

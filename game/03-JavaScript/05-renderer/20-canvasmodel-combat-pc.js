@@ -857,6 +857,18 @@ const combatMainPc = {
 			filters: ["body"],
 			z: CombatRenderer.indices.head,
 		},
+		sclera: {
+			srcfn(options) {
+				return `${options.src}body/head/sclera-red.png`;
+			},
+			showfn(options) {
+				return !!options.showPlayer && !!options.showFace && !!options.sclera;
+			},
+			animationfn(options) {
+				return options.animKey;
+			},
+			z: CombatRenderer.indices.head + 2,
+		},
 		frontEye: {
 			srcfn(options) {
 				return options.trauma ? `${options.src}body/head/eyesempty.png` : `${options.src}body/head/eyes.png`;
@@ -1174,10 +1186,20 @@ const combatMainPc = {
 		 *	 ██████ ███████  ██████     ██    ██   ██ ██ ██   ████  ██████
 		 */
 		facewear: PlayerCanvasHelper.genClothingLayer("face", {
-			z: CombatRenderer.indices.head + 4,
+			zfn(options) {
+				if (V.facelayer === "back") {
+					return CombatRenderer.indices.hair + 1;
+				}
+				return CombatRenderer.indices.head + 4;
+			},
 		}),
 		facewearAcc: PlayerCanvasHelper.genClothingAccLayer("face", {
-			z: CombatRenderer.indices.head + 4,
+			zfn(options) {
+				if (V.facelayer === "back") {
+					return CombatRenderer.indices.hair + 1;
+				}
+				return CombatRenderer.indices.head + 4;
+			},
 		}),
 		footwearBack: PlayerCanvasHelper.genClothingLayer("feet", {
 			srcfn(options) {
