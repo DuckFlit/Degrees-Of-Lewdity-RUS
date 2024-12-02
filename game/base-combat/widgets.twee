@@ -1,13 +1,32 @@
 :: Widgets Combat [widget]
 
 <<widget "takeVirginity">>
+	<<if Array.isArray(_args[0])>>
+		/* Array of NPCList index's, should only be used for double penetration */
+		<<set $_npc to $NPCList[_args[0][0]]>>
+		<<set $_npc2 to $NPCList[_args[0][1]]>>
+		<<if $_npc?.fullDescription and $_npc2?.fullDescription>>
+			<<set $_taker to `${$_npc.fullDescription} and ${$_npc2.fullDescription}`>>
+		<</if>>
+	<</if>>
+	<<if !$_taker>>
+		<<set $_taker to _args[0]>>
+		<<set $_npcIndex to $NPCNameList.indexOf($_taker)>>
+		<<if $_npcIndex isnot -1>>
+			<<set $_npc to $NPCName[$_npcIndex]>>
+		<<else>>
+			<<run $NPCList.forEach(npc => {
+				if (npc.fullDescription is $_taker) $_npc to npc;
+			})>>
+		<</if>>
+	<</if>>
 	<<if _args[1]>>
 		<<if _args[1] is "penile" and playerHasStrapon()>>
 			<!-- Do nothing -->
 		<<else>>
 			<<if $player.virginity[_args[1]] is true>>
-				<<if $activeNightmare or ($wraith.mimic is _args[0])>>
-					<<switch _args[0]>>
+				<<if $activeNightmare or ($wraith.mimic is $_taker)>>
+					<<switch $_taker>>
 						<<case "Robin">><<displayFeatFake "Robin the Lover">>
 						<<case "Kylar">><<displayFeatFake "Kylar the Obsessed">>
 						<<case "Eden">><<displayFeatFake "Eden the Lonely">>
@@ -22,10 +41,10 @@
 						<<case "Morgan">><<displayFeatFake "Morgan the Lost">>
 					<</switch>>
 					<<if !$activeNightmare>>
-						<<set _args[0] to "Ivory Wraith">>
+						<<set $_taker to "Ivory Wraith">>
 					<</if>>
 				<<elseif _args[1] is "vaginal" or _args[1] is "penile">>
-					<<switch _args[0]>>
+					<<switch $_taker>>
 						<<case "Robin">><<earnFeat "Robin the Lover">>
 						<<case "Kylar">><<earnFeat "Kylar the Obsessed">>
 						<<case "Eden">><<earnFeat "Eden the Lonely">>
@@ -46,7 +65,7 @@
 				<</if>>
 				<<set $player.virginityDetails[_args[1]] to {
 					timestamp: Time.date.timeStamp,
-					taker: _args[0],
+					taker: $_taker,
 					passage: $passage,
 				}>>
 				<<if $combat>>
@@ -59,27 +78,25 @@
 				<<if _args[1] is "penile">>
 					<<set $player.virginityDetails[_args[1]].playerPenisSize to $player.penissize>>
 				<<elseif ["vaginal", "anal", "oral"].includes(_args[1])>>
-					<<set $_npcIndex to $NPCNameList.indexOf(_args[0])>>
-					<<if $_npcIndex isnot -1>>
-						<<set $player.virginityDetails[_args[1]].npcPenisSize to $NPCName[$_npcIndex].penissize>>
-						<<set $player.virginityDetails[_args[1]].npcPenisdesc to $NPCName[$_npcIndex].penisdesc>>
-					<<else>>
-						<<run $NPCList.forEach(npc => {
-							if (npc.fullDescription is _args[0]) $player.virginityDetails[_args[1]].npcPenisSize to npc.penissize;
-							if (npc.fullDescription is _args[0]) $player.virginityDetails[_args[1]].npcPenisdesc to npc.penisdesc;
-						})>>
+					<<if $_npc>>
+						<<set $player.virginityDetails[_args[1]].npcPenisSize to $_npc.penissize>>
+						<<set $player.virginityDetails[_args[1]].npcPenisdesc to $_npc.penisdesc>>
+					<</if>>
+					<<if $_npc2>>
+						<<set $player.virginityDetails[_args[1]].npcPenisSize2 to $_npc2.penissize>>
+						<<set $player.virginityDetails[_args[1]].npcPenisdesc2 to $_npc2.penisdesc>>
 					<</if>>
 					<<if !$player.virginityDetails[_args[1]].npcPenisSize>>
 						<<if $tentacles>>
 							<<run Object.values($tentacles).forEach(tentacle => {
-								if (tentacle and tentacle.fullDesc is _args[0] and tentacle.size isnot undefined) $player.virginityDetails[_args[1]].tentacleSize to tentacle.size;
+								if (tentacle and tentacle.fullDesc is $_taker and tentacle.size isnot undefined) $player.virginityDetails[_args[1]].tentacleSize to tentacle.size;
 							})>>
 						<</if>>
 					<</if>>
 				<</if>>
 
-				<<if _args[0] isnot undefined and _args[0] isnot 0>>
-					<<set $player.virginity[_args[1]] to _args[0]>>
+				<<if $_taker isnot undefined and $_taker isnot 0>>
+					<<set $player.virginity[_args[1]] to $_taker>>
 					<<if $ironmanmode is true and $passage != "Loveth">>
 						<<run ironmanAutoSave()>>
 					<</if>>
@@ -89,7 +106,7 @@
 				<!-- virgin purity loss -->
 				<<switch _args[1]>>
 					<<case "vaginal" "penile">>
-						<<if $templePromised isnot _args[0]>>
+						<<if $templePromised isnot $_taker>>
 							<<purity -50>>
 						<</if>>
 					<<case "anal">><<purity -25>>
@@ -99,9 +116,9 @@
 				<</switch>>
 			<</if>>
 
-			<<if $player.virginity.temple is true and (_args[1] is "vaginal" or _args[1] is "penile") and $templePromised isnot _args[0]>>
+			<<if $player.virginity.temple is true and (_args[1] is "vaginal" or _args[1] is "penile") and $templePromised isnot $_taker>>
 				<<set $virginityProtected to false>>
-				<<set $player.virginity.temple to _args[0]>>
+				<<set $player.virginity.temple to $_taker>>
 			<</if>>
 		<</if>>
 	<</if>>
