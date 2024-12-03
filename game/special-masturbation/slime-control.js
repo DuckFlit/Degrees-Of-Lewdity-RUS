@@ -102,7 +102,7 @@ function masturbationSlimeControl() {
 	if (V.corruptionMasturbation) {
 		if (V.earSlime.event.includes("get your own sperm into your")) {
 			fragment.append(
-				Wikifier.wikifyEval("<span class='red'>It continues to force you to play with yourself, but limits it's control so you can do you task.</span>")
+				Wikifier.wikifyEval("<span class='red'>It continues to force you to play with yourself, but limits its control so you can do your task.</span>")
 			);
 			fragment.append(" ");
 		} else {

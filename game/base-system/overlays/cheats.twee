@@ -570,7 +570,16 @@
 			<<if $temple_rank is "initiate" or $temple_rank is "monk" or $temple_rank is "priest">>
 				<<numberStepper "Grace" $grace "grace">>
 			<</if>>
+			<hr>
+			<span class="gold">Speech Attitude</span>
+			<br>
+			<span class="description">Changing speech attitude will also alter your submissiveness.</span>
+			<br>
+			<span id="statsSpeechAttitude">
+				<<cheatsSpeechAttitude>>
+			</span>
 		</div>
+
 		<div class="settingsToggleItem">
 			<<set _skills to ["skulduggery", "skulduggeryday", "danceskill", "swimmingskill", "athletics", "tending", "housekeeping"]>>
 			<span class="gold">Core Skills</span>
@@ -1366,7 +1375,6 @@
 			<div class="settingsToggleItem">
 				<<mericon>><span class="gold">Pirates</span>
 				<<numberStepper "Status" $pirate_status "pirate_status">>
-				<br>
 				Rank: <span id="pirate_rank"><<cheatsRep "pirate_rank">></span>
 			</div>
 		<</if>>
@@ -1474,18 +1482,18 @@
 				<<default>><span class="green">No one is spreading rumours about you at school.</span>
 			<</switch>>
 		<<case "wolfpackleader" "pirate_rank">>
-				<<set _ranks to _args[0] is "pirate_rank" ? {0: "Scum", 1: "Mate"} : {0: "Packmate", 1: "Pack leader"}>>
-				<<capture _i, _ranks>>
-					<<for _i to 0; _i lt Object.keys(_ranks).length; _i++>>
-						<span @class="V[_args[0]] is _i ? 'goldLink' : 'unselected'">
-							<<link _ranks[_i]>>
-								<<set V[_args[0]] to _i>>
-								<<replace `"#" + _args[0]`>><<cheatsRep _args[0]>><</replace>>
-							<</link>>
-						</span>
-						<<= _i < Object.keys(_ranks).length - 1 ? "|" : "">>
-					<</for>>
-				<</capture>>
+			<<set _ranks to _args[0] is "pirate_rank" ? {0: "Scum", 1: "Mate"} : {0: "Packmate", 1: "Pack leader"}>>
+			<<capture _i, _ranks>>
+				<<for _i to 0; _i lt Object.keys(_ranks).length; _i++>>
+					<span @class="V[_args[0]] is _i ? 'goldLink' : 'unselected'">
+						<<link _ranks[_i]>>
+							<<set V[_args[0]] to _i>>
+							<<replace `"#" + _args[0]`>><<cheatsRep _args[0]>><</replace>>
+						<</link>>
+					</span>
+					<<= _i < Object.keys(_ranks).length - 1 ? "|" : "">>
+				<</for>>
+			<</capture>>
 		<<default>>
 	<</switch>>
 <</widget>>
@@ -2162,6 +2170,23 @@
 					<<replace "#statsBodySize">><<cheatsBodySize>><</replace>>
 				<</link>>
 			</span> <<= _i lt _size.length - 1 ? "|" : "">>
+		<</for>>
+	<</capture>>
+<</widget>>
+
+<<widget "cheatsSpeechAttitude">>
+	<<set _submissiveness = [1500, 1000, 500]>>
+	<<set _attitude = ["meek", "neutral", "bratty"]>>
+
+	<<capture _i, _submissiveness, _attitude>>
+		<<for _i = 0; _i < _attitude.length; _i++>>
+			<span @class="$speech_attitude is _attitude[_i] ? 'goldLink' : 'link'">
+				<<link _attitude[_i].toUpperFirst()>>
+					<<set $speech_attitude to _attitude[_i]>>
+					<<set $submissive to _submissiveness[_i]>>
+					<<replace "#statsSpeechAttitude">><<cheatsSpeechAttitude>><</replace>>
+				<</link>>
+			</span> <<= _i lt _attitude.length - 1 ? "|" : "">>
 		<</for>>
 	<</capture>>
 <</widget>>
