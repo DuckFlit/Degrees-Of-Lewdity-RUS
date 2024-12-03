@@ -3774,7 +3774,7 @@ function masturbationEffectsVaginaAnus({ span, otherElement, additionalEffect, s
 			wikifier("arousal", 500, "anal");
 			wikifier("drugs", 10);
 			if (V.arousal >= (V.arousalmax / 5) * 4) {
-				fragment.append(span("You roughly ride the plant, rubbing it as quickly as you can. It's unlike anything you've felt before.."));
+				fragment.append(span("You roughly ride the plant, rubbing it as quickly as you can. It's unlike anything you've felt before."));
 			} else if (V.arousal >= (V.arousalmax / 5) * 3) {
 				fragment.append(
 					span(`You ride the plant${V.player.penisExist ? ", trying to get it to hit your prostate" : ""}. It's unlike anything you've felt before.`)
