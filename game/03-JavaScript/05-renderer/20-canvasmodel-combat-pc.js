@@ -706,6 +706,9 @@ const combatMainPc = {
 		},
 		penetrator: {
 			srcfn(options) {
+				if (V.player.virginity.penile) {
+					return `${options.src}body/penetrator/default-virgin.png`;
+				}
 				return `${options.src}body/penetrator/default-default.png`;
 			},
 			showfn(options) {
@@ -1069,6 +1072,26 @@ const combatMainPc = {
 			},
 			filters: ["lipstick"],
 			z: CombatRenderer.indices.head + 1,
+		},
+		/*
+		 *    ██████   █████  ██████   █████  ███████ ██ ████████ ███████
+		 *    ██   ██ ██   ██ ██   ██ ██   ██ ██      ██    ██    ██
+		 *    ██████  ███████ ██████  ███████ ███████ ██    ██    █████
+		 *    ██      ██   ██ ██   ██ ██   ██      ██ ██    ██    ██
+		 *    ██      ██   ██ ██   ██ ██   ██ ███████ ██    ██    ███████
+		 */
+		parasiteClothing: {
+			srcfn(options) {
+				return `${options.src}body/parasite/${options.parasite.clothing.type}.png`;
+			},
+			showfn(options) {
+				return options.parasite.clothing.show;
+			},
+			animationfn(options) {
+				return options.animKey;
+			},
+			filters: ["parasiteClothing"],
+			z: CombatRenderer.indices.frontLowerUnderwear - 1,
 		},
 		/*
 		 *    ████████ ██████   █████  ███    ██ ███████ ███████  ██████  ██████  ███    ███  █████  ████████ ██  ██████  ███    ██

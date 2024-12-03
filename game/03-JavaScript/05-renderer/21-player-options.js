@@ -50,6 +50,18 @@
  * @property {Dict<TransformationOptions>} transformations
  * @property {Vore} vore
  * @property {MakeupOptions} makeup
+ * @property {ParasiteOptions} parasite
+ */
+
+/**
+ * @typedef ParasiteOptions
+ * @property {ParasiteClothingOptions} clothing
+ */
+
+/**
+ * @typedef ParasiteClothingOptions
+ * @property {boolean} show
+ * @property {"shorts" | "panties"} type
  */
 
 /**
@@ -569,6 +581,12 @@ class PlayerCombatMapper {
 			machines: PlayerCombatMapper.defaultMachines,
 			tentacles: PlayerCombatMapper.defaultTentacles,
 			bodywriting: PlayerCombatMapper.defaultBodywritings,
+			parasite: {
+				clothing: {
+					show: false,
+					type: "panties",
+				},
+			},
 		};
 	}
 
@@ -665,6 +683,17 @@ class PlayerCombatMapper {
 		// Vore stuff
 		options.vore.show = options.position === "doggy" && V.vorestage > 0 && V.vorestage <= 7;
 		options.vore.stage = V.vorestage || 0;
+
+		// Parasite stuff
+		if (V.parasite.penis.name === "parasite" || V.parasite.clit.name === "parasite") {
+			options.parasite.clothing.show = true;
+			options.parasite.clothing.type = V.earSlime.focus === "impregnation" ? "shorts" : "panties";
+			/** @type {Partial<CompositeLayerSpec>} */
+			options.filters.parasiteClothing = {
+				blend: "#f00",
+				blendMode: "hard-light",
+			};
+		}
 
 		// Set animation speed
 		options.animKey = PlayerCombatMapper.getPcAnimation(options);
@@ -1347,7 +1376,7 @@ class PlayerCombatMapper {
 	static mapPcToPenetratorOptions(pc, options) {
 		const hasPenetrator = pc.penisExist || playerHasStrapon();
 		const isExposed = PlayerCombatMapper.isPenisExposed(options);
-		const hasChastityBelt = V.worn.genitals.name.includes("chastity belt");
+		const hasChastityBelt = ["chastitybeltfetish", "goldchastitybelt", "chastitybelt", "flatchastitycage"].includes(V.worn.genitals.variable);
 		/** @type {Penetrator} */
 		const penetrator = {
 			show: hasPenetrator && isExposed && !hasChastityBelt,
@@ -1360,7 +1389,7 @@ class PlayerCombatMapper {
 				V.penisstate !== "penetrated" &&
 				V.orgasmcount < 25 &&
 				V.femaleclimax !== 1 &&
-				!V.worn.genitals.name.includes("chastity belt") &&
+				!hasChastityBelt &&
 				!playerHasStrapon() &&
 				wearingCondom("player") !== "worn",
 			ejaculate: {
