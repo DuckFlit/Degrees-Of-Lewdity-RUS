@@ -132,9 +132,12 @@ const combatClosePenis = {
 				return options.animKeyPenis;
 			},
 			filtersfn(options) {
-				return options.penis.chastityDevice.includes("parasite") ? ["parasitePanties"] : [];
+				if (options.penis.chastityDevice.includes("parasite")) {
+					return ["parasitePanties"];
+				}
+				return ["worn_genitals_main"];
 			},
-			z: CombatRenderer.indices.closeWorn,
+			z: CombatRenderer.indices.closeWorn + 3,
 		},
 		penetratedNpc: {
 			srcfn(options) {
