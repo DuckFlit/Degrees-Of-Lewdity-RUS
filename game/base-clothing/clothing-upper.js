@@ -1770,6 +1770,7 @@ function initUpper() {
 				reference: "regularshirt",
 				mainColour: "#fff",
 				hasSleeves: true,
+				hasBreasts: true,
 			},
 			integrity: 300,
 			integrity_max: 300,
