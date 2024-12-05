@@ -4030,7 +4030,7 @@ window.isPartEnabled = isPartEnabled;
 /**
  * 
  * @param {TransformationKeys} type 
- * @param {"halo" | "wings" | "eyes" | "malar" | "plumage" | "pubes" | "tail" | "heterochromia" | "horns" | "wings_colour" | "cheeks" | "ears" | "pits"} part 
+ * @param {TransformationParts} part 
  * @returns {boolean}
  */
 function isTransformationPartEnabled(type, part) {

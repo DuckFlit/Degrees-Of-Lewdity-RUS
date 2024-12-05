@@ -480,8 +480,11 @@ const combatMainPc = {
 			filters: ["tentacles"],
 			z: 49,
 		},
-		tentacleLeftArm: {
+		tentacleBackArm: {
 			srcfn(options) {
+				if (options.tentacles.backArm.isBound) {
+					return `${options.src}tentacles/back-arm-bound.png`;
+				}
 				return `${options.src}tentacles/${options.tentacles.backArm.state}.png`;
 			},
 			showfn(options) {
@@ -491,10 +494,13 @@ const combatMainPc = {
 				return options.animKey;
 			},
 			filters: ["tentacles"],
-			z: 49,
+			z: CombatRenderer.indices.backArm + 5,
 		},
-		tentacleRightArm: {
+		tentacleFrontArm: {
 			srcfn(options) {
+				if (options.tentacles.frontArm.isBound) {
+					return `${options.src}tentacles/front-arm-bound.png`;
+				}
 				return `${options.src}tentacles/${options.tentacles.frontArm.state}.png`;
 			},
 			showfn(options) {
@@ -504,33 +510,33 @@ const combatMainPc = {
 				return options.animKey;
 			},
 			filters: ["tentacles"],
-			z: 49,
+			z: CombatRenderer.indices.frontArm + 5,
 		},
-		tentacleLeftLeg: {
+		tentacleBackLeg: {
 			srcfn(options) {
-				return `${options.src}tentacles/${options.tentacles.backLeg.state}.png`;
+				return `${options.src}tentacles/back-leg-bound.png`;
 			},
 			showfn(options) {
-				return options.tentacles.backLeg.show;
+				return options.tentacles.backLeg.show && options.tentacles.backLeg.isBound;
 			},
 			animationfn(options) {
 				return options.animKey;
 			},
 			filters: ["tentacles"],
-			z: 49,
+			z: CombatRenderer.indices.backLeg + 5,
 		},
-		tentacleRightLeg: {
+		tentacleFrontLeg: {
 			srcfn(options) {
-				return `${options.src}tentacles/${options.tentacles.frontLeg.state}.png`;
+				return `${options.src}tentacles/front-leg-bound.png`;
 			},
 			showfn(options) {
-				return options.tentacles.frontLeg.show;
+				return options.tentacles.frontLeg.show && options.tentacles.frontLeg.isBound;
 			},
 			animationfn(options) {
 				return options.animKey;
 			},
 			filters: ["tentacles"],
-			z: 49,
+			z: CombatRenderer.indices.frontLeg + 5,
 		},
 		tentacleOral: {
 			srcfn(options) {

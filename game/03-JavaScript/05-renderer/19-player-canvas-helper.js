@@ -440,7 +440,7 @@ class PlayerCanvasHelper {
 
 	/**
 	 * @param {TransformationKeys} transformation
-	 * @param {"wings" | "halo" | "horns" | "ears" | "tail" | "eyes" | "cheeks" | "malar" | "pubes" | "pits" | "plumage"} part
+	 * @param {TransformationParts} part
 	 * @param {"front" | "back"} layer
 	 * @param {CanvasModelLayers<CombatPlayerOptions>} overrideOptions
 	 * @returns {CanvasModelLayers<CombatPlayerOptions>}
@@ -451,6 +451,7 @@ class PlayerCanvasHelper {
 		 */
 		const defaults = {
 			srcfn(options) {
+				/** @type {TransformationPartOptions} */
 				const value = options.transformations[transformation][part];
 				const path = `${options.src}body/transformations/${value.type}/${part}/${layer}-${value.style}.png`;
 				return path;
@@ -464,7 +465,15 @@ class PlayerCanvasHelper {
 				return options.animKey;
 			},
 			filters: [transformation + part.toUpperFirst()],
-			z: CombatRenderer.indices[layer + part.toUpperFirst()],
+			zfn(options) {
+				/** @type {TransformationPartOptions} */
+				const value = options.transformations[transformation][part];
+				let z = CombatRenderer.indices[layer + part.toUpperFirst()];
+				if (value.inFront) {
+					z += 1;
+				}
+				return z;
+			},
 		};
 		return Object.assign(defaults, overrideOptions);
 	}

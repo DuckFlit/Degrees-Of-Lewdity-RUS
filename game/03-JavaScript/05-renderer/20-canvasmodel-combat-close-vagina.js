@@ -151,13 +151,19 @@ const combatCloseVagina = {
 				return `${options.src}vagina/${options.position}/npc/npc-cum.png`;
 			},
 			showfn(options) {
-				return (
-					!!options.showVagina &&
-					!!options.vagina.npc &&
-					V.enemyarousal >= V.enemyarousalmax &&
-					wearingCondom(V.vaginatarget) !== "worn" &&
-					!npcHasStrapon(V.vaginatarget)
-				);
+				if (!options.showVagina) {
+					return false;
+				}
+				if (!options.vagina.npc) {
+					return false;
+				}
+				if (V.enemyarousal < V.enemyarousalmax) {
+					return false;
+				}
+				if (options.vagina.npc === "tentacle") {
+					return true;
+				}
+				return wearingCondom(V.vaginatarget) !== "worn" && !npcHasStrapon(V.vaginatarget);
 			},
 			animationfn(options) {
 				return options.animKeyVagina;
