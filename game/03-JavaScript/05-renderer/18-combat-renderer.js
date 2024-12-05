@@ -1,5 +1,5 @@
 // @ts-check
-/* globals FilterMap, CompositeLayerSpec, SpritePositions, Condom, CondomOptions, Partial, ClothedSlots, ClothingState, PositionStates, TransformationKeys, Transformations, CombatClothingTypes, CombatPlayerOptions, CharacterTypes */
+/* globals FilterMap, CompositeLayerSpec, SpritePositions, Condom, CondomOptions, Partial, ClothedSlots, ClothingState, PositionStates, TransformationKeys, TransformationParts, Transformations, CombatClothingTypes, CombatPlayerOptions, CharacterTypes */
 
 /**
  * @typedef CombatZIndices
@@ -716,7 +716,7 @@ class CombatRenderer {
 
 	/**
 	 * @param {TransformationKeys} transformation
-	 * @param {"wings" | "halo" | "horns" | "ears" | "tail" | "eyes" | "cheeks" | "malar" | "pubes" | "pits" | "plumage"} part
+	 * @param {TransformationParts} part
 	 * @returns {Partial<CompositeLayerSpec>}
 	 */
 	static getTransformationFilter(transformation, part) {

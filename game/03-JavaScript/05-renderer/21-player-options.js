@@ -1,5 +1,5 @@
 // @ts-check
-/* global Partial, Dict, Record, CombatRenderer, Player, Bodywriting, ClothedSlots, SkinColours, isTransformationPartEnabled, isChimeraEnabled, TotalClothingStates, TransformationKeys, CombatClothingTypes, AnimationSpeed, LegPositions, MachineState, CondomOptions */
+/* global Partial, Dict, Record, CombatRenderer, Player, Bodywriting, ClothedSlots, SkinColours, ShaftTarget, isTransformationPartEnabled, isChimeraEnabled, TotalClothingStates, TransformationKeys, TransformationParts, CombatClothingTypes, AnimationSpeed, LegPositions, MachineState, CondomOptions */
 
 /**
  * @typedef CombatPlayerOptions
@@ -242,10 +242,10 @@
  * @property {Tentacle} anus
  * @property {Tentacle} breasts
  * @property {Tentacle} feet
- * @property {Tentacle} backArm
- * @property {Tentacle} frontArm
- * @property {Tentacle} backLeg
- * @property {Tentacle} frontLeg
+ * @property {ArmTentacle} backArm
+ * @property {ArmTentacle} frontArm
+ * @property {LegTentacle} backLeg
+ * @property {LegTentacle} frontLeg
  * @property {Tentacle} mouth
  * @property {Tentacle} penis
  * @property {Tentacle} vagina
@@ -255,6 +255,19 @@
  * @typedef Tentacle
  * @property {boolean} show
  * @property {string?} state
+ */
+
+/**
+ * @typedef ArmTentacle
+ * @property {boolean} show
+ * @property {string?} state
+ * @property {boolean} isBound
+ */
+
+/**
+ * @typedef LegTentacle
+ * @property {boolean} show
+ * @property {boolean} isBound
  */
 
 /**
@@ -277,6 +290,7 @@
  * @property {boolean} show
  * @property {string} type
  * @property {string} style
+ * @property {boolean} inFront
  */
 
 /** @type {CanvasModelOptions<CombatPlayerOptions>} */
@@ -414,12 +428,12 @@ class PlayerCombatMapper {
 		/** @type {Tentacles} */
 		const tentacles = {
 			anus: PlayerCombatMapper.defaultTentacle,
-			backArm: PlayerCombatMapper.defaultTentacle,
-			backLeg: PlayerCombatMapper.defaultTentacle,
+			backArm: PlayerCombatMapper.defaultTentacleArm,
+			backLeg: PlayerCombatMapper.defaultTentacleLeg,
 			breasts: PlayerCombatMapper.defaultTentacle,
 			feet: PlayerCombatMapper.defaultTentacle,
-			frontArm: PlayerCombatMapper.defaultTentacle,
-			frontLeg: PlayerCombatMapper.defaultTentacle,
+			frontArm: PlayerCombatMapper.defaultTentacleArm,
+			frontLeg: PlayerCombatMapper.defaultTentacleLeg,
 			mouth: PlayerCombatMapper.defaultTentacle,
 			penis: PlayerCombatMapper.defaultTentacle,
 			vagina: PlayerCombatMapper.defaultTentacle,
@@ -433,6 +447,27 @@ class PlayerCombatMapper {
 		const tentacle = {
 			show: false,
 			state: null,
+		};
+		return { ...tentacle };
+	}
+
+	/** @returns {ArmTentacle} */
+	static get defaultTentacleArm() {
+		/** @type {ArmTentacle} */
+		const tentacle = {
+			show: false,
+			isBound: false,
+			state: null,
+		};
+		return { ...tentacle };
+	}
+
+	/** @returns {LegTentacle} */
+	static get defaultTentacleLeg() {
+		/** @type {LegTentacle} */
+		const tentacle = {
+			show: false,
+			isBound: false,
 		};
 		return { ...tentacle };
 	}
@@ -1056,65 +1091,126 @@ class PlayerCombatMapper {
 	}
 
 	/**
+	 * @param {ShaftTarget} target
+	 * @returns {TentacleState?}
+	 */
+	static getTentacleByShaft(target) {
+		const count = V.tentacles.max;
+		// const count = V.tentacles.active;
+		for (let i = 0; i < count; i++) {
+			/** @type {TentacleState?} */
+			const tentacle = V.tentacles[i];
+
+			if (tentacle == null) {
+				continue;
+			}
+
+			if (tentacle.tentaclehealth <= 0) {
+				continue;
+			}
+
+			if (tentacle.shaft === target) {
+				return tentacle;
+			}
+		}
+		return null;
+	}
+
+	/**
 	 *
 	 * @param {CombatPlayerOptions} options
 	 * @returns {CombatPlayerOptions}
 	 */
 	static mapToTentacleOptions(options) {
 		/**
-		 * @param {...Object<string, string>} parts
+		 * @param {Dict<string>=} parts
 		 * @returns {Tentacle}
 		 */
-		function getState(...parts) {
-			const state = PlayerCombatMapper.getTentacleHeadPosition(...parts);
+		function getState(parts) {
+			const state = PlayerCombatMapper.getTentacleHeadPosition(parts || {});
 			return {
 				state,
 				show: state != null,
 			};
 		}
 
+		/**
+		 * @param {ShaftTarget} target
+		 * @param {Dict<string>} parts
+		 * @returns {ArmTentacle}
+		 */
+		function getArmState(target, parts) {
+			const state = PlayerCombatMapper.getTentacleHeadPosition(parts);
+			const tentacle = PlayerCombatMapper.getTentacleByShaft(target);
+			const isBound = tentacle != null && V[target] === "grappled";
+			return {
+				show: state != null || isBound,
+				state,
+				isBound,
+			};
+		}
+
+		/**
+		 * @param {ShaftTarget} target
+		 * @returns {LegTentacle}
+		 */
+		function getLegState(target) {
+			const tentacle = PlayerCombatMapper.getTentacleByShaft(target);
+			const isBound = tentacle != null && V[target] === "grappled";
+			return {
+				show: isBound,
+				isBound,
+			};
+		}
+
 		options.filters.tentacles = PlayerCombatMapper.getTentacleFilter();
 
-		const tentacles = {
-			mouth: getState({ mouthentrance: "oral-entrance" }, { mouthimminent: "oral-imminent" }, { mouth: "oral" }, { mouthdeep: "oral" }),
-			breasts: getState(),
-			backArm: getState({ leftarm: "handjob-left" }),
-			frontArm: getState({ rightarm: "handjob-right" }),
-			penis: getState(
-				{ penisentrance: "penis-entrance-0" },
-				{ penisimminent: "penis-imminent" },
-				{ penis: "penis" },
-				{ penisdeep: "penis" },
-				{ penisrub: "penis" }
-			),
-			vagina: getState({ vaginaentrance: "vagina-entrance" }, { vaginaimminent: "vagina-imminent" }, { vagina: "vagina" }, { vaginadeep: "vagina" }),
-			anus: getState(
-				{ anusentrance: "anal-entrance" },
-				{ anusimminent: "anal-imminent" },
-				{ anus: "anal" },
-				{ anusrub: "anal-rub" },
-				{ anusdeep: "anal" }
-			),
-			backLeg: getState(),
-			frontLeg: getState({ feet: "footjob" }, { leftlegentrance: "footjob" }),
-			feet: getState(),
-		};
+		/** @type {Partial<Tentacles>} */
+		const tentacles = options.tentacles;
 
-		if (V.feetstate === "tentacle") {
-			tentacles.feet = getState({ finished: "footjob" });
+		if (V.mouthstate !== 0) {
+			tentacles.mouth = getState({ mouthentrance: "oral-entrance", mouthimminent: "oral-imminent", mouth: "oral", mouthdeep: "oral" });
+		}
+		tentacles.breasts = getState();
+		// Tentacle code requires that I check the states.
+		if (V.penisstate !== 0) {
+			tentacles.penis = getState({
+				penisentrance: "penis-entrance-0",
+				penisimminent: "penis-imminent",
+				penis: "penis",
+				penisdeep: "penis",
+				penisrub: "penis",
+			});
+		}
+		if (V.vaginastate !== 0) {
+			tentacles.vagina = getState({
+				vaginaentrance: "vagina-entrance",
+				vaginaimminent: "vagina-imminent",
+				vagina: "vagina",
+				vaginadeep: "vagina",
+				vaginarub: "vagina-rub",
+			});
+		}
+		if (V.anusstate !== 0) {
+			tentacles.anus = getState({ anusentrance: "anal-entrance", anusimminent: "anal-imminent", anus: "anal", anusrub: "anal-rub", anusdeep: "anal" });
+		}
+		if (V.feetstate !== 0) {
+			tentacles.feet = getState({ finished: "footjob", feet: "footjob" });
 		}
 
 		switch (options.position) {
 			case "doggy":
-				tentacles.backArm = getState({ rightarm: "handjob-right" });
-				tentacles.frontArm = getState({ leftarm: "handjob-left" });
+				tentacles.backArm = getArmState("rightarm", { rightarm: "handjob-right" });
+				tentacles.frontArm = getArmState("leftarm", { leftarm: "handjob-left" });
 				break;
 			case "missionary":
-				tentacles.backArm = getState({ leftarm: "handjob-left" });
-				tentacles.frontArm = getState({ rightarm: "handjob-right" });
+				tentacles.backArm = getArmState("leftarm", { leftarm: "handjob-left" });
+				tentacles.frontArm = getArmState("rightarm", { rightarm: "handjob-right" });
+				tentacles.backLeg = getLegState("leftleg");
+				tentacles.frontLeg = getLegState("rightleg");
 				break;
 		}
-		options.tentacles = tentacles;
+
 		return options;
 	}
 
@@ -1248,6 +1344,9 @@ class PlayerCombatMapper {
 			if (V.NPCList.some(a => ["dog", "pig", "boar"].includes(a.type))) {
 				return "up";
 			}
+			if (PlayerCombatMapper.getTentacleByShaft("rightleg") !== null && V.rightleg === "grappled") {
+				return "up";
+			}
 		}
 		if (V.feetuse === "penis" || V.feetstate === "tentacle") {
 			return "up";
@@ -1283,6 +1382,9 @@ class PlayerCombatMapper {
 				return "up";
 			}
 			if (V.NPCList.some(a => ["horse", "centaur", "dog", "pig", "boar"].includes(a.type))) {
+				return "up";
+			}
+			if (PlayerCombatMapper.getTentacleByShaft("leftleg") !== null && V.leftleg === "grappled") {
 				return "up";
 			}
 		}
@@ -1757,7 +1859,7 @@ class PlayerCombatMapper {
 	static mapToTransformationOptions(options) {
 		/**
 		 * @param {TransformationKeys} type
-		 * @param {"wings" | "halo" | "horns" | "ears" | "tail" | "eyes" | "cheeks" | "malar" | "pubes" | "pits" | "plumage"} part
+		 * @param {TransformationParts} part
 		 */
 		function generateTransformationFilter(type, part) {
 			const parts = V.transformationParts[type];
@@ -1809,12 +1911,26 @@ class PlayerCombatMapper {
 				show: false,
 				type,
 				style: "disabled",
+				inFront: false,
 			};
+		}
+		switch (type) {
+			case "bird":
+				if (PlayerCombatMapper.isChimeraPartEnabled("demon", "bird", "demonharpy", "wings")) {
+					return {
+						show: true,
+						type,
+						style: "demon",
+						inFront: true,
+					};
+				}
+				break;
 		}
 		return {
 			show: true,
 			type,
 			style: parts.wings,
+			inFront: false,
 		};
 	}
 
@@ -1829,12 +1945,14 @@ class PlayerCombatMapper {
 				show: false,
 				type,
 				style: "disabled",
+				inFront: false,
 			};
 		}
 		return {
 			show: true,
 			type,
 			style: parts.halo,
+			inFront: false,
 		};
 	}
 
@@ -1849,12 +1967,26 @@ class PlayerCombatMapper {
 				show: false,
 				type,
 				style: "disabled",
+				inFront: false,
 			};
+		}
+		switch (type) {
+			case "cow":
+				if (PlayerCombatMapper.isChimeraPartEnabled("demon", "cow", "demoncow", "horns")) {
+					return {
+						show: true,
+						type,
+						style: "demon",
+						inFront: true,
+					};
+				}
+				break;
 		}
 		return {
 			show: true,
 			type,
 			style: parts.horns,
+			inFront: false,
 		};
 	}
 
@@ -1869,12 +2001,14 @@ class PlayerCombatMapper {
 				show: false,
 				type,
 				style: "disabled",
+				inFront: false,
 			};
 		}
 		return {
 			show: true,
 			type,
 			style: parts.ears,
+			inFront: false,
 		};
 	}
 
@@ -1889,21 +2023,26 @@ class PlayerCombatMapper {
 				show: false,
 				type,
 				style: "disabled",
+				inFront: false,
 			};
 		}
-		let style = parts.tail;
-		if (
-			type === "demon" &&
-			isTransformationPartEnabled("demon", "tail") &&
-			isTransformationPartEnabled("cat", "tail") &&
-			isChimeraEnabled("demoncat", "tail")
-		) {
-			style = "default-cat";
+		switch (type) {
+			case "demon":
+				if (PlayerCombatMapper.isChimeraPartEnabled("demon", "cat", "demoncat", "tail")) {
+					return {
+						show: true,
+						type,
+						style: "default-cat",
+						inFront: false,
+					};
+				}
+				break;
 		}
 		return {
 			show: true,
 			type,
-			style,
+			style: parts.tail,
+			inFront: false,
 		};
 	}
 
@@ -1918,12 +2057,14 @@ class PlayerCombatMapper {
 				show: false,
 				type,
 				style: "disabled",
+				inFront: false,
 			};
 		}
 		return {
 			show: true,
 			type,
 			style: parts.eyes,
+			inFront: false,
 		};
 	}
 
@@ -1938,12 +2079,14 @@ class PlayerCombatMapper {
 				show: false,
 				type,
 				style: "disabled",
+				inFront: false,
 			};
 		}
 		return {
 			show: true,
 			type,
 			style: parts.cheeks,
+			inFront: false,
 		};
 	}
 
@@ -1958,12 +2101,14 @@ class PlayerCombatMapper {
 				show: false,
 				type,
 				style: "disabled",
+				inFront: false,
 			};
 		}
 		return {
 			show: true,
 			type,
 			style: parts.malar,
+			inFront: false,
 		};
 	}
 
@@ -1978,12 +2123,14 @@ class PlayerCombatMapper {
 				show: false,
 				type,
 				style: "disabled",
+				inFront: false,
 			};
 		}
 		return {
 			show: true,
 			type,
 			style: parts.pubes,
+			inFront: false,
 		};
 	}
 
@@ -1998,12 +2145,14 @@ class PlayerCombatMapper {
 				show: false,
 				type,
 				style: "disabled",
+				inFront: false,
 			};
 		}
 		return {
 			show: true,
 			type,
 			style: parts.pits,
+			inFront: false,
 		};
 	}
 
@@ -2018,13 +2167,35 @@ class PlayerCombatMapper {
 				show: false,
 				type,
 				style: "disabled",
+				inFront: false,
 			};
 		}
 		return {
 			show: true,
 			type,
 			style: parts.plumage,
+			inFront: false,
 		};
+	}
+
+	/**
+	 * @param {TransformationKeys} one
+	 * @param {TransformationKeys} two
+	 * @param {"demoncow" | "demoncat" | "demonharpy"} chimera
+	 * @param {TransformationParts} part
+	 * @returns {boolean}
+	 */
+	static isChimeraPartEnabled(one, two, chimera, part) {
+		if (!isChimeraEnabled(chimera, part)) {
+			return false;
+		}
+		if (!isTransformationPartEnabled(one, part)) {
+			return false;
+		}
+		if (!isTransformationPartEnabled(two, part)) {
+			return false;
+		}
+		return true;
 	}
 
 	/**

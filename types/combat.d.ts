@@ -23,6 +23,8 @@ declare module "twine-sugarcube" {
 		chest: number | string;
 		leftarm: number | string;
 		rightarm: number | string;
+		leftleg: number | string;
+		rightleg: number | string;
 
 		active_enemy: number;
 		enemyno: number;
@@ -147,6 +149,12 @@ declare global {
 
 	export type AnimationSpeed = "vfast" | "fast" | "mid" | "slow" | "idle";
 
+	// There is more to do, look at tentacle-action.twee
+	export type ShaftTarget = 0 | "tummy" | "thighs" | "breasts" | "chest" | "waist" | "neck" | "shoulders" | "leftarm" | "rightarm" | "leftleg" | "rightleg";
+
+	// There is a lot more, look at tentacle-action.twee
+	export type HeadTarget = 0 | "leftarm" | "rightarm" | "feet" | "leftnipplesuck" | "rightnipplesuck" | "leftnipple" | "rightnipple";
+
 	export interface CombatRendererOverrides {
 		legBackPosition?: LegPositions;
 		legFrontPosition?: LegPositions;
@@ -159,9 +167,9 @@ declare global {
 		babychance: number;
 		desc: string;
 		fullDesc: string;
-		head: string;
+		head: HeadTarget;
 		id: string;
-		shaft: string;
+		shaft: ShaftTarget;
 		size: number;
 		tentaclehealth: number;
 		tentaclehealthstart: number;

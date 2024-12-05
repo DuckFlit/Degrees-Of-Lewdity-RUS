@@ -256,10 +256,8 @@ class NpcCombatMapper {
 				case "penisentrance":
 				case "penisimminent":
 				case "penis":
-					if (options.category !== "shadow") {
-						options.state = "penis";
-						options.show = true;
-					}
+					options.state = "penis";
+					options.show = true;
 					break;
 			}
 		}
