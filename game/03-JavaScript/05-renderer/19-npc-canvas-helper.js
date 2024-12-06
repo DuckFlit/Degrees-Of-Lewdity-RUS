@@ -14,18 +14,15 @@ class NpcCanvasHelper {
 		const defaults = {
 			srcfn(options) {
 				if (layer === "front" && options.category === "shadow") {
-					const path = `${options.src}/${options.category}/${options.type}/${options.state}.png`;
-					return path;
+					return `${options.src}/${options.category}/${options.type}/${options.state}.png`;
 				}
-				if (layer === "outline" && options.category === "shadow" && options.type === "human") {
-					const path = `${options.src}/${options.category}/${options.type}/${options.state}-outline.png`;
-					return path;
+				if (layer === "outline" && options.category === "shadow" && ["human", "plant"].includes(options.type)) {
+					return `${options.src}/${options.category}/${options.type}/${options.state}-outline.png`;
 				}
 				if (options.isBlackWolf) {
 					return `${options.src}/${options.category}/blackwolf/${layer}-${options.state}.png`;
 				}
-				const path = `${options.src}/${options.category}/${options.type}/${layer}-${options.state}.png`;
-				return path;
+				return `${options.src}/${options.category}/${options.type}/${layer}-${options.state}.png`;
 			},
 			showfn(options) {
 				if (!options.show) {
@@ -44,7 +41,7 @@ class NpcCanvasHelper {
 				if (layer === "back" && options.category !== "beast") {
 					return false;
 				}
-				if (layer === "outline" && options.type !== "human") {
+				if (layer === "outline" && (options.category !== "shadow" || !["human", "plant"].includes(options.type))) {
 					return false;
 				}
 				return true;
