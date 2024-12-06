@@ -251,15 +251,14 @@ class NpcCombatMapper {
 			return options;
 		}
 
-		if (npc.vagina && npc.vagina !== "none") {
-			switch (npc.vagina) {
-				case "penisentrance":
-				case "penisimminent":
-				case "penis":
-					options.state = "penis";
-					options.show = true;
-					break;
-			}
+		if (options.category === "shadow" && ["penis"].includes(npc.vagina)) {
+			options.state = "penis";
+			options.show = true;
+		}
+
+		if (options.category !== "shadow" && ["penis", "penisimminent", "penisentrace"].includes(npc.vagina)) {
+			options.state = "penis";
+			options.show = true;
 		}
 
 		// Primary for being pinned:

@@ -316,7 +316,7 @@ declare global {
 		gender: "m" | "f";
 
 		virginity: {
-			penile: boolean;
+			penile: "string" | boolean;
 			vaginal: boolean;
 			anal: boolean;
 			temple: boolean;

@@ -712,7 +712,7 @@ const combatMainPc = {
 		},
 		penetrator: {
 			srcfn(options) {
-				if (V.player.virginity.penile) {
+				if (V.player.virginity.penile === true) {
 					return `${options.src}body/penetrator/default-virgin.png`;
 				}
 				return `${options.src}body/penetrator/default-default.png`;
