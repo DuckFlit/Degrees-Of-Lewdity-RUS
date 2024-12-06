@@ -306,11 +306,6 @@ class XrayCombatMapper {
 			case "bullboy":
 				penetrator.penetratorSprite = "horse";
 				penetrator.size = 5;
-				options.filters[slot + "Penetrator"] = {
-					blend: "#ec3535",
-					blendMode: "multiply",
-					desaturate: true,
-				};
 				break;
 			case "dog":
 			case "doggirl":
@@ -516,7 +511,7 @@ class XrayCombatMapper {
 		if (penetrator.type === "parasite") {
 			options.filters.playerPenis = CombatRenderer.lookupColour(setup.colours.tentacle_map, "tentacles-peach", "xrayTentacle", undefined, undefined);
 		} else {
-			options.filters.playerPenis = options.filters.body;
+			options.filters.playerPenis = setup.colours.getSkinFilter(Skin.color.natural, 0);
 		}
 		penetrator.base = "sex";
 		options.showNpcVagina = penetrator.penetrated === "vaginal";
