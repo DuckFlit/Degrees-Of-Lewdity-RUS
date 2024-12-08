@@ -1,5 +1,6 @@
 /* eslint-disable eqeqeq */
 /* eslint-disable jsdoc/require-description-complete-sentence */
+
 function overlayShowHide(elementId) {
 	const div = document.getElementById(elementId);
 	if (div != null) {

@@ -172,8 +172,15 @@ declare global {
 		colour: 0 | string;
 		colour_options?: string[];
 		colour_sidebar?: 0 | 1 | "primary";
+		/**
+		 * if 1, then sidebar image and colour array reference special sprites (ex. one "jar of jam" prop with images right_apple.png, right_blackberry.png, etc. and a colour array of ["apple", "blackberry"...]) instead of separate "jar of apple jam", "jar of blackberry jam", etc. items"
+		 */
 		colour_combat?: 0 | string;
 		colourCustom?: string;
+		pattern?: 0 | string;
+		pattern_options?: string[];
+		pattern_caption?: boolean;
+		pattern_layer?: "secondary";
 		accessory: number;
 		accessory_colour?: 0 | string;
 		accessory_colour_options?: string[];
@@ -273,6 +280,8 @@ declare global {
 		altDamage?: "metal" | "plastic" | "parasite";
 		penisSize?: boolean;
 		hood?: 0 | 1;
+		// Handheld item held over head, or alternate limb position used
+		holdPosition?: "right_cover" | "left_cover" | "cover_both" | "idle" | "clutch" | "over_head" | "hold";
 		coverBackImage?: 0 | 1;
 		coverImage?: 0 | 1;
 		leftImage?: 0 | 1;

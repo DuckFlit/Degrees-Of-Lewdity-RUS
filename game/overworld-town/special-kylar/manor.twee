@@ -5,30 +5,31 @@ You are in the front garden of Kylar's manor. Choking weeds and thorny bushes su
 <br><br>
 
 <<if $daily.manorGarden is undefined and $kylar_parents_trust lt 100>>
-	<<ind>><<link [[Trim the hedges (1:00)|Manor Garden Trim]]>><<kylar_parents_trust 1>><<set $daily.manorGarden to 1>><<pass 60>><</link>><<tendingdifficulty 1 1000>><<gtrust>>
+	<<choreicon "trim">><<link [[Trim the hedges (1:00)|Manor Garden Trim]]>><<kylar_parents_trust 1>><<set $daily.manorGarden to 1>><<pass 60>><</link>><<tendingdifficulty 1 1000>><<gtrust>>
 	<br><br>
 <</if>>
 
-<<getinicon>><<link [[Enter the manor (0:01)|Manor Hall]]>><<pass 1>><</link>>
+<<kylarmanoricon "hall">><<link [[Enter the manor (0:01)|Manor Hall]]>><<pass 1>><</link>>
 <br>
-<<walkicon>><<link [[Walk around the side of the manor (0:01)|Manor Grounds]]>><<pass 1>><</link>>
+<<kylarmanoricon "grounds">><<link [[Walk around the side of the manor (0:01)|Manor Grounds]]>><<pass 1>><</link>>
 <br><br>
-<<getouticon>><<link [[Leave (0:02)|Danube Street]]>><<pass 2>><</link>>
+<<danubeicon>><<link [[Leave (0:02)|Danube Street]]>><<pass 2>><</link>>
 <br>
 
 :: Manor Hall
 <<set $outside to 0>><<location "kylarmanor">><<effects>>
+<<set _state to ($kylar_parents_trust < 100) ? "messy" : "">>
 
 You are in the front hall of Kylar's manor. A chemical scent lingers in the air. You hear a disturbing noise upstairs.
 <br><br>
 
-<<ind>><<link [[Kitchen|Manor Kitchen]]>><</link>>
+<<kitchenicon _state>><<link [[Kitchen|Manor Kitchen]]>><</link>>
 <br>
-<<ind>><<link [[Lab|Manor Lab]]>><</link>>
+<<kylarmanoricon "lab">><<link [[Lab|Manor Lab]]>><</link>>
 <br>
-<<ind>><<link [[Kylar's room|Manor Kylar Room]]>><</link>>
+<<bedicon "kylar">><<link [[Kylar's room|Manor Kylar Room]]>><</link>>
 <br>
-<<ind>><<link [[Parents' room|Manor Parents Room]]>><</link>>
+<<bedicon "parents">><<link [[Parents' room|Manor Parents Room]]>><</link>>
 <br>
 
 <<getouticon>><<link [[Leave (0:01)|Manor Garden]]>><<pass 1>><</link>>
@@ -42,7 +43,7 @@ Kylar's parents' room looks like the master bedroom. The four-poster bed is unto
 <br><br>
 
 <<if $daily.manorParents is undefined and $kylar_parents_trust lt 100>>
-	<<ind>><<link [[Soothe Kylar's parents (1:00)|Manor Parents Room Soothe]]>><<set $daily.manorParents to 1>><<kylar_parents_trust 1>><<stress 6>><<pass 60>><</link>><<gstress>><<gtrust>>
+	<<socialiseicon>><<link [[Soothe Kylar's parents (1:00)|Manor Parents Room Soothe]]>><<set $daily.manorParents to 1>><<kylar_parents_trust 1>><<stress 6>><<pass 60>><</link>><<gstress>><<gtrust>>
 	<br><br>
 <</if>>
 
@@ -57,7 +58,7 @@ You are in the lab in Kylar's manor. A peppery chemical smell fills the air.
 <br><br>
 
 <<if $daily.manorLab is undefined and $kylar_parents_trust lt 100>>
-	<<ind>><<link [[Clean (1:00)|Manor Lab Clean]]>><<set $daily.manorLab to 1>><<kylar_parents_trust 1>><<pass 60>><</link>><<skill_difficulty `currentSkillValue("science")` "Science" 1 1000>><<gtrust>>
+	<<choreicon "wash">><<link [[Clean (1:00)|Manor Lab Clean]]>><<set $daily.manorLab to 1>><<kylar_parents_trust 1>><<pass 60>><</link>><<skill_difficulty `currentSkillValue("science")` "Science" 1 1000>><<gtrust>>
 	<br><br>
 <</if>>
 
@@ -72,27 +73,28 @@ You are in the kitchen in Kylar's manor.
 <br><br>
 
 <<if $daily.manorKitchen isnot 1 and $kylar_parents_trust lt 100>>
-	<<link [[Clean (1:00)|Manor Kitchen Clean]]>><<set $daily.manorKitchen to 1>><<kylar_parents_trust 1>><<pass 60>><</link>><<gtrust>>
+	<<choreicon "wash">><<link [[Clean (1:00)|Manor Kitchen Clean]]>><<set $daily.manorKitchen to 1>><<kylar_parents_trust 1>><<pass 60>><</link>><<gtrust>>
 	<br>
 <</if>>
 
-<<link [[Front hall|Manor Hall]]>><</link>>
+<<kylarmanoricon "hall">><<link [[Front hall|Manor Hall]]>><</link>>
 <br>
-<<link [[Outside (0:01)|Manor Grounds]]>><<pass 1>><</link>>
+<<kylarmanoricon "grounds">><<link [[Outside (0:01)|Manor Grounds]]>><<pass 1>><</link>>
 <br>
 
 :: Manor Grounds
 <<set $outside to 1>><<location "kylarmanor_grounds">><<effects>>
+<<set _state to ($kylar_parents_trust >= 100) ? "kylar" : "overgrown">>
 
 You are in the grounds behind Kylar's manor, an elevated patch of woodland full of curious mushrooms.
 <br><br>
 
 <<if $daily.manorForage is undefined>>
-	<<tendingicon "ghostshrooms">> <<link [[Pick mushrooms (1:00)|Manor Forage]]>><<set $daily.manorForage to 1>><<pass 60>><</link>><<tendingdifficulty 1 500>>
+	<<tendingicon "ghostshroom">> <<link [[Pick mushrooms (1:00)|Manor Forage]]>><<set $daily.manorForage to 1>><<pass 60>><</link>><<tendingdifficulty 1 500>>
 	<br>
 <</if>>
 
-<<gardenicon>><<link [[Garden (0:01)|Manor Garden]]>><<pass 1>><</link>>
+<<gardenicon _state>><<link [[Front garden (0:01)|Manor Garden]]>><<pass 1>><</link>>
 <br>
 <<foresticon>><<link [[Forest (0:10)|Forest]]>><<pass 10>><<set $forest to 0>><<set $eventskip to 1>><</link>>
 <br>
@@ -100,7 +102,7 @@ You are in the grounds behind Kylar's manor, an elevated patch of woodland full 
 :: Manor Forage
 <<effects>>
 
-You search the bases of trees for the ash-coloured <<tendingicon "ghostshrooms">> mushrooms. Most aren't ready for harvest,
+You search the bases of trees for the ash-coloured <<tendingicon "ghostshroom">> mushrooms. Most aren't ready for harvest,
 <<if $tendingSuccess>>
 	<<wearProp "ghostshroom">>
 	<span class="green">but you find enough to fill a basket.</span>
@@ -149,7 +151,7 @@ You are in Kylar's bedroom. A perpetually active computer sits on the far side, 
 		Kylar sits at <<nnpc_his "Kylar">> computer.
 		<br><br>
 
-		<<link [[Approach Kylar|Manor Kylar]]>><</link>>
+		<<techicon "monitors">><<link [[Approach Kylar|Manor Kylar]]>><</link>>
 		<br>
 	<<elseif Time.hour lte 6>>
 		Kylar lies on <<nnpc_his "Kylar">> bed at a haphazard angle, a multitude of sheets partially covering <<nnpc_him "Kylar">>.
@@ -157,12 +159,12 @@ You are in Kylar's bedroom. A perpetually active computer sits on the far side, 
 	<</if>>
 
 	<<if $kylar_sleep_abduction is undefined>>
-		<<link [[Sleep|Manor Sleep Abduction]]>><<set $kylar_sleep_abduction to 1>><</link>>
+		<<bedicon "kylar">><<link [[Sleep|Manor Sleep Abduction]]>><<set $kylar_sleep_abduction to 1>><</link>>
 		<br>
 	<</if>>
 <</if>>
 
-<<link [[Leave (0:01)|Manor Hall]]>><<pass 1>><</link>>
+<<getouticon>><<link [[Leave (0:01)|Manor Hall]]>><<pass 1>><</link>>
 <br>
 
 :: Manor Kylar
@@ -173,14 +175,8 @@ You are in Kylar's bedroom. A perpetually active computer sits on the far side, 
 <<npc Kylar>><<person1>>
 Kylar instinctively minimises all <<his>> windows as you approach, then spins <<his>> chair to face you.
 <br><br>
+
 <<kylaroptions>>
-<<if $kylar_parents_trust gte 100 and $kylar_manor_secret is undefined>>
-	<<link [[Tell Kylar that the manor is clean|Manor Kylar Secret]]>><<set $kylar_manor_secret to 1>><</link>>
-	<br>
-<<elseif $kylar_parents_trust gte 1 and $kylar_manor_secret is undefined>>
-	<<link [[Have a word about the state of the manor|Manor Kylar Word]]>><</link>>
-	<br>
-<</if>>
 
 :: Manor Kylar Word
 <<effects>>
@@ -198,14 +194,12 @@ Kylar looks ashamed. "I-I clean up after myself," <<he>> says. "Though I'm a bit
 <br><br>
 
 <<kylaroptions>>
-
-<<link [[Ask what happened to <<his>> parents|Manor Kylar Word 2]]>><</link>>
 <br>
 
 :: Manor Kylar Word 2
 <<effects>>
 
-"I-I don't," <<hes>> struggling to look at you. "I don't know. One night they were really excited. They put me to bed early. Then I heard windows smashing. I-I hid under the covers. In the morning, they were like this."
+"I-I don't..." <<Hes>> struggling to look at you. "I don't know. One night they were really excited. They put me to bed early. Then I heard windows smashing. I-I hid under the covers. In the morning, they were like this."
 <br><br>
 <<kylaroptions>>
 
@@ -528,12 +522,11 @@ Kylar covers <<himself>> with a sheet. You feel <<his>> eyes staring at you from
 
 
 :: Manor Garden Trim
-<<effects>>
+<<effects>><<wearProp "hedge shears">>
 
 You use a pair of shears to trim the near-wild hedge growing around the garden.
 <<if $tendingSuccess>>
 	The barbed branches put up a fight, <span class="green">but you're able to tame them.</span>
-	<br><br>
 <<else>>
 	The barbed branches seem to grope for you,
 	<<if $exposed gte 2>>
@@ -566,12 +559,12 @@ You use a pair of shears to trim the near-wild hedge growing around the garden.
 	<br><br>
 <</if>>
 
-<<link [[Next|Manor Garden]]>><</link>>
+<<link [[Next|Manor Garden]]>><<handheldon>><</link>>
 <br>
 
 
 :: Manor Lab Clean
-<<effects>>
+<<effects>><<wearProp "sponge">>
 
 The equipment is extensive and robust, if a little dated. Kylar uses some of it to make pepper spray, and doesn't do a good job cleaning up. The rest is covered in dust.
 <br><br>
@@ -611,7 +604,7 @@ You grab a bottle of rubbing alcohol, and get to work. You start with the exteri
 	<br><br>
 <</if>>
 
-<<link [[Next|Manor Lab]]>><</link>>
+<<link [[Next|Manor Lab]]>><<handheldon>><</link>>
 <br>
 
 
@@ -621,14 +614,19 @@ You grab a bottle of rubbing alcohol, and get to work. You start with the exteri
 Kylar isn't great at cleaning up after <<nnpc_himself "Kylar">>.
 
 <<if $kylar_parents_trust gte 80>>
+	<<wearProp "broom">>
 	You clean the wooden floor, though you fear you'll have to live with some of these stains.
 <<elseif $kylar_parents_trust gte 60>>
+	<<wearProp "sponge">>
 	You wipe down the counters with a sponge, removing all sorts of gunk.
 <<elseif $kylar_parents_trust gte 40>>
+	<<wearProp "sponge">>
 	You work on the mountain of unwashed dishes teetering on the counter. At least the taps work.
 <<elseif $kylar_parents_trust gte 20>>
+	<<wearProp "featherduster">>
 	You check the cupboards for expired food. There's a lot. You dust the empty shelves.
 <<else>>
+	<<wearProp "trash bag">>
 	You clear up some of the rubbish scattered across the floor, and march it outside in several bin bags. You startle a mouse that made its home among the litter, and it startles you in turn.<<gstress>><<stress 6>>
 <</if>>
 <br><br>
@@ -638,20 +636,14 @@ Kylar isn't great at cleaning up after <<nnpc_himself "Kylar">>.
 	<br><br>
 <</if>>
 
-<<link [[Next|Manor Kitchen]]>><</link>>
+<<link [[Next|Manor Kitchen]]>><<handheldon>><</link>>
 <br>
 
 
 :: Manor Parents Room Soothe
 <<effects>>
 
-You're not sure if one, or both, are beneath the bed, but you sit atop it and talk about yourself. You're their
-<<if C.npc.Kylar.pronoun is "m">>
-	son's
-<<else>>
-	daughter's
-<</if>>
-<<girlfriend>>, after all. They should get to know you.
+You're not sure if one, or both, are beneath the bed, but you sit atop it and talk about yourself. You're their <<= C.npc.Kylar.pronoun is "m" ? "son's" : "daughter's">> <<girlfriend>>, after all. They should get to know you.
 <br><br>
 <<if $kylar_parents_trust gte 80>>
 	A figure rises from beneath the bed, and a gaunt face greets you. It extends a handful of silver nails towards you, and strokes your skin. You don't dare move until it retreats into the dark.

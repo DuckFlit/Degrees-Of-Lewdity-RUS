@@ -523,12 +523,12 @@
 		<<case 4>>
 			a wallet in <<bhis>> <<if $monster is 1>>talons<<else>>mouth<</if>>. It's probably stolen, but there might be money or other valuables inside. <<bHe>> drops it at your feet, then looks at you, awaiting your response.
 			<br><br>
-			<<link [[Take it|Bird Tower Wallet]]>><<bird_loot valuables 20>><<npcincr "Great Hawk" love 1>><<transform bird 1>><<bird_stockholm 1>><</link>><<gbirdstockholm>><<glove>>
+			<<link [[Take it|Bird Tower Wallet]]>><<set $phase to "wallet">><<bird_loot valuables 20>><<npcincr "Great Hawk" love 1>><<transform bird 1>><<bird_stockholm 1>><</link>><<gbirdstockholm>><<glove>>
 			<br>
 		<<default>>
 			a purse in <<bhis>> <<if $monster is 1>>talons<<else>>mouth<</if>>. It's probably stolen, but there might be money or other valuables inside. <<bHe>> drops it at your feet, then looks at you, awaiting your response.
 			<br><br>
-			<<link [[Take it|Bird Tower Wallet]]>><<bird_loot valuables 20>><<npcincr "Great Hawk" love 1>><<transform bird 1>><<bird_stockholm 1>><</link>><<gbirdstockholm>><<glove>>
+			<<link [[Take it|Bird Tower Wallet]]>><<set $phase to "purse">><<bird_loot valuables 20>><<npcincr "Great Hawk" love 1>><<transform bird 1>><<bird_stockholm 1>><</link>><<gbirdstockholm>><<glove>>
 			<br>
 		<</switch>>
 		<<link [[Scold|Bird Tower Valuables Scold]]>><<bird_loot valuables -20>><<npcincr "Great Hawk" dom -1>><<transform bird 1>><<bird_stockholm 1>><</link>><<gbirdstockholm>><<ldom>>
@@ -674,22 +674,25 @@
 				<<link [[Wear|Bird Tower Clothes]]>><<generalWear _random_slot _random_index>><<bird_loot clothes 20>><<npcincr "Great Hawk" love 1>><<transform bird 1>><<bird_stockholm 1>><</link>><<gbirdstockholm>><<glove>>
 				<br>
 				<span class="blue">Your $worn[_random_slot].name will be put in your wardrobe.</span><<gfabric>>
+				<br>
 			<<elseif _random_clothes isnot "piece of fabric">>
 				<<link [[Wear|Bird Tower Clothes]]>><<generalWear _random_slot _random_index>><<bird_loot clothes 20>><<npcincr "Great Hawk" love 1>><<transform bird 1>><<bird_stockholm 1>><</link>><<gbirdstockholm>><<glove>>
+				<br>
 			<</if>>
 			<<if _random_clothes isnot "piece of fabric">>
-				<br>
 				<<link [[Put it in the wardrobe|Bird Tower Clothes Keep]]>><<generalSend "birdTower" _random_slot _random_index>><<bird_loot clothes 20>><<npcincr "Great Hawk" love 1>><<transform bird 1>><<bird_stockholm 1>><</link>><<gbirdstockholm>><<glove>>
+				<br>
 			<</if>>
 		<<else>>
 			<<if $worn[_random_slot].name isnot "naked" and _random_clothes isnot "piece of fabric">>
-				<<link [[Wear|Bird Tower Clothes]]>><<generalRuined _random_slot>><<generalWear _random_slot _random_index>><<bird_loot clothes 20>><<npcincr "Great Hawk" love 1>><<transform bird 1>><<set $bird.materials.fabric += 1>><<bird_stockholm 1>><</link>><<gbirdstockholm>><<glove>>
+			<<link [[Wear|Bird Tower Clothes]]>><<generalRuined _random_slot>><<generalWear _random_slot _random_index>><<bird_loot clothes 20>><<npcincr "Great Hawk" love 1>><<transform bird 1>><<set $bird.materials.fabric += 1>><<bird_stockholm 1>><</link>><<gbirdstockholm>><<glove>>
 				<span class="blue">Your $worn[_random_slot].name will be replaced.</span><<gfabric>>
+				<br>
 			<<elseif _random_clothes isnot "piece of fabric">>
 				<<link [[Wear|Bird Tower Clothes]]>><<generalWear _random_slot _random_index>><<bird_loot clothes 20>><<npcincr "Great Hawk" love 1>><<transform bird 1>><<bird_stockholm 1>><</link>><<gbirdstockholm>><<glove>>
+				<br>
 			<</if>>
 		<</if>>
-		<br>
 		<<link [[Thank|Bird Tower Fabric]]>><<bird_loot clothes 20>><<npcincr "Great Hawk" love 1>><<transform bird 1>><<set $bird.materials.fabric += 1>><<bird_stockholm 1>><</link>><<gbirdstockholm>><<glove>><<gfabric>>
 		<br>
 		<<link [[Scold|Bird Tower Clothes Scold]]>><<bird_loot clothes -20>><<npcincr "Great Hawk" dom -1>><<transform bird 1>><<def 1>><<set $bird.materials.fabric += 1>><<bird_stockholm 1>><</link>><<gbirdstockholm>><<ldom>><<gfabric>>
@@ -1024,7 +1027,7 @@
 			The wind could carry you a long way, <span class="red">but you don't know how to fly.</span> Your wings should at least carry you down safely.
 			<br>
 			<<if ($bird.activity is "sing" or $bird.activity is "groom") and $bird.state is "home">>
-				<<askicon>><<link [[Ask the Great Hawk to teach you to fly|Bird Tower Fly Intro]]>><<endevent>><</link>><<flight_text>><br>
+				<<socialiseicon "ask">><<link [[Ask the Great Hawk to teach you to fly|Bird Tower Fly Intro]]>><<endevent>><</link>><<flight_text>><br>
 				<<if $syndromebird isnot 1>>
 					<span class="red">You won't be able to glide down with the Great Hawk watching you.</span><br>
 				<<else>>
@@ -1227,6 +1230,7 @@
 		<</switch>>
 		<<capture _distanceNorthSouth _distanceEastWest _fatigueMod _flightTime _fatigueText>>
 			<<link [[`Continue hunting (${getTimeString(_hoursPassed, _minutesPassed)})`|Bird Hunt Event]]>>
+				<<handheldon>>
 				<<set $bird.hunts.distanceNorth += _distanceNorthSouth>>
 				<<set $bird.hunts.distanceEast += _distanceEastWest>>
 				<<set $fatigueMod to _fatigueMod>>
@@ -1240,6 +1244,7 @@
 		<br>
 		<<flight_time_check _returnTime "silent">>
 		<<link [[`Ask to return to the castle (${getTimeString(_hoursPassed, _minutesPassed)})`|Bird Hunt Return Ask]]>>
+			<<handheldon>>
 			<<set $fatigueMod to _fatigueMod>>
 			<<set $flightTime to _flightTime>>
 			<<bird_pass _flightTime>>
@@ -1304,19 +1309,19 @@
 		<br>
 		<<capture _hoursPassed _minutesPassed _fatigueMod _flightTime _fatigueText>>
 			<<if $bird.hunts.distanceNorth lt 5>>
-				<<link [[North (<<print getTimeString(_hoursPassed, _minutesPassed)>>)|Bird Hunt Event]]>><<set $bird.hunts.direction to "north">><<set $bird.hunts.distanceNorth++>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><</link>><<print _fatigueText>>
+				<<link [[North (<<print getTimeString(_hoursPassed, _minutesPassed)>>)|Bird Hunt Event]]>><<handheldon>><<set $bird.hunts.direction to "north">><<set $bird.hunts.distanceNorth++>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><</link>><<print _fatigueText>>
 				<br>
 			<</if>>
 			<<if $bird.hunts.distanceEast lt 5>>
-				<<link [[East (<<print getTimeString(_hoursPassed, _minutesPassed)>>)|Bird Hunt Event]]>><<set $bird.hunts.direction to "east">><<set $bird.hunts.distanceEast++>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><</link>><<print _fatigueText>>
+				<<link [[East (<<print getTimeString(_hoursPassed, _minutesPassed)>>)|Bird Hunt Event]]>><<handheldon>><<set $bird.hunts.direction to "east">><<set $bird.hunts.distanceEast++>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><</link>><<print _fatigueText>>
 				<br>
 			<</if>>
 			<<if $bird.hunts.distanceNorth gt -5>>
-				<<link [[South (<<print getTimeString(_hoursPassed, _minutesPassed)>>)|Bird Hunt Event]]>><<set $bird.hunts.direction to "south">><<set $bird.hunts.distanceNorth-->><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><</link>><<print _fatigueText>>
+				<<link [[South (<<print getTimeString(_hoursPassed, _minutesPassed)>>)|Bird Hunt Event]]>><<handheldon>><<set $bird.hunts.direction to "south">><<set $bird.hunts.distanceNorth-->><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><</link>><<print _fatigueText>>
 				<br>
 			<</if>>
 			<<if $bird.hunts.distanceEast gt -5>>
-				<<link [[West (<<print getTimeString(_hoursPassed, _minutesPassed)>>)|Bird Hunt Event]]>><<set $bird.hunts.direction to "west">><<set $bird.hunts.distanceEast-->><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><</link>><<print _fatigueText>>
+				<<link [[West (<<print getTimeString(_hoursPassed, _minutesPassed)>>)|Bird Hunt Event]]>><<handheldon>><<set $bird.hunts.direction to "west">><<set $bird.hunts.distanceEast-->><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><</link>><<print _fatigueText>>
 				<br>
 			<</if>>
 		<</capture>>
@@ -1359,6 +1364,7 @@
 		<<link [[Return to the castle (<<print getTimeString(_hoursPassed, _minutesPassed)>>)|Bird Hunt Return]]>><<set $fatigueMod to _fatigueMod>><<set $flightTime to _flightTime>><<bird_pass _flightTime>><<endevent>><</link>><<print _fatigueText>>
 		<br>
 	<<elseif $stress gte $stressmax or isPregnancyEnding()>>
+		<<handheldon>>
 		You don't have the strength to keep flying. Your wings limply carry you into a clumsy, rapidly descending glide. You black out.
 		<br><br>
 
@@ -1448,6 +1454,12 @@
 		<<endevent>>
 		<<if _huntFail is 1>><<set $phase to 2>><</if>>
 		<<flight_hunt_options>>
+	<</if>>
+	/* at end due to inline endevent */
+	<<if _prop is "feather">>
+		<<wearProp _prop "original">>
+	<<elseif _prop>>
+		<<wearProp _prop>>
 	<</if>>
 <</widget>>
 
@@ -1676,13 +1688,15 @@
 
 <<widget "flight_hunt_get_random">>
 	<<rng 5>>
+	/* set _prop, to be called in <<flight_hunt_return>>. if scene does not use <<flight_hunt_return>>, manually add <<wearProp _prop>> to scene */
 	<<switch $rng>>
-		<<case 1>>It's just a big stick. You take it anyways. <<flight_hunt_get "sticks" 1>>
-		<<case 2>>It's a lurker, freshly caught. You take it. <<flight_hunt_get "lurkers" 1>>
-		<<case 3>>It's a piece of torn fabric. You take it. <<flight_hunt_get "fabric" 1>>
-		<<case 4>>It's just a particularly shiny rock. You take it anyways. <<flight_hunt_get "junk" 1>>
+		<<case 1>>It's just a big stick. You take it anyways. <<set _prop to "stick">><<flight_hunt_get "sticks" 1>>
+		<<case 2>>It's a lurker, freshly caught. You take it. <<set _prop to "lurker">><<flight_hunt_get "lurkers" 1>>
+		<<case 3>>It's a piece of torn fabric. You take it. <<set _prop to "rag">><<flight_hunt_get "fabric" 1>>
+		<<case 4>>It's just a particularly shiny rock. You take it anyways. <<set _prop to "disc">><<flight_hunt_get "junk" 1>>
 		<<default>>
 			<<set _looted to either("watch", "ring", "necklace", "bracelet")>>
+			<<set _prop to _looted>>
 			It's a _looted, now stolen yet again it seems. <<flight_hunt_get "valuables" 1 _looted>>
 	<</switch>>
 <</widget>>
@@ -1695,11 +1709,11 @@
 		<br>
 		<<set $_ambushLooted to $_ambushLootList.pluck()>>
 		<<switch $_ambushLooted>>
-			<<case "towel">>- A large towel. It's tough, and could be used as fabric. <<flight_hunt_get "fabric" 2>>
-			<<case "junk">>- Some shiny trinkets. <<flight_hunt_get "junk" 1>>
-			<<case "firestarter">>- A firestarting kit. You can use it as firewood. Luckily, it's much lighter. <<flight_hunt_get "wood" 2>><<set $bird.hunts.weight -= 2>>
-			<<case "wallet">>- A wallet, full of cards and an ID. <<flight_hunt_get "valuables" 1 "wallet">>
-			<<case "watch">>- A nice watch. <<flight_hunt_get "valuables" 1 "watch">>
+			<<case "towel">>- A large towel. It's tough, and could be used as fabric. <<flight_hunt_get "fabric" 2>><<set _prop to "rag">>
+			<<case "junk">>- Some shiny trinkets. <<flight_hunt_get "junk" 1>><<set _prop to "junk">>
+			<<case "firestarter">>- A firestarting kit. You can use it as firewood. Luckily, it's much lighter. <<flight_hunt_get "wood" 2>><<set $bird.hunts.weight -= 2>><<set _prop to "wood">>
+			<<case "wallet">>- A wallet, full of cards and an ID. <<flight_hunt_get "valuables" 1 "wallet">><<set _prop to "wallet">>
+			<<case "watch">>- A nice watch. <<flight_hunt_get "valuables" 1 "watch">><<set _prop to "watch">>
 			<<case "clothing">>
 				-
 				<<select_random_clothes_limited "upper" "lower" "under_upper" "under_lower" "legs" "hands">>
@@ -1720,10 +1734,13 @@
 				<<else>>
 					<<flight_hunt_get "clothing" 1 _random_slot _random_index>>
 				<</if>>
+				<<set _prop to "rag">>
 			<<default>>
 				- <<moneyGain 30 true true>> in cash.
+				<<set _prop to "wallet">>
 		<</switch>>
 	<</for>>
+	<<wearProp _prop>>
 <</widget>>
 
 <<widget "flight_hunt_loot">>
@@ -1842,10 +1859,10 @@
 			<</if>>
 			<br><br>
 		<<elseif $bird.injured gt 1 and $bird.state is "home">>
-			<<link [[Feed the Great Hawk a lurker|Bird Tower Hunt End Injured Eat]]>><<set $bird.materials.lurkers -=1>><<endevent>><</link>>
+			<<link [[Feed the Great Hawk a lurker|Bird Tower Hunt End Injured Eat]]>><<set $bird.materials.lurkers -=1>><<endevent>><<wearProp "lurker">><</link>>
 			<br>
 		<<elseif npcIsPregnant("Great Hawk") and talkedAboutPregnancy("Great Hawk","pc") and $bird.state is "home">>
-			<<link [[Feed the Great Hawk a lurker|Bird Tower Hunt End Preggy Eat]]>><<set $bird.materials.lurkers -=1>><<endevent>><</link>>
+			<<link [[Feed the Great Hawk a lurker|Bird Tower Hunt End Preggy Eat]]>><<set $bird.materials.lurkers -=1>><<endevent>><<wearProp "lurker">><</link>>
 			<br>
 		<</if>>
 
@@ -1853,17 +1870,17 @@
 			<<getChildrenIds `{location:"tower", eggTimer:undefined}` "both">>
 			<<set _childrenTotal to _childrenIds.length>>
 			<<if _childrenTotal gte 2>>
-				<<link [[Feed your children a lurker|Bird Tower Hunt End Children]]>><<set $bird.materials.lurkers -=1>><<endevent>><</link>>
+				<<link [[Feed your children a lurker|Bird Tower Hunt End Children]]>><<set $bird.materials.lurkers -=1>><<endevent>><<wearProp "lurker">><</link>>
 			<<else>>
-				<<link [[Feed your child a lurker|Bird Tower Hunt End Children]]>><<set $bird.materials.lurkers -=1>><<endevent>><</link>>
+				<<link [[Feed your child a lurker|Bird Tower Hunt End Children]]>><<set $bird.materials.lurkers -=1>><<endevent>><<wearProp "lurker">><</link>>
 			<</if>>
 			<br>
 		<</if>>
-		<<link [[Eat a lurker|Bird Tower Hunt End Eat]]>><<hunger -2000>><<set $bird.materials.lurkers -=1>><<endevent>><</link>>
+		<<link [[Eat a lurker|Bird Tower Hunt End Eat]]>><<hunger -2000>><<set $bird.materials.lurkers -=1>><<endevent>><<wearProp "lurker">><</link>>
 		<br>
 		<<if $bird.upgrades.pot gte 2>>
 			<<if getBirdBurnTime() gt 0>>
-				<<link [[Cook and eat a lurker (0:15)|Bird Tower Hunt End Eat Cook]]>><<hunger -2000>><<set $bird.materials.lurkers -=1>><<endevent>><<bird_pass 15>><</link>>
+				<<link [[Cook and eat a lurker (0:15)|Bird Tower Hunt End Eat Cook]]>><<hunger -2000>><<set $bird.materials.lurkers -=1>><<endevent>><<bird_pass 15>><<wearProp "lurker">><</link>>
 				<br>
 			<<else>>
 				<span class="red">The fire needs to be lit in order to cook lurkers.</span>
