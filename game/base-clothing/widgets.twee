@@ -23,18 +23,19 @@
 			<<if $worn[$_slot].name isnot "naked">>
 				<<generalUndress `clothesReturnLocation($worn[$_slot])` $_slot>>
 			<</if>>
-			<<equipClothesItemFromDefault $_slot _args[1] _args[2] _args[3]>>
+			<<equipClothesItemFromDefault $_slot _args[1] _args[2] _args[3] _args[4] _args[5]>>
 			/*Outfit pieces*/
 			<<if _outfitPrimaryWear isnot undefined>>
 				<<set _colour to $worn[$_slot].colour>>
 				<<set _accessory_colour to $worn[$_slot].accessory_colour>>
+				<<set _pattern to $worn[$_slot].pattern>>
 				<<for _outfitSlot, _outfitName range _outfitPrimaryWear>>
 					<<if $worn[_outfitSlot].name isnot "naked">>
 						<<generalUndress `clothesReturnLocation($worn[_outfitSlot])` _outfitSlot>>
 					<</if>>
 					<<set _pieceId to setup.clothes[_outfitSlot].findIndex(item => item.name is _outfitName)>>
 					<<if _pieceId isnot -1>> <!-- findIndex() returns -1 if no index is found -->
-						<<equipClothesItemFromDefault _outfitSlot _pieceId _colour _accessory_colour>>
+						<<equipClothesItemFromDefault _outfitSlot _pieceId _colour _accessory_colour _pattern>>
 					<<else>>
 						<!-- Error -->
 					<</if>>
@@ -72,6 +73,14 @@
 			<<set _accessoryColorOption to clone($_item.accessory_colour_options)>>
 			<<run _accessoryColorOption.delete("custom")>>
 			<<set $_item.accessory_colour to _accessoryColorOption.random()>>
+		<</if>>
+	<</if>>
+	<<if $_item.pattern_options?.length gt 0>>
+		<<if _args[4]>>
+			<<set $_item.pattern to _args[4]>>
+		<<else>>
+			<<set _patternOption to clone($_item.pattern_options)>>
+			<<set $_item.pattern to _patternOption.random()>>
 		<</if>>
 	<</if>>
 	<<set $worn[$_slot] to $_item>>
@@ -137,7 +146,7 @@
 <</widget>>
 
 <<widget "handheldwear">>
-	<<generalWear "handheld" _args[0] _args[1] _args[2]>>
+	<<generalWear "handheld" _args[0] _args[1] _args[2] _args[3] _args[4]>>
 <</widget>>
 
 <<widget "legswear">>
@@ -454,18 +463,17 @@
 	<<generalStrip "feet">>
 <</widget>>
 
-/*temporarily equips a handheld "prop" for visual effect in scenes. props can be cleared earlier in a scene via <<handheldon>> or <<clotheson>>, and are cleared in <<endevent>>*/
+/* temporarily equips a handheld "prop" for visual effect in scenes. props can be cleared earlier in a scene via <<handheldon>> or <<clotheson>>, and are cleared in <<endevent>> */
 <<widget "wearProp">>
+	<<set _colour to _args[1] || 0>>
+	<<set _pattern to _args[2] || 0>>
 	<<set _propIndex to setup.clothes.handheld.findIndex(item => item.variable is _args[0])>>
-	<<if !$worn.handheld.type.includes("prop")>>
-		<<set $propEquipped to 1>>
-		<<handheldstrip>>
-		<<if _args[1]>>
-			<<handheldwear _propIndex _args[1]>>
-		<<else>>
-			<<handheldwear _propIndex>>
-		<</if>>
+	<<if $worn.handheld.type.includes("prop")>>
+		<<handheldon>>
 	<</if>>
+	<<set $propEquipped to 1>>
+	<<handheldstrip>>
+	<<handheldwear _propIndex _colour 0 _pattern>>
 <</widget>>
 
 /*Returns all carried clothes back to the wardrobe*/

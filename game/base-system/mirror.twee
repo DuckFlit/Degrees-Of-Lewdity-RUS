@@ -182,7 +182,7 @@
 	<<if $worn.neck.name is "love locket">>
 		__Locket__
 		<br>
-		<span @class="'clothes-'+$worn.neck.colour"><<icon "locket.png">></span><<link [[Customise locket|Mirror Locket]]>><<set $passage_mirror to $passage>><</link>>
+		<span @class="'clothes-'+$worn.neck.colour.replace(' ','-')"><<icon "locket.png">></span><<link [[Customise locket|Mirror Locket]]>><<set $passage_mirror to $passage>><</link>>
 		<br><br>
 	<</if>>
 
@@ -1872,6 +1872,13 @@
 						`_item.colour <span @class="_itemType+'-'+_item.colour.replace(/ /g, '-')"><span class="colour-sample"></span></span>
 						× _item.count`>>
 						<<button _name>>
+							<<handheldon>>
+							<<if _itemType is "lipstick">>
+								<<set _colour to _item.colour is "dark red" ? "jewel red" : _item.colour is "orange" ? "tangerine" : _item.colour>>
+								<<wearProp _itemType _colour>>
+							<<else>>
+								<<wearProp _itemType>>
+							<</if>>
 							<<if $makeup[_itemType] !== _item.colour>>
 								<<set $makeup[_itemType] = _item.colour>>
 								<<set _item.count -= 1>>
@@ -2073,6 +2080,7 @@
 									`_colour <span @class="'eye-'+_colour.replace(/ /g, '-')"><span class="colour-sample bgcolour-eyes left-"></span></span>`>>
 
 									<<button _contactName>>
+										<<handheldon 1>>
 										<<if _contact_eye_selected == "Both">>
 											<<set $makeup.eyelenses = { left: _colour, right: _colour }>>
 										<<elseif _contact_eye_selected == "Left eye">>
@@ -2126,6 +2134,8 @@
 					<span class="gold bold">Eyebrow Colour:</span>
 					<br>
 					<<if $mirror_eyebrow_dye is true>>
+						<<handheldon 1>>
+						<<wearProp "hairdye">>
 						<<unset $mirror_eyebrow_dye>>
 						You open up the box with <<= setup.colours.hair_map[$browsDyeOption].name>> dye and prepare the mixture. Using a small brush, you carefully apply the dye to your eyebrows. You wait several minutes for the dye to set and hope you didn't mess up anything.
 						<<set $makeup.owned.hairdye.find(x => x.colour == $browsDyeOption).count -= 1>><<set $makeup.browscolour = $browsDyeOption>><<unset $browsDyeOption>>

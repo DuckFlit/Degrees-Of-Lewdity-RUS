@@ -88,7 +88,7 @@ replace (?<!["'\w])_(?=\w) with T.
  * "left_eye": string - colour of left eye
  * "right_eye": string - colour of right eye
  * "brows": "none"|"top"|"low"|"orgasm"|"mid"
- * "mouth": "none"|"neutral"|"cry"|"frown"|"smile"
+ * "mouth": "none"|"neutral"|"cry"|"frown"|"smile"|"chew"
  * "tears":number - tears level, 0..4, 0 is "no tears"
  * "blush":number - blush level, 0..5, 0 is "no blush"
  * "lipstick_colour": "" (none), key from setup.colours.lipstick_map, or "custom" ("lipstick" filter required)
@@ -794,8 +794,8 @@ Renderer.CanvasModels.main = {
 
 		if (options.worn.handheld.setup.type.includes("rainproof")) {
 			options.handheld_overhead = true;
-			if (options.angel_halo_type === "default") options.angel_halo_lower = true;
-		} else if (["balloon", "heart balloon", "paper fan", "torch", "forearm crutch", "cane"].includes(options.worn.handheld.setup.name)) {
+			if (options.angel_halo_type === "default" || options.fallen_halo_type === "default" ) options.angel_halo_lower = true;
+		} else if (["right_cover", "over_head"].includes(options.worn.handheld.setup?.holdPosition)) {
 			options.handheld_overhead = true;
 			options.angel_halo_lower = false;
 		} else {
@@ -803,12 +803,9 @@ Renderer.CanvasModels.main = {
 			options.angel_halo_lower = false;
 		}
 
-		if (
-			!["pom poms", "cane", "forearm crutch", "naked"].includes(options.worn.handheld.setup.name)
-				&& options.arm_right === "hold"
-		) {
+		if (options.arm_right === "hold") {
 			options.handheld_position = 'hold';
-		} else if (["cane", "forearm crutch"].includes(options.worn.handheld.setup.name)) {
+		} else if (["right_cover"].includes(options.worn.handheld.setup?.holdPosition)) {
 			options.handheld_position = 'right_cover';
 		} else {
 			options.handheld_position = null;
@@ -1062,10 +1059,10 @@ Renderer.CanvasModels.main = {
 				return options.arm_right !== "none";
 			},
 			srcfn(options) {
-				if (options.mannequin && options.handheld_position) return `img/body/mannequin/rightarm${options.handheld_position === "hold" ? options.handheld_position : "cover"}.png`;
+				if (options.mannequin && options.handheld_position) return `img/body/mannequin/rightarm${options.handheld_position === "right_cover" ? "cover" : options.handheld_position}.png`;
 				if (options.mannequin) return "img/body/mannequin/rightarmidle.png";
-				if (options.arm_right === "cover") return "img/body/rightarmcover.png";
-				if (options.handheld_position) return `img/body/rightarm${options.handheld_position === "hold" ? options.handheld_position : "cover"}.png`;
+				if (options.arm_right === "cover" || options.handheld_position === "right_cover") return "img/body/rightarmcover.png";
+				if (options.handheld_position) return `img/body/rightarm${options.handheld_position}.png`;
 				return `img/body/rightarmidle-${options.body_type}.png`
 			},
 		},
@@ -1887,6 +1884,9 @@ Renderer.CanvasModels.main = {
 			srcfn(options) {
 				return `img/transformations/fallen/backbrokenhalo/${options.fallen_halo_type}.png`;
 			},
+			dyfn(options) {
+				return options.angel_halo_lower && isPartEnabled(options.fallen_halo_type) ? 20 : 0;
+			},
 			showfn(options) {
 				return options.show_tf && isPartEnabled(options.fallen_halo_type) && !options.hideAll;
 			},
@@ -1897,6 +1897,9 @@ Renderer.CanvasModels.main = {
 
 			srcfn(options) {
 				return `img/transformations/fallen/frontbrokenhalo/${options.fallen_halo_type}.png`;
+			},
+			dyfn(options) {
+				return options.angel_halo_lower && isPartEnabled(options.fallen_halo_type) ? 20 : 0;
 			},
 			showfn(options) {
 				return options.show_tf && isPartEnabled(options.fallen_halo_type) && !options.hideAll;
@@ -3619,20 +3622,29 @@ Renderer.CanvasModels.main = {
 		"handheld": genlayer_clothing_main('handheld', {
 			srcfn(options) {
 				const torchLevels = [100, 80, 60, 40, 20, 1, 0];
-				const torchNum = torchLevels.findIndex(x => V.catacombs_torch >= x) + 1;
-				const torch = options.worn.handheld.setup.variable === "torch" && V.catacombs_torch >= 0 ? torchNum : '';
+				const torchNum = torchLevels.findIndex(x => V.catacombs_torch >= x) + 1 || 1;
+				const torch = options.worn.handheld.setup.variable === "torch" ? torchNum : '';
 
 				const cardNum = V.blackjack ? Math.clamp(V.blackjack.playersCards.length, 1, 5) : 0;
 				const cards = options.worn.handheld.setup.variable === "cards" ? cardNum : '';
+
+				const fabricLevels = [7, 6, 4, 2, 1];
+				const fabricNum = T.ropeLength || fabricLevels.findIndex(x => V.bird.rope >= x) + 1 || 1;
+				const fabric = options.worn.handheld.setup.variable === "fabric rope" ? fabricNum : '';
+
+				const special = options.worn.handheld?.pattern && !(options.worn.handheld?.pattern_layer === "secondary") ? "_" + options.worn.handheld.pattern.replace(" ", "_") : '';
+
 				const cover = options.arm_right === "cover" && options.handheld_position !== 'right_cover' ? "right_cover" : "right";
-				const extra = torch || cards || '';
-				const path = `img/clothes/handheld/${options.worn.handheld.setup.variable}/${cover}${extra}.png`;
+				const extra = torch || cards || fabric || special || '';
+				const directory = options.worn.handheld.setup.type.includes("prop") ? "props" : "handheld";
+				const category = directory === "props" ? (options.worn.handheld.setup.type.find(type => ["food", "ingredient", "recipe", "tending", "antique", "sex toy", "child toy", "book"].includes(type)) || "general") + "/" : "";
+				const path = `img/clothes/${directory}/${category}${options.worn.handheld.setup.variable}/${cover}${extra}.png`;
 				return gray_suffix(path, options.filters['worn_handheld']);
 			},
 			showfn(options) {
 				const commonChecks = options.show_clothes && options.worn.handheld.index > 0 && !options.hideAll;
 
-				if (options.arm_right === "cover") return commonChecks && options.worn.handheld.setup.coverImage !== 0;
+				if (options.arm_right === "cover" && !["right_cover"].includes(options.worn.handheld.setup?.holdPosition)) return commonChecks && options.worn.handheld.setup.coverImage !== 0;
 				return commonChecks && options.arm_right !== "none";
 			},
 			zfn(options) {
@@ -3641,16 +3653,26 @@ Renderer.CanvasModels.main = {
 			},
 			animationfn(options) {
 				return options.handheld_animation
-			}
+			},
+			filtersfn(options) {
+				if (["feather"].includes(options.worn.handheld.setup.variable) && options.worn.handheld.colour === "grey") {
+					return ["hair"];
+				}
+				return ["worn_handheld"];
+			},
 		}),
 		"handheld_acc": genlayer_clothing_accessory('handheld', {
 			srcfn(options) {
 				const cardNum = V.blackjack ? Math.clamp(V.blackjack.playersCards.length, 1, 5) : 0;
 				const cards = options.worn.handheld.setup.variable === "cards" ? cardNum : '';
 
+				const special = options.worn.handheld?.pattern && options.worn.handheld?.pattern_layer === "secondary" ? "_" + options.worn.handheld.pattern.replace(" ", "_") : '';
+
 				const cover = options.arm_right === "cover" && options.handheld_position !== 'right_cover' ? "right_cover" : "right";
-				const extra = cards || '';
-				const path = `img/clothes/handheld/${options.worn.handheld.setup.variable}/${cover}${extra}_acc.png`;
+				const extra = cards || special || '';
+				const directory = options.worn.handheld.setup.type.includes("prop") ? "props" : "handheld";
+				const category = directory === "props" ? (options.worn.handheld.setup.type.find(type => ["food", "ingredient", "recipe", "tending", "antique", "sex toy", "child toy", "book"].includes(type)) || "general") + "/" : "";
+				const path = `img/clothes/${directory}/${category}${options.worn.handheld.setup.variable}/${cover}${extra}_acc.png`;
 				return gray_suffix(path, options.filters['worn_handheld_acc']);
 			},
 			showfn(options) {
@@ -3670,7 +3692,9 @@ Renderer.CanvasModels.main = {
 		"handheld_left": {
 			srcfn(options) {
 				const cover = options.arm_left === "cover" ? "left_cover" : "left";
-				const path = `img/clothes/handheld/${options.worn.handheld.setup.variable}/${cover}.png`;
+				const directory = options.worn.handheld.setup.type.includes("prop") ? "props" : "handheld";
+				const category = directory === "props" ? (options.worn.handheld.setup.type.find(type => ["food", "ingredient", "recipe", "tending", "antique", "sex toy", "child toy", "book"].includes(type)) || "general") + "/" : "";
+				const path = `img/clothes/${directory}/${category}${options.worn.handheld.setup.variable}/${cover}.png`;
 				return gray_suffix(path, options.filters['worn_handheld']);
 			},
 			showfn(options) {
@@ -3690,7 +3714,9 @@ Renderer.CanvasModels.main = {
 		"handheld_left_acc": {
 			srcfn(options) {
 				const cover = options.arm_left === "cover" ? "left_cover" : "left";
-				const path = `img/clothes/handheld/${options.worn.handheld.setup.variable}/${cover}_acc.png`;
+				const directory = options.worn.handheld.setup.type.includes("prop") ? "props" : "handheld";
+				const category = directory === "props" ? (options.worn.handheld.setup.type.find(type => ["food", "ingredient", "recipe", "tending", "antique", "sex toy", "child toy", "book"].includes(type)) || "general") + "/" : "";
+				const path = `img/clothes/${directory}/${category}${options.worn.handheld.setup.variable}/${cover}_acc.png`;
 				return gray_suffix(path, options.filters['worn_handheld_acc']);
 			},
 			showfn(options) {

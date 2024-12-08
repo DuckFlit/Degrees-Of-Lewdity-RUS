@@ -1149,7 +1149,7 @@ function initLegs() {
 			shop: ["clothing", "adult"],
 			accessory: 1,
 			accessory_colour: 0,
-			accessory_colour_options: ["steel", "blue steel", "bronze", "gold", "silver", "black", "white"],
+			accessory_colour_options: ["steel", "blue steel", "bronze", "gold", "rose gold", "silver", "black", "white"],
 			accessory_colour_sidebar: 1,
 			cursed: 0,
 			location: 0,

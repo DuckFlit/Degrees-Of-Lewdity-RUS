@@ -1038,6 +1038,13 @@ setup.colours.clothes = [
 		canvasfilter: { blend: "#72AC72" },
 	},
 	{
+		variable: "lime",
+		name: "lime",
+		name_cap: "Lime",
+		csstext: "lime",
+		canvasfilter: { blend: "#38B20A" },
+	},
+	{
 		variable: "black",
 		name: "black",
 		name_cap: "Black",
@@ -1071,6 +1078,13 @@ setup.colours.clothes = [
 		name_cap: "Lilac",
 		csstext: "lilac",
 		canvasfilter: { blend: "#d692fc" },
+	},
+	{
+		variable: "violet",
+		name: "violet",
+		name_cap: "Violet",
+		csstext: "violet",
+		canvasfilter: { blend: "#c42eff" },
 	},
 	{
 		variable: "tangerine",
@@ -1225,6 +1239,13 @@ setup.colours.clothes = [
 		name_cap: "Bronze",
 		csstext: "bronze",
 		canvasfilter: { blend: "#cd9932" },
+	},
+	{
+		variable: "rose gold",
+		name: "rose gold",
+		name_cap: "Rose gold",
+		csstext: "rose-gold",
+		canvasfilter: { blend: "#dea193", brightness: 0.15 },
 	},
 	{
 		variable: "gold",
@@ -1386,12 +1407,12 @@ setup.colours.eyeshadow = [
 		},
 	},
 	{
-		variable: "light green",
-		name: "light green",
-		name_cap: "Light green",
-		csstext: "green",
+		variable: "lime",
+		name: "lime",
+		name_cap: "Lime",
+		csstext: "lime",
 		canvasfilter: {
-			blend: "#7caf7c",
+			blend: "#38B20A",
 		},
 	},
 	{
