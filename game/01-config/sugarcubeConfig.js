@@ -650,6 +650,15 @@ Config.navigation.override = function (dest) {
 			case "Town Eden Shopping Clothes PC Dress Up Sex Finish":
 				return "Street Eden Worried Suggest";
 
+			case "Prison Wren Panties":
+			case "Prison Wren Briefs":
+			case "Prison Wren Bra":
+			case "Prison Wren Vest":
+			case "Prison Wren Shirt":
+			case "Prison Wren Trousers":
+			case "Prison Wren Jumpsuit":
+				return "Prison Wren Clothes";
+
 			default:
 				return false;
 		}
