@@ -541,16 +541,16 @@ class NpcCombatMapper {
 			return options;
 		}
 
+		if (NpcCombatMapper.hasUnderSprite(options.position, configuration) && NpcCombatMapper.isUnderPositioned(npc)) {
+			options.show = true;
+			options.state = "under";
+			return options;
+		}
+
 		if (NpcCombatMapper.hasOverSprite(options.position, configuration) && NpcCombatMapper.isOverPositioned(npc, penetrator)) {
 			options.drool.show = ["pig", "boar"].includes(npc.type) && NpcCombatMapper.isOverPositioned(npc, penetrator);
 			options.show = true;
 			options.state = ["horse", "centaur"].includes(npc.type) && penetrator?.state === "penetrating" ? "over-penetrated" : "over";
-			return options;
-		}
-
-		if (NpcCombatMapper.hasUnderSprite(options.position, configuration) && NpcCombatMapper.isUnderPositioned(npc)) {
-			options.show = true;
-			options.state = "under";
 			return options;
 		}
 

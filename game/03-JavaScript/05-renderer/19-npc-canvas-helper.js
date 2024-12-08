@@ -63,8 +63,13 @@ class NpcCanvasHelper {
 					}
 					return CombatRenderer.indices.frontLowerOverwear + 3;
 				}
-				if (layer === "outline") return 92;
+				if (layer === "outline") {
+					return 92;
+				}
 				// Back layer
+				if (options.category === "beast" && options.state === "under") {
+					return 40;
+				}
 				if (options.position === "doggy") {
 					return 20;
 				}
