@@ -4043,7 +4043,7 @@ function initLower() {
 			cursed: 0,
 			notuck: 0,
 			location: 0,
-			iconFile: 0,
+			iconFile: "prison_trousers.png",
 			accIcon: 0,
 		},
 
@@ -4093,7 +4093,7 @@ function initLower() {
 			cursed: 0,
 			notuck: 0,
 			location: 0,
-			iconFile: 0,
+			iconFile: "prison_jumpsuit.png",
 			accIcon: 0,
 			outfitSecondary: ["upper", "prison jumpsuit"],
 		},
