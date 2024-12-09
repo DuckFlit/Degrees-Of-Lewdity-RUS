@@ -474,11 +474,12 @@ class XrayCombatMapper {
 			}
 		}
 
-		penetrator.cum = penetrator.cum || 0;
 		if (V.orgasmdown >= 1 && V.orgasmcount <= 24 && V.femaleclimax !== 1 && wearingCondom("player") !== "worn" && !playerHasStrapon()) {
-			penetrator.cum += V.semen_amount > (V.semen_volume / 24) * 18 ? 2 : 1;
-			penetrator.cum = Math.clamp(penetrator.cum, 0, 5);
 			penetrator.isCumActive = true;
+			penetrator.showCum = true;
+		}
+
+		if (V.internalejac && V.otherFilled > 0) {
 			penetrator.showCum = true;
 		}
 

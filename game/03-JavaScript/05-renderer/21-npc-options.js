@@ -692,16 +692,17 @@ class NpcCombatMapper {
 	 * @returns {PenetratorTypes}
 	 */
 	static getPenetratorType(npc) {
-		if (["dog", "wolf", "fox", "bear"].includes(npc.type)) {
+		if (["dog", "doggirl", "dogboy", "wolf", "wolfgirl", "wolfboy", "fox", "foxgirl", "foxboy", "bear", "beargirl", "bearboy"].includes(npc.type)) {
 			return "knotted";
 		}
 		if (["horse", "centaur"].includes(npc.type)) {
 			return "equine";
 		}
-		if (["cat"].includes(npc.type)) {
+		// Previously called 'pointed'
+		if (["cat", "catgirl", "catboy", "hawk", "harpy"].includes(npc.type)) {
 			return "feline";
 		}
-		if (["pig", "boar"].includes(npc.type)) {
+		if (["pig", "piggirl", "pigboy", "boar", "boargirl", "boarboy"].includes(npc.type)) {
 			return "sus";
 		}
 		return "human";

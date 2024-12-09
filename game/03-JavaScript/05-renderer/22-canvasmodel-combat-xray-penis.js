@@ -57,7 +57,7 @@ const combatXrayPenis = {
 		playerCum: {
 			srcfn(options) {
 				const size = options.penis.size ? "_size" + options.penis.size : "";
-				const cumAmt = options.penis.penetrated === "vaginal" ? "_cum" + options.penis.cum : "_cum";
+				const cumAmt = options.penis.penetrated === "vaginal" ? "_cum" + V.otherFilled : "_cum";
 				return `${options.src}${options.penis.penetrated}/cum/${options.penis.base}${size}${cumAmt}.png`;
 			},
 			showfn(options) {
