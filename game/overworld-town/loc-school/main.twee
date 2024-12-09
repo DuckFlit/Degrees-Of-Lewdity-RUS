@@ -423,19 +423,7 @@ The school gate is shut and sealed by a sturdy padlock.
 <<unset $audienceforcegirl>>
 <<unset $audienceforceboy>>
 <<unset $changingRoomGender>>
-
-<<set _studentsKnow to ($schoolrep.crossdress gte 4 and $changingroomstate is "own") or ($schoolrep.crossdress gte 5 and $changingroomstate isnot "empty")>>
-<<if !$daily.changingRoomPregnancyFame>><<set $daily.changingRoomPregnancyFame to $player.gender_appearience is "m" ? random(500, 1500) : random(200, 1000)>><</if>>
-<<if $player.gender_appearance is "f" and $fame.pregnancy gte $daily.changingRoomPregnancyFame or playerBellyVisible()>>
-	<<set _studentsKnow to false>>
-<</if>>
-
-<<set _seenGender to ($NudeGenderDC isnot -1 and $schoolrep.crossdress gte 4 and _studentsKnow) ? $player.gender : $player.gender_appearance>>
-<<set _uncomfortableGender to ($backgroundTraits.includes("crossdresser") ? $player.gender : false)>>
-<<set _delinquentGender to ($changingroomstate is "empty" ? false : _seenGender)>>
-<<if _delinquentGender is "m" and ($fame.pregnancy gte $daily.changingRoomPregnancyFame or playerBellyVisible())>>
-	<<set _delinquentGender to false>>
-<</if>>
+<<unset $previousClothes>>
 
 <<if $forcedcrossdressingdisable is "t">>
 <<elseif $whitneyCrossdressSwimwear and $daily.school.attended.swimming and $daily.whitney.whitneyCrossdressSwimwear>>
@@ -497,13 +485,15 @@ The school gate is shut and sealed by a sturdy padlock.
 	<br><br>
 <</if>>
 
+<<changingRoomSetup "m">>
 <<maleicon>><<link [[Boys' changing room|School Boy Changing Room]]>>
 	<<if $daily.whitney.whitneyCrossdressSwimwear>><<run $daily.whitney.whitneyCrossdressSwimwear.push("boys entrance")>><</if>>
-<</link>><<if _uncomfortableGender is "m">><<gstress>><</if>><<if _delinquentGender is "f">><<gdelinquency>><</if>>
+<</link>><<if _uncomfortable>><<gstress>><</if>><<if !_allowedToChange>><<gdelinquency>><</if>>
 <br>
+<<changingRoomSetup "f">>
 <<femaleicon>><<link [[Girls' changing room|School Girl Changing Room]]>>
 	<<if $daily.whitney.whitneyCrossdressSwimwear>><<run $daily.whitney.whitneyCrossdressSwimwear.push("girls entrance")>><</if>>
-<</link>><<if _uncomfortableGender is "f">><<gstress>><</if>><<if _delinquentGender is "m">><<gdelinquency>><</if>>
+<</link>><<if _uncomfortable>><<gstress>><</if>><<if !_allowedToChange>><<gdelinquency>><</if>>
 <br><br>
 
 <<if $changingroomstate isnot "empty" and $player.gender_appearance isnot $player.gender>>
