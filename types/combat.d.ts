@@ -10,6 +10,8 @@ declare module "twine-sugarcube" {
 		enemyarousal: number;
 		enemyarousalmax: number;
 		ejaculating: number;
+		internalejac: number;
+		otherFilled: number;
 
 		orgasmdown: number;
 		orgasmcount: number;
