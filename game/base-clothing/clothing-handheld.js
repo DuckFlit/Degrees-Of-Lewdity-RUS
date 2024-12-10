@@ -2943,7 +2943,7 @@ function initHandheld() {
 			name: "antique cane",
 			name_cap: "Antique cane",
 			variable: "sword cane",
-			armPosition: "right_cover",
+			holdPosition: "right_cover",
 			state: 0,
 			state_base: 0,
 			warmth: 0,
