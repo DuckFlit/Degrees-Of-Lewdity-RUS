@@ -467,13 +467,17 @@
 <<widget "wearProp">>
 	<<set _colour to _args[1] || 0>>
 	<<set _pattern to _args[2] || 0>>
-	<<set _propIndex to setup.clothes.handheld.findIndex(item => item.variable is _args[0])>>
+	<<set _propIndex to setup.clothes.handheld.findIndex(item => item.variable is _args[0]) || 0>>
 	<<if $worn.handheld.type.includes("prop")>>
 		<<handheldon>>
 	<</if>>
 	<<set $propEquipped to 1>>
 	<<handheldstrip>>
-	<<handheldwear _propIndex _colour 0 _pattern>>
+	<<if _propIndex gt 1>>
+		<<handheldwear _propIndex _colour 0 _pattern>>
+	<<else>>
+		<<run Errors.report("Invalid prop variable: " + _args[0])>>
+	<</if>>
 <</widget>>
 
 /*Returns all carried clothes back to the wardrobe*/
