@@ -454,6 +454,18 @@ const combatMainPc = {
 			filters: ["tentacles"],
 			z: 49,
 		},
+		tentacleAnalCum: {
+			srcfn(options) {
+				return `${options.src}body/anal/analcum.png`;
+			},
+			showfn(options) {
+				return options.tentacles.anus.show && V.anusstate === "tentacledeep";
+			},
+			animationfn(options) {
+				return options.animKey;
+			},
+			z: 50,
+		},
 		tentacleBreasts: {
 			srcfn(options) {
 				return `${options.src}tentacles/${options.tentacles.breasts.state}.png`;
@@ -551,6 +563,18 @@ const combatMainPc = {
 			filters: ["tentacles"],
 			z: 72,
 		},
+		tentacleOralCum: {
+			srcfn(options) {
+				return `${options.src}body/oral/oralcum.png`;
+			},
+			showfn(options) {
+				return options.tentacles.mouth.show && V.mouthstate === "tentacledeep";
+			},
+			animationfn(options) {
+				return options.animKey;
+			},
+			z: 73,
+		},
 		tentaclePenis: {
 			srcfn(options) {
 				return `${options.src}tentacles/${options.tentacles.penis.state}.png`;
@@ -576,6 +600,18 @@ const combatMainPc = {
 			},
 			filters: ["tentacles"],
 			z: 49,
+		},
+		tentacleVaginaCum: {
+			srcfn(options) {
+				return `${options.src}body/vaginal/vaginalcum.png`;
+			},
+			showfn(options) {
+				return options.tentacles.vagina.show && V.vaginastate === "tentacledeep";
+			},
+			animationfn(options) {
+				return options.animKey;
+			},
+			z: 50,
 		},
 		/*
 		 *	██████   █████  ███████ ███████

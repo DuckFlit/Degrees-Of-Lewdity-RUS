@@ -163,7 +163,7 @@ const combatCloseVagina = {
 				if (options.vagina.npc === "tentacle") {
 					return true;
 				}
-				return wearingCondom(V.vaginatarget) !== "worn" && !npcHasStrapon(V.vaginatarget);
+				return wearingCondom(V.vaginatarget) !== "worn" && !npcHasStrapon(V.vaginatarget) && !playerChastity("vagina");
 			},
 			animationfn(options) {
 				return options.animKeyVagina;
