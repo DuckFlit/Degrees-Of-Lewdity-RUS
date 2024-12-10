@@ -1662,6 +1662,136 @@ function checkTFparts() {
 }
 window.checkTFparts = checkTFparts;
 
+/*
+	Might be good to convert the whole TF mechanic, including `transformationStateUpdate` to something like below at some point.
+	Part of the transformationParts is unsued right now, but its to account for this potential.
+*/
+function validateTransformations() {
+	const transformationParts = [
+		{
+			level: "wolf",
+			build: "wolfbuild",
+			type: "physicalTransform",
+			parts: [
+				{ name: "cheeks", tfRequired: 2, default: "hidden" },
+				{ name: "ears", tfRequired: 4 },
+				{ name: "pubes", tfRequired: 4, default: V.pbdisable === "f" ? "default" : "hidden" },
+				{ name: "pits", tfRequired: 4, default: V.pbdisable === "f" ? "default" : "hidden" },
+				{ name: "tail", tfRequired: 6 },
+			],
+			traits: [{ name: "fangs", tfRequired: 2 }],
+		},
+		{
+			level: "cat",
+			build: "catbuild",
+			type: "physicalTransform",
+			parts: [
+				{ name: "ears", tfRequired: 4 },
+				{ name: "tail", tfRequired: 6 },
+				{ name: "heterochromia", tfRequired: 7 },
+			],
+			traits: [
+				{ name: "fangs", tfRequired: 2 },
+				{ name: "sharpEyes", tfRequired: 2 },
+			],
+		},
+		{
+			level: "cow",
+			build: "cowbuild",
+			type: "physicalTransform",
+			parts: [
+				{ name: "horns", tfRequired: 2 },
+				{ name: "ears", tfRequired: 4 },
+				{ name: "tail", tfRequired: 6 },
+			],
+			traits: [],
+		},
+		{
+			nameOveride: "bird",
+			level: "harpy",
+			build: "birdbuild",
+			type: "physicalTransform",
+			parts: [
+				{ name: "eyes", tfRequired: 2 },
+				{ name: "malar", tfRequired: 2 },
+				{ name: "tail", tfRequired: 4 },
+				{ name: "plumage", tfRequired: 4 },
+				{ name: "wings", tfRequired: 6 },
+				{ name: "pubes", tfRequired: 6, default: V.pbdisable === "f" ? "default" : "hidden" },
+			],
+			traits: [
+				{ name: "sharpEyes", tfRequired: 2 },
+				{ name: "mateForLife", tfRequired: 3 },
+			],
+		},
+		{
+			level: "fox",
+			build: "foxbuild",
+			type: "physicalTransform",
+			parts: [
+				{ name: "ears", tfRequired: 4 },
+				{ name: "cheeks", tfRequired: 5 },
+				{ name: "tail", tfRequired: 6 },
+			],
+			traits: [
+				{ name: "fangs", tfRequired: 2 },
+				{ name: "sharpEyes", tfRequired: 2 },
+				{ name: "mateForLife", tfRequired: 3 },
+			],
+		},
+		{
+			level: "angel",
+			build: "angelbuild",
+			type: "specialTransform",
+			parts: [
+				{ name: "halo", tfRequired: 4 },
+				{ name: "wings", tfRequired: 6 },
+			],
+			traits: [],
+		},
+		{
+			level: "fallen",
+			build: "fallenbuild",
+			type: "specialTransform",
+			parts: [
+				{ name: "halo", tfRequired: 2 },
+				{ name: "wings", tfRequired: 2 },
+			],
+			traits: [],
+		},
+		{
+			level: "demon",
+			build: "demonbuild",
+			type: "specialTransform",
+			parts: [
+				{ name: "horns", tfRequired: 2 },
+				{ name: "tail", tfRequired: 4 },
+				{ name: "wings", tfRequired: 6 },
+			],
+			traits: [],
+		},
+	];
+	transformationParts.forEach(tf => {
+		const tdLevel = V[tf.level];
+		const name = tf.nameOveride || tf.level;
+		tf.parts.forEach(part => {
+			if (tdLevel >= part.tfRequired && V.transformationParts[name][part.name] === "disabled") {
+				V.transformationParts[name][part.name] = part.default || "default";
+			} else if (tdLevel < part.tfRequired && V.transformationParts[name][part.name] !== "disabled") {
+				V.transformationParts[name][part.name] = "disabled";
+			}
+		});
+		tf.traits.forEach(trait => {
+			if (tdLevel >= trait.tfRequired && V.transformationParts.traits[trait.name] === "disabled") {
+				V.transformationParts.traits[trait.name] = trait.default || "default";
+			} else if (tdLevel < trait.tfRequired && V.transformationParts.traits[trait.name] !== "disabled") {
+				V.transformationParts.traits[trait.name] = "disabled";
+			}
+		});
+	});
+}
+DefineMacro("validateTransformations", validateTransformations);
+
 // prettier-ignore
 function getSexesFromRandomGroup() {
 	if (maleChance() <= 0) { /* Only females. */
