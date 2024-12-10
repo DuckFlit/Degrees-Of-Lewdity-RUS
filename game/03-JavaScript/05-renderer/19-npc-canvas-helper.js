@@ -52,6 +52,9 @@ class NpcCanvasHelper {
 			zfn(options) {
 				if (layer === "front") {
 					if (options.category === "shadow") {
+						if (options.state === "mouth") {
+							return CombatRenderer.indices.near;
+						}
 						return CombatRenderer.indices.frontThigh - 1;
 					}
 					if (options.state === "penis") {

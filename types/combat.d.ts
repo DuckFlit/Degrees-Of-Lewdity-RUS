@@ -152,10 +152,23 @@ declare global {
 	export type AnimationSpeed = "vfast" | "fast" | "mid" | "slow" | "idle";
 
 	// There is more to do, look at tentacle-action.twee
-	export type ShaftTarget = 0 | "tummy" | "thighs" | "breasts" | "chest" | "waist" | "neck" | "shoulders" | "leftarm" | "rightarm" | "leftleg" | "rightleg";
+	export type ShaftTarget =
+		| 0
+		| "tummy"
+		| "thighs"
+		| "breasts"
+		| "chest"
+		| "waist"
+		| "neck"
+		| "shoulders"
+		| "leftarm"
+		| "rightarm"
+		| "leftleg"
+		| "rightleg"
+		| "finished";
 
 	// There is a lot more, look at tentacle-action.twee
-	export type HeadTarget = 0 | "leftarm" | "rightarm" | "feet" | "leftnipplesuck" | "rightnipplesuck" | "leftnipple" | "rightnipple";
+	export type HeadTarget = 0 | "leftarm" | "rightarm" | "feet" | "leftnipplesuck" | "rightnipplesuck" | "leftnipple" | "rightnipple" | "finished";
 
 	export interface CombatRendererOverrides {
 		legBackPosition?: LegPositions;

@@ -1078,7 +1078,7 @@ class PlayerCombatMapper {
 				continue;
 			}
 
-			if (tentacle.tentaclehealth <= 0) {
+			if (tentacle.tentaclehealth <= 0 && tentacle.head === "finished") {
 				continue;
 			}
 
@@ -1105,7 +1105,7 @@ class PlayerCombatMapper {
 				continue;
 			}
 
-			if (tentacle.tentaclehealth <= 0) {
+			if (tentacle.tentaclehealth <= 0 && tentacle.shaft === "finished") {
 				continue;
 			}
 
