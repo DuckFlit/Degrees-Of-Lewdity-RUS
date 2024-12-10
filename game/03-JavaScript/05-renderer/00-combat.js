@@ -207,7 +207,7 @@ class CombatSystem {
 	}
 
 	isFeetActive() {
-		const activeUse = V.feetuse === "penis";
+		const activeUse = V.feetuse === "penis" || V.feetstate === "tentacle";
 		return !!activeUse;
 	}
 
