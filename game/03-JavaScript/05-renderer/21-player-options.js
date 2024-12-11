@@ -1021,7 +1021,7 @@ class PlayerCombatMapper {
 				return defaults;
 			}
 			let show = true;
-			if (["vaginal", "anal"].includes(id) && !["penetrated", "entrance"].includes(machine.state)) {
+			if (["vaginal", "anal"].includes(id) && !["penetrated", "entrance", "imminent"].includes(machine.state)) {
 				show = false;
 			}
 			if (id === "tattoo") {
@@ -1358,7 +1358,7 @@ class PlayerCombatMapper {
 			return "down";
 		}
 		const parts = [V.anususe, V.vaginause, V.thighuse];
-		if (parts.includes("penis") || parts.includes(1)) {
+		if (parts.includes("penis") || parts.includes(1) || parts.includes("machine")) {
 			return "up";
 		}
 		if (combat.vaginaCount >= 2 || combat.anusCount >= 2) {
@@ -1398,7 +1398,7 @@ class PlayerCombatMapper {
 			return "down";
 		}
 		const parts = [V.anususe, V.vaginause, V.thighuse];
-		if (parts.includes("penis") || parts.includes(1)) {
+		if (parts.includes("penis") || parts.includes(1) || parts.includes("machine")) {
 			return "up";
 		}
 		if (combat.vaginaCount >= 2 || combat.anusCount >= 2) {

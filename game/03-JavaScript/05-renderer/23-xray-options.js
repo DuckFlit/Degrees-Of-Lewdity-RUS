@@ -1,5 +1,5 @@
 // @ts-check
-/* global CombatRenderer, NpcCombatMapper, Condom */
+/* global CombatRenderer, PlayerCombatMapper, NpcCombatMapper, Condom */
 
 /**
  * @typedef XrayOptions
@@ -166,6 +166,12 @@ class XrayCombatMapper {
 		options.showPcArse = XrayCombatMapper.isPcAnusVisible();
 		options.showNpcPenis = XrayCombatMapper.isNpcBlowjobVisible();
 
+		// Colours
+		// @ts-ignore
+		CombatRenderer.generateBodyFilters(options);
+		// @ts-ignore
+		PlayerCombatMapper.mapPcToClothingOption("under_lower", V.player, options);
+
 		// Genitals
 		if (options.showPcPenis) {
 			XrayCombatMapper.mapXrayPlayerPenis(options, options.penis);
@@ -176,10 +182,6 @@ class XrayCombatMapper {
 		if (options.showPcArse) {
 			XrayCombatMapper.mapXrayPenetrators(options, options.anus, "anus");
 		}
-
-		// Colours
-		// @ts-ignore
-		CombatRenderer.generateBodyFilters(options);
 
 		// Set animation speed
 		if (V.enemytype === "machine") {
@@ -426,7 +428,7 @@ class XrayCombatMapper {
 				penetrator["penetratorSprite" + index] = "point";
 				penetrator["size" + index] = 2;
 			} else {
-				penetrator["penetratorSprite" + index] = "penis";
+				penetrator["penetratorSprite" + index] = "strapon";
 				penetrator["size" + index] = V.NPCList[penetrator[npc]].penissize;
 			}
 		} else {
@@ -454,9 +456,9 @@ class XrayCombatMapper {
 				? "tentacle"
 				: V.NPCList[V.penistarget].type;
 
-		const playerPenisType = playerHasStrapon() ? "strap" : V.player.gender === "f" ? "parasite" : "penis";
+		const playerPenisType = playerHasStrapon() ? "strapon" : V.player.gender === "f" ? "parasite" : "penis";
 		penetrator.type = playerPenisType;
-		penetrator.playerSprite = penetrator.type === "parasite" ? "parasite" : "penis";
+		penetrator.playerSprite = playerPenisType;
 		penetrator.size = playerHasStrapon() && V.worn.under_lower.size !== undefined ? V.worn.under_lower.size : V.player.penissize;
 		penetrator.size = Math.clamp(penetrator.size, 1, 5);
 		penetrator.state = V.penisstate;
@@ -510,9 +512,7 @@ class XrayCombatMapper {
 		}
 
 		if (penetrator.type === "parasite") {
-			options.filters.playerPenis = CombatRenderer.lookupColour(setup.colours.tentacle_map, "tentacles-peach", "xrayTentacle", undefined, undefined);
-		} else {
-			options.filters.playerPenis = setup.colours.getSkinFilter(Skin.color.natural, 0);
+			options.filters.parasite = CombatRenderer.lookupColour(setup.colours.tentacle_map, "tentacles-peach", "xrayTentacle", undefined, undefined);
 		}
 		penetrator.base = "sex";
 		options.showNpcVagina = penetrator.penetrated === "vaginal";

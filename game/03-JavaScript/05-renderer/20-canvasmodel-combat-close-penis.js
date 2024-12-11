@@ -70,7 +70,15 @@ const combatClosePenis = {
 			animationfn(options) {
 				return options.animKeyPenis;
 			},
-			filters: ["body"],
+			filtersfn(options) {
+				if (playerHasStrapon()) {
+					return ["worn_under_lower_main"];
+				}
+				if (options.penis.type === "parasite") {
+					return [];
+				}
+				return ["body"];
+			},
 			z: CombatRenderer.indices.closeGenitals + 4,
 		},
 		condom: {

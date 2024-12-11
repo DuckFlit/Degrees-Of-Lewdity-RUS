@@ -311,46 +311,6 @@ class NpcCanvasHelper {
 		return Object.assign(defaults, overrideOptions);
 	}
 
-	static genPenetratorInternalEjaculationLayer(overrideOptions = {}) {
-		/**
-		 * @type {CanvasModelLayers<NpcOptions>}
-		 */
-		const defaults = {
-			srcfn(options) {
-				const penetrator = options.penetrators[0];
-				if (penetrator == null) {
-					return "";
-				}
-				let cavity;
-				if (penetrator.position === "vagina") cavity = "vaginal";
-				if (penetrator.position === "anus") cavity = "anal";
-				if (penetrator.position === "mouth") cavity = "oral";
-				return `${options.src}/body/${cavity}/${cavity}cum.png`;
-			},
-			showfn(options) {
-				const penetrator = options.penetrators[0];
-				if (penetrator == null || !["vagina", "anus", "mouth", null].includes(penetrator.position)) {
-					return false;
-				}
-				return penetrator.show && penetrator.state === "penetrating" && penetrator.isEjaculating;
-			},
-			animationfn(options) {
-				return options.animKey;
-			},
-			zfn(options) {
-				const penetrator = options.penetrators[0];
-				if (penetrator == null) {
-					return 0;
-				}
-				if (penetrator.position === "mouth") {
-					return 73;
-				}
-				return 50;
-			},
-		};
-		return Object.assign(defaults, overrideOptions);
-	}
-
 	static genCondomLayer(overrideOptions = {}) {
 		/**
 		 * @type {CanvasModelLayers<NpcOptions>}
