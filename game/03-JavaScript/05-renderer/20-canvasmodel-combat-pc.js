@@ -408,7 +408,22 @@ const combatMainPc = {
 			animationfn(options) {
 				return options.machineAnimKey;
 			},
-			z: CombatRenderer.indices.base + 4,
+			zfn(options) {
+				if (
+					options.machines.tattoo.use === "forehead" ||
+					(options.machines.tattoo.use === "right_cheek" && options.position === "missionary") ||
+					(options.machines.tattoo.use === "left_cheek" && options.position === "doggy")
+				) {
+					return CombatRenderer.indices.head + 1;
+				}
+				if (
+					(options.machines.tattoo.use === "right_bottom" && options.position === "missionary") ||
+					(options.machines.tattoo.use === "left_bottom" && options.position === "doggy")
+				) {
+					return CombatRenderer.indices.frontLeg + 5;
+				}
+				return CombatRenderer.indices.base + 4;
+			},
 		},
 		dildoVaginal: {
 			srcfn(options) {
@@ -420,7 +435,7 @@ const combatMainPc = {
 			animationfn(options) {
 				return options.machineAnimKey;
 			},
-			z: CombatRenderer.indices.backLowerOverwear + 1,
+			z: CombatRenderer.indices.base - 1,
 		},
 		dildoAnal: {
 			srcfn(options) {
@@ -432,7 +447,7 @@ const combatMainPc = {
 			animationfn(options) {
 				return options.machineAnimKey;
 			},
-			z: CombatRenderer.indices.backLowerOverwear + 1,
+			z: CombatRenderer.indices.base - 1,
 		},
 		/*
 		 *    ████████ ███████ ███    ██ ████████  █████   ██████ ██      ███████ ███████

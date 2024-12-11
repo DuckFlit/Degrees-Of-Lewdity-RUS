@@ -96,7 +96,6 @@ const combatMainNpc = {
 		},
 		npcPenetrator: NpcCanvasHelper.genPenetratorLayer(),
 		npcPenetratorEjaculate: NpcCanvasHelper.genPenetratorEjaculationLayer(),
-		npcInternalEjaculate: NpcCanvasHelper.genPenetratorInternalEjaculationLayer(),
 		npcCondom: NpcCanvasHelper.genCondomLayer(),
 	},
 };

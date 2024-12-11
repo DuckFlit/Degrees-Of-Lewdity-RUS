@@ -154,7 +154,7 @@ const combatCloseVagina = {
 				if (!options.showVagina) {
 					return false;
 				}
-				if (!options.vagina.npc) {
+				if (!options.vagina.npc || options.vagina.npc === "machine") {
 					return false;
 				}
 				if (V.enemyarousal < V.enemyarousalmax) {

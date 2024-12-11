@@ -51,7 +51,15 @@ const combatXrayPenis = {
 			animationfn(options) {
 				return options.animKeyPenis;
 			},
-			filters: ["playerPenis"],
+			filtersfn(options) {
+				if (playerHasStrapon()) {
+					return ["worn_under_lower_main"];
+				}
+				if (options.penis.type === "parasite") {
+					return ["parasite"];
+				}
+				return ["body"];
+			},
 			z: CombatRenderer.indices.xrayPenetrator,
 		},
 		playerCum: {
@@ -61,7 +69,7 @@ const combatXrayPenis = {
 				return `${options.src}${options.penis.penetrated}/cum/${options.penis.base}${size}${cumAmt}.png`;
 			},
 			showfn(options) {
-				return !!options.penis.showCum;
+				return !!options.penis.showCum && V.otherFilled >= 1;
 			},
 			animationfn(options) {
 				return options.animKeyPenis;
@@ -89,7 +97,7 @@ const combatXrayPenis = {
 				return `${options.src}${options.penis.penetrated}/tentacle${conSize}.png`;
 			},
 			showfn(options) {
-				return !!options.showPcPenis && !!options.penis.condom;
+				return !!options.showPcPenis && !!options.penis.condom.worn;
 			},
 			animationfn(options) {
 				return options.animKeyPenis;
