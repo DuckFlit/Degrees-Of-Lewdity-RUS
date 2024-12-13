@@ -296,8 +296,8 @@ class XrayCombatMapper {
 					this.mapXrayHumanPenis("npc2", slot, options);
 
 					/* size 1 and 5 penises are supposed to be impossible to dp with, so just in case, make sure sprites don't error out */
-					Math.clamp(penetrator.size, 2, 4);
-					Math.clamp(penetrator.size2, 2, 4);
+					penetrator.size = Math.clamp(penetrator.size, 2, 4);
+					penetrator.size2 = Math.clamp(penetrator.size2, 2, 4);
 				}
 				break;
 			case "horse":

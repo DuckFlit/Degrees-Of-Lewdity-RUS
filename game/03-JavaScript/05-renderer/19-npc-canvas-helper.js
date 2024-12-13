@@ -124,6 +124,48 @@ class NpcCanvasHelper {
 	 * @param {CanvasModelLayers<NpcOptions>} overrideOptions
 	 * @returns {CanvasModelLayers<NpcOptions>}
 	 */
+	static genNpcTongue(overrideOptions = {}) {
+		/**
+		 * @type {CanvasModelLayers<NpcOptions>}
+		 */
+		const defaults = {
+			srcfn(options) {
+				const tongue = options.tongue;
+				if (tongue == null || !tongue.show || tongue.position == null) {
+					return "";
+				}
+				let positionAlias = tongue.position;
+				if (tongue.position === "mouth") positionAlias = "kiss";
+				if (options.position === "missionary") {
+					if (["anus", "anusentrance", "anusimminent"].includes(tongue.position)) positionAlias = "anus";
+					if (["penis", "penisentrance", "penisimminent"].includes(tongue.position)) positionAlias = "penis";
+					if (["vagina", "vaginaentrance", "vaginaimminent"].includes(tongue.position)) positionAlias = "vagina";
+					if (["kiss", "kissentrance", "kissimminent"].includes(tongue.position)) positionAlias = "kiss";
+				}
+				return `${options.src}/penetrators/tongue/${positionAlias}.png`;
+			},
+			showfn(options) {
+				return options.tongue.show;
+			},
+			zfn(options) {
+				const tongue = options.tongue;
+				if (tongue == null || !tongue.show || tongue.position == null) {
+					return 51;
+				}
+				if (["mouth", "kiss", "kissentrance", "kissimminent"].includes(tongue.position)) return 71;
+				return 51;
+			},
+			animationfn(options) {
+				return options.animKey;
+			},
+		};
+		return Object.assign(defaults, overrideOptions);
+	}
+
+	/**
+	 * @param {CanvasModelLayers<NpcOptions>} overrideOptions
+	 * @returns {CanvasModelLayers<NpcOptions>}
+	 */
 	static genPenetratorLayer(overrideOptions = {}) {
 		/**
 		 * @type {CanvasModelLayers<NpcOptions>}

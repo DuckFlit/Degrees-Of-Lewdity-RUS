@@ -94,6 +94,7 @@ const combatMainNpc = {
 				return 49;
 			},
 		},
+		npcTongue: NpcCanvasHelper.genNpcTongue(),
 		npcPenetrator: NpcCanvasHelper.genPenetratorLayer(),
 		npcPenetratorEjaculate: NpcCanvasHelper.genPenetratorEjaculationLayer(),
 		npcCondom: NpcCanvasHelper.genCondomLayer(),
