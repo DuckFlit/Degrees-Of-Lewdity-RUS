@@ -1014,6 +1014,7 @@ function noonCheck() {
 	fragment.append(wikifier("dailySellProduce"));
 	if (V.lake_ice_broken >= 1) V.lake_ice_broken--;
 	if (V.lake_ice_broken <= 0) delete V.lake_ice_broken;
+	if (V.edenNightmareWake) delete V.edenNightmareWake;
 
 	fragment.append(wikifier("menstruationCycle"));
 	pregnancyProgress();
