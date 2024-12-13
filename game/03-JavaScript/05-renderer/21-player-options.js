@@ -1381,6 +1381,9 @@ class PlayerCombatMapper {
 			if (V.feetuse === "penis" || V.feetstate === "tentacle") {
 				return "up";
 			}
+			if (V.NPCList.some(a => a.type === "horse" && NpcCombatMapper.isUnderPositioned(a))) {
+				return "down";
+			}
 			if (V.NPCList.some(a => ["horse", "centaur", "dog", "pig", "boar"].includes(a.type))) {
 				return "up";
 			}
@@ -1479,6 +1482,14 @@ class PlayerCombatMapper {
 		const hasPenetrator = pc.penisExist || playerHasStrapon();
 		const isExposed = PlayerCombatMapper.isPenisExposed(options);
 		const hasChastityBelt = ["chastitybeltfetish", "goldchastitybelt", "chastitybelt", "flatchastitycage"].includes(V.worn.genitals.variable);
+		const isEjaculating = V.orgasmdown > 0 &&
+			V.penisstate !== "penetrated" &&
+			V.orgasmcount < 25 &&
+			V.femaleclimax !== 1 &&
+			!hasChastityBelt &&
+			!playerHasStrapon() &&
+			wearingCondom("player") !== "worn" &&
+			(V.parasite.penis.name === "parasite" || V.parasite.penis.name == null);
 		/** @type {Penetrator} */
 		const penetrator = {
 			show: hasPenetrator && isExposed && !hasChastityBelt,
@@ -1486,14 +1497,7 @@ class PlayerCombatMapper {
 			size: pc.penissize,
 			colour: pc.skin.color,
 			target: V.penistarget,
-			isEjaculating:
-				V.orgasmdown > 0 &&
-				V.penisstate !== "penetrated" &&
-				V.orgasmcount < 25 &&
-				V.femaleclimax !== 1 &&
-				!hasChastityBelt &&
-				!playerHasStrapon() &&
-				wearingCondom("player") !== "worn",
+			isEjaculating,
 			ejaculate: {
 				type: "sperm",
 			},

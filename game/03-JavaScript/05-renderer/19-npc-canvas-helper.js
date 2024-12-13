@@ -35,7 +35,7 @@ class NpcCanvasHelper {
 					return false;
 				}
 				const penetrator = options.penetrators[0];
-				if (penetrator != null && penetrator.position === "mouth" && penetrator.state !== "penetrating") {
+				if (penetrator != null && penetrator.position === "mouth" && penetrator.state === "entrance") {
 					return false;
 				}
 				if (layer === "back" && options.category !== "beast") {
@@ -47,6 +47,11 @@ class NpcCanvasHelper {
 				return true;
 			},
 			animationfn(options) {
+				const penetrator = options.penetrators[0];
+
+				if (penetrator != null && penetrator.position === "mouth" && penetrator.type === "human") {
+					return penetrator.state !== "penetrating" ? options.animKeyStill : options.animKey;
+				}
 				return options.animKey;
 			},
 			zfn(options) {
@@ -99,6 +104,16 @@ class NpcCanvasHelper {
 							return 20;
 					}
 				}
+				if (penetrator.position === "mouth" && penetrator.type === "human") {
+					switch (penetrator.state) {
+						case "entrance":
+							return -20;
+						case "imminent":
+							return -10;
+						default:
+							return 0;
+					}
+				}
 				return 0;
 			},
 		};
@@ -123,6 +138,9 @@ class NpcCanvasHelper {
 				if (["horse", "centaur"].includes(options.type)) {
 					return `${options.src}/penetrators/${penetrator.type}/${penetrator.state}.png`;
 				}
+				if (options.category === "shadow" && penetrator.position === "mouth") {
+					return `${options.src}/penetrators/${penetrator.type}/${penetrator.position}-${penetrator.state}.png`;
+				}
 				return `${options.src}/penetrators/${penetrator.type}/${penetrator.position}.png`;
 			},
 			showfn(options) {
@@ -133,7 +151,7 @@ class NpcCanvasHelper {
 				// if (penetrator.position === "vagina" && penetrator.state === "penetrated") return false;
 				// Bestial oral penetration sprites are kind of fucked, don't show unless penetrating mouth
 				// Also, regular humans fallback to use the old 4f sprites, so no showing imminent sprites etc.
-				if (penetrator.position === "mouth" && penetrator.state !== "penetrating") {
+				if (penetrator.position === "mouth" && penetrator.state === "entrance") {
 					return false;
 				}
 				return !!penetrator.show;
@@ -179,13 +197,10 @@ class NpcCanvasHelper {
 					return options.animKey;
 				}
 				if (penetrator.position === "mouth") {
-					return options.animKey;
+					return penetrator.type === "human" && penetrator.state !== "penetrating" ? options.animKeyStill : options.animKey;
 				}
-				if (options.position === "missionary") {
-					switch (penetrator.position) {
-						case "vagina":
-							return `vagina-missionary-${speed}`;
-					}
+				if (options.position === "missionary" && penetrator.position === "vagina") {
+					return `vagina-missionary-${speed}`;
 				}
 				if (penetrator.position != null && ["vagina", "anus", "thighs"].includes(penetrator.position)) {
 					return `equal-oscillation-${speed}`;
@@ -222,24 +237,14 @@ class NpcCanvasHelper {
 							return 20;
 					}
 				}
-				if (penetrator.position === "mouth") {
-					if (options.position === "doggy") {
-						switch (penetrator.state) {
-							case "penetrating":
-								return 0;
-							case "imminent":
-								return -10;
-							case "entrance":
-								return -20;
-						}
-					}
+				if (penetrator.position === "mouth" && penetrator.type === "human") {
 					switch (penetrator.state) {
-						case "penetrating":
-							return 0;
-						case "imminent":
-							return 12;
 						case "entrance":
-							return 16;
+							return -20;
+						case "imminent":
+							return -10;
+						default:
+							return 0;
 					}
 				}
 				return 0;
@@ -281,6 +286,9 @@ class NpcCanvasHelper {
 				if (["horse", "centaur"].includes(options.type)) {
 					return `${options.src}/penetrators/${penetrator.type}/${penetrator.state}-${penetrator.ejaculate.type}.png`;
 				}
+				if (options.category === "shadow" && penetrator.position === "mouth") {
+					return `${options.src}/penetrators/${penetrator.type}/${penetrator.position}-${penetrator.state}-${penetrator.ejaculate.type}.png`;
+				}
 				return `${options.src}/penetrators/${penetrator.type}/${penetrator.position}-${penetrator.ejaculate.type}.png`;
 			},
 			showfn(options) {
@@ -298,6 +306,9 @@ class NpcCanvasHelper {
 				const penetrator = options.penetrators[0];
 				if (penetrator == null) {
 					return 0;
+				}
+				if (penetrator.position === "mouth") {
+					return CombatRenderer.indices.head + 2;
 				}
 				if (penetrator.position === "thighs") {
 					return 32;
@@ -320,6 +331,9 @@ class NpcCanvasHelper {
 				const penetrator = options.penetrators[0];
 				if (penetrator == null || !penetrator.show) {
 					return "";
+				}
+				if (options.category === "shadow" && penetrator.position === "mouth") {
+					return `${options.src}/penetrators/${penetrator.type}/${penetrator.position}-${penetrator.state}-condom.png`;
 				}
 				// Use penetrator.condom.isDefective for alternative sprites?
 				return `${options.src}/penetrators/${penetrator.type}/${penetrator.position}-condom.png`;
