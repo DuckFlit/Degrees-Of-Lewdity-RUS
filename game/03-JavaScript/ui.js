@@ -1,5 +1,6 @@
 /* eslint-disable eqeqeq */
 /* eslint-disable jsdoc/require-description-complete-sentence */
+/* globals hasSexStat, sexStatNameMapper, heatRutSexStatModifier, drunkSexStatModifier */
 
 function overlayShowHide(elementId) {
 	const div = document.getElementById(elementId);
@@ -930,3 +931,85 @@ function moneyStatsProcess(stats) {
 	return [keys, stats, total];
 }
 window.moneyStatsProcess = moneyStatsProcess;
+
+/**
+ * If hasSexStat() modifiers are allowing the player to see an aditional option, return the css class for the largest individual modifier.
+ * If the modifiers are not high enough to show a new option, don't return a class.
+ * Passing in 0 or nothing for requiredLevel returns the classes for the largest modifier regardless of if the player is being shown an aditional option.
+ *
+ * Returns the sexStat Modifer CSS classes drunk-text / jitter-text and the level of the effect (drunk-1, jitter-2...)
+ *
+ * When text animations are turned off, this will only return drunk-text or jitter-text without the animation level.
+ *
+ * @param {string} input
+ * @param {number} requiredLevel
+ */
+function getLargestSexStatModifierCssClasses(input, requiredLevel = 0) {
+	const statName = sexStatNameMapper(input);
+	// check if stat name is valid.
+	if (statName == null) {
+		Errors.report(`[getLargestSexStatModifierCssClasses]: input '${statName}' null.`, {
+			Stacktrace: Utils.GetStack(),
+			statName,
+		});
+		return "";
+	}
+
+	const drunkSexStatModifierValue = drunkSexStatModifier(V[statName]);
+	const heatRutSexStatModifierValue = heatRutSexStatModifier(statName);
+
+	// If there is a modifier, and either requiredLevel is 0 or the modifiers put the player up a level of the sexStat.
+	if (
+		drunkSexStatModifierValue + heatRutSexStatModifierValue > 0 &&
+		(requiredLevel === 0 || (!hasSexStat(statName, requiredLevel, false) && hasSexStat(statName, requiredLevel, true)))
+	) {
+		const modifiers = [
+			{ value: drunkSexStatModifierValue, class: "drunk" },
+			{ value: heatRutSexStatModifierValue, class: "jitter" },
+		];
+
+		// Gets the largest modifier.
+		const largestModifier = modifiers.reduce((max, current) => (current.value > max.value ? current : max), modifiers[0]);
+
+		// Gets the base class for effect.
+		let modifierClasses = `${largestModifier.class}-text`;
+
+		if (V.options.textAnimations) {
+			// Sets the animation based on how large the modifier is.
+			if (largestModifier.value > 20) {
+				modifierClasses += ` ${largestModifier.class}-3`;
+			} else if (largestModifier.value > 10) {
+				modifierClasses += ` ${largestModifier.class}-2`;
+			} else {
+				modifierClasses += ` ${largestModifier.class}-1`;
+			}
+
+			modifierClasses += ` animation-offset-${Math.floor(Math.random() * 10)}`;
+		}
+
+		return modifierClasses;
+	} else {
+		return "";
+	}
+}
+window.getLargestSexStatModifierCssClasses = getLargestSexStatModifierCssClasses;
+
+/**
+ * Used to display the drunk text, with with animations if enabled, otherwise just the glow effect.
+ *
+ * @returns {string}
+ */
+function basicDrunkCss() {
+	return V.options.textAnimations ? "drunk-text drunk-1" : "drunk-text";
+}
+window.basicDrunkCss = basicDrunkCss;
+
+/**
+ * Used to display the jitter text, with with animations if enabled, otherwise just the glow effect.
+ *
+ * @returns {string}
+ */
+function basicJitterCss() {
+	return V.options.textAnimations ? "jitter-text drunk-1" : "jitter-text";
+}
+window.basicJitterCss = basicJitterCss;

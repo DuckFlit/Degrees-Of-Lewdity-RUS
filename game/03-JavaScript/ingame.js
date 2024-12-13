@@ -1473,60 +1473,6 @@ function hasSexStat(input, required, modifiers = true) {
 }
 window.hasSexStat = hasSexStat;
 
-/**
- * If hasSexStat() modifiers are allowing the player to see an aditional option, return the css class for the largest individual modifier.
- * If the modifiers are not high enough to show a new option, don't return a class.
- * Passing in 0 or nothing for requiredLevel returns the classes for the largest modifier regardless of if the player is being shown an aditional option.
- *
- * @param {string} input
- * @param {number} requiredLevel
- */
-function getLargestSexStatModifierCssClasses(input, requiredLevel = 0) {
-	const statName = sexStatNameMapper(input);
-	// check if stat name is valid.
-	if (statName == null) {
-		Errors.report(`[getLargestSexStatModifierCssClasses]: input '${statName}' null.`, {
-			Stacktrace: Utils.GetStack(),
-			statName,
-		});
-		return "";
-	}
-
-	const drunkSexStatModifierValue = drunkSexStatModifier(V[statName]);
-	const heatRutSexStatModifierValue = heatRutSexStatModifier(statName);
-
-	// If there is a modifier, and either requiredLevel is 0 or the modifiers put the player up a level of the sexStat.
-	if (
-		drunkSexStatModifierValue + heatRutSexStatModifierValue > 0 &&
-		(requiredLevel === 0 || (!hasSexStat(statName, requiredLevel, false) && hasSexStat(statName, requiredLevel, true)))
-	) {
-		const modifiers = [
-			{ value: drunkSexStatModifierValue, class: "drunk" },
-			{ value: heatRutSexStatModifierValue, class: "jitter" },
-		];
-
-		// Gets the largest modifier.
-		const largestModifier = modifiers.reduce((max, current) => (current.value > max.value ? current : max), modifiers[0]);
-
-		// Gets the base class for animation.
-		let modifierClasses = largestModifier.class + "-text";
-
-		// Sets the animation based on how large the modifier is.
-		if (largestModifier.value > 20) {
-			modifierClasses += " " + largestModifier.class + "-3";
-		} else if (largestModifier.value > 10) {
-			modifierClasses += " " + largestModifier.class + "-2";
-		} else {
-			modifierClasses += " " + largestModifier.class + "-1";
-		}
-
-		return modifierClasses;
-	} else {
-		return "";
-	}
-}
-window.getLargestSexStatModifierCssClasses = getLargestSexStatModifierCssClasses;
-
 function playerIsPenetrated() {
 	return [V.mouthstate, V.vaginastate, V.anusstate].some(s => ["penetrated", "doublepenetrated", "tentacle", "tentacledeep"].includes(s));
 }
