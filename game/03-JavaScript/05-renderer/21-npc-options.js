@@ -14,6 +14,7 @@
  * @property {Penetrator[]} penetrators
  * @property {Balls} balls
  * @property {Drool} drool
+ * @property {Tongue} tongue
  * @property {boolean} show
  * @property {string?} state
  * @property {Colour} colour
@@ -33,6 +34,12 @@
  * @typedef Drool
  * @property {boolean} show
  * @property {number} amount
+ */
+
+/**
+ * @typedef Tongue
+ * @property {boolean} show
+ * @property {string?} position
  */
 
 /**
@@ -65,6 +72,10 @@ class NpcCombatMapper {
 			drool: {
 				show: false,
 				amount: 0,
+			},
+			tongue: {
+				show: false,
+				position: null,
 			},
 			penetrators: [],
 			balls: {
@@ -198,6 +209,8 @@ class NpcCombatMapper {
 			show: false,
 			amount: V.enemyarousal >= (V.enemyarousalmax / 5) * 3 ? 2 : 1,
 		};
+		options.tongue.show = typeof npc.mouth === "string" && ["mouth", "kiss", "kissentrance", "kissimminent", "anus", "anusentrance", "anusimminent", "vagina", "vaginaentrance", "vaginaimminent", "penis", "penisentrance", "penisimminent"].includes(npc.mouth);
+		options.tongue.position = typeof npc.mouth === "string" ? npc.mouth : null;
 		options.penetrators = options.penetrators = [];
 
 		options.filters.skin = NpcCombatMapper.getNpcSkinFilter(npc);

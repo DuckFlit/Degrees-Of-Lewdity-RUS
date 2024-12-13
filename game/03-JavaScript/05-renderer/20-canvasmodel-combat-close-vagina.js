@@ -157,6 +157,9 @@ const combatCloseVagina = {
 				if (!options.vagina.npc || options.vagina.npc === "machine") {
 					return false;
 				}
+				if (options.vagina.npc !== "beastoral") {
+					return false;
+				}
 				if (V.enemyarousal < V.enemyarousalmax) {
 					return false;
 				}
