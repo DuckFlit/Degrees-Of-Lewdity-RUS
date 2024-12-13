@@ -400,11 +400,13 @@ class CombatSystem {
 					state: "penetrating",
 				};
 			case "penisentrance":
-				return {};
 			case "penisimminent":
-				return {};
 			case "penis":
-				return {};
+				return {
+					show: true,
+					position: "penis",
+					state: "rubbing",
+				};
 			case "vaginaentrance":
 				return {
 					show: true,

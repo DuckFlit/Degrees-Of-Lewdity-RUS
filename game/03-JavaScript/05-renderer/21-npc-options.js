@@ -107,7 +107,7 @@ class NpcCombatMapper {
 
 		// Set animation speed
 		options.animKey = NpcCombatMapper.getNpcAnimation();
-		options.animKeyStill = NpcCombatMapper.getNpcAnimation();
+		options.animKeyStill = NpcCombatMapper.getNpcIdleAnimation();
 		options.speed = NpcCombatMapper.getNpcAnimationSpeed();
 
 		// Prevent showing if state is not set.
@@ -123,10 +123,14 @@ class NpcCombatMapper {
 	static getNpcAnimation() {
 		const speed = NpcCombatMapper.getNpcAnimationSpeed();
 		const frames = NpcCombatMapper.getNpcAnimationFrameCount();
-		if (combat.isActive()) {
-			return `sex-${frames}f-${speed}`;
-		}
 		return `sex-${frames}f-${speed}`;
+	}
+
+	/**
+	 * @returns {string}
+	 */
+	static getNpcIdleAnimation() {
+		return `sex-2f-idle`;
 	}
 
 	/**
@@ -159,18 +163,23 @@ class NpcCombatMapper {
 						return "slow";
 					case 2:
 						return "fast";
-					case 3:
-						return "vfast";
 					default:
 						return "vfast";
 				}
-			} else {
-				if (T.knotted || T.knotted_short) return "mid";
-				if (V.enemyarousal >= (V.enemyarousalmax / 5) * 4) return "vfast";
-				if (V.enemyarousal >= (V.enemyarousalmax / 5) * 3) return "fast";
-				if (V.enemyarousal >= (V.enemyarousalmax / 5) * 1) return "mid";
-				return "slow";
 			}
+			if (T.knotted || T.knotted_short) {
+				return "mid";
+			}
+			if (V.enemyarousal >= (V.enemyarousalmax / 5) * 4) {
+				return "vfast";
+			}
+			if (V.enemyarousal >= (V.enemyarousalmax / 5) * 3) {
+				return "fast";
+			}
+			if (V.enemyarousal >= (V.enemyarousalmax / 5) * 1) {
+				return "mid";
+			}
+			return "slow";
 		}
 		return "idle";
 	}
@@ -384,6 +393,7 @@ class NpcCombatMapper {
 			horse: {
 				show: true,
 				hasOverSprite: true,
+				hasUnderSprite: true,
 			},
 			lizard: {
 				show: true,
