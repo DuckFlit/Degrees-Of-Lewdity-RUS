@@ -89,6 +89,11 @@ You climb aboard the bus. Tickets cost £1.
 <br><br>
 <<if $stress gte $stressmax>>
 	<<passoutbus>>
+<<elseif $tiredness gte (C.tiredness.max / 5) * 4 and $stress gte (($stressmax / 5) * 4) and !isPregnancyEnding()>>
+	After a while, you find yourself struggling to keep your eyes open. Your exhausted and tense body slowly relaxes, and your head slumps as you fall into a restless doze.
+	<br><br>
+	<<link [[Sleep|Passout bus]]>><<tiredness -20>><<set $phase to 1>><</link>><<ltiredness>>
+	<br>
 <<elseif playerBellyVisible() and $rng gte 75 and getPregnancyObject().awareOf>>
 	/* event is only possible if the player knows they are pregnant, and their belly is visible */
 	A <<generate1>><<person1>><<person>> next to you keeps sparing glances down at your belly.
@@ -210,8 +215,8 @@ You climb aboard the bus. Tickets cost £1.
 				<</if>>
 			<<else>>
 				<<generate1>><<generate2>>The <<people>> in the bus seem to be crowding around you. Some even move seats to be closer.
-				<br><br>
-				<<if Time.dayState is "night">>
+				<br><br> 
+				<<if Time.dayState is "night" and !isPregnancyEnding()>>
 					The bus approaches your destination but doesn't slow down. You stand to tell the driver, but a <<person1>><<person>> blocks your path. "Going so soon?" A <<person2>><<person>> grabs you from behind. "You should know better than to wander at night."
 					<br><br>
 					<<link [[Next|Bus Seat Rape]]>><<set $molestationstart to 1>><</link>>
@@ -232,7 +237,10 @@ You climb aboard the bus. Tickets cost £1.
 
 :: Stripped Bus
 
+<<if $phase is 1>><<unset $phase>><</if>>
 <<effects>>
+<<upperruined>><<lowerruined>><<underupperruined>><<underlowerruined>>
+
 You feel strangely cold as you awaken. You are still on the bus. You are about to stand up when you realise that you are completely naked! You frantically search for your clothing, but can find nothing.<<controlloss>>
 <br><br>
 You cautiously look around the bus. No one seems to have noticed your predicament.
@@ -242,12 +250,12 @@ You cautiously look around the bus. No one seems to have noticed your predicamen
 	<br><br>
 	<<link [[Climb out (0:05)|Climb Out Bus]]>><<pass 5>><</link>>
 	<br>
-	<<link [[Wait (1:00)|Bus Station]]>><<pass 1 hour>><</link>>
+	<<link [[Wait (0:30)|Bus Station]]>><<pass 30>><</link>>
 	<br><br>
 <<else>>
 	You peek out the window and see numerous pedestrians. You can't think of any option other than hiding under a seat and waiting until the bus returns to station.
 	<br><br>
-	<<link [[Wait (1:00)|Bus Station]]>><<pass 1 hour>><</link>>
+	<<link [[Wait (0:45)|Bus Station]]>><<pass 45>><</link>>
 	<br><br>
 <</if>>
 
@@ -295,12 +303,16 @@ You cautiously look around the bus. No one seems to have noticed your predicamen
 <<wearProp "chocolate bar">>
 <<generate1>><<person1>>
 <<effects>><<pass 1 hour>><<set $hunger -= 500>><<set $thirst -= 500>><<set $stress -= 500>>
-You feel someone shaking your shoulder. You look around and see an old <<personsimple>> smiling at you. <<He>> pours you a cup of tea from a flask and gives you a chocolate bar, letting you know that it's important to not let your blood-sugar levels drop too low. You thank <<him>> and shortly after the bus arrives at your destination.
+You feel someone shaking your shoulder. You look around and see an old <<personsimple>> smiling at you. <<He>> pours you a cup of tea from a flask and gives you a chocolate bar, letting you know that it's important to not let your blood-sugar levels drop too low. <<if $phase is 1>><<He>> also gently reminds you to not overwork yourself.<</if>> You thank <<him>> and <<if $phase is 1>>exit the bus at the next stop<<else>>shortly after the bus arrives at your destination<</if>>.
 <br><br>
 <<He>> waves from the window as the bus continues on.
 <br><br>
 <<endevent>>
-<<destination>>
+<<if $phase is 1>>
+	<<unset $phase>><<destinationbusrandom>>
+<<else>>
+	<<destination>>
+<</if>>
 <<displayLinks>>
 
 :: Bus move
@@ -618,9 +630,9 @@ There's not much to do but cover up and leave the bus.
 <<if $enemyhealth lte 0>>
 	You knock the <<person1>><<person>> down, giving you a clear route out. <<tearful>> you run to the front of the bus.
 	<<if $speech_attitude is "bratty">>
-		"Let me off or I'll mess you up too," you say,
+		"Let me off, or I'll mess you up too," you say,
 	<<elseif $speech_attitude is "meek">>
-		"Please stop the bus," you say,
+		"P-please stop the bus," you say,
 	<<else>>
 		"Let me off!" you say,
 	<</if>>
@@ -643,84 +655,25 @@ There's not much to do but cover up and leave the bus.
 	<</if>>
 	<<if $exposed gte 1>>
 		<<tearful>> you hide behind a car before you're seen.
-		<br><br>
 	<<else>>
 		<<tearful>> you try to work out where you are.
-		<br><br>
 	<</if>>
+	<br><br>
 	<<set $stealtextskip to 1>>
 	<<stealclothes>>
 	<<clotheson>>
 	<<endcombat>>
-	<<rng 13>>
-	<<switch $rng>>
-	<<case 1>>
-		<<set $bus to "nightingale">>
-	<<case 2>>
-		<<set $bus to "domus">>
-	<<case 3>>
-		<<set $bus to "elk">>
-	<<case 4>>
-		<<set $bus to "high">>
-	<<case 5>>
-		<<set $bus to "starfish">>
-	<<case 6>>
-		<<set $bus to "barb">>
-	<<case 7>>
-		<<set $bus to "connudatus">>
-	<<case 8>>
-		<<set $bus to "wolf">>
-	<<case 9>>
-		<<set $bus to "harvest">>
-	<<case 10>>
-		<<set $bus to "oxford">>
-	<<case 11>>
-		<<set $bus to "danube">>
-	<<case 12>>
-		<<set $bus to "mer">>
-	<<case 13>>
-		<<set $bus to "cliff">>
-	<</switch>>
-	<<destination>>
+	<<destinationbusrandom>>
 <</if>>
 
 :: Bus Seat Rape Jump
 
 <<effects>>
-You leap from the bus. You land rolling on a patch of grass. <<tearful>> you struggle to your feet.
+You leap from the bus. You land rolling on a patch of <<if Weather.precipitation is "snow">>snow<<else>>grass<</if>>. <<tearful>> you struggle to your feet. 
 <<pain 15>>
 <<clotheson>>
 <<endcombat>>
-<<rng 13>>
-<<switch $rng>>
-<<case 1>>
-	<<set $bus to "nightingale">>
-<<case 2>>
-	<<set $bus to "domus">>
-<<case 3>>
-	<<set $bus to "elk">>
-<<case 4>>
-	<<set $bus to "high">>
-<<case 5>>
-	<<set $bus to "starfish">>
-<<case 6>>
-	<<set $bus to "barb">>
-<<case 7>>
-	<<set $bus to "connudatus">>
-<<case 8>>
-	<<set $bus to "wolf">>
-<<case 9>>
-	<<set $bus to "harvest">>
-<<case 10>>
-	<<set $bus to "oxford">>
-<<case 11>>
-	<<set $bus to "danube">>
-<<case 12>>
-	<<set $bus to "mer">>
-<<case 13>>
-	<<set $bus to "cliff">>
-<</switch>>
-<<destination>>
+<<destinationbusrandom>>
 
 :: Bus Seat Rape Punch
 
@@ -728,36 +681,7 @@ You leap from the bus. You land rolling on a patch of grass. <<tearful>> you str
 You grip a pole with one hand and punch the driver in the jaw. <<He>> brakes, but the bus swerves off the road, colliding with the corner of a building before coming to a stop. The impact knocks everyone to the ground. <<tearful>> you escape the bus and run round a corner, away from view.
 <<clotheson>>
 <<endcombat>>
-<<rng 13>>
-<<switch $rng>>
-<<case 1>>
-	<<set $bus to "nightingale">>
-<<case 2>>
-	<<set $bus to "domus">>
-<<case 3>>
-	<<set $bus to "elk">>
-<<case 4>>
-	<<set $bus to "high">>
-<<case 5>>
-	<<set $bus to "starfish">>
-<<case 6>>
-	<<set $bus to "barb">>
-<<case 7>>
-	<<set $bus to "connudatus">>
-<<case 8>>
-	<<set $bus to "wolf">>
-<<case 9>>
-	<<set $bus to "harvest">>
-<<case 10>>
-	<<set $bus to "oxford">>
-<<case 11>>
-	<<set $bus to "danube">>
-<<case 12>>
-	<<set $bus to "mer">>
-<<case 13>>
-	<<set $bus to "cliff">>
-<</switch>>
-<<destination>>
+<<destinationbusrandom>>
 
 :: Bus orgasm
 
@@ -932,76 +856,95 @@ Your attacker recovers just in time for <<his>> stop, and leaves abruptly. You s
 
 The bus slows to round a corner. You take the opportunity to slip out unnoticed.
 <br><br>
-<<starfishquick>>
+<<destinationbusrandom>>
 
 :: Molestation bus Alarm
 
 <<effects>>
-<<He>> notices several heads turning in response to your cry, and relents in <<his>> assault. <<He>> hurriedly leaves at the next stop, and you arrive at your own soon after. <<tearful>> you leave the bus.
+<<He>> notices several heads turning in response to your cry, and relents in <<his>> assault. <<He>> hurriedly leaves at the next stop,
+<<if $phase is 1>>
+	
+<<else>>
+	and you arrive at your own soon after. <<tearful>> you leave the bus.
+<</if>>
 <br><br>
 <<clotheson>>
 <<endcombat>>
 <<set $stress -= 1000>><<set $eventskip to 1>>
-<<destination>>
+<<if $phase is 1>>
+	<<unset $phase>><<destinationbusrandom>>
+<<else>>
+	<<destination>>
+<</if>>
 
 :: Molestation bus Ejaculation
 
 <<effects>>
 <<ejaculation>>
 <<if $enemyanger gte ($enemyangermax / 5) * 3>>
-	<<He>> gives you one last smack to the face, then leaves you lying on the cum-stained seat.
+	<<He>> gives you one last smack to the face, then leaves you lying on the <<if $NPCList[0].penis isnot "none">>cum<<else>>slime<</if>>-stained seat.
 	<<violence 3>>
-	<br><br>
 <<elseif $enemyanger gte 1>>
-	Without a word, <<he>> gets up and leaves you lying on the cum-stained seat.
-	<br><br>
+	Without a word, <<he>> gets up and leaves you lying on the <<if $NPCList[0].penis isnot "none">>cum<<else>>slime<</if>>-stained seat.
 <<else>>
-	Smiling, <<he>> kisses you on the cheek. "This is for you." <<He>> gets up and leaves you lying on the cum-stained seat.
+	Smiling, <<he>> kisses you on the cheek. "This is for you." <<He>> gets up and leaves you lying on the <<if $NPCList[0].penis isnot "none">>cum<<else>>slime<</if>>-stained seat.
 	<br>
 	You've gained <<printmoney 500>><<money 500 "prostitution">>.
-	<br><br>
 <</if>>
-You soon arrive at your stop. <<tearful>> you leave the bus.
+<br><br>
+<<if $phase is 1>>
+	<<tearful>> you leave the bus when it reaches the next stop.
+<<else>>
+	You soon arrive at your stop. <<tearful>> you leave the bus.
+<</if>>
 <br><br>
 <<clotheson>>
 <<endcombat>>
 <<set $stress -= 1000>><<set $eventskip to 1>>
-<<destination>>
+<<if $phase is 1>>
+	<<unset $phase>><<destinationbusrandom>>
+<<else>>
+	<<destination>>
+<</if>>
 
 :: Molestation bus Escape
 
 <<effects>>
-<<He>> recoils in pain as you arrive at your destination. <<tearful>> you seize the opportunity and dart out the vehicle.
+<<He>> recoils in pain. <<if $phase is 1>>The bus soon reaches the next stop.<<else>>You arrive at your destination not long after.<</if>> <<tearful>> you seize the opportunity and dart out the vehicle.
 <br><br>
 <<clotheson>>
 <<endcombat>>
 <<set $stress -= 1000>><<set $eventskip to 1>>
-<<destination>>
+<<if $phase is 1>>
+	<<unset $phase>><<destinationbusrandom>>
+<<else>>
+	<<destination>>
+<</if>>
 
 :: Passout bus
 
-You've pushed yourself too much.
+<<if $phase is 1>>
+	The bus rumbles to a sudden halt. And you wake with a start.
+<<else>>
+	You've pushed yourself too much.
+<</if>>
 <br><br>
 <<passout>>
 <<set $safebus to 0>>
 <<set $dangerbus to 0>>
 <<set $danger to random(1, 10000)>>
-<<if $danger gte (9900 - $allure)>><<set $dangerbus to random(1, 2)>><</if>>
-<<if $danger lt (9900 - $allure)>><<set $safebus to random(1, 2)>><</if>>
-<<if $dangerbus eq 1>>
-	<<link [[Wake up|Stripped Bus]]>><</link>>
-<<elseif $dangerbus eq 2>>
-	<<link [[Wake up|Molestation bus]]>>
-		<<set $molestationstart to 1>>
-	<</link>>
-<</if>>
-<<if $safebus eq 1>>
-	<<link [[Wake up|Stranger rescue bus]]>><</link>>
-<<elseif $safebus eq 2>>
+<<if $danger gte (9900 - $allure)>><<set $dangerbus to random(1, 2)>><<else>><<set $safebus to random(1, 2)>><</if>>
+<<if $dangerbus is 1>>
+	<<link [[Next|Stripped Bus]]>><</link>>
+<<elseif $dangerbus is 2>>
+	<<link [[Next|Molestation bus]]>><<set $molestationstart to 1>><</link>>
+<<elseif $safebus is 1 or $phase is 1>>
+	<<link [[Next|Stranger rescue bus]]>><</link>>
+<<elseif $safebus is 2>>
 	<<ambulance>>
 <</if>>
 <<pass 1 hour>>
-<<trauma 6>><<set $stress -= 2000>>
+<<trauma 6>><<if $phase is 1>><<set $stress -= 1000>><<else>><<set $stress -= 2000>><</if>>
 
 :: Bus Pregnancy Wait
 <<effects>>
