@@ -276,7 +276,7 @@
  * @property {TransformationPartOptions} halo
  * @property {TransformationPartOptions} horns
  * @property {TransformationPartOptions} ears
- * @property {TransformationPartOptions} tail
+ * @property {TransformationTailPartOptions} tail
  * @property {TransformationPartOptions} eyes
  * @property {TransformationPartOptions} cheeks
  * @property {TransformationPartOptions} malar
@@ -290,6 +290,15 @@
  * @property {boolean} show
  * @property {string} type
  * @property {string} style
+ * @property {boolean} inFront
+ */
+
+/**
+ * @typedef TransformationTailPartOptions
+ * @property {boolean} show
+ * @property {string} type
+ * @property {string} style
+ * @property {string} state
  * @property {boolean} inFront
  */
 
@@ -1168,12 +1177,12 @@ class PlayerCombatMapper {
 		/** @type {Partial<Tentacles>} */
 		const tentacles = options.tentacles;
 
-		if (V.mouthstate !== 0) {
+		if (V.mouthstate !== 0 || V.mouthuse !== 0) {
 			tentacles.mouth = getState({ mouthentrance: "oral-entrance", mouthimminent: "oral-imminent", mouth: "oral", mouthdeep: "oral" });
 		}
 		tentacles.breasts = getState();
 		// Tentacle code requires that I check the states.
-		if (V.penisstate !== 0) {
+		if (V.penisstate !== 0 || V.penisuse !== 0) {
 			tentacles.penis = getState({
 				penisentrance: "penis-entrance-0",
 				penisimminent: "penis-imminent",
@@ -1182,7 +1191,7 @@ class PlayerCombatMapper {
 				penisrub: "penis",
 			});
 		}
-		if (V.vaginastate !== 0) {
+		if (V.vaginastate !== 0 || V.vaginause !== 0) {
 			tentacles.vagina = getState({
 				vaginaentrance: "vagina-entrance",
 				vaginaimminent: "vagina-imminent",
@@ -1191,10 +1200,10 @@ class PlayerCombatMapper {
 				vaginarub: "vagina-rub",
 			});
 		}
-		if (V.anusstate !== 0) {
+		if (V.anusstate !== 0 || V.anususe !== 0) {
 			tentacles.anus = getState({ anusentrance: "anal-entrance", anusimminent: "anal-imminent", anus: "anal", anusrub: "anal-rub", anusdeep: "anal" });
 		}
-		if (V.feetstate !== 0) {
+		if (V.feetstate !== 0 || V.feetuse !== 0) {
 			tentacles.feet = getState({ finished: "footjob", feet: "footjob" });
 		}
 
@@ -1881,7 +1890,7 @@ class PlayerCombatMapper {
 				halo: PlayerCombatMapper.mapToTransformationHaloOptions(transformation),
 				horns: PlayerCombatMapper.mapToTransformationHornOptions(transformation),
 				ears: PlayerCombatMapper.mapToTransformationEarOptions(transformation),
-				tail: PlayerCombatMapper.mapToTransformationTailOptions(transformation),
+				tail: PlayerCombatMapper.mapToTransformationTailOptions(options, transformation),
 				eyes: PlayerCombatMapper.mapToTransformationEyeOptions(transformation),
 				cheeks: PlayerCombatMapper.mapToTransformationCheekOptions(transformation),
 				malar: PlayerCombatMapper.mapToTransformationMalarOptions(transformation),
@@ -2017,35 +2026,49 @@ class PlayerCombatMapper {
 	}
 
 	/**
+	 * @param {CombatPlayerOptions} options
 	 * @param {TransformationKeys} type
-	 * @returns {TransformationPartOptions}
+	 * @returns {TransformationTailPartOptions}
 	 */
-	static mapToTransformationTailOptions(type) {
+	static mapToTransformationTailOptions(options, type) {
 		const parts = V.transformationParts[type];
 		if (!("tail" in parts) || parts.tail === "disabled" || parts.tail === "hidden") {
 			return {
 				show: false,
 				type,
 				style: "disabled",
+				state: "default",
 				inFront: false,
 			};
 		}
+		const style = ["default", "classic", "cat", "succubus"].includes(parts.tail) ? parts.tail : "default";
 		switch (type) {
 			case "demon":
 				if (PlayerCombatMapper.isChimeraPartEnabled("demon", "cat", "demoncat", "tail")) {
 					return {
 						show: true,
 						type,
-						style: "default-cat",
+						style: "cat",
+						state: "default",
 						inFront: false,
 					};
 				}
 				break;
 		}
+		if (["demon"].includes(type) && V.enemytype === "man" && (V.anusstate === "penetrated" || V.vaginastate === "penetrated")) {
+			return {
+				show: true,
+				type,
+				style,
+				state: "sex",
+				inFront: false,
+			};
+		}
 		return {
 			show: true,
 			type,
-			style: parts.tail,
+			style,
+			state: "default",
 			inFront: false,
 		};
 	}
