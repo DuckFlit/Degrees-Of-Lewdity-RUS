@@ -65,37 +65,7 @@ class PlayerCanvasHelper {
 				return PlayerCanvasHelper.genClothingLayerLowerSrc(slot, layer, isAccessory, options);
 			},
 			showfn(options) {
-				const clothes = options.clothes[slot];
-				if (clothes == null) {
-					Errors.report("Clothing object was undefined", {
-						slot,
-						layer,
-						isAccessory,
-					});
-					return false;
-				}
-				if (clothes.renderStep == null) {
-					return false;
-				}
-				const step = ClothingRendererStep.instances[clothes.renderStep];
-				if (step == null) {
-					// Fallback
-					Errors.report("Step key not found in ClothingRendererStep", {
-						slot,
-						layer,
-						isAccessory,
-						name: clothes.name,
-					});
-					return false;
-				}
-				if (isAccessory && !clothes.hasAccessory) {
-					return false;
-				}
-				// @ts-ignore
-				const stepShow = step.shouldShow(options.position, clothes.state);
-				const isClothingShown = CombatRenderer.isClothingShown(clothes, options.showClothing);
-				const hasMainImg = clothes.hasMainImg;
-				return !!stepShow && !!isClothingShown && !!hasMainImg;
+				return PlayerCanvasHelper.genClothingLayerLowerShow(options, slot, layer, isAccessory);
 			},
 			alphafn(options) {
 				const clothes = options.clothes[slot];
@@ -168,6 +138,47 @@ class PlayerCanvasHelper {
 		const state = states.join("-");
 		const path = `${options.src}clothing/${slot}/${clothes.name}/${state}.png`;
 		return path;
+	}
+
+	/**
+	 * @param {CombatPlayerOptions} options
+	 * @param {ClothedSlots} slot
+	 * @param {"front" | "back"} layer
+	 * @param {boolean} isAccessory
+	 * @returns {boolean}
+	 */
+	static genClothingLayerLowerShow(options, slot, layer, isAccessory) {
+		const clothes = options.clothes[slot];
+		if (clothes == null) {
+			Errors.report("Clothing object was undefined", {
+				slot,
+				layer,
+				isAccessory,
+			});
+			return false;
+		}
+		if (clothes.renderStep == null) {
+			return false;
+		}
+		const step = ClothingRendererStep.instances[clothes.renderStep];
+		if (step == null) {
+			// Fallback
+			Errors.report("Step key not found in ClothingRendererStep", {
+				slot,
+				layer,
+				isAccessory,
+				name: clothes.name,
+			});
+			return false;
+		}
+		if (isAccessory && !clothes.hasAccessory) {
+			return false;
+		}
+		// @ts-ignore
+		const stepShow = step.shouldShow(options.position, clothes.state);
+		const isClothingShown = CombatRenderer.isClothingShown(clothes, options.showClothing);
+		const hasMainImg = clothes.hasMainImg;
+		return !!stepShow && !!isClothingShown && !!hasMainImg;
 	}
 
 	/**
@@ -434,6 +445,43 @@ class PlayerCanvasHelper {
 				return [filter];
 			},
 			z: CombatRenderer.indices[slot],
+		};
+		return Object.assign(defaults, overrideOptions);
+	}
+
+	/**
+	 * @param {TransformationKeys} transformation
+	 * @param {"front" | "back"} layer
+	 * @param {CanvasModelLayers<CombatPlayerOptions>} overrideOptions
+	 * @returns {CanvasModelLayers<CombatPlayerOptions>}
+	 */
+	static genTransformationTailLayer(transformation, layer, overrideOptions = {}) {
+		/**
+		 * @type {CanvasModelLayers<CombatPlayerOptions>}
+		 */
+		const defaults = {
+			srcfn(options) {
+				const value = options.transformations[transformation].tail;
+				const path = `${options.src}body/transformations/${value.type}/tail/${layer}-${value.state}-${value.style}.png`;
+				return path;
+			},
+			showfn(options) {
+				const value = options.transformations[transformation].tail;
+				const show = value.show;
+				return show;
+			},
+			animationfn(options) {
+				return options.animKey;
+			},
+			filters: [transformation + "Tail"],
+			zfn(options) {
+				const value = options.transformations[transformation].tail;
+				let z = CombatRenderer.indices[layer + "Tail"];
+				if (value.inFront) {
+					z += 1;
+				}
+				return z;
+			},
 		};
 		return Object.assign(defaults, overrideOptions);
 	}

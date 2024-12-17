@@ -60,7 +60,7 @@ class NpcCanvasHelper {
 						if (options.state === "mouth") {
 							return CombatRenderer.indices.near;
 						}
-						return CombatRenderer.indices.frontThigh - 1;
+						return CombatRenderer.indices.hair - 1;
 					}
 					if (options.state === "penis") {
 						return 91;
