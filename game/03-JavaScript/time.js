@@ -1020,6 +1020,7 @@ function noonCheck() {
 	pregnancyProgress();
 	pregnancyProgress("anus");
 
+	if (V.weekly.schoolNightPoolParty && V.weekly.schoolNightPoolParty !== "intro") V.weekly.schoolNightPoolParty = false;
 	delete V.birdSleep;
 	delete V.edenbed;
 	delete V.glideScared;
@@ -1046,6 +1047,8 @@ function dawnCheck() {
 	delete V.alexSomnoAngry;
 	delete V.connudatus_stripped;
 	delete V.robin_kicked_out;
+
+	if (V.schoolBlocked) delete V.schoolBlocked;
 
 	delete V.foxCrimeProgress;
 	for (const crimeKeys of Object.keys(setup.crimeNames)) {
@@ -1691,6 +1694,8 @@ function dailySchoolEffects() {
 	if (V.temple_spar !== undefined) {
 		delete V.temple_spar;
 	}
+
+	if (V.weekly.schoolNightPoolParty == "intro") V.weekly.schoolNightPoolParty = false;
 
 	return fragment;
 }
