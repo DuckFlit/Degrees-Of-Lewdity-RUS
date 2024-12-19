@@ -1,0 +1,262 @@
+:: Widgets Kitchen [widget]
+
+<<widget "kitchen_display">>
+<<set _recipe_known to false>>
+<details class="kitchenInventory">
+	<summary class="journal"><<print _args[0].toLocaleUpperFirst()>></summary>
+    <<set _food_keys to Object.keys(setup.plants)>>
+    <<for _i to 0; _i lt _food_keys.length; _i++>>
+        <<set _food to _food_keys[_i]>>
+
+        <<if _args[0] is "sweets" and setup.plants[_food].special.includes("sweet") or
+        _args[0] is "drinks" and setup.plants[_food].special.includes("drink") or
+        _args[0] is "ingredients" and setup.plants[_food].type.includes("ingredient") or
+        _args[0] is "savouries" and !setup.plants[_food].special.includes("sweet") and !setup.plants[_food].special.includes("drink") and setup.plants[_food].type isnot "ingredient">>
+            <<set _recipe_go to true>>
+        <<else>>
+            <<set _recipe_go to false>>
+        <</if>>
+        <<if $plants[_food].recipe is true and _recipe_go is true>>
+        <div class="kitchen-recipe-box">
+            <div class="recipe-text"><<tendingicon setup.plants[_food].icon>><<print _food.toLocaleUpperFirst().replace(/_/g," ")>></div>
+            Number owned: <<print $plants[_food].amount>>
+            <br>
+            Time needed to make: <<print setup.plants[_food].days>> minutes
+            <br>
+            Quantity made: <<print setup.plants[_food].multiplier>> 
+            <<if setup.plants[_food].multiplier gte 2>>
+                <<print setup.plants[_food].plural>>
+            <</if>>
+            <br>
+            Ingredients (number available):
+            <<unset _ingredients_available>>
+            <<for _e to 0; _e lt setup.plants[_food].ingredients.length; _e++>>
+                <<set _ingredient to setup.plants[_food].ingredients[_e]>>
+                <<print _ingredient.toLocaleUpperFirst().replace(/_/g," ")>>
+                <<if _food_keys.includes(_ingredient)>>
+                    <<tendingicon setup.plants[_ingredient].icon>>
+                <<else>>
+                    <span class="red">Ingredient missing, perhaps misspelled?</span>
+                <</if>>
+                <<if Object.keys($plants).includes(_ingredient)>>
+                    <<if _ingredients_supplied.includes(_ingredient)>>
+                        (∞)
+                    <<else>>
+                        (<<print $plants[_ingredient].amount>>)
+                    <</if>>
+                    <<if $bus is "orphanage_kitchen">>
+                        <<if _ingredients_supplied.includes(_ingredient) or _ingredients_exceptions.includes(_ingredient) and $plants[_ingredient].amount gte 1>>
+                            
+                        <<else>>
+                            <<set _ingredients_available to false>>
+                        <</if>>
+                    <<else>>
+                        <<if $plants[_ingredient].amount gte 1 or _ingredients_supplied.includes(_ingredient)>>
+
+                        <<else>>
+                            <<set _ingredients_available to false>>
+                        <</if>>
+                    <</if>>
+                <<else>>
+                    <span class="red">Problem detected.</span>
+                <</if>>
+                |
+            <</for>>
+            <<if _ingredients_available isnot false>>
+                <<capture _food>>
+                    <br>
+                    <<if $tiredness gte C.tiredness.max>>
+                        <span class="purple">You're too tired to cook!</span>
+                    <<else>>
+                        <<link [[Make|$passage]]>><<make_recipe _food>><</link>>
+                    <</if>>
+                <</capture>>
+            <</if>>
+            <<set _recipe_known to true>>
+        </div>
+        <</if>>
+    <</for>>
+    <<if _recipe_known is false>>
+        <span class="blue">You know no recipes!</span> <span class="gold">You can learn them from the housekeeping class at school.</span>
+    <</if>>
+</details>
+<</widget>>
+
+<<widget "learn_recipe">>
+    <<if $plants[_args[0]].recipe isnot true>>
+        <span class="gold">You have learned how to make <<print _args[0].replace(/_/g," ")>>!</span>
+        <<tendingicon setup.plants[_args[0]].icon>>
+    <</if>>
+    <<set $plants[_args[0]].recipe to true>>
+<</widget>>
+
+<<widget "learn_recipe_all">>
+    <<set _food_keys to Object.keys(setup.plants)>>
+    <<for _i to 0; _i lt _food_keys.length; _i++>>
+        <<set _food to _food_keys[_i]>>
+        <<if setup.plants[_food].ingredients.length gte 1>>
+            <<learn_recipe _food>>
+        <</if>>
+    <</for>>
+<</widget>>
+
+<<widget "make_recipe">>
+    <<tending_give _args[0] setup.plants[_args[0]].multiplier>>
+    <<for _i to 0; _i lt setup.plants[_args[0]].ingredients.length; _i++>>
+        <<if !_ingredients_supplied.includes(setup.plants[_args[0]].ingredients[_i])>>
+            <<tending_give setup.plants[_args[0]].ingredients[_i] -1>>
+        <</if>>
+    <</for>>
+    <<set _prop to setup.plants[_args[0]].name.replace(/_/g," ")>>
+    <<wearProp _prop>>
+    <<pass setup.plants[_args[0]].days>>
+<</widget>>
+
+<<widget "kitchen_display_all">>
+    <<kitchen_display "ingredients">>
+    <br>
+    <<kitchen_display "savouries">>
+    <br>
+    <<kitchen_display "sweets">>
+    <br>
+    <<kitchen_display "drinks">>
+    <br>
+<</widget>>
+
+<<widget "ingredients_supplied">>
+    <<set _ingredients_supplied to []>>
+    <<if _args[0]>>
+        The kitchen has plenty of the following ingredients in stock:
+        <br>
+        <<for _i to 0; _i lt _args.length; _i++>>
+            <<set _ingredients_supplied.push(_args[_i])>>
+            <<print _args[_i].toLocaleUpperFirst().replace(/_/g," ")>>
+            <<tendingicon setup.plants[_args[_i]].icon>>
+            |
+        <</for>>
+    <</if>>
+<</widget>>
+
+<<widget "ingredients_exceptions">>
+    <<set _ingredients_exceptions to []>>
+    <<if _args[0]>>
+        <<for _i to 0; _i lt _args.length; _i++>>
+            <<set _ingredients_exceptions.push(_args[_i])>>
+        <</for>>
+    <</if>>
+<</widget>>
+
+<<widget "food_list">>
+	<summary class="journal"><<print _args[0].toLocaleUpperFirst()>></summary>
+    <<set _food_keys to Object.keys(setup.plants)>>
+    <<for _i to 0; _i lt _food_keys.length; _i++>>
+        <<set _food to _food_keys[_i]>>
+
+        <<if _args[0] is "sweets" and setup.plants[_food].special.includes("sweet") or
+        _args[0] is "drinks" and setup.plants[_food].special.includes("drink") or
+        _args[0] is "savouries" and !setup.plants[_food].special.includes("sweet") and !setup.plants[_food].special.includes("drink") and setup.plants[_food].type isnot "ingredient">>
+            <<set _recipe_go to true>>
+        <<else>>
+            <<set _recipe_go to false>>
+        <</if>>
+        <<if $plants[_food].recipe is true and _recipe_go is true>>
+        <div class="kitchen-recipe-box">
+            <div class="recipe-text"><<tendingicon setup.plants[_food].icon>><<print _food.toLocaleUpperFirst().replace(/_/g," ")>></div>
+            Number owned: <<print $plants[_food].amount>>
+            <br>
+            <<if _ingredients_available isnot false>>
+                <<capture _food>>
+                    <br>
+                    <<if $tiredness gte C.tiredness.max>>
+                        <span class="purple">You're too tired to cook!</span>
+                    <<else>>
+                        <<link [[Make|$passage]]>><<make_recipe _food>><</link>>
+                    <</if>>
+                <</capture>>
+            <</if>>
+            <<set _recipe_known to true>>
+        </div>
+        <</if>>
+    <</for>>
+    <<if _recipe_known is false>>
+        <span class="blue">You know no recipes!</span> <span class="gold">You can learn them from the housekeeping class at school.</span>
+    <</if>>
+<</widget>>
+
+<<widget "food_list_all">>
+    <<food_list "savouries">>
+    <br>
+    <<food_list "sweets">>
+    <br>
+    <<food_list "drinks">>
+    <br>
+<</widget>>
+
+<<widget "housekeeping_exam_select">>
+    <<set _food_keys to Object.keys(setup.plants)>>
+    <<set _possible_recipes to []>>
+    <<for _i to 0; _i lt _food_keys.length; _i++>>
+        <<set _food to _food_keys[_i]>>
+        <<if $plants[_food].recipe isnot true and setup.plants[_food].ingredients.length gte 1 and setup.plants[_food].difficulty is 1>>
+            <<set _possible_recipes.push(_food)>>
+        <</if>>
+    <</for>>
+    <<if _possible_recipes.length is 0>>
+        <<for _i to 0; _i lt _food_keys.length; _i++>>
+            <<set _food to _food_keys[_i]>>
+            <<if $plants[_food].recipe isnot true and setup.plants[_food].ingredients.length gte 1 and setup.plants[_food].difficulty is 2>>
+                <<set _possible_recipes.push(_food)>>
+            <</if>>
+        <</for>>
+    <</if>>
+    <<if _possible_recipes.length is 0>>
+        <<for _i to 0; _i lt _food_keys.length; _i++>>
+            <<set _food to _food_keys[_i]>>
+            <<if $plants[_food].recipe isnot true and setup.plants[_food].ingredients.length gte 1 and setup.plants[_food].difficulty is 3>>
+                <<set _possible_recipes.push(_food)>>
+            <</if>>
+        <</for>>
+    <</if>>
+    <<if _possible_recipes.length is 0>>
+        <<for _i to 0; _i lt _food_keys.length; _i++>>
+            <<set _food to _food_keys[_i]>>
+            <<if $plants[_food].recipe isnot true and setup.plants[_food].ingredients.length gte 1 and setup.plants[_food].difficulty is 4>>
+                <<set _possible_recipes.push(_food)>>
+            <</if>>
+        <</for>>
+    <</if>>
+    <<if _possible_recipes.length isnot 0>>
+        <<set $chosen_recipe to _possible_recipes.pluck()>>
+    <<else>>
+        <<set $chosen_recipe to "none">>
+    <</if>>
+<</widget>>
+
+<<widget "food_gift_list">>
+    <<set _food_keys to Object.keys(setup.plants)>>
+    <<for _i to 0; _i lt _food_keys.length; _i++>>
+        <<set _food to _food_keys[_i]>>
+        <<if setup.plants[_food].type is "food">>
+            <<if $plants[_food].amount gte 1>>
+                <<set _food_gift_found to true>>
+                <label><<tendingicon setup.plants[_food].icon>><<print _food.toLocaleUpperFirst().replace(/_/g," ")>> (<<print $plants[_food].amount>>) <<radiobutton "$gift" setup.plants[_food] checked>></label> |
+            <</if>>
+        <</if>>
+    <</for>>
+    <<if _food_gift_found isnot true>>
+        You don't have any homemade food to gift.
+    <</if>>
+    <br><br>
+<</widget>>
+
+<<widget "give_gift">>
+    <<tending_give $gift.name -1>>
+    <<gift_recipients_check>>
+    <<set $daily.gift_recipients.push(_args[0])>>
+<</widget>>
+
+<<widget "gift_recipients_check">>
+    <<if $daily.gift_recipients is undefined>>
+        <<set $daily.gift_recipients to []>>
+    <</if>>
+<</widget>>

@@ -508,6 +508,8 @@ function weekPassed() {
 		if (V.brothelVending.weeksEmpty >= 4) V.brothelVending.status = "sold";
 	}
 
+	supermarket_weekly();
+
 	statChange.worldCorruption("soft", V.world_corruption_hard);
 
 	V.weekly.clearProperties();
@@ -2080,3 +2082,15 @@ function getTimeString(...args) {
 	return Math.trunc(minutes / 60) + ":" + ("0" + Math.trunc(minutes % 60)).slice(-2);
 }
 window.getTimeString = getTimeString;
+
+/*Determines and replenishes stock at supermarket*/
+function supermarket_weekly() {
+	const food_keys = Object.keys(setup.plants);
+	for (let i = 0; i < food_keys.length; i++) {
+		const current_food = food_keys[i];
+		if (setup.plants[current_food].name == "cocoa_powder" || setup.plants[current_food].name == "salt" || setup.plants[current_food].name == "sugar" || setup.plants[current_food].name == "vegetable_oil" || setup.plants[current_food].type == "meat" || setup.plants[current_food].type == "fish" || setup.plants[current_food].name == "red_wine" || setup.plants[current_food].name == "white_wine" || setup.plants[current_food].name == "oats" || setup.plants[current_food].name == "date" || setup.plants[current_food].name == "cherry" || setup.plants[current_food].name == "lime") {
+			V.plants[current_food].supermarket = Math.trunc(3000 / setup.plants[current_food].plant_cost);
+		}
+	}
+}
+DefineMacro("supermarket_weekly", supermarket_weekly);
