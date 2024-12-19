@@ -79,7 +79,6 @@ declare global {
 		silhouetteEnabled: boolean;
 		bodywritingImages: boolean;
 		combatAnimations: boolean;
-		combatRendererMode: "new" | "old" | "both";
 	}
 }
 

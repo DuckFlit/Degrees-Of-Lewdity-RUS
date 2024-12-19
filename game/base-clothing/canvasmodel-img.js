@@ -169,7 +169,7 @@ DefineMacro("modelprepare-player-body", function () {
 			) {
 				T.coverCrotch = false;
 				// "left_cover" checks included intentionally; parameter is meant to be used should there ever be a handheld item that should only use the left_cover hand position
-				T.modeloptions.arm_right = srightArm;
+				T.modeloptions.arm_right = rightArm;
 			} else {
 				T.coverCrotch = true;
 				T.modeloptions.arm_right = "cover"; // might be changed back to rightArm if covering with wings/tail
