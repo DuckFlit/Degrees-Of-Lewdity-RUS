@@ -7337,8 +7337,8 @@ function initLower() {
 			combat: {
 				reference: "trousers",
 			},
-			integrity: 160,
-			integrity_max: 160,
+			integrity: 200,
+			integrity_max: 200,
 			fabric_strength: 30,
 			reveal: 300,
 			rearresize: 0,
