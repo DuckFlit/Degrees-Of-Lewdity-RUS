@@ -395,6 +395,8 @@
 		<<set _bird_loot_select to "rocks">>
 	<<elseif Object.values($children).find(child => (child.type is "hawk" and child.location is "tower" and child.eggTimer is undefined)) and !$daily.birdBabyFeed>>
 		<<set _bird_loot_select to "lurker_for_children">>
+	<<elseif $syndromebird isnot 1 and $hunger gte 2000 and !$daily.birdForcefeed and $rng gte 51>>
+		<<set _bird_loot_select to "lurker_for_player">>
 	<</if>>
 	<<switch _bird_loot_select>>
 	<<case "lurker">>
@@ -637,6 +639,32 @@
 			<<link [[Do nothing|Bird Tower Lurker Nothing]]>><<bird_loot lurker -10>><<npcincr "Great Hawk" love -1>><</link>><<llove>>
 			<br>
 		<</if>>
+	<<case "lurker_for_player">>
+		<<set $daily.birdForcefeed to true>>
+
+		<<bHe>> carries a strange, leathery and many-limbed creature in <<bhis>> <<if $monster is 1>>talons<<else>>mouth<</if>>.
+		<<if $monster is 1>>
+			<<bHe>> holds it out without taking a bite, concern clear in <<bhis>> gaze. "<<print either(
+			"It's food, you should eat it.",
+			"Please eat. It's fresh.",
+			"Need meat on bones.",
+			"Let me feed you.",
+			"Don't want you to waste away.",
+			"I promise it's good."
+			)>>"
+		<<else>>
+			<<bHe>> drops the creature in front of you and nudges it closer with a soft chirp, not taking any of it for <<bhimself>>.<<if understandsBirdBehaviour()>> There's a pleading look in <<bhis>> eyes.<</if>>
+		<</if>>
+		<br><br>
+		<<bHe>> waits attentively for your response.
+		<br><br>
+
+		<<link [[Eat|Bird Tower Lurker]]>><<set $hunger to 1>><<bird_loot lurker 5>><<transform bird 1>><<npcincr "Great Hawk" love 1>><<bird_stockholm 1>><</link>><<gbirdstockholm>><<glove>><<lllhunger>>
+		<br>
+		<<link [[Scold|Bird Tower Forcefeed Insist]]>><<set $phase to 0>><<transform bird 1>><<npcincr "Great Hawk" dom -1>><<def 1>><<bird_stockholm 1>><</link>><<gbirdstockholm>><<ldom>>
+		<br>
+		<<link [[Do nothing|Bird Tower Forcefeed Insist]]>><<set $phase to 1>><<npcincr "Great Hawk" love -1>><</link>><<llove>>
+		<br>
 	<<default>>
 		<<bHe>> carries
 		<<if $syndromebird is 1>><<select_random_clothes>><<else>><<select_random_clothes_limited "upper" "lower" "under_upper" "under_lower" "hands" "legs">><</if>>
