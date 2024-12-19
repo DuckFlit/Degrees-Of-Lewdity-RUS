@@ -170,22 +170,3 @@ $(document).on(":enginerestart", () => {
 	Skin.recache();
 });
 $(document).on(":oncloseoverlay", refreshModels);
-
-/**
- * @param {"new" | "old"} type
- */
-function isCombatRendererEnabled(type) {
-	if (V.options.combatRendererMode == null) {
-		return true;
-	}
-	switch (type) {
-		case "new":
-			return [1, 2].includes(V.options.combatRendererMode);
-		case "old":
-			return [1, 3].includes(V.options.combatRendererMode);
-		default:
-			console.error("isCombatRendererEnabled given incorrect parameter:", type, "should be ['new' or 'old']");
-			return false;
-	}
-}
-window.isCombatRendererEnabled = isCombatRendererEnabled;
