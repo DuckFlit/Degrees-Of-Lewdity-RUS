@@ -88,6 +88,11 @@ setup.colours = {
 	mascara_default: {
 		blendMode: "hard-light",
 	},
+	blusher: [],
+	blusher_map: {},
+	blusher_default: {
+		blendMode: "hard-light",
+	},
 	lipstick: [],
 	lipstick_map: {},
 	lipstick_default: {
@@ -1535,6 +1540,17 @@ setup.colours.mascara = [
 		},
 	},
 ];
+setup.colours.blusher = [
+	{
+		variable: "rosy pink",
+		name: "rosy pink",
+		name_cap: "Rosy pink",
+		csstext: "light-pink",
+		canvasfilter: {
+			blend: "#4372FF",
+		},
+	},
+];
 setup.colours.condom = [
 	{
 		variable: "red",
@@ -1745,6 +1761,7 @@ setup.colourName = function (colour) {
 		setup.colours.clothes_map,
 		setup.colours.mascara_map,
 		setup.colours.lipstick_map,
+		setup.colours.blusher_map,
 		setup.colours.eyeshadow_map,
 		setup.colours.condom_map,
 		setup.colours.tentacle_map,

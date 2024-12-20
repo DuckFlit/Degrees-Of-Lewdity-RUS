@@ -224,6 +224,7 @@ declare module "twine-sugarcube" {
 			};
 			pbcolour: string;
 			lipstick: string;
+			blusher: string;
 			mascara: string;
 			concealer: string;
 			eyeshadow: string;

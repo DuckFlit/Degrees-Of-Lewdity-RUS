@@ -155,8 +155,9 @@ function genderappearancecheck() {
 	}
 	/* Makeup */
 	addfemininityfromfactor(V.makeup.lipstick ? 50 : 0, "Lipstick");
-	addfemininityfromfactor(V.makeup.eyeshadow ? 50 : 0, "Eye shadow");
+	addfemininityfromfactor(V.makeup.eyeshadow ? 50 : 0, "Eyeshadow");
 	addfemininityfromfactor(V.makeup.mascara ? 50 : 0, "Mascara");
+	addfemininityfromfactor(V.makeup.blusher ? 50 : 0, "Blusher");
 	/* Body structure */
 	setfemininitymultiplierfromgender(V.player.gender_body);
 	addfemininityfromfactor(T.femininity_multiplier * 200, "Body appearance");
