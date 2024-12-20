@@ -3,7 +3,7 @@
 
 /**
  * @typedef CloseOptions
- * @property {"img/newsex"} root
+ * @property {"img/sex"} root
  * @property {string} src Source directory for closeup images.
  * @property {boolean} showChest
  * @property {boolean} showPenis
@@ -34,7 +34,7 @@ class CloseCombatMapper {
 		// @ts-ignore
 		return {
 			position: "missionary",
-			src: "img/newsex/close/",
+			src: "img/sex/close/",
 			animKeyVagina: "sex-1f-idle",
 			animKeyPenis: "sex-1f-idle",
 			animKeyArse: "sex-1f-idle",
@@ -53,7 +53,7 @@ class CloseCombatMapper {
 		options.position = CombatRenderer.getPosition(V.position);
 
 		// Set directory for images
-		options.root = "img/newsex";
+		options.root = "img/sex";
 		options.src = `${options.root}/close/`;
 
 		options.filters = options.filters || {
