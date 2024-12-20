@@ -1346,19 +1346,30 @@ function dailyPlayerEffects() {
 		}
 	}
 
-	statChange.insecurity("penis_tiny", -1);
-	statChange.insecurity("penis_small", -1);
-	statChange.insecurity("penis_big", -1);
-	statChange.insecurity("breasts_tiny", -1);
-	statChange.insecurity("breasts_small", -1);
-	statChange.insecurity("breasts_big", -1);
+	// Lower insecurity, reduced faster as the sizes become more acceptable
+	statChange.insecurity("penis_small", -Math.clamp(V.player.penissize + 1, 1, 5)); // Increases by 1 for each size above small
+	statChange.insecurity("penis_big", Math.clamp(V.player.penissize - 4, -5, -1)); // Increases by 1 for each size below large
 
-	V.insecurity_penis_tiny = Math.clamp(V.insecurity_penis_tiny, 0, 1000);
-	V.insecurity_penis_small = Math.clamp(V.insecurity_penis_small, 0, 1000);
-	V.insecurity_penis_big = Math.clamp(V.insecurity_penis_big, 0, 1000);
-	V.insecurity_breasts_tiny = Math.clamp(V.insecurity_breasts_tiny, 0, 1000);
-	V.insecurity_breasts_small = Math.clamp(V.insecurity_breasts_small, 0, 1000);
-	V.insecurity_breasts_big = Math.clamp(V.insecurity_breasts_big, 0, 1000);
+	const reducedBreastsize = Math.floor(V.player.breastsize / 2);
+	if (V.player.gender !== "f") {
+		statChange.insecurity("breasts_big", Math.clamp(reducedBreastsize - 4, -5, -1)); // Increases by 1 for each other size below full
+	} else if (V.player.gender === "h") {
+		statChange.insecurity("breasts_big", Math.clamp(reducedBreastsize - 5, -5, -1)); // Increases by 1 for each other size below ample
+	} else {
+		statChange.insecurity("breasts_small", -Math.clamp(reducedBreastsize - 1, 1, 5)); // Increases by 1 for each other size above modest
+		statChange.insecurity("breasts_big", Math.clamp(reducedBreastsize - 5, -5, -1)); // Increases by 1 for each other size below ample
+	}
+
+	// Lower acceptance when it no longer applies, takes 200 days for it to drop to 0 from max
+	if (!(V.player.penisExist && V.player.penissize <= 1)) statChange.acceptance("penis_small", -5);
+	if (!(V.player.penisExist && V.player.penissize >= (V.player.gender === "m" ? 4 : 3))) statChange.acceptance("penis_big", -5);
+	if (V.player.gender === "f" && !between(V.player.breastsize, 0, 4)) statChange.acceptance("breasts_small", -5);
+	if (!(V.player.breastsize >= (V.player.gender === "m" ? 1 : 8))) statChange.acceptance("breasts_big", -5);
+
+	if (playerBellySize() < 8) {
+		statChange.insecurity("pregnancy", -5);
+		statChange.acceptance("pregnancy", -5);
+	}
 
 	for (const bodypart of setup.bodyparts) {
 		if (V.skin[bodypart].pen === "marker" && random(0, 1)) fragment.append(wikifier("bodywriting_clear", bodypart));
