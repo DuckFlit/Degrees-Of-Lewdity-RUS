@@ -81,9 +81,9 @@ Missionary specifics:
 
 Penetrator(s) need to be redesigned to rest upon the face of the PC:
 
--   img\newsex\missionary\penetrators\human\mouth-entrance.png
--   img\newsex\missionary\penetrators\human\mouth-imminent.png
+-   img\sex\missionary\penetrators\human\mouth-entrance.png
+-   img\sex\missionary\penetrators\human\mouth-imminent.png
 
 Penetrator(s) need to be improved so the base of the penetrator does not seem too intrusive for when other NPC shadows are over it.
 
--   img\newsex\missionary\penetrators\human\mouth-penetrated.png
+-   img\sex\missionary\penetrators\human\mouth-penetrated.png

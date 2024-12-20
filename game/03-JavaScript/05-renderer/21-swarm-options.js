@@ -9,8 +9,8 @@ class SwarmCombatMapper {
 		/** @type {SwarmOptions} */
 		return {
 			show: false,
-			src: "img/newsex/",
-			root: "img/newsex/",
+			src: "img/sex/",
+			root: "img/sex/",
 			position: "doggy",
 			animKey: "sex-2f-idle",
 			animKeyImminent: "sex-2f-idle",

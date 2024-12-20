@@ -4,7 +4,7 @@
 /**
  * @typedef CombatPlayerOptions
  * @type {object}
- * @property {"img/sex/" | "img/newsex/"} root The root directory.
+ * @property {"img/sex/" | "img/sex/"} root The root directory.
  * @property {"doggy"|"missionary"} position The position.
  * @property {boolean} isDebugging Flag for debugging mode. E.G. Shows frame number.
  * @property {boolean} showPlayer Flag to show the player model.
@@ -572,7 +572,7 @@ class PlayerCombatMapper {
 	/** @returns {CombatPlayerOptions} */
 	static generateOptions() {
 		return {
-			root: "img/newsex/",
+			root: "img/sex/",
 			position: "missionary",
 			isDebugging: false,
 			showPlayer: true,
@@ -589,7 +589,7 @@ class PlayerCombatMapper {
 				worn: {},
 			},
 			showTan: true,
-			src: "img/newsex/missionary/",
+			src: "img/sex/missionary/",
 			legBackPosition: "down",
 			legFrontPosition: "down",
 			armBackPosition: "default",
