@@ -1113,24 +1113,12 @@ Renderer.CanvasModels.main = {
 		 *
 		 *
 		 */
-		"facebase": {
-			filters: ["tan"],
-			z: ZIndices.facebase,
-			animation: "idle",
-
-			srcfn(options) {
-				return `img/face/${options.facestyle}/${options.facevariant}/base.png`;
-			},
-			showfn(options) {
-				return options.show_face;
-			},
-		},
 		"freckles": {
 			filters: ["tan"],
 			z: ZIndices.freckles,
 
 			srcfn(options) {
-				return `img/face/${options.facestyle}/${options.facevariant}/freckles.png`;
+				return `img/face/${options.facestyle}/freckles.png`;
 			},
 			showfn(options) {
 				return options.show_face && !!options.freckles;
@@ -1141,7 +1129,7 @@ Renderer.CanvasModels.main = {
 			z: ZIndices.ears,
 
 			srcfn(options) {
-				return `img/face/${options.facestyle}/${options.facevariant}/ears.png`;
+				return `img/face/${options.facestyle}/ears.png`;
 			},
 			showfn(options) {
 				return options.show_face && options.ears_position === "front";
@@ -1162,7 +1150,7 @@ Renderer.CanvasModels.main = {
 			z: ZIndices.sclera,
 
 			srcfn(options) {
-				return `img/face/${options.facestyle}/${options.facevariant}/${options.eyes_bloodshot ? "sclerabloodshot" : "sclera"}.png`;
+				return `img/face/${options.facestyle}/${options.facevariant}/${options.eyes_bloodshot ? "sclera-bloodshot" : "sclera"}.png`;
 			},
 			showfn(options) {
 				return options.show_face;
@@ -1174,13 +1162,16 @@ Renderer.CanvasModels.main = {
 			animation: "idle",
 
 			srcfn(options) {
-				const iris = options.trauma ? "irisempty" : "iris";
-				const half = options.eyes_half ? "_halfclosed" : "";
-				return `img/face/${options.facestyle}/${options.facevariant}/${iris}${half}_left.png`;
+				const iris = options.trauma ? "iris-empty" : "iris";
+				const half = options.eyes_half ? "-half-closed" : "";
+				return `img/face/${options.facestyle}/${options.facevariant}/${iris}${half}.png`;
 			},
 			showfn(options) {
 				return options.show_face;
 			},
+			masksrcfn(options) {
+				return "img/face/masks/left.png"
+			}
 		},
 		"right_iris": {
 			filters: ["right_eye"],
@@ -1188,13 +1179,16 @@ Renderer.CanvasModels.main = {
 			animation: "idle",
 
 			srcfn(options) {
-				const iris = options.trauma ? "irisempty" : "iris";
-				const half = options.eyes_half ? "_halfclosed" : "";
-				return `img/face/${options.facestyle}/${options.facevariant}/${iris}${half}_right.png`;
+				const iris = options.trauma ? "iris-empty" : "iris";
+				const half = options.eyes_half ? "-half-closed" : "";
+				return `img/face/${options.facestyle}/${options.facevariant}/${iris}${half}.png`;
 			},
 			showfn(options) {
 				return options.show_face;
 			},
+			masksrcfn(options) {
+				return "img/face/masks/right.png"
+			}
 		},
 		"eyelids": {
 			show: true,
@@ -1202,7 +1196,7 @@ Renderer.CanvasModels.main = {
 			z: ZIndices.eyelids,
 
 			srcfn(options) {
-				const half = options.eyes_half ? "_halfclosed" : "";
+				const half = options.eyes_half ? "-half-closed" : "";
 				return `img/face/${options.facestyle}/${options.facevariant}/eyelids${half}.png`;
 			},
 			animationfn(options) {
@@ -1213,7 +1207,7 @@ Renderer.CanvasModels.main = {
 			z: ZIndices.lashes,
 
 			srcfn(options) {
-				const half = options.eyes_half ? "_halfclosed" : "";
+				const half = options.eyes_half ? "-half-closed" : "";
 				return `img/face/${options.facestyle}/${options.facevariant}/lashes${half}.png`;
 			},
 			showfn(options) {
@@ -1228,8 +1222,8 @@ Renderer.CanvasModels.main = {
 			z: ZIndices.eyelids,
 
 			srcfn(options) {
-				const half = options.eyes_half ? "_halfclosed" : "";
-				return `img/face/${options.facestyle}/${options.facevariant}/makeup/eyeshadows${half}.png`;
+				const half = options.eyes_half ? "-half-closed" : "";
+				return `img/face/${options.facestyle}/${options.facevariant}/makeup/eyeshadow${half}.png`;
 			},
 			animationfn(options) {
 				return options.blink_animation;
@@ -1243,7 +1237,7 @@ Renderer.CanvasModels.main = {
 			z: ZIndices.lashes,
 
 			srcfn(options) {
-				const half = options.eyes_half ? "_halfclosed" : "";
+				const half = options.eyes_half ? "-half-closed" : "";
 				return `img/face/${options.facestyle}/${options.facevariant}/makeup/mascara${half}.png`;
 			},
 			animationfn(options) {
@@ -1258,7 +1252,7 @@ Renderer.CanvasModels.main = {
 			z: ZIndices.brow,
 
 			srcfn(options) {
-				return `img/face/${options.facestyle}/${options.facevariant}/brow${options.brows}.png`;
+				return `img/face/${options.facestyle}/${options.facevariant}/brow-${options.brows}.png`;
 			},
 			zfn(options) {
 				return options.brows_position === "back" ? ZIndices.backbrow : ZIndices.brow;
@@ -1272,7 +1266,7 @@ Renderer.CanvasModels.main = {
 			z: ZIndices.mouth,
 
 			srcfn(options) {
-				return `img/face/${options.facestyle}/${options.facevariant}/mouth${options.mouth}.png`;
+				return `img/face/${options.facestyle}/mouth-${options.mouth}.png`;
 			},
 			showfn(options) {
 				return options.show_face && options.mouth !== "none";
@@ -1283,7 +1277,7 @@ Renderer.CanvasModels.main = {
 			z: ZIndices.mouth,
 
 			srcfn(options) {
-				return `img/face/${options.facestyle}/${options.facevariant}/makeup/lipstick_${options.mouth}.png`;
+				return `img/face/${options.facestyle}/makeup/lipstick-${options.mouth}.png`;
 			},
 			showfn(options) {
 				return options.show_face && !!options.lipstick_colour;
@@ -1294,7 +1288,7 @@ Renderer.CanvasModels.main = {
 			z: ZIndices.blush,
 
 			srcfn(options) {
-				return `img/face/${options.facestyle}/${options.facevariant}/blush${options.blush}.png`;
+				return `img/face/${options.facestyle}/blush${options.blush}.png`;
 			},
 			showfn(options) {
 				return options.show_face && options.blush > 0;
@@ -1305,7 +1299,7 @@ Renderer.CanvasModels.main = {
 			animation: "idle",
 
 			srcfn(options) {
-				return `img/face/${options.facestyle}/${options.facevariant}/tear${options.tears}.png`;
+				return `img/face/${options.facestyle}/tear${options.tears}.png`;
 			},
 			showfn(options) {
 				return options.show_face && options.tears > 0;
@@ -4054,9 +4048,9 @@ function isPartEnabled(type) {
 window.isPartEnabled = isPartEnabled;
 
 /**
- * 
- * @param {TransformationKeys} type 
- * @param {TransformationParts} part 
+ *
+ * @param {TransformationKeys} type
+ * @param {TransformationParts} part
  * @returns {boolean}
  */
 function isTransformationPartEnabled(type, part) {
