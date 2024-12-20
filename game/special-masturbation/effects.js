@@ -2310,7 +2310,10 @@ function masturbationEffectsArms(
 		case "mvaginastop":
 			clearAction("mrest");
 			V[arm + "arm"] = 0;
-			V.fingersInVagina = 0;
+			if (V[otherArm + "arm"] !== "mvagina") {
+				V.fingersInVagina = 0;
+				V.vaginause = 0;
+			}
 			if (doubleAction) {
 				V[otherArm + "arm"] = 0;
 				if (V.vaginause === "mfingers") V.vaginause = 0;
