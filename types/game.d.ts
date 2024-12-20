@@ -170,6 +170,7 @@ declare module "twine-sugarcube" {
 			clothes: FilterMap[];
 			lipstick: FilterMap[];
 			condom: FilterMap[];
+			blusher: FilterMap[];
 			mascara: FilterMap[];
 			eyeshadow: FilterMap[];
 			eyes: FilterMap[];
@@ -178,6 +179,7 @@ declare module "twine-sugarcube" {
 			clothes_default: Partial<CompositeLayerSpec>;
 			lipstick_default: Partial<CompositeLayerSpec>;
 			condom_default: Partial<CompositeLayerSpec>;
+			blusher_default: Partial<CompositeLayerSpec>;
 			mascara_default: Partial<CompositeLayerSpec>;
 			eyeshadow_default: Partial<CompositeLayerSpec>;
 			eyes_default: Partial<CompositeLayerSpec>;
@@ -186,6 +188,9 @@ declare module "twine-sugarcube" {
 				[x: string]: FilterMap;
 			};
 			lipstick_map: {
+				[x: string]: FilterMap;
+			};
+			blusher_map: {
 				[x: string]: FilterMap;
 			};
 			condom_map: {

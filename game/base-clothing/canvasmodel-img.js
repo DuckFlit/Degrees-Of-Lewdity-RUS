@@ -17,6 +17,9 @@ DefineMacro("modelprepare-player-body", function () {
 	if (V.makeup.lipstick != 0) {
 		T.modeloptions.lipstick_colour = V.makeup.lipstick;
 	}
+	if (V.makeup.blusher != 0) {
+		T.modeloptions.blusher_colour = V.makeup.blusher;
+	}
 
 	if (V.possessed) {
 		T.modeloptions.left_eye = ["haunt", "despair"].includes(V.wraith.state) ? "red possessed" : "blue possessed";
