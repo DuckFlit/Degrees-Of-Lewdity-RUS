@@ -661,14 +661,40 @@ const statChange = (() => {
 				case 4:
 					insecurity("penis_big", amount);
 					return statDisplay.ginsecurity("penis_big");
+				case 3:
+					if (V.player.gender !== "m") {
+						insecurity("penis_big", amount);
+						return statDisplay.ginsecurity("penis_big");
+					}
+					break;
 				case 1:
 					insecurity("penis_small", amount);
 					return statDisplay.ginsecurity("penis_small");
 				case 0:
+					insecurity("penis_small", Math.floor(amount * 1.5));
+					return statDisplay.ginsecurity("penis_small");
 				case -1:
+					insecurity("penis_small", Math.floor(amount * 2));
+					return statDisplay.ginsecurity("penis_small");
 				case -2:
-					insecurity("penis_tiny", amount);
-					return statDisplay.ginsecurity("penis_tiny");
+					insecurity("penis_small", Math.floor(amount * 2.5));
+					return statDisplay.ginsecurity("penis_small");
+			}
+		}
+		return "";
+	}
+
+	function gainBreastInsecurity(amount = 5) {
+		if (V.statFreeze) return "";
+		if (isNaN(amount)) paramError("gainBreastInsecurity", "amount", amount, "Expected a number.");
+		amount = Number(amount);
+		if (amount) {
+			if (V.player.breastsize >= 8) {
+				insecurity("breasts_big", amount);
+				return statDisplay.ginsecurity("breasts_big");
+			} else {
+				insecurity("breasts_small", Math.floor(amount));
+				return statDisplay.ginsecurity("breasts_small");
 			}
 		}
 		return "";
@@ -677,57 +703,54 @@ const statChange = (() => {
 	function insecurity(type, amount) {
 		if (V.statFreeze) return;
 		if (isNaN(amount)) paramError("insecurity", "amount", amount, "Expected a number.");
-		if (!["penis_tiny", "penis_small", "penis_big", "breasts_tiny", "breasts_small", "breasts_big", "pregnancy"].includes(type)) {
-			paramError(
-				"insecurity",
-				"type",
-				type,
-				'Expected values include "penis_tiny", "penis_small", "penis_big", "breasts_tiny", "breasts_small", "breasts_big", "pregnancy"'
-			);
+		if (!["penis_small", "penis_big", "breasts_small", "breasts_big", "pregnancy"].includes(type)) {
+			paramError("insecurity", "type", type, 'Expected values include "penis_small", "penis_big", "breasts_small", "breasts_big", "pregnancy"');
 			return;
 		}
 		amount = Number(amount);
 		if (amount) {
+			// Male players always gain insecurity when breast size is above 0
+			if (V.player.gender === "m" && type === "breasts_small") type = "breasts_big";
+
 			const insecurityPossible = {
-				penis_tiny: V.player.penisExist && V.player.penissize <= 0,
-				penis_small: V.player.penisExist && V.player.penissize === 1,
-				penis_big: V.player.penisExist && V.player.penissize >= 4,
-				breasts_tiny: V.player.gender !== "m",
-				breasts_small: true,
-				breasts_big: true,
+				penis_small: V.player.penisExist && V.player.penissize <= 1,
+				penis_big: V.player.penisExist && V.player.penissize >= (V.player.gender === "m" ? 4 : 3),
+				breasts_small: V.player.gender === "f" && between(V.player.breastsize, 0, 4),
+				breasts_big: V.player.breastsize >= (V.player.gender === "m" ? 1 : 8),
 				pregnancy: playerBellySize() >= 8,
 			}[type];
 			const acceptance = V["acceptance_" + type];
 			let insecurity = V["insecurity_" + type];
-			if (acceptance < 1000 && insecurityPossible) {
+			if ((acceptance < 1000 && insecurityPossible) || amount < 0) {
 				insecurity = Math.clamp(insecurity + amount, 0, 1000);
-				switch (Math.floor(insecurity / 200)) {
-					case 5:
-						stress(3);
-						control(-3);
-						break;
-					case 4:
-						stress(3);
-						control(-2);
-						break;
-					case 3:
-						stress(2);
-						control(-2);
-						break;
-					case 2:
-						stress(2);
-						control(-1);
-						break;
-					case 1:
-						stress(1);
-						control(-1);
-						break;
-					case 0:
-						stress(1);
-						break;
-				}
 				V["insecurity_" + type] = insecurity;
+
 				if (amount > 0) {
+					switch (Math.floor(insecurity / 200)) {
+						case 5:
+							stress(3);
+							control(-3);
+							break;
+						case 4:
+							stress(3);
+							control(-2);
+							break;
+						case 3:
+							stress(2);
+							control(-2);
+							break;
+						case 2:
+							stress(2);
+							control(-1);
+							break;
+						case 1:
+							stress(1);
+							control(-1);
+							break;
+						case 0:
+							stress(1);
+							break;
+					}
 					// reduce acceptance by matching amount
 					V["acceptance_" + type] = Math.clamp(acceptance - amount, 0, 1000);
 				}
@@ -739,18 +762,19 @@ const statChange = (() => {
 	function acceptance(type, amount) {
 		if (V.statFreeze) return;
 		if (isNaN(amount)) paramError("acceptance", "amount", amount, "Expected a number.");
-		if (!["penis_tiny", "penis_small", "penis_big", "breasts_tiny", "breasts_small", "breasts_big", "pregnancy"].includes(type)) {
-			paramError(
-				"acceptance",
-				"type",
-				type,
-				'Expected values include "penis_tiny", "penis_small", "penis_big", "breasts_tiny", "breasts_small", "breasts_big", "pregnancy"'
-			);
+		if (!["penis_small", "penis_big", "breasts_small", "breasts_big", "pregnancy"].includes(type)) {
+			paramError("acceptance", "type", type, 'Expected values include "penis_small", "penis_big", "breasts_small", "breasts_big", "pregnancy"');
 			return;
 		}
 		amount = Number(amount);
 		if (amount) {
-			V["acceptance_" + type] = Math.clamp(V["acceptance_" + type] + amount * 6, 0, 1000);
+			// Male players always gain insecurity when breast size is above 0
+			if (V.player.gender === "m" && type === "breasts_small") type = "breasts_big";
+			// eslint-disable-next-line prettier/prettier
+			const insecurityMod = amount > 0 ? (Math.ceil(V["insecurity_" + type] / 200) + 1) : 1;
+
+			// eslint-disable-next-line prettier/prettier
+			V["acceptance_" + type] = Math.clamp(V["acceptance_" + type] + (amount * insecurityMod), 0, 1000);
 		}
 	}
 	DefineMacro("acceptance", acceptance);
@@ -765,13 +789,14 @@ const statChange = (() => {
 				case 4:
 					type = "penis_big";
 					break;
-				case 1:
-					type = "penis_small";
+				case 3:
+					if (V.player.gender !== "m") type = "penis_big";
 					break;
+				case 1:
 				case 0:
 				case -1:
 				case -2:
-					type = "penis_tiny";
+					type = "penis_small";
 					break;
 			}
 			if (type && V["insecurity_" + type] > 0 && V["acceptance_" + type] < 1000) {
@@ -1273,6 +1298,7 @@ const statChange = (() => {
 		submissive,
 		subCheck,
 		gainPenisInsecurity,
+		gainBreastInsecurity,
 		insecurity,
 		acceptance,
 		gainPenisAcceptance,
