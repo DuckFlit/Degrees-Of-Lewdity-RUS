@@ -828,6 +828,7 @@ function moneyStatsProcess(stats) {
 					case "schoolProject":
 					case "schoolCondoms":
 					case "schoolStimulant":
+					case "schoolPoolParty":
 						compressTo = "school";
 						break;
 					case "bus":

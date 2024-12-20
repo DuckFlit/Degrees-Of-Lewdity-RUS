@@ -1706,7 +1706,7 @@ function dailySchoolEffects() {
 		delete V.temple_spar;
 	}
 
-	if (V.weekly.schoolNightPoolParty == "intro") V.weekly.schoolNightPoolParty = false;
+	if (V.weekly.schoolNightPoolParty === "intro") V.weekly.schoolNightPoolParty = false;
 
 	return fragment;
 }
