@@ -21,7 +21,7 @@
             <div class="recipe-text"><<tendingicon setup.plants[_food].icon>><<print _food.toLocaleUpperFirst().replace(/_/g," ")>></div>
             Number owned: <<print $plants[_food].amount>>
             <br>
-            Time needed to make: <<print setup.plants[_food].days>> minutes
+            Time needed to make: <<print setup.plants[_food].days>> minute<<if setup.plants[_food].days isnot 1>>s<</if>>
             <br>
             Quantity made: <<print setup.plants[_food].multiplier>> 
             <<if setup.plants[_food].multiplier gte 2>>
@@ -29,7 +29,7 @@
             <</if>>
             <br>
             Ingredients (number available):
-            <<unset _ingredients_available>>
+            <<unset _ingredients_available>><<unset _ingredients_blocked>>
             <<for _e to 0; _e lt setup.plants[_food].ingredients.length; _e++>>
                 <<set _ingredient to setup.plants[_food].ingredients[_e]>>
                 <<print _ingredient.toLocaleUpperFirst().replace(/_/g," ")>>
@@ -44,33 +44,29 @@
                     <<else>>
                         (<<print $plants[_ingredient].amount>>)
                     <</if>>
-                    <<if $bus is "orphanage_kitchen">>
-                        <<if _ingredients_supplied.includes(_ingredient) or _ingredients_exceptions.includes(_ingredient) and $plants[_ingredient].amount gte 1>>
-                            
-                        <<else>>
-                            <<set _ingredients_available to false>>
-                        <</if>>
-                    <<else>>
-                        <<if $plants[_ingredient].amount gte 1 or _ingredients_supplied.includes(_ingredient)>>
-
-                        <<else>>
-                            <<set _ingredients_available to false>>
-                        <</if>>
-                    <</if>>
+					<<if $plants[_ingredient].amount gte 1 or _ingredients_supplied.includes(_ingredient)>>
+						<<if $bus is "orphanage_kitchen" and !_ingredients_exceptions.includes(_ingredient) and !_ingredients_supplied.includes(_ingredient)>>
+							<<set _ingredients_blocked to true>>
+						<</if>>
+					<<else>>
+						<<set _ingredients_available to false>>
+					<</if>>
                 <<else>>
                     <span class="red">Problem detected.</span>
                 <</if>>
                 |
             <</for>>
-            <<if _ingredients_available isnot false>>
-                <<capture _food>>
-                    <br>
-                    <<if $tiredness gte C.tiredness.max>>
-                        <span class="purple">You're too tired to cook!</span>
-                    <<else>>
-                        <<link [[Make|$passage]]>><<make_recipe _food>><</link>>
-                    <</if>>
-                <</capture>>
+			<br>
+			<<if $tiredness gte C.tiredness.max>>
+				<span class="purple">You're too tired to cook!</span>
+			<<elseif _ingredients_available is false>>
+				<span class="purple">You do not have all the required ingredients.</span>
+			<<elseif _ingredients_blocked is true>>
+				<span class="purple">Some required ingredients are banned by Bailey.</span>
+			<<else>>
+				<<capture _food>>
+					<<link [[Make|$passage]]>><<make_recipe _food>><</link>>
+				<</capture>>
             <</if>>
             <<set _recipe_known to true>>
         </div>
