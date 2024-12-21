@@ -8034,7 +8034,7 @@ function initHandheld() {
 			index: 331,
 			name: "cheese and crackers",
 			name_cap: "Cheese and crackers",
-			variable: "cheese and crackern",
+			variable: "cheese and crackers",
 			state: 0,
 			state_base: 0,
 			warmth: 0,
