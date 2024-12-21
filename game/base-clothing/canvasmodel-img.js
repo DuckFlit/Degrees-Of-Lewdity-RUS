@@ -118,9 +118,7 @@ DefineMacro("modelprepare-player-body", function () {
 		*/
 
 	T.coverBreastsWithArm = false;
-	const leftArm = setup.clothes_all_slots.some(slot => ["left_cover", "clutch", "cover_both"].includes(V.worn[slot]?.holdPositionPosition))
-		? "cover"
-		: "idle";
+	const leftArm = setup.clothes_all_slots.some(slot => ["left_cover", "clutch", "cover_both"].includes(V.worn[slot]?.holdPosition)) ? "cover" : "idle";
 	const rightArm = setup.clothes_all_slots.some(slot => ["right_cover", "cover_both"].includes(V.worn[slot]?.holdPosition))
 		? "cover"
 		: (V.worn.handheld.name !== "naked" && !["left_cover", "idle"].includes(V.worn.handheld?.holdPosition)) ||

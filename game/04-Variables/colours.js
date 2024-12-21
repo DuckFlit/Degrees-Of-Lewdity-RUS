@@ -1412,6 +1412,15 @@ setup.colours.eyeshadow = [
 		},
 	},
 	{
+		variable: "light green",
+		name: "light green",
+		name_cap: "Light green",
+		csstext: "green",
+		canvasfilter: {
+			blend: "#7caf7c",
+		},
+	},
+	{
 		variable: "lime",
 		name: "lime",
 		name_cap: "Lime",

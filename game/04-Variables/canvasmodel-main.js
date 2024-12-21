@@ -796,8 +796,8 @@ Renderer.CanvasModels.main = {
 			options.shirt_fitted_right_move_src = check ? "img/clothes/masks/formfitting_right_move.png" : null;
 			options.shirt_fitted_left_move_src = check ? "img/clothes/masks/formfitting_left_move.png" : null;
 		} else if (soft) {
-			const upperCheck = !options.worn.upper.setup.outfitPrimary && !options.high_waist_suspenders && !options.belly_mask_clip_src;
-			const underUpperCheck = !options.worn.under_upper.setup.outfitPrimary && !options.belly_mask_clip_src;
+			const upperCheck = !options.worn.upper.setup.outfitPrimary && !options.worn.lower.setup.type.includes("covered") && !options.high_waist_suspenders && !options.belly_mask_clip_src;
+			const underUpperCheck = !options.worn.under_upper.setup.outfitPrimary && !options.worn.under_lower.setup.type.includes("covered") && !options.belly_mask_clip_src;
 			options.shirt_mask_clip_src = "img/clothes/masks/soft_clip.png";
 			options.shirt_fitted_right_move_src = "img/clothes/masks/soft_right_move.png";
 			options.shirt_fitted_left_move_src = "img/clothes/masks/soft_left_move.png";
@@ -805,8 +805,6 @@ Renderer.CanvasModels.main = {
 			options.lowerShadowMask.push(upperCheck ? "img/clothes/masks/soft_shadow.png" : null);
 			options.underLowerShadowMask.push(underUpperCheck ? "img/clothes/masks/soft_shadow.png" : null);
 			options.underLowerMask.push(underUpperCheck? "img/clothes/masks/soft_lower_clip.png" : null);
-			console.error(options.lowerShadowMask);
-			console.error(options.underLowerShadowMask);
 		}
 
 		if (options.lower_tucked && !options.worn.lower.setup.notuck && !options.worn.feet.setup.notuck) {
