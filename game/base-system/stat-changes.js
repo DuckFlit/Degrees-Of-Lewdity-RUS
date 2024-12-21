@@ -410,6 +410,8 @@ const statChange = (() => {
 				// science reduction
 				pain *= 1 - V.sciencetrait / 10;
 
+				if (V.drunk >= 360) pain *= Math.min(0.95, 0.95 - 0.1 * ((V.drunk - 360) / 640));
+
 				// Including masochism effect for all pain NG v2.7
 				if (V.masochism >= 100) {
 					pain *= 1 - V.masochism / 1200;
