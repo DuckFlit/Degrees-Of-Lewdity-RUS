@@ -2461,3 +2461,16 @@ function unableTakeVirginity(virginity) {
 	}
 }
 window.unableTakeVirginity = unableTakeVirginity;
+
+function canGiftFood(npc) {
+	let amount = 0;
+
+	Object.values(setup.plants).forEach(plants => {
+		if (plants.type === "food" && V.plants[plants.name] && V.plants[plants.name].amount > 0) {
+			amount++;
+		}
+	});
+
+	return V.daily.giftedFood[npc] === undefined && amount > 0;
+}
+window.canGiftFood = canGiftFood;
