@@ -215,7 +215,7 @@ class NpcCombatMapper {
 
 		options.filters.skin = NpcCombatMapper.getNpcSkinFilter(npc);
 
-		const penetrator = NpcCombatMapper.mapNpcToPenetratorOptions(npc, options);
+		const penetrator = NpcCombatMapper.mapNpcToPenetratorOptions(index, npc, options);
 		if (penetrator != null) {
 			options.penetrators.push(penetrator);
 
@@ -647,18 +647,19 @@ class NpcCombatMapper {
 	}
 
 	/**
+	 * @param {number} index
 	 * @param {Npc} npc
 	 * @param {NpcOptions} options
 	 * @returns {Penetrator?}
 	 */
-	static mapNpcToPenetratorOptions(npc, options) {
+	static mapNpcToPenetratorOptions(index, npc, options) {
 		/** @type {Penetrator} */
 		const penetrator = {
 			show: false,
 			type: NpcCombatMapper.getPenetratorType(npc),
 			colour: npc.skincolour,
 			target: combat.target.pc,
-			isEjaculating: combat.isNpcPenetratorEjaculating(npc),
+			isEjaculating: combat.isNpcPenetratorEjaculating(index, npc),
 			ejaculate: {
 				type: "sperm",
 			},

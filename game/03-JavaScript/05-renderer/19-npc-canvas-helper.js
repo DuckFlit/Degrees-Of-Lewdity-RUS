@@ -104,16 +104,6 @@ class NpcCanvasHelper {
 							return 20;
 					}
 				}
-				if (penetrator.position === "mouth" && penetrator.type === "human") {
-					switch (penetrator.state) {
-						case "entrance":
-							return -20;
-						case "imminent":
-							return -10;
-						default:
-							return 0;
-					}
-				}
 				return 0;
 			},
 		};
@@ -279,16 +269,6 @@ class NpcCanvasHelper {
 							return 20;
 					}
 				}
-				if (penetrator.position === "mouth" && penetrator.type === "human") {
-					switch (penetrator.state) {
-						case "entrance":
-							return -20;
-						case "imminent":
-							return -10;
-						default:
-							return 0;
-					}
-				}
 				return 0;
 			},
 			dyfn(options) {
@@ -302,6 +282,10 @@ class NpcCanvasHelper {
 				return 0;
 			},
 			filtersfn(options) {
+				const penetrator = options.penetrators[0];
+				if (penetrator.type === "feline") {
+					return ["penetrator"];
+				}
 				if (options.category !== "shadow") {
 					return [];
 				}
