@@ -16,6 +16,8 @@ declare module "twine-sugarcube" {
 declare global {
 	export type HumanoidTypes =
 		| "human"
+		| "dogboy"
+		| "doggirl"
 		| "wolfboy"
 		| "wolfgirl"
 		| "bearboy"

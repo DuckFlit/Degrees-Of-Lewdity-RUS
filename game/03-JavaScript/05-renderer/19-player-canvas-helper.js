@@ -534,9 +534,9 @@ class PlayerCanvasHelper {
 	static isBestialHandjob(options, side) {
 		switch (side) {
 			case "front":
-				return options.position === "missionary" ? this.isRightBestialHandjob() : this.isLeftBestialHandjob();
+				return options.position === "missionary" ? PlayerCanvasHelper.isRightBestialHandjob() : PlayerCanvasHelper.isLeftBestialHandjob();
 			case "back":
-				return options.position === "missionary" ? this.isLeftBestialHandjob() : this.isRightBestialHandjob();
+				return options.position === "missionary" ? PlayerCanvasHelper.isLeftBestialHandjob() : PlayerCanvasHelper.isRightBestialHandjob();
 			default:
 				return false;
 		}
@@ -552,7 +552,7 @@ class PlayerCanvasHelper {
 		}
 		const target = V.lefttarget;
 		const npc = V.NPCList[target];
-		return ["pig", "boar"].includes(npc.type);
+		return ["pig", "boar", "pigboy", "boarboy"].includes(npc.type);
 	}
 
 	/**
@@ -565,7 +565,7 @@ class PlayerCanvasHelper {
 		}
 		const target = V.righttarget;
 		const npc = V.NPCList[target];
-		return ["pig", "boar"].includes(npc.type);
+		return ["pig", "boar", "pigboy", "boarboy"].includes(npc.type);
 	}
 }
 window.PlayerCanvasHelper = PlayerCanvasHelper;

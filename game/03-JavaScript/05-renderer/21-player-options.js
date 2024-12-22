@@ -2375,6 +2375,9 @@ class PlayerCombatMapper {
 							type: sanitise(type),
 						};
 					}
+					if (bodywriting.writing === "cross") {
+						return null;
+					}
 					if (bodywriting.type === "object") {
 						return {
 							show: true,
