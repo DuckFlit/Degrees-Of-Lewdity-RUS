@@ -592,14 +592,17 @@
 
 <<widget "faceStyleOptions">>
 	Your currently selected style is:
-	<<listbox "$facestyle" autoselect>>
+	<<listbox "_facestyle" autoselect>>
 		<<optionsfrom setup.faceStyleOptions>>
 	<</listbox>>
 	<br>
 	<<link "Apply">>
-		<<set $facevariant to "default">>
-		<<replace "#visualsFaceVariantRadios">><<faceVariantOptions>><</replace>>
-		<<updatesidebarimg true>>
+		<<if $facestyle isnot _facestyle>>
+			<<set $facestyle to _facestyle>>
+			<<set $facevariant to "default">>
+			<<replace "#visualsFaceVariantRadios">><<faceVariantOptions>><</replace>>
+			<<updatesidebarimg true>>
+		<</if>>
 	<</link>>
 <</widget>>
 
@@ -610,9 +613,11 @@
 			<<optionsfrom setup.faceVariantOptions[$facestyle]>>
 		<</listbox>>
 		<br>
-		<<link "Apply">>
-			<<updatesidebarimg true>>
-		<</link>>
+		<<run $(() => {
+			$("#listbox-facevariant").on("change", () => {
+				Wikifier.wikifyEval('<<updatesidebarimg true>>');
+			});
+		})>>
 	<<else>>
 		There are
 		<mouse class = "gold tooltip-small" style="border-bottom-color:white">
