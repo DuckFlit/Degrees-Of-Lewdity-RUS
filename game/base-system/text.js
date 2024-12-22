@@ -562,20 +562,6 @@ statDisplay.create("gggmaths", () => {
 	return result;
 });
 
-statDisplay.create("lhousekeeping", () => statDisplay.statChange("Housekeeping", -1, "red"));
-statDisplay.create("ghousekeeping", () => {
-	const result = statDisplay.statChange("Housekeeping", 1, "green");
-	return result;
-});
-statDisplay.create("gghousekeeping", () => {
-	const result = statDisplay.statChange("Housekeeping", 2, "green");
-	return result;
-});
-statDisplay.create("ggghousekeeping", () => {
-	const result = statDisplay.statChange("Housekeeping", 3, "green");
-	return result;
-});
-
 statDisplay.create("lenglish", () => statDisplay.statChange("English", -1, "red"));
 statDisplay.create("genglish", () => {
 	const result = statDisplay.statChange("English", 1, "green");
@@ -616,11 +602,11 @@ statDisplay.create("ggghistory", () => {
 	return result;
 });
 
+statDisplay.create("lhousekeeping", () => statDisplay.statChange("Housekeeping", -1, "red"));
 statDisplay.create("ghousekeeping", (amount, silent = false) => {
-	if (V.statsdisable === "t") return "";
 	if (amount === undefined || V.housekeeping < amount) {
 		return statDisplay.statChange("Housekeeping", 1, "green");
-	} else if (silent === "silent") {
+	} else if (silent === "silent" || V.statdisable === "t") {
 		return "";
 	} else if (V.housekeeping >= amount) {
 		return " You're too skilled for this to improve your housekeeping.";
