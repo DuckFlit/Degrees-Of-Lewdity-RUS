@@ -508,7 +508,7 @@ function weekPassed() {
 		if (V.brothelVending.weeksEmpty >= 4) V.brothelVending.status = "sold";
 	}
 
-	supermarket_weekly();
+	supermarketWeekly();
 
 	statChange.worldCorruption("soft", V.world_corruption_hard);
 
@@ -1609,7 +1609,12 @@ function dailySchoolEffects() {
 	if (Time.isSchoolDay(Time.yesterday) && V.location !== "prison") {
 		const attended = Object.keys(V.daily.school.attended).length;
 		V.schoolLessonsMissed.science += !Number(V.daily.school.attended.science);
-		V.schoolLessonsMissed.maths += !Number(V.daily.school.attended.maths);
+		if ([4, 6].includes(Time.weekDay)) {
+			// Housekeeping classes take over days 3 and 5, added one to both since this occurs on the next day
+			V.schoolLessonsMissed.housekeeping += !Number(V.daily.school.attended.housekeeping);
+		} else {
+			V.schoolLessonsMissed.maths += !Number(V.daily.school.attended.maths);
+		}
 		V.schoolLessonsMissed.english += !Number(V.daily.school.attended.english);
 		V.schoolLessonsMissed.history += !Number(V.daily.school.attended.history);
 		V.schoolLessonsMissed.swimming += !Number(V.daily.school.attended.swimming);
@@ -2083,14 +2088,27 @@ function getTimeString(...args) {
 }
 window.getTimeString = getTimeString;
 
-/*Determines and replenishes stock at supermarket*/
-function supermarket_weekly() {
-	const food_keys = Object.keys(setup.plants);
-	for (let i = 0; i < food_keys.length; i++) {
-		const current_food = food_keys[i];
-		if (setup.plants[current_food].name == "cocoa_powder" || setup.plants[current_food].name == "salt" || setup.plants[current_food].name == "sugar" || setup.plants[current_food].name == "vegetable_oil" || setup.plants[current_food].type == "meat" || setup.plants[current_food].type == "fish" || setup.plants[current_food].name == "red_wine" || setup.plants[current_food].name == "white_wine" || setup.plants[current_food].name == "oats" || setup.plants[current_food].name == "date" || setup.plants[current_food].name == "cherry" || setup.plants[current_food].name == "lime") {
-			V.plants[current_food].supermarket = Math.trunc(3000 / setup.plants[current_food].plant_cost);
+/* Determines and replenishes stock at supermarket */
+function supermarketWeekly() {
+	const foodKeys = Object.keys(setup.plants);
+	for (let i = 0; i < foodKeys.length; i++) {
+		const currentFood = foodKeys[i];
+		if (
+			setup.plants[currentFood].name === "cocoa_powder" ||
+			setup.plants[currentFood].name === "salt" ||
+			setup.plants[currentFood].name === "sugar" ||
+			setup.plants[currentFood].name === "vegetable_oil" ||
+			setup.plants[currentFood].type === "meat" ||
+			setup.plants[currentFood].type === "fish" ||
+			setup.plants[currentFood].name === "red_wine" ||
+			setup.plants[currentFood].name === "white_wine" ||
+			setup.plants[currentFood].name === "oats" ||
+			setup.plants[currentFood].name === "date" ||
+			setup.plants[currentFood].name === "cherry" ||
+			setup.plants[currentFood].name === "lime"
+		) {
+			V.plants[currentFood].supermarket = Math.trunc(3000 / setup.plants[currentFood].plant_cost);
 		}
 	}
 }
-DefineMacro("supermarket_weekly", supermarket_weekly);
+DefineMacro("supermarketWeekly", supermarketWeekly);

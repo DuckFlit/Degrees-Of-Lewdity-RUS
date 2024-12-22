@@ -849,6 +849,7 @@ function moneyStatsProcess(stats) {
 					case "tattoo":
 					case "furniture":
 					case "cosmetics":
+					case "supermarket":
 						compressTo = "shopping";
 						break;
 					case "flatsCanal":
