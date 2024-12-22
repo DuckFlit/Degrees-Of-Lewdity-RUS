@@ -522,14 +522,15 @@ class CombatSystem {
 	}
 
 	/**
+	 * @param {number} index
 	 * @param {Npc} npc
 	 * @returns {boolean}
 	 */
-	isNpcPenetratorEjaculating(npc) {
-		if (wearingCondom(npc.index || 0)) {
+	isNpcPenetratorEjaculating(index, npc) {
+		if (wearingCondom(index)) {
 			return false;
 		}
-		if (npcHasStrapon(npc.index || 0)) {
+		if (npcHasStrapon(index)) {
 			return false;
 		}
 		const arousalMaxed = V.enemyarousal >= V.enemyarousalmax;
