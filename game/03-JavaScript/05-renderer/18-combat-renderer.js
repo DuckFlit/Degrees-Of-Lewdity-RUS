@@ -75,6 +75,8 @@ class CombatRenderer {
 			"plant",
 			"wolfboy",
 			"wolfgirl",
+			"dogboy",
+			"doggirl",
 			"bearboy",
 			"beargirl",
 			"pigboy",
@@ -252,9 +254,13 @@ class CombatRenderer {
 			case "catgirl":
 				return "cat";
 			case "pigboy":
-				return "boar";
+				return "pig";
 			case "piggirl":
 				return "pig";
+			case "dogboy":
+				return "dog";
+			case "doggirl":
+				return "dog";
 			case "wolfboy":
 				return "wolf";
 			case "wolfgirl":

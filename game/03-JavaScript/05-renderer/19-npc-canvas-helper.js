@@ -180,7 +180,7 @@ class NpcCanvasHelper {
 				if (["horse", "centaur"].includes(options.type)) {
 					return `${options.src}/penetrators/${penetrator.type}/${penetrator.state}.png`;
 				}
-				if (options.category === "shadow" && penetrator.position === "mouth") {
+				if (["knotted", "human"].includes(penetrator.type) && penetrator.position === "mouth") {
 					return `${options.src}/penetrators/${penetrator.type}/${penetrator.position}-${penetrator.state}.png`;
 				}
 				return `${options.src}/penetrators/${penetrator.type}/${penetrator.position}.png`;
@@ -328,7 +328,7 @@ class NpcCanvasHelper {
 				if (["horse", "centaur"].includes(options.type)) {
 					return `${options.src}/penetrators/${penetrator.type}/${penetrator.state}-${penetrator.ejaculate.type}.png`;
 				}
-				if (options.category === "shadow" && penetrator.position === "mouth") {
+				if (["knotted", "human"].includes(penetrator.type) && penetrator.position === "mouth") {
 					return `${options.src}/penetrators/${penetrator.type}/${penetrator.position}-${penetrator.state}-${penetrator.ejaculate.type}.png`;
 				}
 				return `${options.src}/penetrators/${penetrator.type}/${penetrator.position}-${penetrator.ejaculate.type}.png`;
