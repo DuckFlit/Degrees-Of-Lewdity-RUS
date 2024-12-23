@@ -6499,9 +6499,9 @@ function initHandheld() {
 		},
 		{
 			index: 265,
-			name: "fizzy drink",
-			name_cap: "Fizzy drink",
-			variable: "pink drink",
+			name: "drink",
+			name_cap: "Drink",
+			variable: "odd drink",
 			state: 0,
 			state_base: 0,
 			warmth: 0,
@@ -6510,7 +6510,10 @@ function initHandheld() {
 			colour: 0,
 			colour_options: [],
 			colour_sidebar: 0,
-			type: ["prop"],
+			pattern_options: ["fizzy", "ghostbrew", "wolfbrew"],
+			pattern_caption: true,
+			pattern: 0,
+			type: ["prop", "recipe"],
 			shop: [],
 			gender: "n",
 			description: "May have adverse side effects.",
@@ -8767,7 +8770,6 @@ function initHandheld() {
 			accessory_colour_sidebar: 0,
 			coverImage: 0,
 		},
-
 		{
 			index: 362,
 			name: "poppy",
