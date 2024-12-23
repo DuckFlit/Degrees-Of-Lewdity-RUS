@@ -143,7 +143,7 @@ Renderer.defaultListener = {
 };
 
 function refreshCanvas(model) {
-	const canvasModel = Renderer.locateModel(model, "sidebar");
+	const canvasModel = Renderer.locateModel("lighting", "sidebar");
 	if (canvasModel.canvas) {
 		Renderer.invalidateLayerCaches(canvasModel.layerList);
 		canvasModel.redraw();
