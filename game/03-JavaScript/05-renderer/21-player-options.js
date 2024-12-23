@@ -1356,6 +1356,9 @@ class PlayerCombatMapper {
 			if (PlayerCombatMapper.getTentacleByShaft("rightleg") !== null && V.rightleg === "grappled") {
 				return "up";
 			}
+			if ((typeof V.vaginastate === "string" && ["othermouth", "othermouthentrance", "othermouthimminent"].includes(V.vaginastate)) || V.vaginause === "othermouth") {
+				return "up";
+			}
 		}
 		if (V.feetuse === "penis" || V.feetstate === "tentacle") {
 			return "up";
@@ -1397,6 +1400,9 @@ class PlayerCombatMapper {
 				return "up";
 			}
 			if (PlayerCombatMapper.getTentacleByShaft("leftleg") !== null && V.leftleg === "grappled") {
+				return "up";
+			}
+			if ((typeof V.vaginastate === "string" && ["othermouth", "othermouthentrance", "othermouthimminent"].includes(V.vaginastate)) || V.vaginause === "othermouth") {
 				return "up";
 			}
 		}
