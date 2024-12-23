@@ -99,6 +99,24 @@ class CombatEditor {
 			});
 		}
 
+		// X
+		CombatEditor.CreateNumericControl(container, "cr-layer-x", "X: ", layer.dx, (control, layer) => {
+			if (!Number.isFinite(control.valueAsNumber)) {
+				control.value = layer.dx?.toString() || "0";
+				return;
+			}
+			layer.dx = control.valueAsNumber;
+		});
+
+		// Y
+		CombatEditor.CreateNumericControl(container, "cr-layer-y", "Y: ", layer.dy, (control, layer) => {
+			if (!Number.isFinite(control.valueAsNumber)) {
+				control.value = layer.dy?.toString() || "0";
+				return;
+			}
+			layer.dy = control.valueAsNumber;
+		});
+
 		// Z
 		CombatEditor.CreateNumericControl(container, "cr-layer-z", "Z: ", layer.z, (control, layer) => {
 			if (!Number.isFinite(control.valueAsNumber)) {
@@ -117,14 +135,14 @@ class CombatEditor {
 
 		// Blend mode
 		if (typeof layer.blendMode === "string") {
-			CombatEditor.CreateTextboxControl(container, "cr-layer-blend", "Blend mode: ", layer.blendMode, (control, layer) => {
+			CombatEditor.CreateTextboxControl(container, "cr-layer-blendmode", "Blend mode: ", layer.blendMode, (control, layer) => {
 				// @ts-ignore - Dev-User input
 				layer.blendMode = control.value;
 			});
 		}
 
 		// Alpha
-		CombatEditor.CreateNumericControl(container, "cr-layer-blend", "Alpha: ", layer.alpha, (control, layer) => {
+		CombatEditor.CreateNumericControl(container, "cr-layer-alpha", "Alpha: ", layer.alpha, (control, layer) => {
 			if (!Number.isFinite(control.valueAsNumber)) {
 				control.value = layer.alpha?.toString() || "0";
 				return;
@@ -139,9 +157,11 @@ class CombatEditor {
 		container.append(filterSpan);
 
 		// Animation key
-		const animSpan = document.createElement("span");
-		animSpan.textContent = "Animation: " + layer.animation;
-		container.append(animSpan);
+		if (typeof layer.animation === "string") {
+			CombatEditor.CreateTextboxControl(container, "cr-layer-animation", "Animation*: ", layer.animation, (control, layer) => {
+				layer.animation = control.value;
+			});
+		}
 
 		// Mask src
 		if (typeof layer.masksrc === "string") {
