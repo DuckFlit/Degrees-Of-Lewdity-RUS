@@ -2408,6 +2408,12 @@ Renderer.CanvasModels.main = {
 					&& isPartEnabled(options.bird_eyes_type)
 					&& !options.hideAll;
 			},
+			masksrcfn(options) {
+				return {
+					path: `img/face/${options.facestyle}/${options.facevariant}/iris.png`,
+					convert: true,
+				};
+			}
 		},
 		"bird_malar": {
 			filters: ["hair"],
@@ -3458,6 +3464,9 @@ Renderer.CanvasModels.main = {
 					&& options.worn.under_lower.setup.penis_img === 1
 					&& calculatePenisBulge() > 0;
 			},
+			masksrcfn(options) {
+				return options.underLowerMask;
+			},
 		},
 		"under_lower_penis_acc": {
 			z: ZIndices.under_lower_top,
@@ -3478,6 +3487,9 @@ Renderer.CanvasModels.main = {
 					&& options.worn.under_lower.setup.penis_acc_img === 1
 					&& options.worn.under_lower.setup.accessory === 1
 					&& calculatePenisBulge() > 0;
+			},
+			masksrcfn(options) {
+				return options.underLowerMask;
 			},
 		},
 		/***

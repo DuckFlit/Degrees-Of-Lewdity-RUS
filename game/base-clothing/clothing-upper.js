@@ -1936,6 +1936,7 @@ function initUpper() {
 			variable: "gingham",
 			combat: {
 				reference: "blouse",
+				hasBreasts: true,
 			},
 			integrity: 140,
 			integrity_max: 140,
