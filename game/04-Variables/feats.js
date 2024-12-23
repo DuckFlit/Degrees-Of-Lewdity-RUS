@@ -186,6 +186,27 @@ setup.feats = {
 		series: "distinction",
 		filter: ["All", "General"],
 	},
+	"Chef de Tournant": {
+		title: "Chef de Tournant",
+		desc: "Learn recipes.",
+		difficulty: 1,
+		series: "chef",
+		filter: ["All", "General"],
+	},
+	"Chef de Partie": {
+		title: "Chef de Partie",
+		desc: "Learn recipes.",
+		difficulty: 2,
+		series: "chef",
+		filter: ["All", "General"],
+	},
+	"Sous Chef": {
+		title: "Sous Chef",
+		desc: "Learn recipes.",
+		difficulty: 3,
+		series: "chef",
+		filter: ["All", "General"],
+	},
 	"Science Fair Winner": {
 		title: "Science Fair Winner",
 		desc: "Blind them with science.",
