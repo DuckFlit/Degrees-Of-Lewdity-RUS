@@ -465,9 +465,17 @@
 
 /* temporarily equips a handheld "prop" for visual effect in scenes. props can be cleared earlier in a scene via <<handheldon>> or <<clotheson>>, and are cleared in <<endevent>> */
 <<widget "wearProp">>
-	<<set _colour to _args[1] || 0>>
-	<<set _pattern to _args[2] || 0>>
-	<<set _propIndex to setup.clothes.handheld.findIndex(item => item.variable is _args[0]) || 0>>
+	<<if _args[0].includes('|')>>
+		<<set _prop to _args[0].split('|')>>
+		<<set _var to _prop[0]>>
+		<<set _colour to _prop[1] || 0>>
+		<<set _pattern to _prop[2] || 0>>
+	<<else>>
+		<<set _var to _args[0]>>
+		<<set _colour to _args[1] || 0>>
+		<<set _pattern to _args[2] || 0>>
+	<</if>>
+	<<set _propIndex to (setup.clothes.handheld.findIndex(item => item.variable is _var) || 0)>>
 	<<if $worn.handheld.type.includes("prop")>>
 		<<handheldon>>
 	<</if>>
