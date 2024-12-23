@@ -15,7 +15,7 @@ Weather.WeatherGeneration = (() => {
 			T.currentWeather = interpolateWeather(date);
 		}
 
-		if (Weather.activeRenderer.loaded.value && T.currentWeather.name !== currentWeather) {
+		if (Weather.activeRenderer?.loaded.value && T.currentWeather.name !== currentWeather) {
 			$.event.trigger(":onWeatherChange");
 		}
 		return T.currentWeather;
