@@ -11,9 +11,9 @@ const StartConfig = {
 	debug: false,
 	enableImages: true,
 	enableLinkNumberify: true,
-	version: "0.5.3.1",
+	version: "0.5.3.2",
 	versionName: `"Houses Kept, Virginity Sold" edition`,
-	sneaky: true,
+	sneaky: false,
 	socialMediaEnabled: true,
 	sourceLinkEnabled: false,
 };
