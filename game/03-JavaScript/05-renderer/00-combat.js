@@ -546,6 +546,9 @@ class CombatSystem {
 			return false;
 		}
 		const npc = V.NPCList[index];
+		if (npc == null) {
+			return false;
+		}
 		return npc.active != null;
 	}
 

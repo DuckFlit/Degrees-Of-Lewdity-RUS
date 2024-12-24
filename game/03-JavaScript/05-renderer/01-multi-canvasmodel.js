@@ -140,10 +140,10 @@ Macro.add("setup-multi-canvas", {
 		const slot = this.args[2];
 		MultiCanvasModel.ensureStorage();
 		if (key in T.multiCombatModels) {
-			Errors.report("Given key for a MultiCanvasModel is already in use.", {
+			Errors.report("MultiCanvasModel already exists: Likely due to two animateCombat uses in the same passage", {
 				key,
+				stack: Utils.GetStack(),
 			});
-			return;
 		}
 		const model = MultiCanvasModel.create(key, id, slot);
 		this.output.append(model.canvas.canvas);

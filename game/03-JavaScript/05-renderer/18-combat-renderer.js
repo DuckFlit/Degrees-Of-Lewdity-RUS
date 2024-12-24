@@ -506,6 +506,10 @@ class CombatRenderer {
 		}
 		const setupCategory = setup.clothes[slot];
 		const defaults = setupCategory == null ? CombatRenderer.emptyClothing : setupCategory[active.index];
+		if (defaults == null) {
+			// Player likely used a modded item ported back to vanilla.
+			return CombatRenderer.emptyClothing;
+		}
 		const combat = Object.assign({}, defaults.combat, active.combat);
 		const result = Object.assign({}, defaults, active);
 		result.combat = combat;
