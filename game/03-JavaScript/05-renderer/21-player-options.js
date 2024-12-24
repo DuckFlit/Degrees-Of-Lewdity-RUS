@@ -2292,6 +2292,28 @@ class PlayerCombatMapper {
 		 * @param {Bodywriting} bodywriting
 		 * @returns {BodywritingOption?}
 		 */
+		function complexText(id, bodywriting) {
+			if (bodywriting.type !== "text" && bodywriting.special !== "islander") {
+				return null;
+			}
+			if (["up", "down"].includes(options.legBackPosition)) {
+				id += "-" + options.legBackPosition;
+			}
+			if (bodywriting.arrow === 1) {
+				id += "-arrow";
+			}
+			return {
+				show: true,
+				area: "text",
+				type: sanitise(id),
+			};
+		}
+
+		/**
+		 * @param {string} id
+		 * @param {Bodywriting} bodywriting
+		 * @returns {BodywritingOption?}
+		 */
 		function hidden(id, bodywriting) {
 			return {
 				show: false,
@@ -2370,36 +2392,10 @@ class PlayerCombatMapper {
 					}
 					return null;
 				});
-				options.bodywriting.frontThigh = getState("right_thigh", (id, bodywriting) => {
-					if (bodywriting.type === "text" || bodywriting.special === "islander") {
-						let type = id;
-						if (["up", "down"].includes(options.legBackPosition)) {
-							type += "-" + options.legBackPosition;
-						}
-						if (bodywriting.arrow === 1) {
-							type += "-arrow";
-						}
-						return {
-							show: true,
-							area: "text",
-							type: sanitise(type),
-						};
-					}
-					if (bodywriting.writing === "cross") {
-						return null;
-					}
-					if (bodywriting.type === "object") {
-						return {
-							show: true,
-							area: bodywriting.writing,
-							type: sanitise(id),
-						};
-					}
-					return null;
-				});
+				options.bodywriting.frontThigh = getState("right_thigh", complexText);
 				options.bodywriting.backThigh = getState("left_thigh", (id, bodywriting) => {
+					let type = id;
 					if (bodywriting.type === "text" || bodywriting.special === "islander") {
-						let type = id;
 						if (["up", "down"].includes(options.legBackPosition)) {
 							type += "-" + options.legBackPosition;
 						}
@@ -2413,10 +2409,13 @@ class PlayerCombatMapper {
 						};
 					}
 					if (bodywriting.type === "object") {
+						if (["up", "footjob"].includes(options.legBackPosition)) {
+							type += "-raised";
+						}
 						return {
 							show: true,
 							area: bodywriting.writing,
-							type: sanitise(id),
+							type: sanitise(type),
 						};
 					}
 					return null;

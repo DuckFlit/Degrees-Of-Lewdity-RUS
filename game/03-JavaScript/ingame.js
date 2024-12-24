@@ -1613,6 +1613,17 @@ window.checkTFparts = checkTFparts;
 	Part of the transformationParts is unsued right now, but its to account for this potential.
 */
 function validateTransformations() {
+	if (V.cat >= 1 || V.wolfgirl >= 1 || V.cow >= 1 || V.harpy >= 1) {
+		V.physicalTransform = 1;
+	} else {
+		V.physicalTransform = 0;
+	}
+	if (V.demon >= 1 || V.angel >= 1 || V.fallenangel >= 2) {
+		V.specialTransform = 1;
+	} else {
+		V.specialTransform = 0;
+	}
+
 	const transformationParts = [
 		{
 			level: "wolf",
@@ -1717,6 +1728,7 @@ function validateTransformations() {
 			traits: [],
 		},
 	];
+	const confirmedTraits = [];
 	transformationParts.forEach(tf => {
 		const tdLevel = V[tf.level];
 		const name = tf.nameOveride || tf.level;
@@ -1728,9 +1740,10 @@ function validateTransformations() {
 			}
 		});
 		tf.traits.forEach(trait => {
+			if (tdLevel >= trait.tfRequired) confirmedTraits.pushUnique(trait.name);
 			if (tdLevel >= trait.tfRequired && V.transformationParts.traits[trait.name] === "disabled") {
 				V.transformationParts.traits[trait.name] = trait.default || "default";
-			} else if (tdLevel < trait.tfRequired && V.transformationParts.traits[trait.name] !== "disabled") {
+			} else if (tdLevel < trait.tfRequired && V.transformationParts.traits[trait.name] !== "disabled" && !confirmedTraits.includes(trait.name)) {
 				V.transformationParts.traits[trait.name] = "disabled";
 			}
 		});

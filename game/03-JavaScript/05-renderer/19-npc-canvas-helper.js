@@ -180,12 +180,6 @@ class NpcCanvasHelper {
 				if (penetrator == null) {
 					return false;
 				}
-				// if (penetrator.position === "vagina" && penetrator.state === "penetrated") return false;
-				// Bestial oral penetration sprites are kind of fucked, don't show unless penetrating mouth
-				// Also, regular humans fallback to use the old 4f sprites, so no showing imminent sprites etc.
-				if (penetrator.position === "mouth" && penetrator.state === "entrance") {
-					return false;
-				}
 				return !!penetrator.show;
 			},
 			zfn(options) {
