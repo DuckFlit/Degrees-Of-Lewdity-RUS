@@ -425,7 +425,7 @@ class CombatRenderer {
 	 * @param {CombatPlayerOptions} options
 	 */
 	static generateBodyFilters(options) {
-		options.skinType = V.player.skin.color;
+		options.skinType = Skin.color.natural;
 		options.skinTone = options.skinType !== "custom" ? Skin.color.tan : 0;
 
 		const skinFilter = setup.colours.getSkinFilter(options.skinType, options.skinTone);
