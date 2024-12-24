@@ -139,7 +139,7 @@ DefineMacro("modelprepare-player-body", function () {
 			if (
 				(V.player.gender_appearance === "m" && V.player.perceived_breastsize <= 2) ||
 				V.worn.under_upper.type.includes("covered") ||
-				(["pool", "lake", "beach"].includes(V.location) && V.worn.under_upper.exposed < 1 && V.underupperwetstage < 3)
+				(["beach", "pool", "sea", "lake", "lake_ruin"].includes(V.location) && V.worn.under_upper.exposed < 1 && V.underupperwetstage < 3)
 			) {
 				T.coverBreasts = false;
 				T.modeloptions.arm_left = leftArm;
@@ -165,7 +165,7 @@ DefineMacro("modelprepare-player-body", function () {
 				(V.uncomfortable.nude && (V.worn.under_lower.exposed >= 1 || V.underlowerwetstage >= 3)))
 		) {
 			if (
-				(["pool", "lake", "beach"].includes(V.location) && V.worn.under_lower.exposed < 1 && V.underlowerwetstage < 3) ||
+				(["beach", "pool", "sea", "lake", "lake_ruin"].includes(V.location) && V.worn.under_lower.exposed < 1 && V.underlowerwetstage < 3) ||
 				V.worn.under_lower.type.includes("covered")
 			) {
 				T.coverCrotch = false;
