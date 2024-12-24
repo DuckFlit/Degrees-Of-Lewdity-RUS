@@ -1224,7 +1224,7 @@ const statChange = (() => {
 
 		// Attempted to start tracking, but the previous tracking wasn't stopped
 		if (lastBadEnd && !lastBadEnd.trackedEnd) {
-			badEndTracking(lastBadEnd.source, {
+			badEndTrackingEnd(lastBadEnd.source, {
 				reason: "unknown",
 				notes: `Not tracked in passage ${V.passage}, likely from an error`,
 			});
