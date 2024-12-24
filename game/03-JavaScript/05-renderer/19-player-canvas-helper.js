@@ -462,7 +462,7 @@ class PlayerCanvasHelper {
 		const defaults = {
 			srcfn(options) {
 				const value = options.transformations[transformation].tail;
-				const path = `${options.src}body/transformations/${value.type}/tail/${layer}-${value.state}-${value.style}.png`;
+				const path = `${options.src}body/transformations/${value.type.toLowerCase()}/tail/${layer}-${value.state}-${value.style}.png`;
 				return path;
 			},
 			showfn(options) {
@@ -501,7 +501,7 @@ class PlayerCanvasHelper {
 			srcfn(options) {
 				/** @type {TransformationPartOptions} */
 				const value = options.transformations[transformation][part];
-				const path = `${options.src}body/transformations/${value.type}/${part}/${layer}-${value.style}.png`;
+				const path = `${options.src}body/transformations/${value.type.toLowerCase()}/${part}/${layer}-${value.style}.png`;
 				return path;
 			},
 			showfn(options) {

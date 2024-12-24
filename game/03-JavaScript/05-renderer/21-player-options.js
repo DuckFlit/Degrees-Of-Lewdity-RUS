@@ -1553,6 +1553,10 @@ class PlayerCombatMapper {
 			return PlayerCombatMapper.defaultClothing;
 		}
 		const defaults = setup.clothes[slot][V.worn[slot].index];
+		if (defaults == null) {
+			// Player likely used a modded item ported back to vanilla.
+			return PlayerCombatMapper.defaultClothing;
+		}
 		const clothing = CombatRenderer.getClothingBySlot(slot);
 		const source = CombatRenderer.getSourceClothing(slot, defaults);
 
