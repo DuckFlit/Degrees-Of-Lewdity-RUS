@@ -6651,7 +6651,7 @@ function initHandheld() {
 			plural: 0,
 			colour: 0,
 			colour_options: ["red", "blue"],
-			colour_sidebar: 0,
+			colour_sidebar: 1,
 			type: ["prop"],
 			shop: [],
 			gender: "n",
