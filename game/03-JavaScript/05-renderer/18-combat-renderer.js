@@ -764,21 +764,31 @@ class CombatRenderer {
 	 * @returns {boolean}
 	 */
 	static isPenileReceptorActive() {
+		// PC penetrating NPC vagina
+		if (V.penisuse === "othervagina" && V.penisstate === "penetrated") {
+			return true;
+		}
+		// PC penetrating NPC anus
+		if (V.penisuse === "otheranus" && V.penisstate === "penetrated") {
+			return true;
+		}
 		if (V.penisstate === "othermouth") {
 			return true;
 		}
-		if (V.enemytype === "beast") {
-			return false;
-		}
-		const result = V.penisstate && ["penetrated", "otheranus"].includes(V.penisstate);
-		return !!result;
+		return false;
 	}
 
 	static isPenileReceptorEjaculationActive() {
-		if (!this.isPenileReceptorActive()) {
+		if (!CombatRenderer.isPenileReceptorActive()) {
 			return false;
 		}
-		return V.orgasmdown >= 1 && V.orgasmcount <= 24 && V.femaleclimax !== 1 && wearingCondom("player") !== "worn" && !playerHasStrapon();
+		if (playerHasStrapon()) {
+			return false;
+		}
+		if (wearingCondom("player") === "worn") {
+			return false;
+		}
+		return V.orgasmdown >= 1 && V.orgasmcount < 25 && V.femaleclimax !== 1;
 	}
 
 	/**
