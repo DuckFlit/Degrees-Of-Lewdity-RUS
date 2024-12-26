@@ -258,15 +258,15 @@ class NpcCombatMapper {
 
 		// Figure out whether the NPC is riding the PC, prepare for combat retardation
 		if (V.penisuse === "otheranus" && V.penistarget === index) {
-			options.show = false;
+			options.show = true;
 			options.state = "penis";
 		}
 		if (V.penisuse === "otherpenis" && V.penistarget === index) {
 			options.show = false;
-			options.state = "penis";
+			options.state = "frotting"; // ? (Not in use)
 		}
 		if (V.penisuse === "othervagina" && V.penistarget === index) {
-			options.show = false;
+			options.show = true;
 			options.state = "penis";
 		}
 
