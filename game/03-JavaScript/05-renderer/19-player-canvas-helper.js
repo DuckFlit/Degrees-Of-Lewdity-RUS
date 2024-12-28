@@ -514,6 +514,10 @@ class PlayerCanvasHelper {
 			},
 			filters: [transformation + part.toUpperFirst()],
 			zfn(options) {
+				if (part === "wings" && options.props.pillory.show) {
+					// Behind the pilloryFront
+					return 79;
+				}
 				/** @type {TransformationPartOptions} */
 				const value = options.transformations[transformation][part];
 				let z = CombatRenderer.indices[layer + part.toUpperFirst()];
