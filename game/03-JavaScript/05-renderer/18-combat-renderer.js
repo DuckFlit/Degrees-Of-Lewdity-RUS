@@ -59,9 +59,9 @@
  * @property {83} frontHorns
  * @property {82} frontEars
  * @property {40} frontTail
- * @property {80} frontEyes
- * @property {80} frontCheeks
- * @property {80} frontMalar
+ * @property {73} frontEyes
+ * @property {73} frontCheeks
+ * @property {73} frontMalar
  * @property {50} frontPubes
  * @property {50} frontPits
  * @property {50} frontPlumage
@@ -207,9 +207,9 @@ class CombatRenderer {
 			frontEars: 82,
 			frontTail: 40,
 
-			frontEyes: 80,
-			frontCheeks: 80,
-			frontMalar: 80,
+			frontEyes: 73,
+			frontCheeks: 73,
+			frontMalar: 73,
 			frontPlumage: 50,
 			frontPubes: 50,
 			frontPits: 50,

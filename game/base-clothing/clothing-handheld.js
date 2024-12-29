@@ -5073,6 +5073,7 @@ function initHandheld() {
 			name: "toolbox",
 			name_cap: "Toolbox",
 			variable: "toolbox",
+			holdPosition: "right_cover",
 			state: 0,
 			state_base: 0,
 			warmth: 0,
