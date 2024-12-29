@@ -161,6 +161,12 @@ setup.colours = {
 			alpha: 0.6,
 			desaturate: true,
 		},
+		// Same as above but without transparency. Used for sidebar.
+		wraith: {
+			gradient: ["#ffffff", "#ffffff"],
+			blendMode: "multiply",
+			desaturate: true,
+		},
 	},
 	/*
 	 * Get canvas filter for skin of given type and tan progression (0..1).

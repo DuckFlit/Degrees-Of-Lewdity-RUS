@@ -838,7 +838,7 @@ Renderer.CanvasModels.main = {
 
 		options.genitals_chastity = options.worn.genitals.setup.type.includes("chastity");
 
-		if (options.worn.head.setup.name === "cat hoodie hood" && options.worn.upper.setup.name === "cat hoodie") {
+		if (options.worn.head.setup.name === "cat hoodie hood") {
 			options.hood_damage = true;
 		} else {
 			options.hood_damage = false;
