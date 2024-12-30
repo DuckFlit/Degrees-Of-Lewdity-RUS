@@ -1393,7 +1393,7 @@ class PlayerCombatMapper {
 			if (V.feetuse === "penis" || V.feetstate === "tentacle") {
 				return "up";
 			}
-			if (V.NPCList.some(a => a.type === "horse" && NpcCombatMapper.isUnderPositioned(a))) {
+			if (V.NPCList.some((npc, index) => npc.type === "horse" && NpcCombatMapper.isUnderPositioned(index, npc))) {
 				return "down";
 			}
 			if (V.NPCList.some(a => ["horse", "centaur", "dog", "pig", "boar"].includes(a.type))) {

@@ -1832,26 +1832,6 @@ function outfitHoodPosition(outfit) {
 }
 window.outfitHoodPosition = outfitHoodPosition;
 
-function combatCharacterShadow() {
-	if (!V.options.characterLightEnabled || !V.options.images || !V.options.combatImages) return;
-	const targetClass = "char-shadow-combat";
-	const mainDiv = ".char_combat";
-
-	$(() => {
-		$(mainDiv)
-			.find("img")
-			.filter((i, n) =>
-				n.className.match(new RegExp("layer-(" + setup.shadowImage[V.position === "doggy" ? "doggy" : "missionary"].join("|") + ")( |$)", "i"))
-			)
-			.clone(true)
-			.removeClass((i, n) => (n.match(/(^|\s)(colour|layer)-\S+/g) || []).join(" "))
-			.addClass(targetClass)
-			.removeAttr("style")
-			.appendTo($(mainDiv).last());
-	});
-}
-window.combatCharacterShadow = combatCharacterShadow;
-
 /**
  * For usage with tears calculation, converts pain stat [0..200] to 0..4 range (maxes out at pain = 80).
  *
@@ -1860,15 +1840,6 @@ window.combatCharacterShadow = combatCharacterShadow;
  */
 const painToTearsLvl = pain => Math.floor(Math.clamp(pain || V.pain, 0, 99) / 20);
 window.painToTearsLvl = painToTearsLvl;
-
-/**
- * Get the CSS Name for a mascara colour name.
- *
- * @param {string} name Name of the mascara colour.
- * @returns {string} CSS Name "csstext" of the given colour.
- */
-const mascaraNameToCSS = name => nullable(setup.colours.mascara.find(x => x.variable === name)).csstext;
-window.mascaraNameToCSS = mascaraNameToCSS;
 
 function isPubfameTaskAccepted(task, status) {
 	return V.pubfame && V.pubfame.task === task && (V.pubfame.status === "accepted" || V.pubfame.status === status);
