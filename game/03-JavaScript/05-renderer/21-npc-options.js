@@ -244,8 +244,10 @@ class NpcCombatMapper {
 			options.show = penetrator.position != null && ["vagina", "anus", "mouth"].includes(penetrator.position);
 
 			// Add exclusion for mouth-entrance.
+			console.log("Checking exclusion:", penetrator);
 			if (penetrator.position === "mouth" && penetrator.state === "entrance") {
 				options.show = false;
+				penetrator.show = false;
 			}
 		}
 
@@ -283,7 +285,7 @@ class NpcCombatMapper {
 			options.show = true;
 		}
 
-		if (options.category !== "shadow" && ["penis", "penisimminent", "penisentrace"].includes(npc.vagina)) {
+		if (options.category !== "shadow" && ["penis", "penisimminent", "penisentrance"].includes(npc.vagina)) {
 			options.state = "penis";
 			options.show = true;
 		}
