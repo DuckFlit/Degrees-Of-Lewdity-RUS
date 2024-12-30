@@ -1960,14 +1960,14 @@ function featsMerge() {
 		idb.getAllSaves()
 			.then(saves =>
 				saves.forEach((slot, index) => {
-					if (slot.data && Array.isArray(slot.data.history)) {
-						slot.data.history.forEach(saveData => {
-							if (saveData.variables && saveData.variables.feats) {
-								loadFeats(saveData.variables.feats.allSaves);
-								loadFeats(saveData.variables.feats.currentSave);
-							}
-						});
-					}
+					// auto-detect between uncompressed and compressed saves
+					const history = slot.data.history || State.deltaDecode(slot.data.delta);
+					history.forEach(saveData => {
+						if (saveData.variables.feats) {
+							loadFeats(saveData.variables.feats.allSaves);
+							loadFeats(saveData.variables.feats.currentSave);
+						}
+					});
 					loadingBar.css("width", `${((localSavesChecked + index + 1) / savesToLoad) * 100}%`);
 					loadingText.html(`${index + 1} out of ${savesToLoad} saves checked.`);
 				})
