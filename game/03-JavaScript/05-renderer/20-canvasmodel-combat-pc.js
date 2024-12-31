@@ -1316,10 +1316,10 @@ const combatMainPc = {
 			z: CombatRenderer.indices.frontFootwear,
 		}),
 		genitals: PlayerCanvasHelper.genClothingLayer("genitals", {
-			z: CombatRenderer.indices.base + 6,
+			z: CombatRenderer.indices.base + 4,
 		}),
 		genitalsAcc: PlayerCanvasHelper.genClothingAccLayer("genitals", {
-			z: CombatRenderer.indices.base + 6,
+			z: CombatRenderer.indices.base + 4,
 		}),
 		handsBack: PlayerCanvasHelper.genClothingLayer("hands", {
 			srcfn(options) {
