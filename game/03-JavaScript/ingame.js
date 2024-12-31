@@ -1626,7 +1626,8 @@ function validateTransformations() {
 
 	const transformationParts = [
 		{
-			level: "wolf",
+			nameOveride: "wolf",
+			level: "wolfgirl",
 			build: "wolfbuild",
 			type: "physicalTransform",
 			parts: [
