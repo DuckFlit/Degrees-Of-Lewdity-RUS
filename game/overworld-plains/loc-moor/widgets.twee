@@ -21,7 +21,7 @@
 				Broccoli. They're fully grown, and inedible. Their gentle sway puts you at ease.<<lstress>><<stress -6>>
 				<br><br>
 				<<if !$plants_known.includes("broccoli")>>
-					<<link [[Harvest seeds (0:30)|Moor Broccoli]]>><<pass 30>><</link>><<tendingdifficulty 400 700>>
+					<<ind>><<link [[Harvest seeds (0:30)|Moor Broccoli]]>><<pass 30>><</link>><<tendingdifficulty 400 700>>
 					<br>
 				<</if>>
 			<<else>>
@@ -49,7 +49,7 @@
 			<br>
 		<</if>>
 	<<elseif $danger gte (9900 - ($allure * $forestmod))>>
-		<<rng 8>>
+		<<rng 9>>
 		<<switch $rng>>
 		<<case 1>>
 			<<generate1>><<person1>>
@@ -58,7 +58,7 @@
 				<<covered>> You duck behind the heather.
 				<br><br>
 
-				<<link [[Hide until they pass (0:10)|Moor Exposed Hide]]>><<pass 10>><</link>>
+				<<link [[Hide until <<he>> passes (0:10)|Moor Exposed Hide]]>><<pass 10>><</link>>
 				<br>
 
 				<<if $exposed gte 2>>
@@ -151,7 +151,7 @@
 			You come to a stream, running along a small valley. The water is fast, but clear and not very deep.
 			<br><br>
 
-			<<if $worn.upper.name isnot "naked" or $worn.lower.name isnot "naked" or $worn.under_upper.name isnot "naked" or $worn.under_lower.name isnot "naked">>
+			<<if !_topless or !_bottomless>>
 				<<link [[Strip and wash (0:10)|Moor Low Clothes Wash]]>><<strip>><<pass 10>><</link>><<exhibitionist1>>
 				<br>
 				<<link [[Take the time to hide your clothes, then wash (0:30)|Moor Low Wash]]>><<undress "moor wash">><<pass 30>><<set $phase to 1>><</link>><<exhibitionist1>>
@@ -163,7 +163,7 @@
 			<<link [[Continue your journey|Moor]]>><<set $eventskip to 1>><</link>>
 			<br>
 		<<case 7>>
-			<<generatey1>><<generatey2>><<generatey3>><<person1>>
+			<<generatey1>><<generatey2>><<generatey3>><<generate4>><<person1>>
 			You hear laughter and shouting up ahead. A group of youths appear over a ridge.
 			<<if $exposed gte 1>>
 				<<covered>> They're some distance away, and may not have noticed your state of dress.
@@ -191,7 +191,7 @@
 				<<if playerIsPregnant() and playerAwareTheyArePregnant()>>
 					<span class="blue">You can't bring yourself to drink while you know you're with child.</span>
 				<<else>>
-					<<foodicon "beerbottle">><<link [[Drink (0:10)|Moor Youths Drink]]>><<pass 10>><<set $drunk += 60>><<stress -6>><<wearProp "beerbottle">><</link>><<lstress>>
+					<<foodicon "beerbottle">><<link [[Drink (0:10)|Moor Youths Drink]]>><<pass 10>><<set $drunk += 60>><<stress -6>><<wearProp "beer bottle">><</link>><<lstress>>
 				<</if>>
 				<br>
 				<<refuseicon>><<link [[Decline|Moor Youths Decline]]>><</link>>
@@ -199,6 +199,21 @@
 			<</if>>
 		<<case 8>>
 			<<moor_fox>>
+		<<case 9>>
+			<<beastNEWinit 1 horse>>
+			You spot a <<beasttype>> relaxing on the plains of the moor. <<bHe>> seems like <<bhe>> hasn't spotted you yet.
+			<br><br>
+
+			<<link[[Attempt to mount|Moor Horse]]>><<set $phase to 0>><</link>><<skill_difficulty `currentSkillValue("thighskill")` "Thigh Skill" 1 1200>>
+			<br>
+			<<link [[Approach carefully and mount|Moor Horse]]>><<set $phase to 1>><</link>><<tendingdifficulty 1 1200>>
+			<br>
+			<<if hasSexStat("deviancy", 5) and ($bestialitydisable is "f" or $monster is 1) and $horsedisable is "f">>
+				<<link [[Let <<bhim>> mount you|Moor Horse]]>><<set $phase to 2>><</link>><<deviant5>>
+				<br>
+			<</if>>
+			<<link [[Ignore|Moor]]>><<endevent>><<set $eventskip to 1>><</link>>
+			<br>
 		<</switch>>
 	<<else>>
 		<<rng 6>>
@@ -267,10 +282,10 @@
 	<<if random(1, 8) is 8 or ($moormove is "quick_search" or $moormove is "normal_search" or $moormove is "careful_search" or $moormove is "fly_search") and random(1, 4) is 4>>
 		<<rng 2>>
 		<<if $rng is 2>>
-			<<wearProp "artillery">>
 			You spot a black shape, half-buried in mud. It's an artillery shell. It looks old.
 
 			<<if currentSkillValue('history') gte 500>>
+				<<wearProp "artillery">>
 				<span class="green">It can't still be active,</span> and it might be worth something to a collector.
 				<<set $antiquemoney += 100>><<museumAntiqueStatus "antiqueshell" "found">>
 				<br><br>
@@ -302,7 +317,7 @@
 		<<switch $rng>>
 		<<case 1>>
 			<<beastNEWinit 1 cat>>
-			The hair stands on the back of your neck. You turn and face a pair of yellow eyes as a <<if $monster isnot 1>>large <</if>><<beasttype>> sprints towards you.
+			The hair stands on the back of your neck. You turn and face a pair of <<print either("hazel", "yellow", "green", "blue")>> eyes as a large <<beasttype>> sprints towards you.
 			<br><br>
 
 			<<if $bestialitydisable is "f">>
@@ -347,7 +362,7 @@
 			<<link [[Next|Moor]]>><<set $eventskip to 1>><</link>>
 			<br>
 		<<case 4>>
-			A pair of yellow eyes stare at you from a cave near the top of a taller rock.<<gstress>><<stress 6>>
+			A pair of <<print either("hazel", "yellow", "green", "blue")>> eyes stare at you from a cave near the top of a taller rock.<<gstress>><<stress 6>>
 			<br><br>
 
 			<<link [[Next|Moor]]>><<set $eventskip to 1>><</link>>
@@ -398,12 +413,12 @@
 				<br><br>
 
 				<<if hasSexStat("deviancy", 3) or $backgroundTraits.includes("plantlover")>>
-					<<link [[Reward|Moor Plant Sex]]>><<set $sexstart to 1>><</link>><<deviant3>>
+					<<link [[Reward|Moor Plant Sex]]>><<set $sexstart to 1>><<set $phase to 1>><</link>><<deviant3>>
 				<<else>>
-					<span class="blue">You are not deviant enough to "reward" <<him>></span>.
+					<<insufficientStat "deviancy" "to give a \'reward\'">>
 				<</if>>
 				<br>
-				<<link [[Refuse|Moor Plant Refuse]]>><<set $phase to 1>><</link>>
+				<<link [[Refuse|Moor Plant Refuse]]>><</link>>
 			<<else>>
 				You <<if $submissive gte 850>>swing your arm to swat it away<<else>>hold your arms in front of you defensively<</if>>, but the creature doesn't make it to you. A sudden rockfall from above knocks it out of the air. It scurries away, as does the second creature.
 				<<stress 6>><<gstress>>
@@ -415,7 +430,7 @@
 			You find a thick crack in the rocky ground, revealing a violent stream. It's hard to tell how deep the churning water is.
 			<br><br>
 
-			<<if $worn.upper.name isnot "naked" or $worn.lower.name isnot "naked" or $worn.under_upper.name isnot "naked" or $worn.under_lower.name isnot "naked">>
+			<<if !_topless or !_bottomless>>
 				<<link [[Strip and wash (0:10)|Moor Mid Wash]]>><<set $phase to 1>><<pass 10>><<strip>><</link>><<exhibitionist1>>
 				<br>
 			<<else>>
@@ -695,7 +710,7 @@
 				<<ggstress>><<stress 12>>
 				<br><br>
 
-				<<set $money += $plantMoney>><<unset $plantMoney>>
+				<<money $plantMoney "moor">><<unset $plantMoney>>
 				<<link [[Next|Moor]]>><<set $eventskip to 1>><</link>>
 			<</if>>
 		<<case 8 9>>
@@ -895,14 +910,14 @@
 			<br><br>
 			<<passout_moor>>
 			<<if $quicksandWraith>>
-				<<ind>><<ind>><<ind>><<ind>><<ind>><<ind>><<ind>><<ind>><span class="wraith_flicker">_drown</span>
-				<br><br><<ind>><<ind>><span class="wraith_flicker">_drown</span>
-				<br><<ind>><<ind>><<ind>><<ind>><<ind>><span class="wraith_flicker">_drown</span>
+				<<ind>><<ind>><<ind>><<ind>><<ind>><<ind>><<ind>><<ind>><span class="wraith-flicker">_drown</span>
+				<br><br><<ind>><<ind>><span class="wraith-flicker">_drown</span>
+				<br><<ind>><<ind>><<ind>><<ind>><<ind>><span class="wraith-flicker">_drown</span>
 			<</if>>
 	<</switch>>
 	<<if $quicksandWraith>>
-		<br><br><<ind>><<ind>><<ind>><<ind>><<ind>><<ind>><span class="wraith_flicker">_drown</span>
-		<br><br><br><<ind>><span class="wraith_flicker">_drown</span>
+		<br><br><<ind>><<ind>><<ind>><<ind>><<ind>><<ind>><span class="wraith-flicker">_drown</span>
+		<br><br><br><<ind>><span class="wraith-flicker">_drown</span>
 	<</if>>
 <</widget>>
 
@@ -1000,7 +1015,7 @@
 		<<endevent>>
 
 		<<if $harpy gte 6>>
-			<<link [[Screech back|Moor Bird Screech]]>><</link>><<harpy>>
+			<<tficon "harpy">><<link [[Screech back|Moor Bird Screech]]>><</link>><<harpy>>
 			<br>
 		<</if>>
 		<<mooricon>><<link [[Continue|Moor]]>><<set $eventskip to 1>><</link>>

@@ -164,9 +164,9 @@
 			<<if $_pregnancy.type is "hawk">>
 				You're pregnant with <<number $_number>> _childType,
 				<<switch _trimester>>
-					<<case "first">>and it will be a while before you can lay them.
-					<<case "second">>but it will still take some time to lay them.
-					<<case "third">>and you'll be ready to lay them soon.
+					<<case "first">>and it will be a while before you can lay <<if $_number is 1>>it<<else>>them<</if>>.
+					<<case "second">>but it will still take some time to lay <<if $_number is 1>>it<<else>>them<</if>>.
+					<<case "third">>and you'll be ready to lay <<if $_number is 1>>it<<else>>them<</if>> soon.
 				<</switch>>
 			<<else>>
 				You're pregnant with <<if !["twins", "identical twins", "triplets"].includes(_childType)>><<number $_number>><</if>> _childType, in the _trimester trimester of your pregnancy.
@@ -376,13 +376,13 @@
 				<!--PHYSIQUE / ТЕЛОСЛОЖЕНИЕ--> 	/* Либо физическая подготовка */
 				<<set _physiqueConfig = { name : "Телосложение", icon : "ui/sym_physique", displayType : "level", currentValue : $physique, maxValue: $physiquesize, modifier: 100, modTypes: { good: [], bad: [] },
 					states : [
-						{ requiredValue:	0,							level: 0, color: 'red',		description: 'Вы истощены.'},
-						{ requiredValue:	$physiquesize / 7,			level: 1, color: 'pink',	description: 'Вы тощий.'},
-						{ requiredValue:	($physiquesize / 7) * 2,	level: 2, color: 'purple',	description: 'Ваше тело лёгкое и худое.'},
-						{ requiredValue:	($physiquesize / 7) * 3,	level: 3, color: 'blue',	description: 'Ваше тело стройное.'},
-						{ requiredValue:	($physiquesize / 7) * 4,	level: 4, color: 'lblue',	description: 'У вас стройное и атлетичное тело.'},
-						{ requiredValue:	($physiquesize / 7) * 5,	level: 5, color: 'teal',	description: 'У вас подтянутое и крепкое тело.'},
-						{ requiredValue:	($physiquesize / 7) * 6,	level: 6, color: 'green',	description: 'У вас подтянутое и сильное тело.'}
+						{ requiredValue:	0,							level: 0, color: 'red',		description:  `Вы ${$player.bodyshape === "soft" ? "malnourished" : "истощены"}.`},
+						{ requiredValue:	$physiquesize / 7,			level: 1, color: 'pink',	description: `Вы ${$player.bodyshape === "soft" ? "squishy" : "тощий"}.`},
+						{ requiredValue:	($physiquesize / 7) * 2,	level: 2, color: 'purple',	description:  `Ваше тело ${$player.bodyshape === "soft" ? "soft and supple" : "лёгкое и худое"}.`},
+						{ requiredValue:	($physiquesize / 7) * 3,	level: 3, color: 'blue',	description:  `Ваше тело ${$player.bodyshape === "soft" ? "well built" : "стройное"}.`},
+						{ requiredValue:	($physiquesize / 7) * 4,	level: 4, color: 'lblue',	description:  `У вас ${$player.bodyshape === "soft" ? "sturdy" : "стройное"} и атлетичное тело.`},
+						{ requiredValue:	($physiquesize / 7) * 5,	level: 5, color: 'teal',	description:  `У вас ${$player.bodyshape === "soft" ? "robust" : "подтянутое"} и крепкое тело.`},
+						{ requiredValue:	($physiquesize / 7) * 6,	level: 6, color: 'green',	description:  `У вас ${$player.bodyshape === "soft" ? "robust" : "подтянутое"} и сильное тело.`}
 					]
 				}>>
 				<<if playerBellySize() gte 10 and playerNormalPregnancyTotal() lt 50>>
@@ -476,10 +476,29 @@
 						{ requiredValue: 15,	level: 2, color: 'lblue',	description: 'Ваши вкусы специфичны.'}, /* Покажи мне свою тайную комнату */
 						{ requiredValue: 35,	level: 3, color: 'blue',	description: 'Ваши вкусы шокируют других.'},
 						{ requiredValue: 55,	level: 4, color: 'purple',	description: 'Ваше вожделение скандально.'},
-						{ requiredValue: 75,	level: 5, color: 'pink',	description: "Вы жаждете немыслимого для других."}, /* You crave acts others wouldn't conceive of. */
+						{ requiredValue: 75,	level: 5, color: 'pink',	description: "Вы жаждете немыслимого для других."}, /* You crave acts others wouldnt conceive of. */
 						{ requiredValue: 95,	level: 6, color: 'red',		description: 'Вы вожделеете о невообразимом.'}  /* You lust for unspeakable. */
 					]
 				}>>
+
+				<!-- Visual indicator for lewd stats being affected by alcohol -->
+				<<if $drunk gte 1>>
+					<<set _promiscuityConfig.modTypes.good.pushUnique("alcohol")>>
+					<<set _exhibitionismConfig.modTypes.good.pushUnique("alcohol")>>
+					<<set _deviancyConfig.modTypes.good.pushUnique("alcohol")>>
+				<</if>>
+
+				<!-- Visual indicator for lewd stats being affected by heat -->
+				<<if playerHeatMinArousal() gte 1>>
+					<<set _promiscuityConfig.modTypes.good.pushUnique("in heat")>>
+					<<set _deviancyConfig.modTypes.good.pushUnique("in heat")>>
+				<</if>>
+
+				<!-- Visual indicator for lewd stats being affected by rut -->
+				<<if playerRutMinArousal() gte 1>>
+					<<set _promiscuityConfig.modTypes.good.pushUnique("in rut")>>
+					<<set _deviancyConfig.modTypes.good.pushUnique("in rut")>>
+				<</if>>
 
 				<!-- MOOR LUCK, at the end so it appears at the end of the mouseover tooltip -->
 				<<if $moorLuck gt 0>>
@@ -914,122 +933,64 @@
 	<span class="gold">Комплексы</span>
 	<div class="description">По мере того как растут комплексы, становится все труднее переносить стресс и контролировать ситуацию. Принятие позволяет не поддаваться влиянию комплексов.</div>
 	<br><br>
-	<<if $insecurity_penis_tiny gte 1 and $player.penissize lte 0 and $acceptance_penis_tiny lte 999>>
-		<span class="red">Комплекс: Крошечный член</span> /* ХУУУУУУУУУУУУУУУУУУУУУУУУУУУЙ */
-		<div class="meter">
-			<<set _percent=Math.floor(($insecurity_penis_tiny/1000)*100)>>
-			<<print '<div class="redbar" style="width:' + _percent + '%"></div>'>>
-		</div>
-		<<if $acceptance_penis_tiny gte 1 and $acceptance_penis_tiny lte 999 and $player.penissize lte 0>>
-			<span class="green">Принятие: Крошечный член</span> /* Милипиздрический* / Крош в ахуе */
-			<div class="meter">
-				<<set _percent=Math.floor(($acceptance_penis_tiny/1000)*100)>>
-				<<print '<div class="greenbar" style="width:' + _percent + '%"></div>'>>
-			</div>
-		<</if>>
-	<</if>>
-	<<if $insecurity_penis_small gte 1 and $player.penissize is 1 and $acceptance_penis_small lte 999>>
-		<span class="red">Комплекс: Маленький член</span>
+	<<set $_penisSize to setup.penisSizes[$player.penissize + 2].toUpperFirst()>>
+	<<if $player.penisExist and $insecurity_penis_small gte 1 and $player.penissize lte 1 and $acceptance_penis_small lte 999>>
+		<span class="red">Комплекс: <<print $_penisSize>> член</span> /* Писюн */
 		<div class="meter">
 			<<set _percent=Math.floor(($insecurity_penis_small/1000)*100)>>
 			<<print '<div class="redbar" style="width:' + _percent + '%"></div>'>>
 		</div>
 		<<if $acceptance_penis_small gte 1 and $acceptance_penis_small lte 999 and $player.penissize is 1>>
-			<span class="green">Принятие: Чуть меньше среднего</span> /* Ладно, оставлю как переводческий гэг */
+			<span class="green">Принятие: Крошечный член</span>  /* Милипиздрический* / Крош в ахуе */
 			<div class="meter">
 				<<set _percent=Math.floor(($acceptance_penis_small/1000)*100)>>
 				<<print '<div class="greenbar" style="width:' + _percent + '%"></div>'>>
 			</div>
 		<</if>>
 	<</if>>
-	<<if $player.gender is "m">>
-		<<if $insecurity_penis_big gte 1 and $player.penissize gte 4 and $acceptance_penis_big lte 999>>
-			<span class="red">Комплекс: Большой член</span> /* Какой бедный */
-			<div class="meter">
-				<<set _percent=Math.floor(($insecurity_penis_big/1000)*100)>>
-				<<print '<div class="redbar" style="width:' + _percent + '%"></div>'>>
-			</div>
-			<<if $acceptance_penis_big gte 1 and $acceptance_penis_big lte 999 and $player.penissize gte 4>>
-				<span class="green">Принятие: Большой член</span> /* Господи простите меня все за то что я такой охуенный, я специально :'C */
-				<div class="meter">
-					<<set _percent=Math.floor(($acceptance_penis_big/1000)*100)>>
-					<<print '<div class="greenbar" style="width:' + _percent + '%"></div>'>>
-				</div>
-			<</if>>
-		<</if>>
-	<<else>>
-		<<if $insecurity_penis_big gte 1 and $player.penissize gte 2 and $acceptance_penis_big lte 999>>
-			<span class="red">Комплекс: Огромный член</span> /* Мне бы его проблемы... */
-			<div class="meter">
-				<<set _percent=Math.floor(($insecurity_penis_big/1000)*100)>>
-				<<print '<div class="redbar" style="width:' + _percent + '%"></div>'>>
-			</div>
-			<<if $acceptance_penis_big gte 1 and $acceptance_penis_big lte 999 and $player.penissize gte 2>>
-				<span class="green">Принятие: Огромный член</span> /* Ну да, принимаешь тот факт, что твоей волыной можно убить. Quite traumatising */
-				<div class="meter">
-					<<set _percent=Math.floor(($acceptance_penis_big/1000)*100)>>
-					<<print '<div class="greenbar" style="width:' + _percent + '%"></div>'>>
-				</div>
-			<</if>>
-		<</if>>
-	<</if>>
-	<<if $insecurity_breasts_tiny gte 1 and $player.breastsize lte 0 and $player.gender is "f" and $acceptance_breasts_tiny lte 999>>
-		<span class="red">Комплекс: Плоская грудь</span> /* ДОСКАААААААААААААААА (Для сёрфинга) */
-		<div class="meter"> /* Извините */
-			<<set _percent=Math.floor(($insecurity_breasts_tiny/1000)*100)>>
+	<<set $_penisSizeMin to $player.gender is "m" ? 4 : 2>>
+	<<if $player.penisExist and $insecurity_penis_big gte 1 and $player.penissize gte $_penisSizeMin and $acceptance_penis_big lte 999>>
+		<span class="red">Комплекс: <<print $_penisSize>> член</span> /* Бедни */
+		<div class="meter">
+			<<set _percent=Math.floor(($insecurity_penis_big/1000)*100)>>
 			<<print '<div class="redbar" style="width:' + _percent + '%"></div>'>>
 		</div>
-		<<if $acceptance_breasts_tiny gte 1 and $acceptance_breasts_tiny lte 999 and $player.breastsize lte 0 and $player.gender is "f">>
-			<span class="green">Принятие: Чуть меньше средней</span>
+		<<if $acceptance_penis_big gte 1 and $acceptance_penis_big lte 999 and $player.penissize gte $_penisSizeMin>>
+			<span class="green">Принятие: <<print $_penisSize>> член</span> /* Господи простите меня все за то что я такой охуенный, я специально :'C */
 			<div class="meter">
-				<<set _percent=Math.floor(($acceptance_breasts_tiny/1000)*100)>>
+				<<set _percent=Math.floor(($acceptance_penis_big/1000)*100)>>
 				<<print '<div class="greenbar" style="width:' + _percent + '%"></div>'>>
 			</div>
 		<</if>>
 	<</if>>
-	<<if $insecurity_breasts_small gte 1 and $player.breastsize gte 1 and $player.breastsize lte 5 and $acceptance_breasts_small lte 999>>
-		<span class="red">Комплекс: Маленькая грудь</span> /* База */
-		<div class="meter">
+	<<set $_breastSize to setup.breastsizes[$player.breastsize].toUpperFirst()>>
+	<<if $player.gender is "f" and $insecurity_breasts_small gte 1 and between($player.breastsize, 0, 4) and $acceptance_breasts_small lte 999>>
+		<span class="red">Комплекс: <<print $player.breastsize ? "$_breastSize Breasts" : "Flat Chest">></span> /* ДОСКАААААААААААААААА (Для сёрфинга) */
+		<div class="meter"> /* Извините */
 			<<set _percent=Math.floor(($insecurity_breasts_small/1000)*100)>>
 			<<print '<div class="redbar" style="width:' + _percent + '%"></div>'>>
 		</div>
-		<<if $acceptance_breasts_small gte 1 and $acceptance_breasts_small lte 999 and $player.breastsize gte 1 and $player.breastsize lte 5>>
-			<span class="green">Принятие: Маленькая грудь греет сердце</span> /* Ладно, стоит признать этот факт - мне пиздец как скучно во время перевода */
+		<<if $acceptance_breasts_small gte 1 and $acceptance_breasts_small lte 999 and between($player.breastsize, 0, 4)>>
+			<span class="green">Принятие: <<print $player.breastsize ? "$_breastSize Breasts" : "Flat Chest">></span>
 			<div class="meter">
 				<<set _percent=Math.floor(($acceptance_breasts_small/1000)*100)>>
 				<<print '<div class="greenbar" style="width:' + _percent + '%"></div>'>>
 			</div>
 		<</if>>
 	<</if>>
-	<<if $player.gender is "f">>
-		<<if $insecurity_breasts_big gte 1 and $player.breastsize gte 8 and $acceptance_breasts_big lte 999>>
-		<span class="red">Комплекс: Огромные сиськи</span> /* Два высших образования, я попрошу! */
+	<<set $_breastSizeMin to $player.gender is "m" ? 1 : 8>>
+	<<if $insecurity_breasts_big gte 1 and $player.breastsize gte $_breastSizeMin and $acceptance_breasts_big lte 999>>
+	<span class="red">Комплекс: <<print $_breastSize>> грудь</span> /* Два высших образования, я попрошу! */
+		<div class="meter">
+			<<set _percent=Math.floor(($insecurity_breasts_big/1000)*100)>>
+			<<print '<div class="redbar" style="width:' + _percent + '%"></div>'>>
+		</div>
+		<<if $acceptance_breasts_big gte 1 and $acceptance_breasts_big lte 999 and $player.breastsize gte $_breastSizeMin>>
+			<span class="green">Принятие: <<print $_breastSize>> грудь</span> /* Пышные горы... */
 			<div class="meter">
-				<<set _percent=Math.floor(($insecurity_breasts_big/1000)*100)>>
-				<<print '<div class="redbar" style="width:' + _percent + '%"></div>'>>
+				<<set _percent=Math.floor(($acceptance_breasts_big/1000)*100)>>
+				<<print '<div class="greenbar" style="width:' + _percent + '%"></div>'>>
 			</div>
-			<<if $acceptance_breasts_big gte 1 and $acceptance_breasts_big lte 999 and $player.breastsize gte 8>>
-				<span class="green">Принятие: Пышная грудь</span> /* Пышные горы... */
-				<div class="meter">
-					<<set _percent=Math.floor(($acceptance_breasts_big/1000)*100)>>
-					<<print '<div class="greenbar" style="width:' + _percent + '%"></div>'>>
-				</div>
-			<</if>>
-		<</if>>
-	<<else>> /* Hold up a second, не понял прекола. Это типа для трансов? */
-		<<if $insecurity_breasts_big gte 1 and $player.breastsize gte 6 and $acceptance_breasts_big lte 999>>
-			<span class="red">Комплекс: Огромные сиськи</span>
-			<div class="meter">
-				<<set _percent=Math.floor(($insecurity_breasts_big/1000)*100)>>
-				<<print '<div class="redbar" style="width:' + _percent + '%"></div>'>>
-			</div>
-			<<if $acceptance_breasts_big gte 1 and $acceptance_breasts_big lte 999 and $player.breastsize gte 6>>
-				<span class="green">Принятие: Пышная грудь</span>
-				<div class="meter">
-					<<set _percent=Math.floor(($acceptance_breasts_big/1000)*100)>>
-					<<print '<div class="greenbar" style="width:' + _percent + '%"></div>'>>
-				</div>
-			<</if>>
 		<</if>>
 	<</if>>
 	<<if $insecurity_pregnancy gte 1 and $acceptance_pregnancy lte 999 and playerBellySize() gte 8>>

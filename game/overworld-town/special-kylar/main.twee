@@ -78,7 +78,6 @@
 
 		<<kylaroptionsleave "manor">>
 	<<elseif $bus is "kylarmanor" and Time.hour lte 6>>
-		<<unset $kylar_action>>
 		Kylar looks at a monitor. "I should sleep," <<he>> says. <<He>> walks over to <<his>> bed and collapses atop it, fully dressed. <<He>> watches you, longing on <<his>> face, but <<he>> doesn't say anything.
 		<br><br>
 
@@ -108,8 +107,21 @@
 			<span class="lewd">a lewd idea strikes you.</span>
 			<br><br>
 
-			<<ind>><<link [[`Ask Kylar for ${_kylar.pronouns.his} ${$daily.kylar.underwear.simpleDesc}`|Kylar Tease Underwear]]>><<arousal 600>><<npcincr Kylar lust 3>><</link>><<promiscuous3>><<garousal>><<gglust>>
+			<<ind>><<link [[`Ask Kylar for <<his>> ${$daily.kylar.underwear.simpleDesc}`|Kylar Tease Underwear]]>><<arousal 600>><<npcincr Kylar lust 3>><</link>><<promiscuous3>><<garousal>><<gglust>>
 			<br><br>
+		<</if>>
+		<<if $bus is "kylarmanor" and $kylar_manor_secret is undefined and !$daily.kylar.manor>>
+			<<if $kylar_parents_trust gte 100>>
+				<<socialiseicon>><<link [[Tell Kylar that the manor is clean|Manor Kylar Secret]]>><<set $kylar_manor_secret to 1>><</link>>
+				<br>
+			<<elseif $kylar_parents_trust gte 1>>
+				<<socialiseicon "angry">><<link [[Have a word about the state of the manor|Manor Kylar Word]]>><<set $daily.kylar.manor to true>><</link>>
+				<br>
+			<</if>>
+		<</if>>
+		<<if $passage is "Manor Kylar Word">>
+			<<socialiseicon "ask">><<link [[Ask what happened to <<his>> parents|Manor Kylar Word 2]]>><</link>>
+			<br>
 		<</if>>
 		<<if !$daily.kylar.walkKiss and $kylar_action is "walk">>
 			<<ind>><<link [[Kiss|Kylar Walk In The Park End 2]]>><</link>><<glove>><<glust>><<llksuspicion>><<kissvirginitywarning>><<NPCvirginitywarning "Kylar" "kiss">>
@@ -154,6 +166,10 @@
 			<<sextoysicon "strap-on">><<link [[Gift Kylar a strap-on|Kylar Gift Strap-on]]>><</link>><<glove>><<lksuspicion>><<gglust>><<lstress>>
 			<br>
 		<</if>>
+		<<if canGiftFood("Kylar") and $kylarenglish gte 1>>
+			<<skinicon "give">><<link [[Give Kylar food|Kylar Gifts List]]>><</link>>
+			<br>
+		<</if>>
 		<<kylaroptionsleave "leave">>
 	<</if>>
 <</widget>>
@@ -181,7 +197,7 @@
 				<<set $_dest to "School Rear Courtyard">>
 		<</switch>>
 		<<if _args[0] is "manor" and $syndromekylar is 1>>
-			<<kylarmanoricon>><<link [["Walk with " + _kylar.pronouns.him + " (0:20)"|Kylar Walk Manor]]>><</link>>
+			<<kylarmanoricon>><<link [["Walk with " + _kylar.pronouns.him + " (0:20)"|Kylar Walk Manor]]>><<unset $kylar_action>><<pass 20>><</link>>
 			<br>
 		<</if>>
 		<<getouticon>><<link [[Leave|$_dest]]>><<endevent>><<unset $kylar_action>><</link>>
@@ -253,12 +269,12 @@
 			<br><br>
 
 			<<He>> looks down timidly. "Say, maybe we should spend some time together? T-To practise, I mean." <<Hes>> about to say something else, but stops <<himself>>. "Just... come see me<<if $schoolstate isnot "afternoon">> after school<</if>>, alright? <span class="gold">I'll be in the rear courtyard.</span>"
-		<<elseif _kylar.love gte 90 and $spray lt $spraymax and !$daily.kylar.spray>>
-			<<set $daily.kylar.spray to true>>
+		<<elseif _kylar.love gte 90 and $spray lt $spraymax and !$weekly.kylarSpray>>
+			<<set $weekly.kylarSpray to true>>
 			"I made you something," <<he>> says as <<he>> rummages in <<his>> bag. <<He>> hands you a charge for your pepper spray.
 			"I made it myself. It'll keep sluts and perverts away." <<He>> beams.
 			<<spray 1>><<gspray>>
-
+			<<wearProp "pepperspray">>
 		<<elseif $kylar.riddle is 2>>
 			<<set $kylar.riddle to 0>>
 			"<<print either("A sphinx", "Shadow", "Plumbers", "A jester", "Blue", "The letter E", "French fries", "Leighton", "An eraser", "A snake",
@@ -383,7 +399,6 @@
 		You think about what Kylar said, and realisation dawns on you. Your <<penis>> is beautiful. Why should you care what other people say about it?
 		You've gained the
 		<<switch _acceptanceAchieved>>
-			<<case "penis_tiny">> <span class="green">Acceptance: Tiny Penis</span>
 			<<case "penis_small">> <span class="green">Acceptance: Small Penis</span>
 			<<case "penis_big">> <span class="green">Acceptance: Big Penis</span>
 		<</switch>>
@@ -1167,7 +1182,6 @@ Kylar drops the axe and weeps.
 <</if>>
 They arrest Kylar. They untie you too, after you make a bit of noise. They decide against taking you in as "evidence."
 <<clothesontowel>>
-<br><br>
 
 <<person1>>
 <<if Time.schoolDay and $schoolstate isnot "early" and $schoolstate isnot "late">>
@@ -1388,7 +1402,7 @@ You shake off Kylar's grip and leave. <<He>> watches you with <<his>> fists clen
 			<<if !$daily.kylar.underwear?.desc>>
 				<<kylarRandomUnderwear>>
 			<</if>>
-			
+
 			You ask to see Kylar's underwear. "Or maybe," you say, "you don't have any on?"
 			<!-- Note for future writers: you COULD use $kylarStolenUnderwear here to reveal kylar is wearing the underwear they stole from the player. -->
 			<<if _kylarLower.includes("skirt")>>
@@ -1881,12 +1895,17 @@ You can feel <<his>> breath, now stabilised and calm, against your skin.
 	Eventually <<he>> untangles <<himself>> from you, looking disappointed. "I shouldn't stay here much longer," <<he>> says.<<if Time.hour gte 18 or Time.hour lte 7>> "They're waiting for me."<</if>> You <<if $phase isnot 2>>push yourself into a sitting position and <</if>>look at <<him>>. <<His>> hair is sticking to <<his>> face. You reach forward and brush it away, and <<he>> smiles.
 	<br><br>
 
-	<<if Time.hour lte 18 and Time.hour gte 7>>
+	<<if Time.hour lt 18 and Time.hour gte 7>>
 		<<if Weather.precipitation isnot "none">>
 			<<link [[Walk to the arcade together (0:15)|Kylar Arcade Walk]]>><<pass 15>><</link>>
 		<br>
 		<<else>>
 			<<link [[Walk to the park together (0:15)|Kylar Park Walk]]>><<pass 15>><</link>>
+			<br>
+		<</if>>
+	<<else>>
+		<<if $syndromekylar is 1>>
+			<<kylarmanoricon>><<link [["Walk to the manor together (0:10)"|Kylar Walk Manor]]>><<pass 10>><</link>>
 			<br>
 		<</if>>
 	<</if>>
@@ -2008,7 +2027,7 @@ You decide to ignore what <<hes>> saying. <<His>> stammering slowly stops, and <
 <</if>>
 <br><br>
 
-<<if Time.hour lte 18 and Time.hour gte 7>>
+<<if Time.hour lt 18 and Time.hour gte 7>>
 	<<if Weather.precipitation isnot "none">>
 		<<link [[Walk to the arcade together (0:15)|Kylar Arcade Walk]]>><<pass 15>><</link>>
 		<br>
@@ -2687,7 +2706,7 @@ You nod, and <<he>> blushes. You think <<hes>> going to turn you down, but <<he>
 			<</if>>
 			<br><br>
 		<<elseif _tf.foxEars and _tfSplit is 1>>
-			After a while, <<his>> hand brushes against your fox ears. It wiggles at <<his>> touch.
+			After a while, <<his>> hand brushes against your fox ears. One wiggles at <<his>> touch.
 			<<He>> smiles. "Are they sensitive?" For a few minutes, <<he>> scratches around your ears, blowing into them at one point.
 			<<if _tf.foxTail>>
 				Your tail swishes up and down, brushing against <<him>> on occasion.
@@ -2953,10 +2972,10 @@ You wrap an arm around Kylar's waist. <<His>> body freezes, then melts against y
 :: Kylar Give Milkshake
 <<set $outside to 1>><<set $location to "school">><<schooleffects>><<effects>>
 
-You take out your milkshake and show it to Kylar. "You brought me something?" <<He>> says, looking at the creamy treat.
+You take out your milkshake and show it to Kylar. "You brought me something?" <<he>> says, looking at the creamy treat.
 <br><br>
 
-You nod and hand the cup over to Kylar. <<He>> looks delighted. You spend the next twenty minutes chatting while Kylar sips on the shake. After <<he>> finishes, Kylar stuffs the cup into their bag. You hope the remains of the shake don't spill in there.
+You nod and hand the cup over to Kylar. <<He>> looks delighted. You spend the next twenty minutes chatting while Kylar sips on the shake. After <<he>> finishes, Kylar stuffs the cup into <<his>> bag. You hope the remains of the shake don't spill in there.
 <br><br>
 <<kylaroptions>>
 
@@ -2964,10 +2983,10 @@ You nod and hand the cup over to Kylar. <<He>> looks delighted. You spend the ne
 <<set $outside to 1>><<set $location to "school">><<schooleffects>><<effects>>
 <<wearProp "milkshake">>
 
-You take out your milkshake and show it to Kylar. "You brought me something?" <<He>> says, looking at the creamy treat.
+You take out your milkshake and show it to Kylar. "You brought me something?" <<he>> says, looking at the creamy treat.
 <br><br>
 
-"I thought we could share it," you say. Kylar looks delighted. You spend the next twenty minutes sipping the drink and chatting. After you both finish, Kylar stuffs the cup into their bag. You hope the remains of the shake don't spill in there.
+"I thought we could share it," you say. Kylar looks delighted. You spend the next twenty minutes sipping the drink and chatting. After you both finish, Kylar stuffs the cup into <<his>> bag. You hope the remains of the shake don't spill in there.
 <br><br>
 
 <<kylaroptions>>
@@ -3013,7 +3032,7 @@ The crowd cheers. Kylar struggles free and runs through the other students, one 
 :: Kylar Walk
 <<set $outside to 0>><<set $location to "school">><<schooleffects>><<effects>>
 
-You turn and walk away. No doubt the audience were hoping you'd cause a bigger fuss.
+You turn and walk away. No doubt the audience was hoping you'd cause a bigger fuss.
 <br><br>
 
 <<link [[Next|Hallways]]>><<set $eventskip to 1>><<endevent>><</link>>
@@ -3248,11 +3267,11 @@ Kylar laughs. "I-I forgot," <<he>> says. "I have somewhere I need to be." <<He>>
 	You finish the food. "I'm going to wait in the classroom," Robin says when you're done. "I don't like being late." <<He>> hugs you. "Do you want to come with me?"
 	<br><br>
 
-		<<if C.npc.Kylar.state is "active">>
-			Kylar watches from across the canteen.
-			<<gksuspicion>><<npcincr Kylar rage 1>><<set $kylarexit to "jealous robin">>
-			<br><br>
-		<</if>>
+	<<if C.npc.Kylar.state is "active">>
+		Kylar watches from across the canteen.
+		<<gksuspicion>><<npcincr Kylar rage 1>><<set $kylarexit to "jealous robin">>
+		<br><br>
+	<</if>>
 	<<endevent>>
 	<<historyicon>><<link [[Go with Robin to your history lesson (0:01)|History Classroom]]>><<set $justEntered to true>><<set $withRobin to "yes">><<pass 1>><<unset $kylarexit>><</link>><br>
 	<<schoolicon "library">><<link [[Say you'd rather go to the library (0:05)|School Library]]>><<set $robinexit to "library">><<set $phase2 to "library">><<pass 5>><</link>><br>
@@ -3317,11 +3336,10 @@ You kiss Kylar. <<He>> almost tackles you off your seat. <<takeKissVirginity "Ky
 <<if $robinromance is 1>>
 	Robin stares at you for a moment, then down at <<his>> tray. <<He>> stands and leaves without a word.
 	<<lllove>><<npcincr Robin love -5>><<set $withRobin to "hurt">><<if $robin.timer.hurt is 0>><<set $robin.hurtReason to "you kissing Kylar">><<set $robin.timer.hurt to 1>><</if>>
-	<br><br>
 <<else>>
 	Robin glances at you, but blushes and looks away when <<he>> sees what you're up to.
-	<br><br>
 <</if>>
+<br><br>
 
 <<if _npcKissVirginTemp>>
 	"Th-that was my first kiss," Kylar whispers, <<nnpc_his "Kylar">> eyes shining. "It was better than I could've ever dreamed.<<if $kylarenglish gte 1>> I'm so glad <<he>> got to see how much we love each other.<</if>>"
@@ -3672,7 +3690,7 @@ Excited at the prospect of violence, other students gather around.
 
 <<elseif $enemyarousal gte $enemyarousalmax>>
 	<<ejaculation>>
-	"You... stupid..." Whitney pants, leaning against the wall. The audience burst into laughter. Flushed, <<he>> scrambles into the crowd.<<llust>><<npcincr Whitney lust -20>>
+	"You... stupid..." Whitney pants, leaning against the wall. The audience bursts into laughter. Flushed, <<he>> scrambles into the crowd.<<llust>><<npcincr Whitney lust -20>>
 	<br><br>
 	<<clotheson>>
 	<<endcombat>>
@@ -3705,7 +3723,7 @@ Excited at the prospect of violence, other students gather around.
 		A student has stepped forward from the crowd, come to your aid. Another student steps forward, and latches onto Whitney's other arm. They tumble backwards.
 		<br><br>
 	<<else>>
-		Whitney manages to throw him off, but it gives you the opportunity you need.
+		Whitney manages to throw them off, but it gives you the opportunity you need.
 		<br><br>
 	<</if>>
 	<br><br>
@@ -3870,6 +3888,7 @@ You smile and squeeze <<his>> other hand. <<He>> drops the knife with a horrifie
 You continue eating, sat beside a dazed Kylar. <<He>> carries your trays away when you're done, then walks in the direction of the <<if Weather.precipitation isnot "none">>library<<else>>rear courtyard<</if>>.
 <br><br>
 
+<<endevent>>
 <<historyicon>><<link [[Go to your history lesson (0:01)|History Classroom]]>><<set $justEntered to true>><<pass 1>><</link>><br>
 <<if _kylarlocation.area is "library">>
 	<<schoolicon "library">><<link [[Follow Kylar to the library (0:02)|School Library]]>><<pass 2>><</link>><br>
@@ -4031,18 +4050,18 @@ You approach Kylar. <<Hes>> racking up quite a score.
 You search the <<persons>> <<wallet>>. There's <<moneyGain _money true true>> inside.
 <br><br>
 
-<<endevent>>
+<<wearProp "wallet">>
 <<destinationeventend>>
 
 :: Street Kylar Help
-<<set $outside to 1>><<set $location to "town">><<effects>>
+<<set $outside to 1>><<set $location to "town">><<effects>><<wearProp "phone" 0 "mobile">>
 
 You pick up the <<persons>> phone and call the hospital. After holding for several minutes, you give them your location and tell them what happened. They agree to send an ambulance.
 <br><br>
 
-<<link [[Rob|Street Kylar Rob]]>><</link>><<crime "thievery">>
+<<link [[Rob|Street Kylar Rob]]>><<handheldon>><</link>><<crime "thievery">>
 <br>
-<<link [[Leave|Street Kylar Leave]]>><</link>>
+<<link [[Leave|Street Kylar Leave]]>><<handheldon>><</link>>
 <br>
 
 :: Street Kylar Leave
@@ -4572,7 +4591,7 @@ You tell Kylar about the loft at the orphanage and ask if <<he>> has any thought
 <br><br>
 
 <<if $money gte 2000000>>
-	<<link [[Set up lab (£20000 3:00)|Kylar Loft 2]]>><<set $money -= 2000000>><<set $loft_kylar to 1>><<set $loft_upgrade += 1>><<pass 180>><</link>>
+	<<link [[Set up lab (£20000 3:00)|Kylar Loft 2]]>><<money -2000000 "orphanageUpgrades">><<set $loft_kylar to 1>><<set $loft_upgrade += 1>><<pass 180>><</link>>
 	<br><br>
 <</if>>
 
@@ -4599,7 +4618,7 @@ You tug the cable, reveal the hidden staircase, and ascend. Kylar investigates e
 <br>
 
 :: Kylar Loft 3
-<<set $outside to 0>><<set $location to "home">><<effects>>
+<<set $outside to 0>><<set $location to "home">><<effects>><<wearProp "note">>
 
 <<generatey2>>A <<person2>><<person>> arrives to investigate at one point. You send <<him>> downstairs to gather others. More residents arrive and crowd around the door. They look nervous, but excited.
 <br><br>
@@ -4610,13 +4629,13 @@ Kylar explains the fermentation process, and demonstrates how to prepare the che
 "I wrote a list of instructions," Kylar says once you're alone. <<He>> hands you a note. "You should stick it up somewhere." <<He>> looks at <<his>> feet, as if waiting for something.
 <br><br>
 
-<<link [[Reward with kiss|Kylar Loft Kiss]]>><</link>><<promiscuous1>><<npcincr Kylar love 1>><<npcincr Kylar lust 1>><<glove>><<glust>><<kissvirginitywarning>><<NPCvirginitywarning "Kylar" "kiss">>
+<<link [[Reward with kiss|Kylar Loft Kiss]]>><<handheldon>><</link>><<promiscuous1>><<npcincr Kylar love 1>><<npcincr Kylar lust 1>><<glove>><<glust>><<kissvirginitywarning>><<NPCvirginitywarning "Kylar" "kiss">>
 <br>
 <<if hasSexStat("promiscuity", 3)>>
-	<<link [[Reward with lewd|Kylar Loft Lewd]]>><</link>><<promiscuous3>><<npcincr Kylar love 3>><<npcincr Kylar lust 3>><<gglove>><<gglust>>
+	<<link [[Reward with lewd|Kylar Loft Lewd]]>><<handheldon>><</link>><<promiscuous3>><<npcincr Kylar love 3>><<npcincr Kylar lust 3>><<gglove>><<gglust>>
 	<br>
 <</if>>
-<<link [[Thank|Kylar Loft Thank]]>><</link>>
+<<link [[Thank|Kylar Loft Thank]]>><<handheldon>><</link>>
 <br>
 
 :: Kylar Loft Kiss
@@ -4846,7 +4865,7 @@ The two of you continue walking.
 <br><br>
 
 <<if $money gte 10>>
-	<<link [[Toss a coin (£0.10)|Kylar Fountain Wish]]>><<set $money -= 10>><<trauma -3>><<set $kylar.fountainCoin to 1>><</link>><<ltrauma>>
+	<<link [[Toss a coin (£0.10)|Kylar Fountain Wish]]>><<money -10>><<trauma -3>><<set $kylar.fountainCoin to 1>><</link>><<ltrauma>>
 	<br>
 <</if>>
 <<link [[Take a coin from the fountain and toss it|Kylar Fountain Wish]]>><<set $kylar.fountainCoin to 0>><</link>>
@@ -5051,12 +5070,12 @@ After a moment, <<he>> shifts uncomfortably. "M-my love, I'm afraid I can't... u
 <br><br>
 
 <<if hasSexStat("promiscuity", 2)>>
-	<<link [["Help " + $NPCList[0].pronouns.him|School Toilets Kylar 2]]>><<set $phase to 1>><<npcincr Kylar love 1>><<npcincr Kylar lust -10>><</link>><<promiscuous2>><<glove>><<llust>>
+	<<link [[Help <<him>>|School Toilets Kylar 2]]>><<set $phase to 1>><<npcincr Kylar love 1>><<npcincr Kylar lust -10>><</link>><<promiscuous2>><<glove>><<llust>>
 <<else>>
-	<span class="blue">You aren't promiscuous enough to take things further.</span>
+	<<insufficientStat "promiscuity" "to take things further">>
 <</if>>
 <br>
-<<link [["Reject " + $NPCList[0].pronouns.his + " advances"|School Toilets Kylar 2]]>><<set $phase to 2>><<npcincr Kylar love -1>><</link>><<llove>><br>
+<<link [[Reject <<his>> advances|School Toilets Kylar 2]]>><<set $phase to 2>><<npcincr Kylar love -1>><</link>><<llove>><br>
 
 :: School Toilets Kylar 2
 <<effects>>

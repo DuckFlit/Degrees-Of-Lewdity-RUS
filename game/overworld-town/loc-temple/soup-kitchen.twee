@@ -19,14 +19,21 @@
 <<else>>
 	You are in the soup kitchen on Wolf Street. Rows of crowded tables line the hall. The kitchen proper sits at the back, filling the room with the smell of warm soup.
 	<br><br>
-	<<ind>><<link [[Help River (1:00)|Soup Kitchen Work]]>><<pass 60>><<famegood 5>><<trauma -6>><<npcincr River love 1>><</link>><<glove>><<ltrauma>>
+	<<kitchenicon "pot_clean">><<link [[Help River (1:00)|Soup Kitchen Work]]>><<pass 60>><<famegood 5>><<trauma -6>><<npcincr River love 1>><</link>><<glove>><<ltrauma>>
 	<br>
 	<<if $mathsproject is "ongoing" and $river_help isnot 1>>
-		<<askicon>><<link [[Ask River for help with maths competition|Soup Kitchen Maths]]>><</link>>
+		<<socialiseicon "ask">><<link [[Ask River for help with maths competition|Soup Kitchen Maths]]>><</link>>
 		<br>
 	<</if>>
 	<<if $loft_known is 1 and $loft_river isnot 1 and C.npc.River.love gte 40>>
 		<<ind>><<link [[Tell River about the orphanage loft|River Loft]]>><</link>>
+		<br>
+	<</if>>
+	<<if $kitchen_river gte 1>>
+		<<kitchenicon "range">><<link [[Cook your own food|Soup Kitchen Kitchen]]>><</link>>
+		<br>
+	<<else>>
+		<<socialiseicon "ask">><<link [[Ask River if you can cook your own food here|Soup Kitchen Kitchen Ask]]>><</link>>
 		<br>
 	<</if>>
 	<<wolficon>><<link [[Leave|Wolf Street]]>><<set $eventskip to 1>><</link>>
@@ -37,7 +44,6 @@
 
 <<set $outside to 0>><<set $location to "temple">><<effects>>
 <<npc River>><<person1>><<generatey2>><<generate3>>
-<br><br>
 You tell River about the loft at the orphanage. <<Hes>> quiet. You're not sure if <<he>> even listened, until <<he>> at last speaks. "It's not my place to discuss this," <<he>> says.
 <br><br>
 "Are we allowed seconds?" interrupts a <<person2>><<person>> you recognise from the orphanage. <<He>> places an empty bowl on the counter. River hesitates for a moment, then fills it. The <<person>> scurries away.
@@ -48,7 +54,7 @@ You tell River about the loft at the orphanage. <<Hes>> quiet. You're not sure i
 <i>A kitchen will let the orphans prepare meals away from Bailey's gaze, which will make it easier to increase hope.</i>
 <br><br>
 <<if $money gte 2000000>>
-	<<link [[Have kitchen installed (£20000 3:00)|River Loft 2]]>><<set $loft_river to 1>><<set $loft_upgrade += 1>><<set $money -= 2000000>><</link>>
+	<<link [[Have kitchen installed (£20000 3:00)|River Loft 2]]>><<set $loft_river to 1>><<set $loft_upgrade += 1>><<money -2000000 "orphanageUpgrades">><</link>>
 	<br>
 <</if>>
 <<link [[Leave|Soup Kitchen]]>><<endevent>><<endevent>><</link>>
@@ -242,13 +248,12 @@ You help River work the kitchen. You cut vegetables ready for cooking and clean 
 	<</addinlineevent>>
 <<else>>
 	<<addinlineevent "kitchen_argument" 1>>
-		<<npc River>><<person1>>
+		<<npc River>><<person1>><<wearProp "ladle">>
 		An argument at the far end of the hall becomes heated. River asks you to handle the soup while <<he>> deals with it. You get to work spooning ladle fulls into bowls for the waiting crowd. You need to work fast to keep up with the flow of people, but manage to do so without making a mess.
 		<br><br>
 		River returns a few minutes later. <<He>> seems pleased you were able to handle things.
 		<br><br>
-		<<endevent>>
-		<<link [[Next|Soup Kitchen]]>><</link>>
+		<<link [[Next|Soup Kitchen]]>><<endevent>><</link>>
 		<br>
 	<</addinlineevent>>
 	<<addinlineevent "kitchen_baking" 1>>
@@ -521,3 +526,68 @@ The rest of the hour passes without event.
 <</if>>
 <<link [[Next|Wolf Street]]>><</link>>
 <br>
+
+
+:: Soup Kitchen Kitchen Ask
+<<set $outside to 0>><<set $location to "temple">><<effects>>
+
+<<npc "River">><<person1>>
+
+<<if $speech_attitude is "meek">>
+	"Could I use the kitchen for other things?" you ask River. "I promise I won't get in the way."
+<<elseif $speech_attitude is "bratty">>
+	"Could I use the kitchen for other things?" you ask River. "I know my way around a spatula."
+<<else>>
+	"Could I use the kitchen for other things?" you ask River. "I won't get in your way."
+<</if>>
+<br><br>
+
+<<if C.npc.River.love gte 20>>
+	River spares a glance your way. <span class="green">"Fine,"</span> <<he>> says. "As long as you clean up after yourself. Feel free to use the fish and vegetables we get in. They change every day."
+	<br><br>
+	<<link [[Next|Soup Kitchen]]>><<set $kitchen_river to 1>><<endevent>><</link>>
+	<br>
+<<else>>
+	River doesn't look up from the half-prepared fish in front of <<him>>. "This isn't a suitable place for cooking just anything," <<he>> says. "Use the one at school. I'm sure the orphanage has a kitchen as well."
+	<br><br>
+	<i>Helping River around the soup kitchen might change <<his>> mind.</i>
+	<br><br>
+	<<link [[Next|Soup Kitchen]]>><<endevent>><</link>>
+	<br>
+<</if>>
+
+:: Soup Kitchen Kitchen
+<<set $outside to 0>><<set $location to "temple">><<effects>>
+
+<<if Time.hour gte 21>>
+	<<generate1>><<person1>>The kitchen closes for the evening. Several <<monks>> from the nearby temple arrive to help clean up.
+	<br><br>
+	<<endevent>>
+	<<link [[Next|Wolf Street]]>><<set $eventskip to 1>><</link>>
+	<br>
+<<else>>
+	You occupy a free space in the kitchen, out of the way of River and the <<monks>>.
+	<br><br>
+	<<if Time.weekDay is 1>>
+		<<ingredients_supplied "vegetable_oil" "salt" "flour" "haddock" "lemon">>
+	<<elseif Time.weekDay is 2>>
+		<<ingredients_supplied "vegetable_oil" "salt" "flour" "salmon" "broccoli">>
+	<<elseif Time.weekDay is 3>>
+		<<ingredients_supplied "vegetable_oil" "salt" "flour" "trout" "lemon">>
+	<<elseif Time.weekDay is 4>>
+		<<ingredients_supplied "vegetable_oil" "salt" "flour" "cod" "potato">>
+	<<elseif Time.weekDay is 5>>
+		<<ingredients_supplied "vegetable_oil" "salt" "flour" "clam" "onion">>
+	<<elseif Time.weekDay is 6>>
+		<<ingredients_supplied "vegetable_oil" "salt" "flour" "prawn" "garlic_bulb">>
+	<<else>>
+		<<ingredients_supplied "vegetable_oil" "salt" "flour" "prawn" "lemon">>
+	<</if>>
+	<<ingredients_exceptions>>
+	<br><br>
+
+	<<kitchen_display_all>>
+
+	<<link [[Leave|Soup Kitchen]]>><<handheldon>><</link>>
+	<br>
+<</if>>

@@ -241,7 +241,7 @@ All eyes are on you as you are led up to the central platform. There's music pla
 <<danceaudience>>
 
 <<if $danceevent is 0>>
-	<<if $exposed gte 2 and $exhibitionism lte 74>>
+	<<if $exposed gte 2 and !hasSexStat("exhibitionism", 5)>>
 		Being so exposed is humiliating, but there's nothing you can do.
 		<br><br>
 	<<elseif $exposed gte 1 and $exhibitionism lte 34 and !$worn.under_lower.type.includes("dance")>>
@@ -350,7 +350,7 @@ The crowd starts booing. A <<generate1>><<person1>><<person>> runs on stage. "Pl
 <<if $enemyhealth lte 0>>
 
 	The <<person1>><<person>> recoils in pain and tumbles from the stage. <<tearful>> you jump over <<him>> and run for the stairs.
-	The audience are so bemused they make no move to stop you.
+	The audience is so bemused they make no move to stop you.
 	You climb the stairs as fast as you can, footsteps thundering beneath you.
 	You emerge in the forest and run in a random direction, aware you are still being pursued.
 	<br><br>
@@ -370,7 +370,7 @@ The crowd starts booing. A <<generate1>><<person1>><<person>> runs on stage. "Pl
 
 	The <<beasttype>> flees in pain and fear, running amok among the audience in an attempt to find an exit.
 	<<tearful>> you leap from the stage and run for the stairs.
-	The audience are so distracted they make no move to stop you.
+	The audience is so distracted they make no move to stop you.
 	You climb the stairs as fast as you can, footsteps thundering beneath you.
 	You emerge in the forest and run in a random direction, aware you are still being pursued.
 	<br><br>
@@ -438,7 +438,7 @@ The crowd starts booing. A <<generate1>><<person1>><<person>> runs on stage. "Pl
 <<if $enemyhealth lte 0>>
 
 	The <<person1>><<person>> recoils in pain and tumbles from the stage. <<tearful>> you jump over <<him>> and run for the stairs.
-	The audience are so bemused they make no move to stop you.
+	The audience is so bemused they make no move to stop you.
 	You climb the stairs as fast as you can, footsteps thundering beneath you.
 	You emerge in the forest and run in a random direction, aware you are still being pursued.
 	<br><br>
@@ -460,7 +460,7 @@ The crowd starts booing. A <<generate1>><<person1>><<person>> runs on stage. "Pl
 
 	The <<person1>><<person>> recoils in pain and tumbles from the stage, and the others back off in instinctive fear.
 	<<tearful>> you jump over <<him>> and run for the stairs.
-	The audience are so bemused they make no move to stop you.
+	The audience is so bemused they make no move to stop you.
 	You climb the stairs as fast as you can, footsteps thundering beneath you.
 	You emerge in the forest and run in a random direction, aware you are still being pursued.
 	<br><br>
@@ -481,17 +481,19 @@ The crowd starts booing. A <<generate1>><<person1>><<person>> runs on stage. "Pl
 
 :: Underground Stage Intro
 <<set $outside to 0>><<set $location to "underground">><<effects>>
+<<beastNEWinit 1 pig>>
 You are led once more to the stage, where the crowd awaits. <<covered>>
 
 <<if $rng gte 51 and ($monster is 1 or $bestialitydisable is "f")>><!-- Modified for Beast People -->
 	<<beastNEWinit 1 pig>>
-	Once there, a metal shutter rattles open behind you, and a gigantic <<beasttype>> steps out. The audience cheers it on.
+	Once there, a metal shutter rattles open behind you, and a gigantic <<beasttype>> steps out. The audience cheers <<bhim>> on.
 	<br><br>
 
 	<<link [[Next|Underground Stage Pig]]>><<set $molestationstart to 1>><</link>>
 	<br>
 
 <<else>>
+	<<endevent>>
 	There's a <<generate1>><<person1>><<person>> already waiting for you. <<He>> takes hold of you leash and pulls you closer while looking at the audience.
 	"What shall I do with <<phim>> my friends?"
 	<br><br>
@@ -602,6 +604,7 @@ As you walk close to <<person1>><<him>>, <<he>> grabs you and bends you over <<h
 
 	<<clotheson>>
 	<<endcombat>>
+	<<badEndTrackingEnd "Underground Dungeon" { reason: "uDungeonPresented" }>>
 	<<dungeonescape>>
 
 	<<link [[Next|Forest]]>><<set $forest to 40>><</link>>
@@ -651,7 +654,7 @@ It looks like you're in a forest clearing.
 		<<if hasSexStat("deviancy", 3)>>
 			<<link "Yes">><<replace "#choice">><<undergroundPlantFakeChoice>><</replace>><<run Links.generateLinkNumbers($(".passage"))>><</link>><<deviant3>>
 		<<else>>
-			<span class="blue">You are not deviant enough to agree to sex with a <<personsimple>>.</span>
+			<<insufficientStat "deviancy" "to agree to usch an offer">>
 		<</if>>
 		<br>
 		<<link "No">><<replace "#choice">><<undergroundPlantFakeChoice>><</replace>><<run Links.generateLinkNumbers($(".passage"))>><</link>>
@@ -686,17 +689,18 @@ You've barely reached the trees when the second shot rings out. You run as fast 
 <<if $athleticsSuccess>>
 	<<rng>>
 	Eventually your legs give out and you collapse against a tree. You hear nothing but your beating heart and the wind rustling through leaves.
-	You got away.
+	<span class="green">You got away</span>.
 	<<pass 5>>
 	<br><br>
 
 	<<endevent>>
+	<<badEndTrackingEnd "Underground Dungeon" { reason: "uDungeonOutran" }>>
 	<<dungeonescape>>
 
 	<<link [[Next|Forest]]>><<set $forest to 1>><</link>>
 <<else>>
 	<<if $rng gte 51 and ($monster is 1 or $bestialitydisable is "f")>><!-- Modified for BeastPeople -->
-		You hear something running through the grass behind you, and feel <<print ($monster is 1 ? "hands" : "paws")>> on your back as you are forced to your knees.
+		You hear something running through the grass behind you, and <span class="red">feel <<print ($monster is 1 ? "hands" : "paws")>> on your back as you are forced to your knees</span>.
 		The <<beasttype 0>> starts humping<<if $NPCList[0].penis isnot "none">>, you feel <<bhis 0>> penis prodding your <<bottom>><</if>>.
 		<br><br>
 
@@ -706,11 +710,10 @@ You've barely reached the trees when the second shot rings out. You run as fast 
 
 		<<link [[Next|Underground Hunt Dog]]>><<set $molestationstart to 1>><</link>>
 	<<else>>
-		You run as fast you can. You hear the <<victimgirls>> scream as they are caught, one by one.
 		You hear something running through the grass behind you right before you are tackled to the ground.
 		<br><br>
 
-		"Got you," the <<person>> says. A number of others from the crowd arrive, panting. "Now the hunter devours <<his>> prey."
+		"Got you," the <<person>> says. A number of others from the crowd arrive, panting. "Now the <<if $pronoun is "f">>huntress<<else>>hunter<</if>> devours <<his>> prey."
 		<br><br>
 
 		<<saveNPC 1 "underground_hunt_1">>
@@ -754,8 +757,22 @@ You've barely reached the trees when the second shot rings out. You run as fast 
 
 <<if $enemyarousal gte $enemyarousalmax>>
 
-	<<beastejaculation>>
+	<<beastejaculation knot>>
+	<<if _knotted>>
+		<<pass 5>>
+		The audience gather around you, some have taken out their phones and started filming you, stuck by the <<beasttype>>'s <<print $NPCList[0].penisdesc>>.
+		<br><br>
 
+		"Nice to see this <<bitch>> getting <<bred>> proper."
+		<br>
+		"Just what a worthless slut deserves."
+		<br>
+		"I bet <<pshe>> is enjoying it."
+		<br><br>
+
+		The jeers and comments continue as the <<beasttype>> forces you prone on the forest ground with <<bhis>> weight. At last, the knot empties enough for <<bhim>> to wriggle it out with a plop. Semen oozes down your <<if $pain gte 60 or $arousal gte ($arousalmax / 5) * 4>>trembling<</if>> thighs.
+		<br><br>
+	<</if>>
 	The <<beasttype 0>> barks happily. "Good dog," says the <<person2>><<person>>.
 	The crowd whisper among themselves as <<he>> grabs your leash and pulls you to your feet.
 	<<if !$worn.feet.type.includes("shackle")>>
@@ -1252,7 +1269,7 @@ The <<person1>><<person>> holds you close and continues to lick along your neck,
 <<He>> strokes your head. "You wanna ditch this joint? Let's get out of here."
 <br><br>
 
-<<link [[Nod|Underground Plant Escape 2]]>><<set $phase to 0>><<dungeonescape>><</link>>
+<<link [[Nod|Underground Plant Escape 2]]>><<set $phase to 0>><<badEndTrackingEnd "Underground Dungeon" { reason: "uDungeonSaved" }>><<dungeonescape>><</link>>
 <br>
 <<link [[Shake your head|Underground Plant Escape Refuse]]>><<set $phase to 1>><</link>>
 
@@ -1325,7 +1342,7 @@ A bush nearby rustles and you tense up. Somebody pops their head out the top. <s
 <<if hasSexStat("deviancy", 3)>>
 	<<link [[Yes|Underground Plant Escape 4]]>><<set $phase to 2>><</link>><<deviant3>>
 <<else>>
-	<span class="blue">You are not deviant enough to agree to sex with a <<personsimple>>.</span>
+	<<insufficientStat "deviancy" "to agree to usch an offer">>
 <</if>>
 <br>
 <<link [[No|Underground Plant Escape 4]]>><</link>>
@@ -1371,3 +1388,150 @@ You tear the fabric to pieces, and throw the remains into the corner. You won't 
 
 <<link [[Next|Underground Cell]]>><<endevent>><</link>>
 <br>
+
+:: Underground Virgin
+<<effects>>
+
+You are led to a stage surrounded by a large group of <<group>>. The crowd catcalls when you enter. With hungry eyes, they watch as you are led up to the central platform. "We've a special show for you today. One fresh virgin about to be ruined," the <<person1>><<person>> announces.
+<br><br>
+<<endevent>><<generate2>><<generate3>><<generate4>>
+"Are you sure <<pshe>> is a virgin?" asks a <<person2>><<person>>.
+<br><br>
+"<<pShe>> better be, or <<pshe>> is going to regret it," a <<person3>><<person>> grunts.
+<br><br>
+"Either way, <<pshe>> won't be when we're done with <<phim>>," a <<person4>><<person>> adds. The crowd laughs cruelly.
+<br><br>
+<<endevent>><<generatetakevirginity 1>><<person1>>
+You try to back away once you realise what is about to happen, but a <<personsimple>> advances on you, offering no chance of escape.
+<br><br>
+
+<<link [[Next|Underground Virgin Rape]]>><<set $molestationstart to 1>><<set $virginityShowPhase to 0>><</link>>
+<br>
+
+:: Underground Virgin Rape
+<<if $molestationstart is 1>>
+	<<set $molestationstart to 0>>
+	<<controlloss>>
+	<<violence 1>>
+	<<neutral 1>>
+	<<molested>>
+	<<maninit>>
+
+	<<if playerChastity()>>
+		<<set $enemytrust -= 100>>
+		<<set $enemyanger += 250>>
+	<</if>>
+	<<npctakevirginity>>
+	<<set $encounterDialogue to "undergroundBrothelVirginityShow">>
+<</if>>
+
+<<effects>>
+<<effectsman>>
+<<man>>
+<<if $player.virginity.penile isnot true or $player.virginity.vaginal isnot true>>
+	The crowd jeers, pleased to see you get what you deserved. They snap more pictures of your once virgin <<genitals>>, now dripping with cum.
+<</if>>
+<<audience>>
+<<stateman>>
+<br><br>
+<<actionsman>>
+
+<<if _combatend>>
+	<span id="next"><<link [[Next|Underground Virgin Rape Finish]]>><</link>></span><<nexttext>>
+<<else>>
+	<span id="next"><<link [[Next|Underground Virgin Rape]]>><</link>></span><<nexttext>>
+<</if>>
+
+:: Underground Virgin Rape Finish
+<<effects>>
+
+<<if $enemyhealth lte 0>>
+	<<switch $virginityShowPhase>>
+		<<case 0>>
+			You manage to kick the <<person>> off you and back away.
+			<br><br>
+			"You fucking bitch," <<he>> shouts. <<He>> picks <<himself>> up and limps from the stage.
+			<br><br>
+			<<if $player.virginity.penile isnot true or $player.virginity.vaginal isnot true>>
+				"I guess it was worth it," <<he>> mutters. "At least I got <<pher>> cherry out of that."
+			<<else>>
+				"I guess <<pshe>> really doesn't want to lose <<pher>> cherry," someone says.
+				<br><br>
+				"Too bad. It's my turn now."
+			<</if>>
+		<<case 1>>
+			The <<person>> drops you and backs away angry. "Fuck you, you'll get what's coming to you."
+		<<case 2>>
+			The <<person>> staggers back, cursing you as <<he>> nurses <<his>> bruises.
+		<<case 3>>
+			The <<person>> attempts to punch you in retaliation, but <<he>> misses. <<He>> walks off the stage, shooting you an angry glare. "Fuck <<phim>> up," <<he>> says to a <<person>>.
+		<<case 4>>
+			You cannot handle any more as you shove the <<person>> away. You have lost count of how many have had their way with you.
+	<</switch>>
+<<elseif $enemyarousal gte $enemyarousalmax>>
+	<<ejaculation>>
+
+	<<switch $virginityShowPhase>>
+		<<case 0>>
+			The <<person>> rolls off of you as <<he>> moans in pleasure. You scramble away as quickly as you can.
+			<br><br>
+			The audience laughs. "You couldn't even outlast a virgin? Pathetic."
+			<br><br>
+			<<if $player.virginity.penile isnot true or $player.virginity.vaginal isnot true>>
+				"Whatever," <<he>> scoffs. "At least I still got <<pher>> cherry."
+			<<else>>
+				"Think <<pshe>>'ll make the rest of us cum if we try for <<pher>> cherry too?" someone asks.
+				<br><br>
+				"Let's find out, shall we?"
+			<</if>>
+		<<case 1>>
+			The <<person>> drops you as <<he>> moans out the last of <<his>> orgasm.
+		<<case 2>>
+			The <<person>> fumbles off the stage, panting at the intensity of <<his>> orgasm.
+		<<case 3>>
+			The <<person>> wipes <<his>> cum off on you. "I guess this is all you are good for, you dirty cum rag."
+			<br><br>
+			"Have fun." You hear <<him>> speak to another person as <<he>> walks off the stage.
+		<<case 4>>
+			You cannot handle any more as the <<person>> finishes cleaning <<himself>> with you. You have lost count of how many have had their way with you.
+	<</switch>>
+<</if>>
+<br><br>
+
+<<if $player.virginity.penile isnot true or $player.virginity.vaginal isnot true or $virginityShowPhase gte 4>>
+	"What a show. I hope everyone enjoyed it. We'll be seeing more of <<pher>>, mark my words."
+	<br><br>
+
+	<<clotheson>>
+	<<endcombat>>
+
+	<<generate1>><<generate2>>
+
+	<<link [[Next|Underground Intro2]]>><<set $phase to 2>><<unset $virginityShowPhase>><</link>>
+	<br>
+<<else>>
+	<<endcombat>>
+
+	<<generatetakevirginity 1>><<generatetakevirginity 2>><<generatetakevirginity 3>><<generatetakevirginity 4>>
+	<<person1>>
+
+	<<switch $virginityShowPhase>>
+		<<case 0>>
+			A <<person>> steps onto the stage with a sinister smile. "It's my turn."
+			<br><br>
+			You glance around the room wildly, but there is nowhere to run.
+		<<case 1>>
+			A <<person>> takes <<his>> place. Despair sets in as you look out into the crowd. This is far from over.
+		<<case 2>>
+			It is a short lived victory, as a <<person>> climbs up to the stage. You brace yourself for more abuse.
+		<<case 3>>
+			The <<person>> gives you a predatory look before pouncing.
+	<</switch>>
+	<br><br>
+
+	<<link [[Next|Underground Virgin Rape]]>><<set $molestationstart to 1>><<set $virginityShowPhase += 1>><</link>>
+	<br>
+<</if>>
+
+
+

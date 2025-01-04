@@ -67,6 +67,8 @@
 <<widget "rentduerobin">>
 	<<set $_robinInRoom to _args[0]>>
 	<<npc Bailey>><<person1>>
+	<<set $baileyRefusedToPayTotal += $rentmoney + ($babyRent || 0)>>
+	<<set $baileyRefusedToPayTotalStat += $rentmoney + ($babyRent || 0)>>
 
 	"Time to pay up," <<he>> says.
 	<<if $baileydefeatedchain gte 3>>
@@ -228,8 +230,7 @@
 <</widget>>
 
 <<widget "rentpay">>
-	<<set $money -= $rentmoney + ($babyRent or 0)>>
-	<<set $baileyPaidStat += $rentmoney + ($babyRent or 0)>>
+	<<money `-$rentmoney + ($babyRent or 0)` "baileyRent">>
 	<<set $rentmoney to [10000,30000,50000,70000,100000,150000,200000][Math.clamp($rentstage,1,6)]>> <!-- note: clamping to 1 is intentional -->
 	<<rentmod>>
 
@@ -332,6 +333,7 @@
 		<<link [[Далее (0:30)|Eden Cabin]]>><<pass 30>><</link>>
 		<br>
 	<<else>>
+		<<badEndTracking "Eden" { reason: "soldBailey" }>>
 		<<if $hunterintro is 1>>
 			- Я знал, что верну тебя.
 		<<else>>
@@ -470,7 +472,7 @@
 		<<link [[Далее|Hospital Arrest]]>><<pass 10>><<endevent>><</link>>
 		<br>
 	<<else>>
-		<<link [[Далее->Hospital front]]>><<pass 10>><<endevent>><</link>>
+		<<link [[Далее|Hospital front]]>><<pass 10>><<endevent>><</link>>
 		<br>
 	<</if>>
 <<else>>
@@ -544,6 +546,8 @@
 
 :: Rent Refuse Robin
 <<effects>><<set $baileypaychain to 0>>
+<<set $baileyRefusedToPayTotal += $rentmoney + ($babyRent || 0)>>
+<<set $baileyRefusedToPayTotalStat += $rentmoney + ($babyRent || 0)>>
 
 <<if $speech_attitude is "bratty">>
 	Ты с вызовом смотришь на <<him>>. Я не собираюсь тебе платить. Мне все равно, что ты со мной сделаешь, но оставь Робин в покое."
@@ -718,8 +722,10 @@
 	Вы слышите шелест бумаги, прежде чем вас тащат дальше по туннелю.
 	<br><br>
 	<<if _robinIsPresent>>
+		<<badEndTracking "Underground Dungeon" { reason: "soldBaileyRobin" }>>
 		<<link [[Далее|Underground Intro]]>><<set $baileySold to true>><<endevent "phaseless">><<set $phase to 1>><</link>>
 	<<else>>
+		<<badEndTracking "Underground Dungeon" { reason: "soldBailey" }>>
 		<<link [[Далее|Underground Intro]]>><<set $baileySold to true>><</link>>
 	<</if>>
 	<br>

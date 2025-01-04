@@ -43,7 +43,7 @@ const Furniture = (() => {
 			type: ["chair", "expensive"],	Traits, can be multiple, shouldn't be shown because I'm too lazy to make a description /j
 			cost: 160,						Cost, 100 is one pound.
 			description: "A set of stools on which to sit on.",			Description for the shop interface to show.
-			iconFile: "stool.png",			Used in image widgets; <img class="icon" @src="'img/misc/icon/furniture/' + $_chair.iconFile">
+			iconFile: "stool",		    	Used in image widgets; <<furnitureicon "stool">>
 		});
 
 		Egg armchairs are here to stay.
@@ -60,8 +60,8 @@ const Furniture = (() => {
 			type: ["starter"],
 			cost: 0,
 			description: "Старый, подержанный стул. Шатающийся и неудобный.",
-			iconFile: "basicChair.png",
-			iconFile2: "basicChairDesk.png",
+			iconFile: "basicChair",
+			iconFile2: "basicChairDesk",
 			tier: 0,
 		});
 		mapper.set("stool", {
@@ -73,8 +73,8 @@ const Furniture = (() => {
 			type: [],
 			cost: 460,
 			description: "Набор табуреток. Неудобно, но лучше, чем ничего.",
-			iconFile: "stool.png",
-			iconFile2: "stoolDesk.png",
+			iconFile: "stool",
+			iconFile2: "stoolDesk",
 			tier: 0,
 		});
 		mapper.set("woodenchair", {
@@ -86,34 +86,34 @@ const Furniture = (() => {
 			type: [],
 			cost: 1280,
 			description: "Набор обычных деревянных стульев. Не самые удобные.",
-			iconFile: "chair.png",
-			iconFile2: "chairDesk.png",
+			iconFile: "chair",
+			iconFile2: "chairDesk",
 			tier: 0,
 		});
 		mapper.set("swivelchair", {
 			name: "swivel chairs",
-			nameCap: "Поворотные кресла",
+			nameCap: "Swivel chairs",
 			article: "a",
 			nameSolo: "swivel chair",
 			category: ["chair"],
 			type: ["comfy"],
 			cost: 1480,
-			description: "Пара поворотных стульев. Удобные и эргономичные.",
-			iconFile: "swivelChair.png",
-			iconFile2: "swivelChairDesk.png",
+			description: "A pair of swivel chairs. Comfortable and ergonomic.",
+			iconFile: "swivelChair",
+			iconFile2: "swivelChairDesk",
 			tier: 1,
 		});
 		mapper.set("shellchair", {
 			name: "shell chairs",
-			nameCap: "Кресла-ракушки",
+			nameCap: "Shell chairs",
 			article: "a",
 			nameSolo: "shell chair",
 			category: ["chair"],
 			type: ["comfy"],
 			cost: 1750,
-			description: "Комплект стульев на колесиках со спинкой в форме раковины. Роскошный.",
-			iconFile: "shellChair.png",
-			iconFile2: "shellChairDesk.png",
+			description: "A set of wheeled chairs with a shell-shaped back. Luxurious.",
+			iconFile: "shellChair",
+			iconFile2: "shellChairDesk",
 			tier: 1,
 		});
 		mapper.set("armchair", {
@@ -125,8 +125,8 @@ const Furniture = (() => {
 			type: ["comfy"],
 			cost: 1970,
 			description: "Набор кресел. Мягкие, расслабляющие и дорогие.",
-			iconFile: "armchair.png",
-			iconFile2: "armchairDesk.png",
+			iconFile: "armchair",
+			iconFile2: "armchairDesk",
 			tier: 1,
 		});
 		mapper.set("egg", {
@@ -138,8 +138,8 @@ const Furniture = (() => {
 			type: ["comfy"],
 			cost: 2420,
 			description: "Набор кресел с округлой спинкой в экзотических цветах. Непростая установка.",
-			iconFile: "armchairegg.png",
-			iconFile2: "armchaireggDesk.png",
+			iconFile: "armchairegg",
+			iconFile2: "armchaireggDesk",
 			tier: 1,
 		});
 
@@ -151,7 +151,7 @@ const Furniture = (() => {
 			type: [],
 			cost: 1100,
 			description: "Можно использовать как рабочее место или место для собраний. Просто добавьте стулья",
-			iconFile: "table.png",
+			iconFile: "table",
 			tier: 0,
 		});
 		mapper.set("marbletable", {
@@ -161,7 +161,7 @@ const Furniture = (() => {
 			type: [],
 			cost: 1430,
 			description: "Обычный деревянный стол с изюминкой.",
-			iconFile: "marbletable.png",
+			iconFile: "marbletable",
 			tier: 1,
 		});
 
@@ -173,7 +173,7 @@ const Furniture = (() => {
 			type: ["stable", "starter"],
 			cost: 0,
 			description: "Старый, доставшийся в наследство письменный стол. Оскверненный высечками сирот прошлых лет.",
-			iconFile: "desk.png",
+			iconFile: "desk",
 		});
 		mapper.set("deskGlass", {
 			name: "glass desk",
@@ -182,7 +182,7 @@ const Furniture = (() => {
 			type: ["fragile"],
 			cost: 1250,
 			description: "A sleek, contemporary desk. Breakable.",
-			iconFile: "deskGlass.png",
+			iconFile: "deskGlass",
 		});
 		mapper.set("deskMidcentury", {
 			name: "mid-century modern desk",
@@ -191,7 +191,7 @@ const Furniture = (() => {
 			type: ["stable"],
 			cost: 1550,
 			description: "Простой письменный стол в стиле модерн. Популярный в середине XX века",
-			iconFile: "deskMidcentury.png",
+			iconFile: "deskMidcentury",
 		});
 		mapper.set("deskAntique", {
 			name: "antique desk",
@@ -200,7 +200,7 @@ const Furniture = (() => {
 			type: ["sturdy"],
 			cost: 3820,
 			description: "Вычурный, антикварный письменный стол. Построен так, чтобы прослужить всю жизнь.",
-			iconFile: "deskAntique.png",
+			iconFile: "deskAntique",
 		});
 
 		/* ------------- BEDS ------------- */
@@ -211,7 +211,7 @@ const Furniture = (() => {
 			type: ["single", "starter"],
 			cost: 0,
 			description: "Старая, убогая кровать. Неудобная",
-			iconFile: "bed.png",
+			iconFile: "bed",
 			tier: 0,
 		});
 		mapper.set("singlebed", {
@@ -221,7 +221,7 @@ const Furniture = (() => {
 			type: ["single"],
 			cost: 1680,
 			description: "Кровать для одного.",
-			iconFile: "singlebed.png",
+			iconFile: "singlebed",
 			tier: 0,
 		});
 		mapper.set("singlebeddeluxe", {
@@ -231,7 +231,7 @@ const Furniture = (() => {
 			type: ["single", "comfy"],
 			cost: 2400,
 			description: "Эргономичная кровать. Очень удобная.",
-			iconFile: "singlebeddeluxe.png",
+			iconFile: "singlebeddeluxe",
 			tier: 1,
 		});
 		mapper.set("doublebed", {
@@ -241,7 +241,7 @@ const Furniture = (() => {
 			type: ["double"],
 			cost: 3400,
 			description: "Простая кровать. Подходит для двоих.",
-			iconFile: "doublebed.png",
+			iconFile: "doublebed",
 			tier: 1,
 			showCheck: "notBedroom",
 		});
@@ -252,7 +252,7 @@ const Furniture = (() => {
 			type: ["double", "comfy"],
 			cost: 2840,
 			description: "Красивая кровать с мягким матрасом. Очень удобная, помещается двое.",
-			iconFile: "doublebeddeluxe.png",
+			iconFile: "doublebeddeluxe",
 			tier: 2,
 			showCheck: "notBedroom",
 		});
@@ -263,7 +263,7 @@ const Furniture = (() => {
 			type: ["double", "comfy"],
 			cost: 4884,
 			description: "Кровать, выполненная в современном минималистском стиле. Очень удобная, подходит для двоих.",
-			iconFile: "doublebedexotic.png",
+			iconFile: "doublebedexotic",
 			tier: 2,
 			showCheck: "notBedroom",
 		});
@@ -274,7 +274,7 @@ const Furniture = (() => {
 			type: ["double", "comfy"],
 			cost: 4860,
 			description: "Аутентичная кровать на ротанговой раме. Очень удобная, подходит для двоих.",
-			iconFile: "doublebedwicker.png",
+			iconFile: "doublebedwicker",
 			tier: 2,
 			showCheck: "notBedroom",
 		});
@@ -287,7 +287,7 @@ const Furniture = (() => {
 			type: [],
 			cost: 680,
 			description: "Глиняный горшок с хорошей почвой. Цветы предварительно высажены. Можно поставить на подоконник",
-			iconFile: "flower.png",
+			iconFile: "flower",
 		});
 		mapper.set("bunnySucculent", {
 			name: "bunny succulent",
@@ -296,7 +296,7 @@ const Furniture = (() => {
 			type: [],
 			cost: 840,
 			description: "Цементный горшок для небольших суккулентов. Предварительно посажена 'Monilaria obconica', также известная как суккулент кролик.",
-			iconFile: "bunnySucculent.png",
+			iconFile: "bunnySucculent",
 		});
 		mapper.set("jar", {
 			name: "jar",
@@ -305,7 +305,7 @@ const Furniture = (() => {
 			type: [],
 			cost: 1380,
 			description: "Цилиндрическая банка. Можно поставить на подоконник.",
-			iconFile: "jar.png",
+			iconFile: "jar",
 		});
 
 		/* ------------- DECORATIONS ------------- */
@@ -316,7 +316,7 @@ const Furniture = (() => {
 			type: [],
 			cost: 360,
 			description: "Дни этого календаря сочтены.",
-			iconFile: "calendar.png",
+			iconFile: "calendar",
 		});
 		mapper.set("painting", {
 			name: "painting",
@@ -325,7 +325,7 @@ const Furniture = (() => {
 			type: [],
 			cost: 680,
 			description: "На самом деле это не картина. Это иллюстрация. ",
-			iconFile: "painting.png",
+			iconFile: "painting",
 		});
 		mapper.set("banner", {
 			name: "banner",
@@ -334,7 +334,7 @@ const Furniture = (() => {
 			type: [],
 			cost: 620,
 			description: "В центре стоит фигура из старого фильма.",
-			iconFile: "banner.png",
+			iconFile: "banner",
 		});
 		mapper.set("bannerlewd", {
 			name: "lewd banner",
@@ -343,7 +343,7 @@ const Furniture = (() => {
 			type: [],
 			cost: 790,
 			description: "Знамя с щупальцем.",
-			iconFile: "banner.png",
+			iconFile: "banner",
 		});
 		mapper.set("bannerfestive", {
 			name: "festive banner",
@@ -352,7 +352,7 @@ const Furniture = (() => {
 			type: [],
 			cost: 670,
 			description: "Это может быть не по сезону, но все равно выглядит круто.",
-			iconFile: "bannerfestive.png",
+			iconFile: "bannerfestive",
 		});
 		mapper.set("bearplushie", {
 			name: "large bear plushie",
@@ -361,7 +361,7 @@ const Furniture = (() => {
 			type: [],
 			cost: 1380,
 			description: "Мягкий, ласковый и вечно преданный.",
-			iconFile: "bearplushie.png",
+			iconFile: "bearplushie",
 		});
 		mapper.set("owlplushie", {
 			name: "owl plushie",
@@ -370,7 +370,7 @@ const Furniture = (() => {
 			type: [],
 			cost: 0,
 			description: "Большие глаза смотрят на мир.",
-			iconFile: "owlplushie.png",
+			iconFile: "owlplushie",
 			showCheck: "disabled",
 		});
 		/* ------------- WARDROBES ------------- */
@@ -384,7 +384,7 @@ const Furniture = (() => {
 			type: ["starter"],
 			cost: 0,
 			description: "Старый, скрипучий шкаф. В нем мало что поместится",
-			iconFile: "wardrobe.png",
+			iconFile: "wardrobe",
 			tier: 0,
 			showCheck: "disabled",
 		});
@@ -395,7 +395,7 @@ const Furniture = (() => {
 			type: ["spacious"],
 			cost: 3160,
 			description: "Базовый шкаф для одежды.",
-			iconFile: "wardrobebasic.png",
+			iconFile: "wardrobebasic",
 			tier: 1,
 			showCheck: "isWardrobeHigherTier",
 		});
@@ -406,7 +406,7 @@ const Furniture = (() => {
 			type: ["spacious"],
 			cost: 3258,
 			description: "Вместительный деревянный шкаф.",
-			iconFile: "armoire.png",
+			iconFile: "armoire",
 			tier: 1,
 			showCheck: "isWardrobeHigherTier",
 		});
@@ -417,7 +417,7 @@ const Furniture = (() => {
 			type: ["organiser"],
 			cost: 4296,
 			description: "Шкаф с большим количеством места.",
-			iconFile: "wardrobeorganiser.png",
+			iconFile: "wardrobeorganiser",
 			tier: 2,
 			showCheck: "isWardrobeHigherTier",
 		});
@@ -428,7 +428,7 @@ const Furniture = (() => {
 			type: ["organiser"],
 			cost: 4620,
 			description: "Вырезанный вручную, он содержит несколько выдвижных ящиков и вешалок для одежды.",
-			iconFile: "armoirecarved.png",
+			iconFile: "armoirecarved",
 			tier: 2,
 			showCheck: "isWardrobeHigherTier",
 		});
@@ -440,7 +440,7 @@ const Furniture = (() => {
 			type: ["poster", "starter"],
 			cost: 135,
 			description: "В настоящее время плакат пуст.",
-			iconFile: "poster.png",
+			iconFile: "poster",
 		});
 		/* ------------- WALLPAPERS -------------- */
 		mapper.set("wallpaper", {
@@ -450,7 +450,7 @@ const Furniture = (() => {
 			type: ["wallpaper", "starter"],
 			cost: 135,
 			description: "Обои в настоящее время пустые.",
-			iconFile: "wallpaper.png",
+			iconFile: "wallpaper",
 		});
 	}
 

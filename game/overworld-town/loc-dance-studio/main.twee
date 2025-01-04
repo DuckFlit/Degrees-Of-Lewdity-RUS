@@ -40,7 +40,7 @@ You are in the dance studio. Here you can pay for lessons to improve your dancin
 				<span class="blue">Charlie will have another job for you next week.</span>
 				<br>
 			<<else>>
-				<<askicon>><<link [[Ask for work|Dance Job Ask]]>><</link>>
+				<<socialiseicon "ask">><<link [[Ask for work|Dance Job Ask]]>><</link>>
 				<br>
 			<</if>>
 		<</if>>
@@ -50,7 +50,7 @@ You are in the dance studio. Here you can pay for lessons to improve your dancin
 					<<ind>><<link [[Take a dance lesson (£12 1:00)|Dancing Lesson Job Intro]]>><</link>><<gtiredness>><<note "+ + Dancing Skill" "green">>
 					<br>
 				<<else>>
-					<<ind>><<link [[Take a dance lesson (£12 1:00)|Dancing Lesson]]>><<set $phase to 0>><<set $money -= 1200>><<set $dancestage to 0>><</link>><<gtiredness>><<note "+ + Dancing Skill" "green">>
+					<<ind>><<link [[Take a dance lesson (£12 1:00)|Dancing Lesson]]>><<set $phase to 0>><<money -1200 "danceStudioLessons">><<set $dancestage to 0>><</link>><<gtiredness>><<note "+ + Dancing Skill" "green">>
 					<br>
 				<</if>>
 			<<else>>
@@ -60,11 +60,11 @@ You are in the dance studio. Here you can pay for lessons to improve your dancin
 		<</if>>
 		<<if (Time.weekDay is 3 or Time.weekDay is 5) and $worn.feet.type.includes("heels")>>
 			<<if $money gte 1200 and $exposed lt 1>>
-				<<heelsicon>><<link [[Take high heel lesson (£12 0:30)|Heel Lesson]]>><<set $phase to 0>><<set $money -= 1200>><<pass 30>><</link>><<gtiredness>><<gfeetskill>>
+				<<heelsicon>><<link [[Take high heel lesson (£12 0:30)|Heel Lesson]]>><<set $phase to 0>><<money -1200 "danceStudioLessons">><<pass 30>><</link>><<gtiredness>><<gfeetskill>>
 				<br>
 			<</if>>
 		<<else>>
-			<<askicon>><<link [[Enquire about high heel lessons|Heel Lesson Inquiry]]>><</link>>
+			<<socialiseicon "ask">><<link [[Enquire about high heel lessons|Heel Lesson Inquiry]]>><</link>>
 			<br>
 		<</if>>
 		<<if (Time.weekDay is 2 or Time.weekDay is 4 or Time.weekDay is 6)>>
@@ -73,7 +73,7 @@ You are in the dance studio. Here you can pay for lessons to improve your dancin
 			<</if>>
 			<br>
 		<<else>>
-			<<askicon>><<link [[Enquire about yoga lessons|Yoga Classes Inquire]]>><</link>>
+			<<socialiseicon "ask">><<link [[Enquire about yoga lessons|Yoga Classes Inquire]]>><</link>>
 			<br>
 		<</if>>
 	<</if>>
@@ -125,15 +125,21 @@ Your heart beats faster as you walk away from the dance studio, and away from re
 <<set $outside to 1>><<effects>><<set $lock to 200>>
 <<openinghours>>
 <<if currentSkillValue('skulduggery') gte $lock>>
-	<span class="green">The lock looks easy to pick.</span>
-	<br><br>
-	<<lockpickicon>><<link [[Pick it (0:10)|Dance Studio]]>><<pass 10>><<crimeUp 5 "trespassing">><</link>><<crime "trespassing">>
-	<br>
+	<<if $leftarm is "bound" and $rightarm is "bound">>
+		You think you'd be able to pick the lock, <span class="blue">if your arms weren't bound.</span>
+		<br><br>
+	<<else>>
+		<<wearProp "lockpick">>
+		<span class="green">The lock looks easy to pick.</span>
+		<br><br>
+		<<lockicon "pick">><<link [[Pick it (0:10)|Dance Studio]]>><<handheldon>><<pass 10>><<crimeUp 5 "trespassing">><</link>><<crime "trespassing">>
+		<br>
+	<</if>>
 <<else>>
 	<span class="red">The lock looks beyond your ability to pick.</span><<skulduggeryrequired>>
 	<br><br>
 <</if>>
-<<getouticon>><<link [[Leave|Barb Street]]>><</link>>
+<<getouticon>><<link [[Leave|Barb Street]]>><<handheldon>><</link>>
 <br>
 
 :: Dance Studio Introduction
@@ -367,19 +373,19 @@ Your heart beats faster as you walk away from the dance studio, and away from re
 		<<if $drugged gte 1>>The drugs inhibit you, you couldn't cry very convincingly.<</if>>
 		<br><br>
 		<<if $enemyarousal gte $enemyarousalmax>>
-			<span id="next"><<link [[Next->Dance Studio Molestation Ejaculation]]>><</link>></span><<nexttext>>
+			<span id="next"><<link [[Next|Dance Studio Molestation Ejaculation]]>><</link>></span><<nexttext>>
 		<<elseif $enemyhealth lte 0>>
-			<span id="next"><<link [[Next->Dance Studio Molestation Escape]]>><</link>></span><<nexttext>>
+			<span id="next"><<link [[Next|Dance Studio Molestation Escape]]>><</link>></span><<nexttext>>
 		<<else>>
-			<span id="next"><<link [[Next->Dance Studio Molestation]]>><</link>></span><<nexttext>>
+			<span id="next"><<link [[Next|Dance Studio Molestation]]>><</link>></span><<nexttext>>
 		<</if>>
 	<</if>>
 <<elseif $enemyarousal gte $enemyarousalmax>>
-	<span id="next"><<link [[Next->Dance Studio Molestation Ejaculation]]>><</link>></span><<nexttext>>
+	<span id="next"><<link [[Next|Dance Studio Molestation Ejaculation]]>><</link>></span><<nexttext>>
 <<elseif $enemyhealth lte 0>>
-	<span id="next"><<link [[Next->Dance Studio Molestation Escape]]>><</link>></span><<nexttext>>
+	<span id="next"><<link [[Next|Dance Studio Molestation Escape]]>><</link>></span><<nexttext>>
 <<else>>
-	<span id="next"><<link [[Next->Dance Studio Molestation]]>><</link>></span><<nexttext>>
+	<span id="next"><<link [[Next|Dance Studio Molestation]]>><</link>></span><<nexttext>>
 <</if>>
 
 :: Dance Studio Molestation Ejaculation
@@ -448,8 +454,8 @@ Charlie immediately recognises that something is wrong. <<He>> pulls you aside a
 <<elseif $phase is 2>>
 	You rub your butt against <<his>> crotch. "You're so fit and well formed, I don't know how you do it."
 	<br>
-	<<He>> moves <<his>> pelvis away from you, blood rushing to <<his>> face. "Y-yes. I mean, no, I mean... you're doing OK, I need to go check on someone else." <<He>> avoids looking in your direction for the rest of the lesson.
-	<<npcincr Charlie love -2>><<promiscuity2>><<llove>>
+	<<He>> moves <<his>> pelvis away from you, blood rushing to <<his>> face. "Y-yes. I mean, no, I mean... you're doing OK, I need to go check on someone else." <<He>> avoids looking in your direction for the rest of the lesson.<<npcincr Charlie love -2>><<llove>>
+	<<promiscuity2>>
 <</if>>
 <br><br>
 <<link [[Next|Dancing Lesson]]>><<endevent>><</link>>
@@ -675,11 +681,11 @@ You enter the changing room, and think about how you would like to dress for the
 	"It's not unusual for one to fall asleep in shavasana," Charlie says with a smile. "But I'm afraid it's time to leave now." <<nnpc_He "Charlie">> sounds apologetic as <<nnpc_he "Charlie">> offers you a hand to help you to your feet. "You and your little one should go get some rest." <<nnpc_He "Charlie">> holds the door open for you as you leave.
 	<<ltiredness>><<glove>><<tiredness -12>><<npcincr Charlie love 1>>
 	<br><br>
-	<<link [[Next|Dance Studio Changing Room]]>><<set $money -= 2200>><<if $exposed gte 2>><<clotheson>><</if>><<endevent>><</link>>
+	<<link [[Next|Dance Studio Changing Room]]>><<money -2200 "danceStudioLessons">><<if $exposed gte 2>><<clotheson>><</if>><<endevent>><</link>>
 <<elseif $dancestage gte 3>>
 	The rest of the lesson passes uneventfully.
 	<br><br>
-	<<link [[Next|Dance Studio Changing Room]]>><<set $money -= 2200>><<if $exposed gte 2>><<clotheson>><</if>><<endevent>><</link>>
+	<<link [[Next|Dance Studio Changing Room]]>><<money -2200 "danceStudioLessons">><<if $exposed gte 2>><<clotheson>><</if>><<endevent>><</link>>
 <<elseif $danger gte (9900 - $allure) and $eventskip is 0>>
 	<<yogalewd>>
 <<else>>

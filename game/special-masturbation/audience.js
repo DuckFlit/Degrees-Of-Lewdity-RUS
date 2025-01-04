@@ -20,7 +20,7 @@ function masturbationAudience() {
 		}
 		if (V.npc[npc - 1]) {
 			sWikifier(
-				`<span class="lewd"><<person${npc}>>You can feel <<combatperson>>'s eyes${V.masturbationAudience > 1 ? ", alongside others," : ""} on you.${
+				`<span class="lewd"><<person${npc}>>You can feel <<combatpersons>> eyes${V.masturbationAudience > 1 ? ", alongside others," : ""} on you.${
 					audienceMutual && V.masturbationAudience <= 6
 						? ` <<He>> mirrors${V.mouth === 0 || V.mouth === "disabled" ? " " : " some of"} your actions.`
 						: ""
@@ -147,9 +147,13 @@ function masturbationAudienceLines(npc) {
 		V.audiencearousal += 1;
 		switch (V.player.penissize) {
 			case -2:
+				wikifier("insecurity", '"penis_small"', 4);
+				break;
 			case -1:
+				wikifier("insecurity", '"penis_small"', 3);
+				break;
 			case 0:
-				wikifier("insecurity", '"penis_tiny"', 1);
+				wikifier("insecurity", '"penis_small"', 2);
 				break;
 			case 1:
 				wikifier("insecurity", '"penis_small"', 1);
@@ -157,7 +161,7 @@ function masturbationAudienceLines(npc) {
 			case 2:
 				break;
 			case 3:
-				if (V.player.gender !== "m") wikifier("insecurity", '"penis_big"', 1);
+				wikifier("insecurity", '"penis_big"', 1);
 				break;
 			case 4:
 				wikifier("insecurity", '"penis_big"', 1);
@@ -172,7 +176,7 @@ function masturbationAudienceLines(npc) {
 		V.masturbationAudienceReactions.push("breastSize");
 		V.audiencearousal += 1;
 		if (V.player.gender_appearance !== "m") {
-			wikifier("insecurity", '"breasts_tiny"', 1);
+			wikifier("insecurity", '"breasts_small"', 2);
 		}
 		return masturbationAudienceLineText(npc, "breastSizeFlat");
 	} else if (V.player.breastsize <= 5) {
@@ -377,7 +381,7 @@ function masturbationAudienceLineText(npc, lineType = "") {
 				`"I've never seen such a pathetic penis."`,
 			]
 				.random()
-				.concat(`<<ginsecurity "penis_tiny">>`);
+				.concat(`<<ginsecurity "penis_small">>`);
 		case "penisSize0":
 			return [
 				`"${V.masturbationAudience > 1 ? "<<pShes>>" : "You're"} so tiny!"`,
@@ -385,7 +389,7 @@ function masturbationAudienceLineText(npc, lineType = "") {
 				`"I've never seen such a pathetic penis."`,
 			]
 				.random()
-				.concat(`<<ginsecurity "penis_tiny">>`);
+				.concat(`<<ginsecurity "penis_small">>`);
 		case "penisSize1":
 			return [
 				`"${V.masturbationAudience > 1 ? "<<pShes>>" : "You're"} so small!"`,
@@ -441,7 +445,7 @@ function masturbationAudienceLineText(npc, lineType = "") {
 						`"Should I take pictures of <<pher>> cute chest? It'll be useful later."`,
 					]
 						.random()
-						.concat(`<<ginsecurity "breasts_tiny">>`);
+						.concat(`<<ginsecurity "breasts_small">>`);
 				} else {
 					return [
 						`"I can't wait to see under <<pher>> top."`,
@@ -449,7 +453,7 @@ function masturbationAudienceLineText(npc, lineType = "") {
 						`"Don't worry, you're cute even without boobs."`,
 					]
 						.random()
-						.concat(`<<ginsecurity "breasts_tiny">>`);
+						.concat(`<<ginsecurity "breasts_small">>`);
 				}
 			}
 		case "breastSizeSmall":

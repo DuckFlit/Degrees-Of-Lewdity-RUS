@@ -197,17 +197,17 @@
 			<</if>>
 
 			<<if $pubtask2 is 1>>
-					<li>Return the black box to Landry at the pub.</li>
+				<li>Return the black box to Landry at the pub.</li>
 			<<elseif $pubtask>>
-					<li>Landry wants you to retrieve a black box from the $pubtask.</li>
+				<li>Landry wants you to retrieve a black box from the $pubtask.</li>
 			<</if>>
 
 			<<if $police_hack is 1>>
-					<li>Landry might be able to help you with the locked police computer.</li>
+				<li>Landry might be able to help you with the locked police computer.</li>
 			<<elseif $pub_hack_job is 1>>
-					<li>Landry wants you to find a hacker supposedly named 'Mickey' living at the Domus street orphanage.</li>
+				<li>Landry wants you to find a hacker supposedly named 'Mickey' living at the Domus street orphanage.</li>
 			<<elseif $pub_hack_job is 2>>
-					<li>Convince 'Mickey' to work with you.</li>
+				<li>Convince 'Mickey' to work with you.</li>
 			<<elseif $pub_hack_job is 3>>
 				<<if !$hacker_tasks.includes("bailey")>>
 					<li>'Mickey' wants you to implant a device on Bailey's computer while Bailey is logged in.</li>
@@ -371,7 +371,7 @@
 			<<if $jordan_ritual_dance is 1>>
 				<li>Jordan has asked you to investigate one of the manors on Danube street. One of the temple's flock went missing after finding work there. You can get access through Charlie, and your status as a dancer.</li>
 			<<elseif $jordan_ritual_dance is 2>>
-				<li>You encountered a strange ritual in a manor on Danube Street. Inform Jordan, priest at the temple.</li>
+				<li>You encountered a strange ritual in a manor on Danube Street. Inform Jordan, head <<nnpc_title "Jordan">> at the temple.</li>
 			<</if>>
 
 			<<if $studyBooks isnot undefined and $studyBooks.rented isnot "none">>
@@ -737,22 +737,23 @@
 	<</if>>
 
 <<set _plant_keys to Object.keys($plants)>>
+<<set _hasProduce to Object.keys($plants).some(key => $plants[key].amount >= 1)>>
 <<set _carrying to [$antiquemoney, $blackmoney, $phials_held, $lurkers_held, $popcorn, $milkshake, $panties_held].some(i => i >= 1)>>
-<<if _carrying or _plant_keys.length gt 0>>
+<<if _carrying or _hasProduce>>
 	<hr>
 		<h1 class="header gold bold">Inventory</h1>
 	<</if>>
 	<<if $farm_key is true and $location is "farm" and !$bus.includes("farm")>>
 		You have stored:
 		<ul class="journal carry">
-			<li><<lakeicon "key">> <span class="green">A ring of keys</span> in your stall. You can use them to escape, but be careful not to get caught with them.</li>
+			<li><<lockicon "bronze key">> <span class="green">A ring of keys</span> in your stall. You can use them to escape, but be careful not to get caught with them.</li>
 		</ul>
 		<br>
 	<</if>>
 	You are carrying:
 	<ul class="journal carry">
-		<<if $location is "prison" and $prison.teeth gte 1>>
-			<li><<icon "sharks_teeth.png">> <span class="green"><<number $prison.teeth>></span> shark's teeth.
+		<<if ["prison", "prison_beach"].includes($location) and $prison.teeth gte 1>>
+			<li><<tendingicon "sharks_teeth">> <span class="green"><<number $prison.teeth>></span> shark's teeth.
 			<<if $prison_wren_intro isnot 1>>
 				You can find Wren in the yard on Fridays after lunch.
 			<</if>>
@@ -779,12 +780,12 @@
 		<<if $panties_held gt 0>>
 			<li><span class="clothes-white"><<icon "clothes/plain_panties.png">></span> <<print $panties_held is 1 ? "a pair" : "<span class='green'>$panties_held</span> pairs">> of stolen underwear. You can sell <<print $panties_held is 1 ? "it" : "them">> during lunchtime in the school rear courtyard.</li>
 		<</if>>
-		<<if _plant_keys.length gt 0>>
-			<li><<tendingicon>> <span class="green">Produce</span>. You can sell it by renting a stand on Connudatus Street at dawn.</li>
+		<<if _hasProduce>>
+			<li><<tendingicon "basket">> <span class="green">Produce</span>. You can sell it by renting a stand on Connudatus Street at dawn.</li>
 		<</if>>
 	</ul>
 
-	<<if _plant_keys.length gt 0>>
+	<<if _hasProduce>>
 		<br>
 		<details class="journal">
 			<summary class="journal">Produce</summary>
@@ -804,7 +805,8 @@
 						<<set _tooltip to `<span class="green">${_item.amount}</span> ${_itemName}`>>
 
 						<div class="item" @tooltip="_tooltip">
-							<<icon `"tending/" + setup.plants[_plant_keys[_t]].icon`>>
+							<<set _iconName to setup.plants[_plant_keys[_t]].icon.replace(/\.[^/.]+$/, "")>>
+							<<tendingicon _iconName>>
 							<hr>
 							<<= _amount>>
 						</div>
@@ -841,7 +843,7 @@
 			<<elseif $_antiquesFound is $museumAntiques.maxCount>>
 				You've found <span class="green">every</span> item for the museum.
 			<<else>>
-				You've found <span class="gold"><<= $_antiquesFound>></span> items for the museum. You're missing <span class="gold"><<= $museumAntiques.maxCount - $_antiquesFound>></span> antiques.
+				You've found <span class="gold"><<= $_antiquesFound>></span> items for the museum. You're missing <span class="gold"><<= $museumAntiques.maxCount - $_antiquesFound>></span> <<= $museumAntiques.maxCount - $_antiquesFound is 1 ? "antique" : "antiques">>.
 			<</if>>
 			<br><br>
 			<details class="journal">
@@ -857,7 +859,7 @@
 							<<switch _valueM>>
 								<<case "notFound">>
 									<div class="item unknown" tooltip="Unknown antique.">
-										<<askicon>>
+										<<mysteryicon>>
 									</div>
 								<<default>>
 									<div class="item" @tooltip="_antique">
@@ -909,7 +911,7 @@
 								</div>
 							<<else>>
 								<div class="item unknown" tooltip="Unknown seed.">
-									<<askicon>>
+									<<mysteryicon>>
 								</div>
 							<</if>>
 						<</if>>

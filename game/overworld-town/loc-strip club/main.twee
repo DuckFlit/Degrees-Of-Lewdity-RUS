@@ -2,6 +2,10 @@
 
 <<set $outside to 0>><<set $location to "strip_club">><<effects>>
 
+<<if $stripclubdancingintro>>
+	<<timeTrackingEndStripclub>>
+<</if>>
+
 You are in the strip club on Connudatus Street. <<if Time.dayState isnot "day" and Time.dayState isnot "dawn">>A few stages dot the room, with dancers working their trade. Two bouncers stand near the entrance, solemnly observing the clientele. Security is taken seriously here.<</if>>
 <br><br>
 
@@ -81,18 +85,20 @@ You are in the strip club on Connudatus Street. <<if Time.dayState isnot "day" a
 
 	<<if Time.dayState isnot "dawn" and Time.dayState isnot "day" and $stripclubintro is 1>>
 		<<if $stripclubbartendingintro isnot 1>>
-			<<askicon>><<link [[Enquire about the bartending job|Strip Club Management]]>><</link>>
+			<<socialiseicon "ask">><<link [[Enquire about the bartending job|Strip Club Management]]>><</link>>
 			<br>
 		<</if>>
 		<<if $stripclubdancingintro isnot 1>>
-			<<askicon>><<link [[Enquire about the dancing job|Strip Club Management]]>><<set $phase to 1>><</link>>
+			<<socialiseicon "ask">><<link [[Enquire about the dancing job|Strip Club Management]]>><<set $phase to 1>><</link>>
 			<br>
 		<</if>>
 	<</if>>
 	<<if $bartendaction is undefined>><<set $bartendaction to "normal">><</if>>/*For the radiobutton variable that determines the PC's attitude while working.*/
 		<<if Time.dayState isnot "dawn" and Time.dayState isnot "day" and $stripclubbartendingintro is 1>>
 			<<foodicon "beerbottle">>
-			<<link [[Work as a bartender (1:00)|Strip Club Bartending]]>><<pass 30>><</link>>
+			<<link [[Work as a bartender (1:00)|Strip Club Bartending]]>>
+				<<timeTrackingStart "stripClub">><<timeTrackingStart "stripClubBartender">><<pass 30>>
+			<</link>>
 			<<if $bartendaction is "normal">>
 				| <label>Work normally <<radiobutton "$bartendaction" "normal" checked>></label>
 			<<else>>
@@ -111,7 +117,10 @@ You are in the strip club on Connudatus Street. <<if Time.dayState isnot "day" a
 			<br>
 		<</if>>
 		<<if Time.dayState isnot "dawn" and Time.dayState isnot "day" and $stripclubdancingintro is 1>>
-			<<brothelicon "stage">><<link [[Work as a dancer (0:05)|Strip Club Dancing]]>><<danceinit>><<set $dancing to 1>><<set $venuemod to 1>><<stress -4>><<tiredness 4>><<set $dancelocation to "club">><</link>><<lstress>><<gtiredness>>
+			<<brothelicon "stage">><<link [[Work as a dancer (0:05)|Strip Club Dancing]]>>
+				<<timeTrackingStart "stripClub">><<timeTrackingStart "stripClubDancer">><<timeTrackingStart "stripClubDanceTips">>
+				<<danceinit>><<set $dancing to 1>><<set $venuemod to 1>><<stress -4>><<tiredness 4>><<set $dancelocation to "club">>
+			<</link>><<lstress>><<gtiredness>>
 			<br>
 			<<shopicon "clothing">><<link [[Dressing room (0:01)|Strip Club Dressing Room]]>><<pass 1>><</link>>
 			<br>
@@ -145,6 +154,10 @@ You are in the strip club on Connudatus Street. <<if Time.dayState isnot "day" a
 :: Strip Club Dressing Room
 
 <<effects>><<set $outside to 0>><<set $location to "strip_club">>
+
+<<if $stripclubdancingintro>>
+	<<timeTrackingEndStripclub>>
+<</if>>
 
 You are in the strip club's dressing room. <<if Time.dayState isnot "day" and Time.dayState isnot "dawn">>There are a few mirrors, currently occupied by staff fixing their hair and makeup.<</if>>
 <br><br>
@@ -183,9 +196,10 @@ You are in the strip club's dressing room. <<if Time.dayState isnot "day" and Ti
 
 You walk past the bemused bouncer guarding the door, and peek outside. It's <<if Time.dayState is "night">>dark<<else>>getting dark<</if>>, but neon light bathes the whole street. It'll be hard to avoid being seen. You don't care. <<flaunting>> you step outside. <<covered>>
 <<if $daily.ex.day isnot 1>>
-<<set $daily.ex.day to 1>><<exhibitionism2>>
+    <<set $daily.ex.day to 1>>
+	<<exhibitionism2>>
 <<else>>
-<br><br>
+    <br><br>
 <</if>>
 
 <<if $rng gte 51>>
@@ -210,9 +224,10 @@ You walk past the bemused bouncer guarding the door, and peek outside. It's <<if
 
 You walk past the bemused bouncer guarding the door, and peek outside. It's <<if Time.dayState is "night">>dark<<else>>getting dark<</if>>, but neon light bathes the whole street. It'll be hard to avoid being seen. You don't care. <<flaunting>> you step outside. <<covered>>
 <<if $daily.ex.day isnot 1>>
-<<set $daily.ex.day to 1>><<exhibitionism2>>
+    <<set $daily.ex.day to 1>>
+	<<exhibitionism2>>
 <<else>>
-<br><br>
+    <br><br>
 <</if>>
 
 <<if $rng gte 51>>
@@ -270,7 +285,7 @@ You are in the bathroom at the Strip Club. There are several private cubicles fo
 <<if $stress gte $stressmax>>
 	<<passoutshop>>
 <<else>>
-	<<bathroomicon "shower">><<link [[Have a shower (0:20)->Strip Club Shower]]>><<strip>><<pass 20>><<stress -1>><<set $hygiene to 0>><</link>><<lstress>>
+	<<bathroomicon "shower">><<link [[Have a shower (0:20)|Strip Club Shower]]>><<strip>><<pass 20>><<stress -1>><<set $hygiene to 0>><</link>><<lstress>>
 	<br><br>
 	<<getouticon>><<link [[Back to the club (0:01)|Strip Club]]>><<pass 1>><</link>>
 	<br>
@@ -285,7 +300,7 @@ You wash until you're squeaky clean.<<wash>>
 <<skinicon "masturbate">><<link [[Masturbate|Strip Club Shower Masturbation]]>><<handheldon>><<set $masturbationstart to 1>><</link>>
 <br>
 
-<<getouticon>><<link [[Get out->Strip Club Bathroom]]>><<clotheson>><</link>>
+<<getouticon>><<link [[Get out|Strip Club Bathroom]]>><<clotheson>><</link>>
 <br>
 
 :: Strip Club Lock
@@ -294,18 +309,23 @@ You wash until you're squeaky clean.<<wash>>
 A sign reads: "Open from <<ampm 18 00>>"
 <br><br>
 
-	<<if currentSkillValue('skulduggery') gte $lock>>
-	<span class="green">The lock looks easy to pick.</span>
-	<br><br>
-
-	<<lockpickicon>><<link [[Pick it (0:10)|Strip Club]]>><<pass 10>><<crimeUp 10 "trespassing">><</link>><<crime "trespassing">>
-	<br>
+<<if currentSkillValue('skulduggery') gte $lock>>
+	<<if $leftarm is "bound" and $rightarm is "bound">>
+		You think you'd be able to pick the lock, <span class="blue">if your arms weren't bound.</span>
+		<br><br>
 	<<else>>
+		<<wearProp "lockpick">>
+		<span class="green">The lock looks easy to pick.</span>
+		<br><br>
+		<<lockicon "pick">><<link [[Pick it (0:10)|Strip Club]]>><<handheldon>><<pass 10>><<crimeUp 10 "trespassing">><</link>><<crime "trespassing">>
+		<br>
+	<</if>>
+<<else>>
 	<span class="red">The lock looks beyond your ability to pick.</span><<skulduggeryrequired>>
 	<br><br>
-	<</if>>
+<</if>>
 
-<<getouticon>><<link [[Leave|Connudatus Street]]>><</link>>
+<<getouticon>><<link [[Leave|Connudatus Street]]>><<handheldon>><</link>>
 <br>
 
 :: Strip Club Management
@@ -387,7 +407,7 @@ As you leave the room Darryl calls out to you. "Oh, by the way. If you see a pai
 <</if>>
 
 :: Strip Club Bartending
-<<set $outside to 0>><<set $location to "strip_club">><<effects>>
+<<set $outside to 0>><<set $location to "strip_club">><<effects>><<wearProp "tray">>
 
 You get to work supplying the patrons with overpriced drinks and snacks. <<if $drinksservedstat is 0>>You're new at this. Fortunately the other staff are happy to show you the ropes.<<elseif $drinksservedstat lte 500>>You've done this before, but you're still inexperienced and rely on other staff to make sure you don't screw up.<<elseif $drinksservedstat lte 10000>>You're pretty good at this.<<else>>You pull pints like a master.<</if>>
 <br><br>
@@ -403,7 +423,7 @@ You get to work supplying the patrons with overpriced drinks and snacks. <<if $d
 		<br><br>
 	<<elseif $rng gte 96>>
 		<<if $worn.lower.type.includes("naked") and $worn.under_lower.type.includes("naked")>>
-			<<generate1>><<person1>>A server in a bunny costume picks up a tray of beers from the counter. <<He>> gives you a sly look, then leans over. You feel <<his>> eyes on your <<nudity>>. "Thought so," <<he>> says. "The counter might be in the way, but you can tell you're naked below the waist by the way you carry yourself."
+			<<generate1>><<person1>>A server in a bunny costume picks up a tray of beers from the counter. <<He>> gives you a sly look, then leans over. You feel <<his>> eyes on your <<nudity>>. "Thought so," <<he>> says. "The counter might be in the way, but I can tell you're naked below the waist by the way you carry yourself."
 			<br><br>
 			"Good thinking," <<he>> continues, fending off a groping client. "That's sure to get you lots of tips."
 			<<endevent>>
@@ -443,7 +463,7 @@ You get to work supplying the patrons with overpriced drinks and snacks. <<if $d
 <<eventsbartendinglisten>>
 <<else>>
 
-Some patrons eye you up, but they're mostly distracted by the dancers. <<tipreceive>>
+Some patrons eye you up, but they're mostly distracted by the dancers. <<tipreceive "stripClubBartender">>
 <br><br>
 
 <<link [[Next|Strip Club]]>><<endevent>><<pass 30>><</link>>
@@ -500,18 +520,17 @@ Some patrons eye you up, but they're mostly distracted by the dancers. <<tiprece
 			<<generate1>>
 		<</if>>
 		<<generate2>><<generate3>><<generate4>><<generate5>><<generate6>><<person1>>
-		You see another member of staff, a <<person>>, leaning against the counter. <<Hes>> wearing a <<if $pronoun is "m">>butler costume<<else>>french maid costume<</if>>, and has attracted a lot of attention from wealthy-looking clientele. <<He>> leans back against the counter, teasing <<his>> onlookers. A <<person2>><<person>> in an expensive <<if $pronoun is "f">>dress<<else>>suit<</if>> tries to grope, but the <<person1>><<person>> gently pushes their hand away.
+		You see another member of staff, a <<person>>, leaning against the counter. <<Hes>> wearing a <<if $pronoun is "m">>butler costume<<else>>french maid costume<</if>>, and has attracted a lot of attention from wealthy-looking clientele. <<He>> leans back against the counter, teasing <<his>> onlookers. A <<person2>><<person>> in an expensive <<if $pronoun is "f">>dress<<else>>suit<</if>> tries to grope, but the <<person1>><<person>> gently pushes <<person2>><<his>> hand away.
 		<br><br>
 		<<if hasSexStat("promiscuity", 2)>>
 			<span class="lewd">An idea strikes you.</span>
 			<br><br>
-		<</if>>
+			<<link [[Strip <<person1>><<him>>|Bartending VIP Strip]]>><</link>><<promiscuous2>>
+			<br>
+		<</if>>		
 		<<link [[Continue working|Bartending VIP Work]]>><</link>>
 		<br>
-		<<if hasSexStat("promiscuity", 2)>>
-			<<link [[Strip them|Bartending VIP Strip]]>><</link>><<promiscuous2>>
-		<</if>>
-		<br>
+		
 	<<elseif $rng gte 41 and $bartendaction is "vip">>
 		<<generate1>><<person1>>"Hey," says a voice behind you. You turn to the counter, and see a <<person>> leaning against it. <<He>> wears an expensive <<if $pronoun is "f">>dress.<<else>>suit.<</if>> "Why don't you bring that ass closer? I might have something in my pocket."
 		<br><br>
@@ -528,7 +547,7 @@ Some patrons eye you up, but they're mostly distracted by the dancers. <<tiprece
 
 	<<elseif $rng gte 31>>
 
-	<<generate1>><<person1>>A <<person>> leaves you a tip. <<tipreceive>>
+	<<generate1>><<person1>>A <<person>> leaves you a tip. <<tipreceive "stripClubBartender">>
 	<br><br>
 
 	<<link [[Next|Strip Club]]>><<endevent>><<pass 30>><</link>>
@@ -627,7 +646,7 @@ Some patrons eye you up, but they're mostly distracted by the dancers. <<tiprece
 		<<link [[Don't tell anyone|Bartending Listen Darryl Refuse]]>><</link>>
 		<br>
 	<<else>>
-		You don't hear anything interesting. Some patrons eye you up, but they're mostly distracted by the dancers. <<tipreceive>>
+		You don't hear anything interesting. Some patrons eye you up, but they're mostly distracted by the dancers. <<tipreceive "stripClubBartender">>
 		<br><br>
 
 		<<link [[Next|Strip Club]]>><<endevent>><<pass 30>><</link>>
@@ -635,62 +654,63 @@ Some patrons eye you up, but they're mostly distracted by the dancers. <<tiprece
 	<</if>>
 <</widget>>
 
+<<widget "timeTrackingEndStripclub">>
+	<<timeTrackingEnd "stripClub">><<timeTrackingEnd "stripClubBartender">><<timeTrackingEnd "stripClubDancer">><<timeTrackingEnd "stripClubDanceTips">>
+<</widget>>
+
 :: Strip Club Bartending Flash
 <<set $outside to 0>><<set $location to "strip_club">><<effects>>
 
 <<if $phase is 0>>
 	<<if $rng gte 21>>
-The <<person>> looks dejected. "Suit yourself." <<He>> leaves the club. <<tipreceive>>
-<br><br>
+        The <<person>> looks dejected. "Suit yourself." <<He>> leaves the club.<<tipreceive>>
 	<<else>>
-"That wasn't a request." <<He>> lunges across the counter and grabs your shoulders. Before you find out what <<he>> intends to do next, security has <<him>> on the ground. <<He>> is quickly removed from the premises, but your heart still races.
-<<controlloss>><<molested>> <<gtrauma>><<gstress>><<garousal>><<trauma 1>><<stress 1>><<arousal 100>>
+        "That wasn't a request." <<He>> lunges across the counter and grabs your shoulders. Before you find out what <<he>> intends to do next, security has <<him>> on the ground. <<He>> is quickly removed from the premises, but your heart still races.
+        <<controlloss>><<molested>> <<gtrauma>><<gstress>><<garousal>><<trauma 1>><<stress 1>><<arousal 100>>		
 	<</if>>
+	<br><br>
 
 <<elseif $phase is 1>>
-
-You give a little spin to show off your form. The <<person>> cheers, <<his>> eyes enjoying the feast. Satisfied, <<he>> leaves you a tip.
-<<tipreceive>><<exhibitionism1>>
+    You give a little spin to show off your form. The <<person>> cheers, <<his>> eyes enjoying the feast. Satisfied, <<he>> leaves you a tip.
+    <<tipreceive>><<exhibitionism1>>
 
 <<elseif $phase is 2>>
 
 	<<if $worn.upper.open is 1>>
-		You pull down your $worn.upper.name, revealing your <<breasts>>. You feel your face begin to heat up.
+		You pull down your $worn.upper.name, revealing your <<breasts>>.
 	<<else>>
-		You lift up your $worn.upper.name, displaying your <<breasts>>. You feel your face begin to heat up.
+		You lift up your $worn.upper.name, displaying your <<breasts>>.
 	<</if>>
-	The <<person>> cheers and raises <<his>> glass to you. Satisfied, <<he>> leaves a tip.
+	You feel your face begin to heat up. The <<person>> cheers and raises <<his>> glass to you. Satisfied, <<he>> leaves a tip.
 	<<tipreceive>>
 	<br><br>
 
 	<<if $player.gender is $player.gender_appearance>>
-		Despite it not being considered obscene for guys to display their chests, doing so on demand for money leaves you feeling flustered and vulnerable. You cover up quickly. <<exhibitionism2>>
+		Despite it not being considered obscene for guys to display their chests, doing so on demand for money leaves you feeling flustered and vulnerable.
 	<<else>>
-		Despite everyone thinking you're a guy, displaying your <<breasts>> in public like this still fills you with a guilty thrill. You cover up quickly.
-		<<exhibitionism2>>
+		Despite everyone thinking you're a guy, displaying your <<breasts>> in public like this still fills you with a guilty thrill.
 	<</if>>
+	You cover up quickly.<<exhibitionism2>>
 
 <<elseif $phase is 3>>
 
 	<<if $worn.upper.open is 1>>
-	You pull down your $worn.upper.name, revealing your <<breasts>>. You feel your face begin to heat up.
+	    You pull down your $worn.upper.name, revealing your <<breasts>>. You feel your face begin to heat up.
 	<<else>>
-	You lift up your $worn.upper.name, displaying your <<breasts>>. You feel your face begin to heat up.
+	    You lift up your $worn.upper.name, displaying your <<breasts>>. You feel your face begin to heat up.
 	<</if>>
 	The <<person>> cheers and raises <<his>> glass to you. Satisfied, <<he>> leaves a tip.
 	<<tipreceive>>
 	<br><br>
 
 	<<if $player.gender is $player.gender_appearance or ($player.penisExist and $player.vaginaExist)>>
-	Despite being in a strip club, actually displaying yourself publicly like this pervades you with excitement and embarrassment. You cover up quickly, before you draw too many eyes.
-	<<exhibitionism4>>
+	    Despite being in a strip club, actually displaying yourself publicly like this pervades you with excitement and embarrassment. You cover up quickly, before you draw too many eyes.
 	<<else>>
-	It's not normally a big deal for a guy's chest to be exposed. But your patrons don't know you're a guy. The hungry and sinful look in their eyes as they take in your bare flesh makes that very clear. You cover up quickly, before you feel too exposed.
-	<<exhibitionism4>>
+	    It's not normally a big deal for a guy's chest to be exposed. But your patrons don't know you're a guy. The hungry and sinful look in their eyes as they take in your bare flesh makes that very clear. You cover up quickly, before you feel too exposed.
 	<</if>>
+	<<exhibitionism4>>
 
 <</if>>
-<br><br>
 
 <<link [[Next|Strip Club]]>><<endevent>><<pass 30>><</link>>
 
@@ -786,28 +806,28 @@ Darryl immediately heads back to <<his>> office. <<He>> doesn't look at you.
 <<set $outside to 0>><<set $location to "strip_club">><<effects>>
 
 <<if $enemyarousal gte $enemyarousalmax>>
-<<ejaculation>>
-The <<person>> blinks as if <<he>> has forgotten where <<he>> is. <<He>> stands up and begins to stagger off. <<He>> doesn't make it far before security restrains <<him>>.
-<br><br>
-<<clotheson>>
-<<endcombat>>
+	<<ejaculation>>
+	The <<person>> blinks as if <<he>> has forgotten where <<he>> is. <<He>> stands up and begins to stagger off. <<He>> doesn't make it far before security restrains <<him>>.
+	<br><br>
+	<<clotheson>>
+	<<endcombat>>
 
 <<elseif $enemyhealth lte 0>>
 
-You manage to knock <<him>> prone. <<He>> struggles to stand up, but it gives you time to retreat to a safe distance. Security arrives and promptly detains <<him>>.
-<br><br>
+	You manage to knock <<him>> prone. <<He>> struggles to stand up, but it gives you time to retreat to a safe distance. Security arrives and promptly detains <<him>>.
+	<br><br>
 
-<<clotheson>>
-<<endcombat>>
+	<<clotheson>>
+	<<endcombat>>
 
 <<else>>
 
-<<set $rescued += 1>>
-<<He>> is grabbed by both shoulders and hoisted away from you. You breathe a sigh of relief as security drags <<him>> to the exit.
-<br><br>
+	<<set $rescued += 1>>
+	<<He>> is grabbed by both shoulders and hoisted away from you. You breathe a sigh of relief as security drags <<him>> to the exit.
+	<br><br>
 
-<<clotheson>>
-<<endcombat>>
+	<<clotheson>>
+	<<endcombat>>
 
 <</if>>
 
@@ -948,7 +968,7 @@ Staying low, you dart across the pavement towards the alley.
 
 <<if $rng gte 51>>
 	<<generate1>><<person1>>
-	You don't get far before being spotted. A few wolf whistles are directed your way, and a <<person>> blocks your path. <<covered>> "Hey <<girl>>," <<he>> says. "You a teaser for what I can expect inside? How about I try out that ass of yours?" <<He>> doesn't ask for a response before grasping your <<bottom>> and pulling you close. <<if $NPCList[0].penis isnot "none">>You feel <<his>> $NPCList[0].penisdesc pressing against you. <<Hes>> already erect.<</if>>
+	You don't get far before being spotted. A few wolf whistles are directed your way, and a <<person>> blocks your path. <<covered>> "Hey, <<girl>>," <<he>> says. "You a teaser for what I can expect inside? How about I try out that ass of yours?" <<He>> doesn't ask for a response before grasping your <<bottom>> and pulling you close. <<if $NPCList[0].penis isnot "none">>You feel <<his>> $NPCList[0].penisdesc pressing against you. <<Hes>> already erect.<</if>>
 	<br><br>
 	The bouncers step forward.
 	<br><br>

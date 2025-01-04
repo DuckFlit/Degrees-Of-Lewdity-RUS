@@ -18,15 +18,16 @@
 	<<set _id to `stats${_type}virginity`>>
 	<<capture _type _id>>
 		<span @id="_id"><<= ($player.virginity[_type] is true ? "Present" : "Taken by " + ($player.virginity[_type] is false ? "unknown" : $player.virginity[_type]))>></span> |
-		<span @id="_id + 'link'"><<link `($player.virginity[_type] is true ? "Take" : "Restore")`>>
+		<span @id="_id + 'link'"><<link `($player.virginity[_type] is true and !$player?.virginityDetails?.[_type]?.taker ? "Take" : "Restore")`>>
 			<<if $player.virginity[_type] is true>>
 				<<set $player.virginity[_type] to (_virginity[_type] is true ? false : _virginity[_type])>>
+				<<if $player.virginity[_type] is false and $player?.virginityDetails?.[_type]?.taker>><<set $player.virginity[_type] to $player.virginityDetails[_type].taker>><</if>>
 				<<if $player.virginity.temple isnot false and ["penile", "vaginal"].includes(_type)>><<set $player.virginity.temple to "unknown">><</if>>
 			<<else>>
 				<<set $player.virginity[_type] to true>>
 				<<if $player.virginity.temple isnot false and ["penile", "vaginal"].includes(_type)>><<set $player.virginity.temple to true>><</if>>
 			<</if>>
-			<<run $(`#${_id}link .link-internal`).html($player.virginity[_type] is true ? "Take" : "Restore")>>
+			<<run $(`#${_id}link .link-internal`).html($player.virginity[_type] is true and !$player?.virginityDetails?.[_type]?.taker ? "Take" : "Restore")>>
 			<<run $(`#${_id}`).html($player.virginity[_type] is true ? "Present" : "Taken by " + ($player.virginity[_type] is false ? "unknown" : $player.virginity[_type]))>>
 		<</link>></span>
 	<</capture>>
@@ -39,7 +40,7 @@
 	<<= _bodypart.toUpperFirst().replace("_", " ")>>:
 	<<capture _bodypart, _parasiteTypes, _i, _temp>>
 		<<for _i = 0; _i < _parasiteTypes.length; _i++>>
-			<span @id="_parasite" @class="_i is 0 ? 'goldLink' : 'link' ">
+			<span @id="_parasite" @class="_parasiteTypes[_i] is $parasite[_bodypart].name || _parasiteTypes[_i] is 'none' and !$parasite[_bodypart].name ? 'goldLink' : 'link' ">
 				<<link _parasiteTypes[_i]>>
 					<<removeparasite _bodypart>>
 					<<set _temp to _parasiteTypes[_i]>>
@@ -99,10 +100,10 @@
 			max: 5,
 			step: 1,
 			values: [_semen],
-			activeButtons: ["single"],
+			activeButtons: ["single", "minMax"],
 			percentage: false,
 			reverse: true,
-			css: {width: "220px", display: "inline-block", "margin-bottom": "0"}
+			css: {display: "inline-block", "margin-bottom": "0"}
 		}>>
 	<<numberStepper "Neck" $player.bodyliquid.neck[_semen] {...T.options, callback: (value, arr) => { V.player.bodyliquid.neck[arr[0]] = value; Wikifier.wikifyEval("<<updatesidebarimg>>") }}>>
 	<<numberStepper "Right arm" $player.bodyliquid.rightarm[_semen] {...T.options, callback: (value, arr) => { V.player.bodyliquid.rightarm[arr[0]] = value; Wikifier.wikifyEval("<<updatesidebarimg>>") }}>>
@@ -127,13 +128,18 @@
 		<div class="settingsToggleItemWide">
 			<span class="gold">Miscellaneous</span>
 			<br>
-			<<numberStepper "Money" $money "money" {
+			<<numberStepper "Money" $money {
 				activeButtons: ["single", "double", "triple"],
 				step: 1000,
-				max: 100000000,
+				max: 10000000000,
 				colorArr:["--yellow"],
 				percentage: false,
-				valueFormat: (value) => `<b>${formatMoney(value)}</b>`
+				valueFormat: (value) => `<b>${formatMoney(value)}</b>`,
+				callback: (value) => {
+					const difference = value - V.money;
+					V.moneyStats.cheats.earned += difference;
+					V.money = value;
+				}
 			}>>
 
 			<<if $location is "prison">>
@@ -167,7 +173,7 @@
 			<</if>>
 		</div>
 		<div class="settingsToggleItem">
-			<span class="gold">Body</span> <mouse class="tooltip linkBlue">(?)<span>Changing the player's genitalia will wash the player of lewd fluids, to prevent them from lingering on nonexisting body parts.</span></mouse>
+			<span class="gold">Body</span> <mouse class="tooltip linkBlue">(?)<span>Changing the player's genitalia will wash the player of lewd fluids, and remove genital parasites, to prevent them from lingering on nonexisting body parts.</span></mouse>
 			<br>
 			Sex:
 			<span id="statsGender">
@@ -175,7 +181,7 @@
 			</span>
 			<br>
 			<<set _gender_body_words to {"m": "Masculine", "f": "Feminine", "a": "Androgynous"}>>
-			Body type:
+			Gender appearance:
 			<span id="statsBodyType">
 				<<cheatsBody>>
 			</span>
@@ -205,6 +211,10 @@
 			Handholding: <<cheatVirginityToggle "handholding">>
 			<br>
 			First kiss: <<cheatVirginityToggle "kiss">>
+			<<if $temple_rank isnot undefined and $temple_rank isnot "prospective">>
+				<br>
+				Temple Vow: <<cheatVirginityToggle "temple">>
+			<</if>>
 		</div>
 		<div class="settingsToggleItem">
 			<span class="gold">State</span>
@@ -499,7 +509,7 @@
 			<br>
 			<<icon "clothes/gag.png">><<link "Gag">><<facewear 4>><<updatesidebarimg>><</link>> | <<link "Blindfold">><<facewear 5>><<updatesidebarimg>><</link>> | <<link "Gag and blindfold">><<facewear 6>><<updatesidebarimg>><</link>> | <<link "Bind arms">><<bind>><<updatesidebarimg>><</link>> | <<link "Shackle feet">><<shackle_feet>><<updatesidebarimg>><</link>>
 			<br>
-			<<undobindingsicon>> <<link "Unbind all">><<unbind>><<set $worn.face.type.push("broken")>><<faceruined>><<updatesidebarimg>><</link>>
+			<<undobindingsicon>> <<link "Unbind all">><<unbind>><<if $worn.face.type.includes("gag") or $worn.face.type.includes("blindfold")>><<set $worn.face.type.push("broken")>><<faceruined>><</if>><<updatesidebarimg>><</link>>
 
 			<<if $debug is 1>>
 				<br><br>
@@ -553,6 +563,13 @@
 			</span>
 			<hr>
 			<span class="gold">Secondary Characteristics</span>
+			<br>
+			Speech Attitude:
+			<span id="statsSpeechAttitude">
+				<<cheatsSpeechAttitude>>
+			</span>
+			<br>
+			<span class="description">Changing speech attitude will also alter your submissiveness.</span>
 			<<numberStepper "Submissiveness" $submissive "submissive" {max: 2000}>>
 			<<numberStepper "Masochism" $masochism "masochism" {max: 1000}>>
 			<<numberStepper "Sadism" $sadism "sadism" {max: 1000}>>
@@ -561,6 +578,7 @@
 				<<numberStepper "Grace" $grace "grace">>
 			<</if>>
 		</div>
+
 		<div class="settingsToggleItem">
 			<<set _skills to ["skulduggery", "skulduggeryday", "danceskill", "swimmingskill", "athletics", "tending", "housekeeping"]>>
 			<span class="gold">Core Skills</span>
@@ -590,6 +608,7 @@
 				<<for _i range _subjects>>
 					<<set V[_i] to 0>><<clamp>>
 				<</for>>
+				<<adjust_school_traits>>
 				<<replace "#schoolSkills">><<cheatSection "school">><</replace>>
 			<</link>>
 			|
@@ -597,6 +616,7 @@
 				<<for _i range _subjects>>
 					<<set V[_i] to 1000>><<clamp>>
 				<</for>>
+				<<adjust_school_traits>>
 				<<replace "#schoolSkills">><<cheatSection "school">><</replace>>
 			<</link>>
 			<br><br>
@@ -1044,7 +1064,7 @@
 
 			<<if $player.penisExist>>
 				<br><br>
-				<span class="gold">Penis</span>
+				<span class="gold">Penis Size</span>
 				<<set _penisText to ["Micro", "Mini", "Tiny", "Small", "Normal", "Large", "Enormous"]>>
 				<<numberslider "$player.penissize" $player.penissize  -2 4 1 {
 				onInputChange: value => {
@@ -1122,20 +1142,22 @@
 		<div class="settingsToggleItem">
 			<span class="gold">Transformation Types</span>
 			<br>
-			<<tficon "angel">>Angel: <<link "Set">><<angelTransform>><<updatesidebarimg>><</link>> / <<link "Clear">><<angelTransform 99>><<updatesidebarimg>><</link>><br>
-			<<tficon "fallen">>Fallen Angel: <<link "Set">><<clearDivineTransformations>><<set $specialTransform to 1>>
-			<<set $fallenangel to 2>><<set $transformationParts.fallenAngel.halo to ($transformationParts.angel.halo is "traditional" ? "traditional" : "default")>><<set $transformationParts.fallenAngel.wings to ($transformationParts.angel.wings is "classic" ? "classic" : "default")>><<if $transformationParts.bird.wings is "default">><<set $transformationParts.fallenAngel.wings to "hidden">><</if>><<updatesidebarimg>><</link>> / <<link "Clear">><<fallenButNotOut 99>><<updatesidebarimg>><</link>><br>
-			<<tficon "demon">>Demon: <<link "Set">><<demonTransform>><<updatesidebarimg>><</link>> / <<link "Clear">><<demonTransform 99>><<updatesidebarimg>><</link>><br>
-			<<tficon "wolf">>Wolf: <<link "Set">><<wolfTransform>><<updatesidebarimg>><</link>> / <<link "Clear">><<wolfTransform 99>><<updatesidebarimg>><</link>><br>
-			<<tficon "cat">>Cat: <<link "Set">><<catTransform>><<updatesidebarimg>><</link>> / <<link "Clear">><<catTransform 99>><<updatesidebarimg>><</link>><br>
-			<<tficon "cow">>Cow: <<link "Set">><<cowTransform>><<updatesidebarimg>><</link>> / <<link "Clear">><<cowTransform 99>><<updatesidebarimg>><</link>><br>
-			<<tficon "bird">>Bird: <<link "Set">><<harpyTransform>><<updatesidebarimg>><</link>> / <<link "Clear">><<harpyTransform 99>><<updatesidebarimg>><</link>><br>
-			<<tficon "fox">>Fox: <<link "Set">><<foxTransform>><<updatesidebarimg>><</link>> / <<link "Clear">><<foxTransform 99>><<updatesidebarimg>><</link>><br>
-			<hr>
 			<span class="description">You may only have one animal and one divine transformation at a time.</span>
+			<br>
+			<<tficon "angel">>Angel: <<link "Set">><<angelTransform>><<updatesidebarimg>><</link>> | <<link "Clear">><<angelTransform 99>><<updatesidebarimg>><</link>><br>
+			<<tficon "fallenangel">>Fallen Angel: <<link "Set">><<clearDivineTransformations>><<set $specialTransform to 1>>
+			<<set $fallenangel to 2>><<set $transformationParts.fallenAngel.halo to ($transformationParts.angel.halo is "traditional" ? "traditional" : "default")>><<set $transformationParts.fallenAngel.wings to ($transformationParts.angel.wings is "classic" ? "classic" : "default")>><<if $transformationParts.bird.wings is "default">><<set $transformationParts.fallenAngel.wings to "hidden">><</if>><<updatesidebarimg>><</link>> | <<link "Clear">><<fallenButNotOut 99>><<updatesidebarimg>><</link>><br>
+			<<tficon "demon">>Demon: <<link "Set">><<demonTransform>><<updatesidebarimg>><</link>> | <<link "Clear">><<demonTransform 99>><<updatesidebarimg>><</link>><br>
+			<<tficon "wolf">>Wolf: <<link "Set">><<wolfTransform>><<updatesidebarimg>><</link>> | <<link "Clear">><<wolfTransform 99>><<updatesidebarimg>><</link>><br>
+			<<tficon "cat">>Cat: <<link "Set">><<catTransform>><<updatesidebarimg>><</link>> | <<link "Clear">><<catTransform 99>><<updatesidebarimg>><</link>><br>
+			<<tficon "cow">>Cow: <<link "Set">><<cowTransform>><<updatesidebarimg>><</link>> | <<link "Clear">><<cowTransform 99>><<updatesidebarimg>><</link>><br>
+			<<tficon "harpy">>Bird: <<link "Set">><<harpyTransform>><<updatesidebarimg>><</link>> | <<link "Clear">><<harpyTransform 99>><<updatesidebarimg>><</link>><br>
+			<<tficon "fox">>Fox: <<link "Set">><<foxTransform>><<updatesidebarimg>><</link>> | <<link "Clear">><<foxTransform 99>><<updatesidebarimg>><</link>>
 		</div>
 	<div class="settingsToggleItem">
 		<span class="gold">Transformation Points</span>
+		<br>
+		<span class="description">Angel and Cat require 50 points to reach their full transformation, while all others require 30 points. Fallen Angel requires 30 points for Acceptance.</span>
 		<<for _tf range ["angel", "fallen", "demon", "wolf", "cat", "cow", "bird", "fox"]>>
 			<<capture _tf>>
 				<<set _name to (_tf is "fallen" ? "Fallen Angel" : _tf)>>
@@ -1151,8 +1173,6 @@
 			<</capture>>
 		<</for>>
 		<<unset _cr>>
-		<hr>
-		<span class="description">Angel and Cat require 50 points to reach their full transformation, while all others require 30 points. Fallen Angel requires 30 points for Acceptance.</span>
 	</div>
 <</widget>>
 
@@ -1223,7 +1243,7 @@
 			<span class="gold">Alex</span>
 			<<numberStepper "<<symbol love>> Love" `C.npc.Alex.love` { callback: value => { C.npc.Alex.love = value } }>>
 			<<numberStepper "<<symbol lust>> Lust" `C.npc.Alex.lust` { callback: value => { C.npc.Alex.lust = value } }>>
-			<<numberStepper "<<symbol dominance>> Dominance" `C.npc.Alex.dom` { callback: value => { C.npc.Alex.dom = value } }>>
+			<<numberStepper "<<symbol dominance>> Dominance" `C.npc.Alex.dom` { callback: value => { C.npc.Alex.dom = value }, min: -50 }>>
 		</div>
 		<div class="settingsToggleItem">
 			<span class="gold">Great Hawk</span>
@@ -1243,7 +1263,7 @@
 				<<sydneyPurity>>
 			</span>
 			<span id="sydneydesc" class="description">
-				(Setting Sydney's <<= _purity is "purity" ? "purity to below 0%" : "corruption to above 0%">> will switch it to <<= _purity is "purity" ? "corruption" : "purity">>.)
+				Setting Sydney's <<= _purity is "purity" ? "purity to below 0%" : "corruption to above 0%">> will switch it to <<= _purity is "purity" ? "corruption" : "purity">>.
 			</span>
 		</div>
 	</div>
@@ -1286,7 +1306,7 @@
 		<div class="settingsHeader options">Reputation</div>
 		<<if $farm_stage gte 2>>
 			<div class="settingsToggleItem">
-				<<farmicon>><span class="gold">Farm</span>
+				<<farmicon>><span class="gold">Farm Status</span>
 				<<numberStepper "Steeds' Respect" `V.farm.beasts.horses` { callback: value => { V.farm.beasts.horses = value }, min: -30, max: 30 }>>
 				<<numberStepper "Pigs' Respect" `V.farm.beasts.pigs` { callback: value => { V.farm.beasts.pigs = value }, min: -30, max: 30}>>
 				<<numberStepper "Cattle' Respect" `V.farm.beasts.cattle` { callback: value => { V.farm.beasts.cattle = value }, min: -30, max: 30 }>>
@@ -1308,14 +1328,16 @@
 			</div>
 		<</if>>
 		<div class="settingsToggleItem">
-			<<wolfcaveicon "pup">><span class="gold">Wolves</span>
+			<<wolfcaveicon "pup">><span class="gold">Wolf Pack</span>
 			<br>
+			<<if $syndromewolves is 1>>
+				Rank: <span id="wolfpackleader"><<cheatsRep "wolfpackleader">></span>
+			<</if>>
 			<<numberStepper "Trust" $wolfpacktrust "wolfpacktrust" {max: 30}>>
 			<<numberStepper "Fear" $wolfpackfear "wolfpackfear" {max: 30}>>
 			<<if $syndromewolves is 1>>
 				<<numberStepper "Harmony" $wolfpackharmony "wolfpackharmony" {max: 20}>>
 				<<numberStepper "Ferocity" $wolfpackferocity "wolfpackferocity" {max: 20}>>
-				Rank: <span id="wolfpackleader"><<cheatsRep "wolfpackleader">></span>
 			<</if>>
 		</div>
 		<div class="settingsToggleItem">
@@ -1353,9 +1375,9 @@
 		<<if $pirate_rank gte 0>>
 			<div class="settingsToggleItem">
 				<<mericon>><span class="gold">Pirates</span>
-				<<numberStepper "Status" $pirate_status "pirate_status">>
 				<br>
 				Rank: <span id="pirate_rank"><<cheatsRep "pirate_rank">></span>
+				<<numberStepper "Status" $pirate_status "pirate_status">>
 			</div>
 		<</if>>
 		<<if $pound>>
@@ -1462,18 +1484,18 @@
 				<<default>><span class="green">No one is spreading rumours about you at school.</span>
 			<</switch>>
 		<<case "wolfpackleader" "pirate_rank">>
-				<<set _ranks to _args[0] is "pirate_rank" ? {0: "Scum", 1: "Mate"} : {0: "Packmate", 1: "Pack leader"}>>
-				<<capture _i, _ranks>>
-				    <<for _i to 0; _i lt Object.keys(_ranks).length; _i++>>
-						<span @class="V[_args[0]] is _i ? 'goldLink' : 'unselected'">
-							<<link _ranks[_i]>>
-								<<set V[_args[0]] to _i>>
-								<<replace `"#" + _args[0]`>><<cheatsRep _args[0]>><</replace>>
-							<</link>>
-						</span>
-						<<= _i < Object.keys(_ranks).length - 1 ? "|" : "">>
-					<</for>>
-				<</capture>>
+			<<set _ranks to _args[0] is "pirate_rank" ? {0: "Scum", 1: "Mate"} : {0: "Packmate", 1: "Pack leader"}>>
+			<<capture _i, _ranks>>
+				<<for _i to 0; _i lt Object.keys(_ranks).length; _i++>>
+					<span @class="V[_args[0]] is _i ? 'goldLink' : 'unselected'">
+						<<link _ranks[_i]>>
+							<<set V[_args[0]] to _i>>
+							<<replace `"#" + _args[0]`>><<cheatsRep _args[0]>><</replace>>
+						<</link>>
+					</span>
+					<<= _i < Object.keys(_ranks).length - 1 ? "|" : "">>
+				<</for>>
+			<</capture>>
 		<<default>>
 	<</switch>>
 <</widget>>
@@ -1485,6 +1507,10 @@
 			<div class="settingsToggleItemWide">
 				<span class="red">Teleporting from a clothing store can break your wardrobe.</span> Please leave the shop before teleporting.
 			</div>
+		<<elseif ["Livestock Field"].includes($passage)>>
+			<div class="settingsToggleItemWide">
+				<span class="red">Teleporting from bad end can lead to various problems.</span> Please escape before teleporting.
+			</div>
 		<<elseif setup.majorAreas.includes($passage) and $event is undefined>>
 			<div class="settingsToggleItemWide">
 			<b>Teleporting from anywhere but the overworld can cause bugs.</b>
@@ -1492,112 +1518,112 @@
 			<div class="settingsToggleItem">
 				<span class="gold">Town Locations</span>
 				<br>
-				<<homeicon>>[[Orphanage]]
+				<<homeicon>><<link [[Orphanage]]>><<cheats-teleport-function>><</link>>
 				<br>
-				<<shopicon>>[[Shopping Centre]]
+				<<shopicon>><<link [[Shopping Centre]]>><<cheats-teleport-function>><</link>>
 				<br>
 				<<if $dorenintro gte 1 and $exposed lte 0>>
-					<<dooricon "doren">><<link [[Doren's Flat|Doren Entrance]]>><</link>>
+					<<dooricon "doren">><<link [[Doren's Flat|Doren Entrance]]>><<cheats-teleport-function>><</link>>
 					<br>
 				<</if>>
-				<<dancestudioicon>>[[Dance Studio]]
+				<<dancestudioicon>><<link [[Dance Studio]]>><<cheats-teleport-function>><</link>>
 				<br>
-				<<policeicon>>[[Police Station]]
+				<<policeicon>><<link [[Police Station]]>><<cheats-teleport-function>><</link>>
 				<br>
-				<<policeicon>>[[Police Back Office]]
+				<<policeicon>><<link [[Police Back Office]]>><<cheats-teleport-function>><</link>>
 				<br>
-				<<spaicon>>[[Spa]]
+				<<spaicon>><<link [[Spa]]>><<cheats-teleport-function>><</link>>
 				<br>
-				<<wolficon>>[[Temple]]
+				<<wolficon>><<link [[Temple]]>><<cheats-teleport-function>><</link>>
 				<br>
-				<<soupkitchenicon>>[[Soup Kitchen]]
+				<<kitchenicon "soup">><<link [[Soup Kitchen]]>><<cheats-teleport-function>><</link>>
 				<br>
-				<<stripclubicon>>[[Strip Club]]
+				<<stripclubicon>><<link [[Strip Club]]>><<cheats-teleport-function>><</link>>
 				<br>
-				<<hospitalicon>><<link [[Hospital|Hospital front]]>><</link>>
+				<<hospitalicon>><<link [[Hospital|Hospital front]]>><<cheats-teleport-function>><</link>>
 				<br>
 				<<if $trash_unlocked is 1>>
-					<<landfillicon>><<link [[Landfill|Trash Gate Enter]]>><</link>>
+					<<landfillicon>><<link [[Landfill|Trash Gate Enter]]>><<cheats-teleport-function>><</link>>
 					<br>
 				<</if>>
 				<<if $compoundcard or $farm_stage gte 9>>
-					<<landfillicon>>[[Elk Compound]]
+					<<landfillicon>><<link [[Elk Compound]]>><<cheats-teleport-function>><</link>>
 					<br>
 				<</if>>
-				<<museumicon>>[[Museum]]
+				<<museumicon>><<link [[Museum]]>><<cheats-teleport-function>><</link>>
 				<br>
-				<<oxfordicon>>[[School Front Courtyard]]
+				<<oxfordicon>><<link [[School Front Courtyard]]>><<cheats-teleport-function>><</link>>
 				<br>
-				<<brothelicon>>[[Brothel]]
+				<<brothelicon>><<link [[Brothel]]>><<cheats-teleport-function>><</link>>
 				<br>
-				<<pubicon>>[[Pub]]
+				<<pubicon>><<link [[Pub]]>><<cheats-teleport-function>><</link>>
 				<br>
-				<<busstationicon>>[[Bus Station]]
+				<<busstationicon>><<link [[Bus Station]]>><<cheats-teleport-function>><</link>>
 				<br>
-				<<docksicon>>[[Docks]]
+				<<docksicon>><<link [[Docks]]>><<cheats-teleport-function>><</link>>
 				<br>
-				<<beachicon>>[[Beach]]
+				<<beachicon>><<link [[Beach]]>><<cheats-teleport-function>><</link>>
 				<br>
-				<<cafeicon>>[[Ocean Breeze]]
+				<<cafeicon>><<link [[Ocean Breeze]]>><<cheats-teleport-function>><</link>>
 				<hr>
 				<span class="gold">Town Outskirts</span>
 				<br>
-				<<foresticon>>[[Forest]]
+				<<foresticon>><<link [[Forest]]>><<cheats-teleport-function>><</link>>
 				<br>
-				<<roadicon>>[[Farm Road 1]]
+				<<roadicon>><<link [[Farm Road 1]]>><<cheats-teleport-function>><</link>>
 				<br>
-				<<farmicon "barn">>[[Farmlands|Farmland]]
+				<<farmicon "barn">><<link [[Farmlands|Farmland]]>><<cheats-teleport-function>><</link>>
 			</div>
 			<div class="settingsToggleItem">
 				<span class="gold">Town Streets</span>
 				<br>
-				<<domusicon>>[[Domus Street]]
+				<<domusicon>><<link [[Domus Street]]>><<cheats-teleport-function>><</link>>
 				<br>
-				<<danubeicon>>[[Danube Street]]
+				<<danubeicon>><<link [[Danube Street]]>><<cheats-teleport-function>><</link>>
 				<br>
-				<<barbicon>>[[Barb Street]]
+				<<barbicon>><<link [[Barb Street]]>><<cheats-teleport-function>><</link>>
 				<br>
-				<<wolficon>>[[Wolf Street]]
+				<<wolficon>><<link [[Wolf Street]]>><<cheats-teleport-function>><</link>>
 				<br>
-				<<connudatusicon>>[[Connudatus Street]]
+				<<connudatusicon>><<link [[Connudatus Street]]>><<cheats-teleport-function>><</link>>
 				<br>
-				<<nightingaleicon>>[[Nightingale Street]]
+				<<nightingaleicon>><<link [[Nightingale Street]]>><<cheats-teleport-function>><</link>>
 				<br>
-				<<highicon>>[[High Street]]
+				<<highicon>><<link [[High Street]]>><<cheats-teleport-function>><</link>>
 				<br>
-				<<elkicon>>[[Elk Street]]
+				<<elkicon>><<link [[Elk Street]]>><<cheats-teleport-function>><</link>>
 				<br>
-				<<oxfordicon>>[[Oxford Street]]
+				<<oxfordicon>><<link [[Oxford Street]]>><<cheats-teleport-function>><</link>>
 				<br>
-				<<harvesticon>>[[Harvest Street]]
+				<<harvesticon>><<link [[Harvest Street]]>><<cheats-teleport-function>><</link>>
 				<br>
-				<<mericon>>[[Mer Street]]
+				<<mericon>><<link [[Mer Street]]>><<cheats-teleport-function>><</link>>
 				<br>
-				<<starfishicon>>[[Starfish Street]]
+				<<starfishicon>><<link [[Starfish Street]]>><<cheats-teleport-function>><</link>>
 				<br>
-				<<clifficon>>[[Cliff Street]]
+				<<clifficon>><<link [[Cliff Street]]>><<cheats-teleport-function>><</link>>
 				<br>
-				<<alleyicon>>[[Commercial alleyways]]
+				<<alleyicon>><<link [[Commercial alleyways]]>><<cheats-teleport-function>><</link>>
 				<br>
-				<<alleyicon>>[[Industrial alleyways]]
+				<<alleyicon>><<link [[Industrial alleyways]]>><<cheats-teleport-function>><</link>>
 				<br>
-				<<alleyicon>>[[Residential alleyways]]
+				<<alleyicon>><<link [[Residential alleyways]]>><<cheats-teleport-function>><</link>>
 				<hr>
 				<span class="gold">Underground</span>
 				<br>
-				<<sewericon>>[[Industrial Drain]]
+				<<sewericon>><<link [[Industrial Drain]]>><<cheats-teleport-function>><</link>>
 				<br>
-				<<sewericon>>[[Commercial Drain]]
+				<<sewericon>><<link [[Commercial Drain]]>><<cheats-teleport-function>><</link>>
 				<br>
-				<<sewericon>>[[Residential Drain]]
+				<<sewericon>><<link [[Residential Drain]]>><<cheats-teleport-function>><</link>>
 				<br>
-				<<sewericon>><<link [[Drain ocean exit|Drain Exit]]>><</link>>
+				<<sewericon>><<link [[Drain ocean exit|Drain Exit]]>><<cheats-teleport-function>><</link>>
 				<br>
-				<<sewericon>>[[Sewers Residential]]
+				<<sewericon>><<link [[Sewers Residential]]>><<cheats-teleport-function>><</link>>
 				<br>
-				<<sewericon>>[[Sewers Commercial]]
+				<<sewericon>><<link [[Sewers Commercial]]>><<cheats-teleport-function>><</link>>
 				<br>
-				<<sewericon>>[[Sewers Industrial]]
+				<<sewericon>><<link [[Sewers Industrial]]>><<cheats-teleport-function>><</link>>
 			</div>
 		<<else>>
 			<div class="settingsToggleItemWide">
@@ -1605,6 +1631,23 @@
 			</div>
 		<</if>>
 	</div>
+<</widget>>
+
+<<widget "cheats-teleport-function">>
+	<<set _lastBadEnd to $badEndStats.last()>>
+	<<if _lastBadEnd?.trackedStart and _lastBadEnd.trackedEnd is undefined>>
+		<<badEndTrackingEnd _lastBadEnd.source { reason: "teleportCheater" }>>
+	<</if>>
+	<<switch $passage>>
+		<<case "Island">>
+			<<island_end>>
+		<<case "Underground Cell">>
+			<<dungeonescape>>
+		<<case "Asylum" "Asylum Cell">>
+			<<asylumescape>>
+		<<case "Prison Cell">>
+			<<prison_bondage_removal>>
+	<</switch>>
 <</widget>>
 
 <<widget "cheats-other">>
@@ -1875,7 +1918,7 @@
 				<br>
 				<<if $playerPregnancyHumanDisable == "f">>
 					<<link [[A random person|$passage]]>> /* checks if males or females have penises, if there is no people with penises a foreigner impregnates PC */
-					<<set _impregnator to "cheater ">>
+					<<set _impregnator to either("arbitrary", "aimless", "by-the-way", "casual", "driftless", "hit-or-miss", "fluky", "promiscuous", "slapdash",  "irresponsible", "careless", "negligent") + " cheater ">>
 					<<if $dgchance gt 0 and $cbchance lt 100>>
 						<<set _impregnator += either("man", "boy", "woman", "girl")>>
 					<<elseif $dgchance gt 0 and $cbchance gt 99>>
@@ -1893,12 +1936,26 @@
 						|
 					<</if>>
 					<<link [[A wolf|$passage]]>>
-					<<if beastMaleChance() gt 0>> /* checks if there are male wolves, if not a foreigner wolf impregnates PC */
-						<<set _impregnator to "cheater wolf">>
+					<<if $monsterchance gte random(1, 100) and ($hallucinations gte 1 or $monsterhallucinations is "f")>>
+						<<if $dgchance gt 0 and $cbchance lt 100>>
+							<<set _impregnator to either("cheater wolfboy", "cheater wolfgirl")>>
+						<<elseif $dgchance gt 0 and $cbchance gt 99>>
+							<<set _impregnator to "cheater wolfgirl">>
+						<<elseif $dgchance lt 1 and $cbchance lt 100>>
+							<<set _impregnator to "cheater wolfboy">>
+						<<else>>
+							<<set _impregnator to "foreign cheater wolfperson">>
+						<</if>>
+						<<if _impregnator is "cheater wolfgirl">><<set _spermType to "wolfgirl">><<else>><<set _spermType to "wolfboy">><</if>>
 					<<else>>
-						<<set _impregnator to "cheater foreign wolf">>
+						<<if beastMaleChance() gt 0>> /* checks if there are male wolves, if not a foreigner wolf impregnates PC */
+							<<set _impregnator to "cheater wolf">>
+						<<else>>
+							<<set _impregnator to "cheater foreign wolf">>
+						<</if>>
+						<<set _spermType to "wolf">>
 					<</if>>
-					<<playerPregnancy _impregnator "wolf" true _womb undefined true>>
+					<<playerPregnancy _impregnator _spermType true _womb undefined true>>
 					<</link>>
 				<</if>>
 				<<for _pregEnabled range _impregnatorNPC>>
@@ -1907,8 +1964,18 @@
 						<<continue>>
 					<</if>>
 					<<switch _actor.nam>>
-						<<case "Black Wolf">><<set _spermType to "wolf">>
-						<<case "Great Hawk">><<set _spermType to "hawk">>
+						<<case "Black Wolf">>
+							<<if $blackwolfmonster>>
+								<<set _spermType to (C.npc["Black Wolf"].pronoun is "f" ? "wolfgirl" : "wolfboy")>>
+							<<else>>
+								<<set _spermType to "wolf">>
+							<</if>>
+						<<case "Great Hawk">>
+							<<if $greathawkmonster>>
+								<<set _spermType to "harpy">>
+							<<else>>
+								<<set _spermType to "hawk">>
+							<</if>>
 						<<default>><<set _spermType to "human">>
 					<</switch>>
 					<<capture _actor, _spermType, _womb>>
@@ -1951,12 +2018,26 @@
 							|
 						<</if>>
 						<<link "A wolf">>
-							<<if beastMaleChance() gt 0>> /* checks if there are male wolves, if not a foreigner wolf inseminates PC */
-								<<set _impregnator to "cheater wolf">>
+							<<if $monsterchance gte random(1, 100) and ($hallucinations gte 1 or $monsterhallucinations is "f")>>
+								<<if $dgchance gt 0 and $cbchance lt 100>>
+									<<set _impregnator to either("cheater wolfboy", "cheater wolfgirl")>>
+								<<elseif $dgchance gt 0 and $cbchance gt 99>>
+									<<set _impregnator to "cheater wolfgirl">>
+								<<elseif $dgchance lt 1 and $cbchance lt 100>>
+									<<set _impregnator to "cheater wolfboy">>
+								<<else>>
+									<<set _impregnator to "foreign cheater wolfperson">>
+								<</if>>
+								<<if _impregnator is "cheater wolfgirl">><<set _spermType to "wolfgirl">><<else>><<set _spermType to "wolfboy">><</if>>
 							<<else>>
-								<<set _impregnator to "foreign cheater wolf">>
+								<<if beastMaleChance() gt 0>> /* checks if there are male wolves, if not a foreigner wolf inseminates PC */
+									<<set _impregnator to "cheater wolf">>
+								<<else>>
+									<<set _impregnator to "foreign cheater wolf">>
+								<</if>>
+								<<set _spermType to "wolf">>
 							<</if>>
-							<<recordSperm `{target: "pc", spermOwner: _impregnator, spermType: "wolf", genital: _womb}`>>
+							<<recordSperm `{target: "pc", spermOwner: _impregnator, spermType: _spermType, genital: _womb}`>>
 							<<replace "#cheatSpermSources">><span class="gold">$sexStats[_womb].sperm.length</span> <<= $sexStats[_womb].sperm.length is 1 ? "sperm source" : "sperm sources">><</replace>>
 						<</link>>
 					<</if>>
@@ -1966,13 +2047,23 @@
 							<<continue>>
 						<</if>>
 						<<switch _actor.nam>>
-							<<case "Black Wolf">><<set _spermType to "wolf">>
-							<<case "Great Hawk">><<set _spermType to "hawk">>
+							<<case "Black Wolf">>
+								<<if $blackwolfmonster>>
+									<<set _spermType to (C.npc["Black Wolf"].pronoun is "f" ? "wolfgirl" : "wolfboy")>>
+								<<else>>
+									<<set _spermType to "wolf">>
+								<</if>>
+							<<case "Great Hawk">>
+								<<if $greathawkmonster>>
+									<<set _spermType to "harpy">>
+								<<else>>
+									<<set _spermType to "hawk">>
+								<</if>>
 							<<default>><<set _spermType to "human">>
 						<</switch>>
 						<<capture _actor, _spermType, _womb>>
 						| <<link _actor.nam>>
-							<<recordSperm `{target: "pc", spermOwner: _actor.nam, spermType: "human", genital: _womb}`>>
+							<<recordSperm `{target: "pc", spermOwner: _actor.nam, spermType: _spermType, genital: _womb}`>>
 							<<replace "#cheatSpermSources">><span class="gold">$sexStats[_womb].sperm.length</span> <<= $sexStats[_womb].sperm.length is 1 ? "sperm source" : "sperm sources">><</replace>>
 						<</link>>
 						<</capture>>
@@ -2154,6 +2245,23 @@
 	<</capture>>
 <</widget>>
 
+<<widget "cheatsSpeechAttitude">>
+	<<set _submissiveness = [1500, 1000, 500]>>
+	<<set _attitude = ["meek", "neutral", "bratty"]>>
+
+	<<capture _i, _submissiveness, _attitude>>
+		<<for _i = 0; _i < _attitude.length; _i++>>
+			<span @class="$speech_attitude is _attitude[_i] ? 'goldLink' : 'link'">
+				<<link _attitude[_i].toUpperFirst()>>
+					<<set $speech_attitude to _attitude[_i]>>
+					<<set $submissive to _submissiveness[_i]>>
+					<<replace "#statsSpeechAttitude">><<cheatsSpeechAttitude>><</replace>>
+				<</link>>
+			</span> <<= _i lt _attitude.length - 1 ? "|" : "">>
+		<</for>>
+	<</capture>>
+<</widget>>
+
 <<widget "cheatsWeather">>
 	<<set _weatherTypes to ["clear", "lightClouds", "heavyClouds", "lightPrecipitation", "heavyPrecipitation"]>>
 	<<set _dayState to Weather.bloodMoon ? "blood" : Weather.dayState === "night" ? "night" : "day">>
@@ -2191,6 +2299,8 @@
 			<<else>>
 				<<link "Male">>
 					<<wash>>
+					<<removeparasite clit>>
+					<<removeparasite penis>>
 					<<set $vaginause to "none">>
 					<<set $vaginastate to "none">>
 					<<set $penisuse to 0>>
@@ -2210,6 +2320,8 @@
 			<<else>>
 				<<link "Female">>
 					<<wash>>
+					<<removeparasite clit>>
+					<<removeparasite penis>>
 					<<set $vaginause to 0>>
 					<<set $vaginastate to 0>>
 					<<set $penisuse to "none">>
@@ -2229,6 +2341,8 @@
 			<<else>>
 				<<link "Hermaphrodite">>
 					<<wash>>
+					<<removeparasite clit>>
+					<<removeparasite penis>>
 					<<set $vaginause to 0>>
 					<<set $vaginastate to 0>>
 					<<set $penisuse to 0>>
@@ -2324,7 +2438,7 @@
 			<<numberStepper "<<symbol beauty>> Beauty" $beauty "beauty" {max: 10000}>>
 			<<numberStepper "<<symbol physique>> Physique" $physique "physique" {max: $physiquesize}>>
 			<<numberStepper "<<symbol willpower>> Willpower" $willpower "willpower" {max: 1000}>>
-			<<numberStepper "<<symbol awareness>> Awareness" $awareness "awareness" {max: 1000, reverse: true}>>
+			<<numberStepper "<<symbol awareness>> Awareness" $awareness "awareness" {min: -200, max: 1000, reverse: true}>>
 			<<numberStepper "<<symbol promiscuity>> Promiscuity" $promiscuity "promiscuity" {reverse: true}>>
 			<<numberStepper "<<symbol exhibitionism>> Exhibitionism" $exhibitionism "exhibitionism" {reverse: true}>>
 			<<numberStepper "<<symbol deviancy>> Deviancy" $deviancy "deviancy" {reverse: true}>>

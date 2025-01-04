@@ -4,15 +4,21 @@
 Зал игровых автоматов закрыт. Светящаяся табличка рядом с дверью гласит: "Открыто с: <span class="gold"><<ampm 9 00>></span>"
 <br><br>
 <<if currentSkillValue('skulduggery') gte $lock>>
-	<span class="green">Замок, похоже, легко поддается взлому.</span>
-	<br><br>
-	<<lockpickicon>><<link [[Вскрыть замок (0:10)|Arcade]]>><<pass 10>><<crimeUp 20 "trespassing">><</link>><<crime "trespassing">>
-	<br>
+	<<if $leftarm is "bound" and $rightarm is "bound">>
+		You think you'd be able to pick the lock, <span class="blue">if your arms weren't bound.</span>
+		<br><br>
+	<<else>>
+		<<wearProp "lockpick">>
+		<span class="green">Замок, похоже, легко поддается взлому.</span>
+		<br><br>
+		<<lockicon "pick">><<link [[Вскрыть его (0:10)|Arcade]]>><<handheldon>><<pass 10>><<crimeUp 20 "trespassing">><</link>><<crime "trespassing">>
+		<br>
+	<</if>>
 <<else>>
 	<span class="red">Похоже, вы не в состоянии вскрыть этот замок.</span><<skulduggeryrequired>>
 	<br><br>
 <</if>>
-<<starfishicon>><<link [[Покинуть|Starfish Street]]>><<set $eventskip to 1>><</link>>
+<<starfishicon>><<link [[Покинуть|Starfish Street]]>><<handheldon>><<set $eventskip to 1>><</link>>
 <br>
 
 :: Arcade
@@ -55,7 +61,7 @@
 			<<orgasmLocation "arcade">>
 		<</if>>
 		<<if $money gte 500 and (Time.dayState is "day" or Time.dayState is "dusk") and $exposed lte 0>>
-			<<robinicon "controller">><<link [[Играть (£5 0:20)|Arcade Play]]>><<set $money -= 500>><<pass 20>><<stress -2>><</link>><<lstress>>
+			<<robinicon "controller">><<link [[Играть (£5 0:20)|Arcade Play]]>><<money -500 "arcade">><<pass 20>><<stress -2>><</link>><<lstress>>
 			<br>
 		<</if>>
 		<<set _kylarLocation to getKylarLocation()>>
@@ -103,7 +109,7 @@
 	<</if>>
 	<br><br>
 	<<if $money gte 500 and Time.dayState isnot "night">>
-		<<link [[Сопротивляться (£5 0:03)|Arcade Play]]>><<set $money -= 500>><<pass 3>><<stress 2>><</link>><<gstress>>
+		<<link [[Persist (£5 0:03)|Arcade Play]]>><<money -500 "arcade">><<pass 3>><<stress 2>><</link>><<gstress>>
 		<br>
 	<</if>>
 	<<link [[Остановиться|Arcade]]>><</link>>
@@ -263,7 +269,7 @@
 <br><br>
 <<endevent>>
 	<<if $money gte 500 and Time.dayState isnot "night">>
-		<<link [[Продолжить играть (£5 0:20)|Arcade Play]]>><<set $money -= 500>><<pass 20>><<stress -2>><</link>><<lstress>>
+		<<link [[Продолжить играть (£5 0:20)|Arcade Play]]>><<money -500 "arcade">><<pass 20>><<stress -2>><</link>><<lstress>>
 		<br>
 	<</if>>
 		<<link [[Остоновиться|Arcade]]>><</link>>
@@ -283,7 +289,7 @@
 <br><br>
 <<endevent>>
 	<<if $money gte 500 and Time.dayState isnot "night">>
-		<<link [[Продолжить играть (£5 0:20)|Arcade Play]]>><<set $money -= 500>><<pass 20>><<stress -2>><</link>><<lstress>>
+		<<link [[Продолжить играть (£5 0:20)|Arcade Play]]>><<money -500 "arcade">><<pass 20>><<stress -2>><</link>><<lstress>>
 		<br>
 	<</if>>
 		<<link [[Остоновиться|Arcade]]>><</link>>
@@ -318,45 +324,45 @@
 :: Arcade Watched Rape Finish
 <<effects>>
 <<if $enemyarousal gte $enemyarousalmax>>
-<<ejaculation>>
+	<<ejaculation>>
 
-<<person1>><<person>> толкает вас об игровой автомат, а затем уходит.
-<br><br>
+	The <<person1>><<person>> shoves you against the cabinet, before wandering off.
+	<br><br>
 
-<<tearful>> ты берешь себя в руки.
-<br><br>
+	<<tearful>> you gather yourself.
+	<br><br>
 
-<<clotheson>>
-<<endcombat>>
+	<<clotheson>>
+	<<endcombat>>
 
-<<link [[Далее|Arcade]]>><</link>>
+	<<link [[Далее|Arcade]]>><</link>>
 
 <<elseif $enemyhealth lte 0>>
 
-Вы толкаете <<person>> на землю.
-<br><br>
+	You shove the <<person>> to the ground.
+	<br><br>
 
-<<tearful>> ты прячешься за автоматом для игры в пинбол.
-<br><br>
+	<<tearful>> you take cover beneath a pinball machine.
+	<br><br>
 
-<<clotheson>>
-<<endcombat>>
+	<<clotheson>>
+	<<endcombat>>
 
-<<link [[Далее|Arcade]]>><</link>>
+	<<link [[Далее|Arcade]]>><</link>>
 
 <<else>>
-<<set $rescued += 1>>
+	<<set $rescued += 1>>
 
-Ваш крик привлекает внимание. Люди оборачиваются, в том числе один из сотрудников. <<person1>><<person>>  отходит от вас, заявляя, что <<he>> ничего не делал. <<he>> больше ничего не предпринимает.
-<br><br>
+	Ваш крик привлекает внимание. Люди оборачиваются, в том числе один из сотрудников. <<person1>><<person>>  отходит от вас, заявляя, что <<he>> ничего не делал. <<he>> больше ничего не предпринимает.
+	<br><br>
 
-<<tearful>> ты берешь себя в руки.
-<br><br>
+	<<tearful>> you gather yourself.
+	<br><br>
 
-<<clotheson>>
-<<endcombat>>
+	<<clotheson>>
+	<<endcombat>>
 
-<<link [[Далее|Arcade]]>><</link>>
+	<<link [[Далее|Arcade]]>><</link>>
 
 <</if>>
 
@@ -367,7 +373,7 @@
 <br><br>
 <<endevent>>
 <<if $money gte 500 and Time.dayState isnot "night">>
-	<<link [[Продолжить играть (£5 0:20)|Arcade Play]]>><<set $money -= 500>><<pass 20>><<stress -2>><</link>><<lstress>>
+	<<link [[Продолжить играть (£5 0:20)|Arcade Play]]>><<money -500 "arcade">><<pass 20>><<stress -2>><</link>><<lstress>>
 	<br>
 <</if>>
 	<<link [[Остоновиться|Arcade]]>><</link>>
@@ -383,7 +389,7 @@
 
 <<endevent>>
 <<if $money gte 500 and Time.dayState isnot "night">>
-	<<link [[Продолжить играть (£5 0:20)|Arcade Play]]>><<set $money -= 500>><<pass 20>><<stress -2>><</link>><<lstress>>
+	<<link [[Продолжить играть (£5 0:20)|Arcade Play]]>><<money -500 "arcade">><<pass 20>><<stress -2>><</link>><<lstress>>
 	<br>
 <</if>>
 	<<link [[Остоновиться|Arcade]]>><</link>>
@@ -1198,7 +1204,7 @@
 	Толпа ревет. Вы пришли и победили этого опытного игрока в максимально близкой игре. Вы видите, как ваш оппонент в ярости убегает.
 
 	<<if $worn.under_lower.type.includes("chastity")>>
-		Ты в таком приподнятом настроении, что тебе все равно, что все могут видеть твой пояс.
+		You're so elated, you don't care that everyone can see your $worn.genitals.name.
 	<<else>>
 		Вы так воодушевлены, что на несколько секунд забываете о том, что ваши $arcadeExposure.lower выставляется на всеобщее обозрение.
 	<</if>>
@@ -1431,7 +1437,7 @@
 	<<link [[Согласиться|Arcade Hockey Agree 2]]>><<exhibitionism2>><</link>><<exhibitionist2>>
 	<br>
 <<else>>
-	<span class="purple">Вы не настолько похотливы, чтобы добровольно рисковать, выставляя себя напоказ в общественном месте.</span>
+	<<insufficientStat "exhibitionism" "to willingly risk exposing yourself in a public place">>
 	<br><br>
 <</if>>
 
@@ -1560,11 +1566,11 @@
 		<<link [[Согласиться|Arcade Hockey Accept]]>><<arousal 600>><<exhibitionism5>><</link>><<garousal>><<exhibitionist5>>
 		<br>
 	<<else>>
-		<span class="purple">Вы не настолько развратны, чтобы добровольно заниматься сексом с кем-то на публике.</span>
+		<<insufficientStat "exhibitionism" "to willing have sex with someone in public">>
 		<br><br>
 	<</if>>
 
-	<<link [[Идти к нему голым|Arcade Hockey Let]]>><<set $phase to 1>><</link>>
+	<<link [[Let <<him>> go naked|Arcade Hockey Let]]>><<set $phase to 1>><</link>>
 	<br>
 
 <<elseif $exposed gte 2>>
@@ -1580,7 +1586,7 @@
 		<<link [[Согласиться|Arcade Hockey Sex]]>><<set $sexstart to 1>><<fameexhibitionism 2>><<exhibitionism5>><</link>><<exhibitionist5>>
 		<br>
 	<<else>>
-		<span class="purple">Вы не настолько развратны, чтобы добровольно заниматься сексом с кем-то на публике.</span>
+		<<insufficientStat "exhibitionism" "to willing have sex with someone in public">>
 		<br><br>
 
 	<</if>>
@@ -1611,7 +1617,7 @@
 		<<link [[Отказаться|Arcade Hockey Decline 2]]>><<set $phase to 0>><</link>>
 		<br>
 	<<else>>
-		<span class="purple">Вы не настолько развратны, чтобы добровольно рискнуть обнажить эту часть себя в общественном месте.</span>
+		<<insufficientStat "exhibitionism" "to willingly risk exposing that part of yourself in a public place">>
 		<br><br>
 
 		<<link [[Отказаться|Arcade Hockey Decline 2]]>><<set $phase to 1>><</link>>
