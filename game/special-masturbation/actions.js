@@ -971,17 +971,17 @@ function masturbationActionsMouth({ selectedToy, toyDisplay, genitalsExposed, br
 				? '<span class="red">The slime in your ear is forcing you to suck on your penis.</span>'
 				: "You're sucking on your penis.";
 			if (V.selfsuckDepth === V.selfsuckLimit) {
-				result.text += `You have the whole thing in your mouth${V.selfsuckDepth >= 2 ? " and throat" : ""}.`;
+				result.text += ` You have the whole thing in your mouth${V.selfsuckDepth >= 2 ? " and throat" : ""}.`;
 			} else {
 				switch (V.selfsuckDepth) {
 					case 0:
-						result.text += "You have the head in your mouth.";
+						result.text += " You have the head in your mouth.";
 						break;
 					case 1:
-						result.text += "The head reaches the back of your mouth.";
+						result.text += " The head reaches the back of your mouth.";
 						break;
 					case 2:
-						result.text += "You have the head in your throat.";
+						result.text += " You have the head in your throat.";
 						break;
 					default:
 						/* Max selfsuckDepth is 3 and is captured by the above condition */

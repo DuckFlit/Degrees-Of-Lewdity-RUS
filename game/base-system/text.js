@@ -352,9 +352,19 @@ statDisplay.create("gghunger", () => statDisplay.statChange("Hunger", 2, "red"))
 statDisplay.create("ggghunger", () => statDisplay.statChange("Hunger", 3, "red"));
 
 statDisplay.create("gacceptance", () => statDisplay.statChange("Acceptance", 1, "green"));
-statDisplay.create("ginsecurity", type => {
-	if (type === "breasts_tiny" && V.player.gender === "m") return "";
-	if (V["acceptance_" + type] <= 999) return statDisplay.statChange("Insecurity", 1, "red");
+statDisplay.create("ginsecurity", (type, amount) => {
+	// Male players can always gain insecurity when breast size is above 0
+	if (V.player.gender === "m" && type === "breasts_small") type = "breasts_big";
+
+	const insecurityPossible = {
+		penis_small: V.player.penisExist && V.player.penissize <= 1,
+		penis_big: V.player.penisExist && V.player.penissize >= (V.player.gender === "m" ? 4 : 3),
+		breasts_small: V.player.gender === "f" && between(V.player.breastsize, 0, 4),
+		breasts_big: V.player.breastsize >= (V.player.gender === "m" ? 1 : 8),
+		pregnancy: playerBellySize() >= 8,
+	}[type];
+	if (!insecurityPossible) return "";
+	if (V["acceptance_" + type] <= 999) return statDisplay.statChange("Insecurity", amount ?? 1, "red");
 	return "";
 });
 
@@ -592,11 +602,11 @@ statDisplay.create("ggghistory", () => {
 	return result;
 });
 
+statDisplay.create("lhousekeeping", () => statDisplay.statChange("Housekeeping", -1, "red"));
 statDisplay.create("ghousekeeping", (amount, silent = false) => {
-	if (V.statsdisable === "t") return "";
 	if (amount === undefined || V.housekeeping < amount) {
 		return statDisplay.statChange("Housekeeping", 1, "green");
-	} else if (silent === "silent") {
+	} else if (silent === "silent" || V.statdisable === "t") {
 		return "";
 	} else if (V.housekeeping >= amount) {
 		return " You're too skilled for this to improve your housekeeping.";
@@ -682,6 +692,7 @@ statDisplay.create("gferocity", (amount = 1) => statChange.ferocity(amount));
 statDisplay.create("lferocity", (amount = 1) => statChange.ferocity(-amount));
 statDisplay.create("incgpenisinsecurity", amount => statChange.gainPenisInsecurity(amount));
 statDisplay.create("incggpenisinsecurity", () => statChange.gainPenisInsecurity(20));
+statDisplay.create("incgbreastinsecurity", amount => statChange.gainBreastInsecurity(amount));
 statDisplay.create("gpenisacceptance", statChange.gainPenisAcceptance);
 statDisplay.create("wolfpacktrust", statChange.wolfpacktrust);
 statDisplay.create("wolfpackfear", statChange.wolfpackfear);

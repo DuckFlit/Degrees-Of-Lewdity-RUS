@@ -13,6 +13,7 @@
 	<<else>>
 		<<beastTrainGenerate>>
 	<</if>>
+	<<set $noFinish to 1>>
 <</if>>
 
 <<effects>>
@@ -48,7 +49,7 @@
 		<br><br>
 		<<link [[Next|Forest Wolf Cave Rape End]]>><</link>>
 	<</if>>
-<<elseif $enemyhealth lte 0>>
+<<else>>
 	<<beastwound>>
 	<<if $combatTrain.length gt 0>>
 		The <<beasttype>> recoils in pain and fear, but another takes its place.
@@ -73,6 +74,7 @@
 
 	<<clotheson>>
 	<<endcombat>>
+	<<badEndTrackingEnd "Wolf Cave" { reason: "wolfCaveDefeated" }>>
 
 	<<link [[Next|Forest]]>><<set $stress -= 1000>><<set $eventskip to 1>><<set $eventskip to 1>><</link>>
 
@@ -150,6 +152,7 @@ You huddle at the back of the cave, and the pack pays you little heed for a time
 <<set $outside to 0>><<set $location to "wolf_cave">><<effects>>
 
 <<if $wolfpacktrust gte 12>>
+	<<badEndTrackingEnd "Wolf Cave" { reason: "wolfCaveTrusted" }>>
 	The pack looks at you as you try to leave, but make no move to stop you. It seems they trust you enough to let you go.
 	<<lstress>>
 
@@ -157,6 +160,7 @@ You huddle at the back of the cave, and the pack pays you little heed for a time
 	<<link [[Next|Forest]]>><<set $stress -= 1000>><<set $eventskip to 1>><<set $forest to 80>><<set $eventskip to 1>><</link>>
 	<br>
 <<elseif $wolfpackfear gte 12>>
+	<<badEndTrackingEnd "Wolf Cave" { reason: "wolfCaveFeared" }>>
 	The pack growls at you as you try to leave, but make no move to stop you. It seems they fear you too much to try and stop you.
 	<<lstress>>
 
@@ -326,7 +330,7 @@ You decide not to risk it. You wait at the back of the cave. The pack soon retur
 :: Forest Wolf Cave Examine
 <<set $outside to 0>><<set $location to "wolf_cave">><<effects>>
 
-The feel around the darkness at the back of the cave, looking for the source of the draught. The air feels like its coming from behind a pile of loose rocks.
+You feel around the darkness at the back of the cave, looking for the source of the draught. The air feels like its coming from behind a pile of loose rocks.
 <br><br>
 
 <<if $syndromewolves gte 1>>
@@ -340,7 +344,7 @@ The feel around the darkness at the back of the cave, looking for the source of 
 :: Forest Wolf Cave Hole
 <<set $outside to 0>><<set $location to "wolf_cave">><<effects>>
 
-You peer down the hole at the back of the cave, but can't make anything out. You hear rushing water. You don't think you'll be able to come back the way you came.
+You peer down the hole at the back of the cave but can't make anything out. You hear rushing water. If you climb into it, you won't be able to come back the way you came.
 <br><br>
 
 <<getouticon "hole">><<link [[Descend|Wolf Cave Descent]]>><</link>>
@@ -354,15 +358,36 @@ You peer down the hole at the back of the cave, but can't make anything out. You
 	<br>
 <</if>>
 
-:: Wolf Cave Hand
+:: Wolf Cave Accept
 <<if $sexstart is 1>>
 	<<set $sexstart to 0>>
 	<<consensual>>
 	<<set $consensual to 1>>
 	<<neutral 1>>
 	<<beastCombatInit>>
-	<<blackwolfhand>>
-	<<deviancy1>>
+	<<if $phase is 0>>
+		You reach beneath the <<beasttype>> and take it in your hand.
+		<<npchand>><<deviancy1>>
+	<<elseif $phase is 2>>
+		<<clothesstrip>><<deviancy5>>
+		You bend forward, assuming a submissive stance on your hands and knees, before bringing your shoulders down to stick your butt up and leave your <<print ($player.vaginaExist ? '<<pussy>>' : 'anus')>> exposed to the <<beasttype>>. <<bHe>> bears down on you, keeping you grounded under <<bhis>> massive size.<<if $NPCList[0].monster>> "<<pPackbrother>> knows <<pher>> place, very well. Will make you a good pack mother," <<bhe>> says with a big, lustful smile.<</if>>
+		<<npc_attempt_sex>>
+		<<set $position to "doggy">>
+		<<set $position_lock to 1>>
+		<<set $NPCList[0].location.head to "head">>
+		<<set $NPCList[0].location.genitals to "genitals">>
+	<<elseif $phase is 3>>
+		<<clothesstrip>><<deviancy5>>
+		You draw closer to the Black Wolf, bringing your mouth closer to <<bhis>> dark fur. You attempt to place a playful bite on <<bhim>> but the Black Wolf puts <<bhis>> <<if $NPCList[0].monster>>hand<<else>>paw<</if>> on your chest, before driving you down onto the ground with little to no effort. <<bHis>> overwhelming weight and size leaves you with few other options.<<if $NPCList[0].monster>> "<<pPackbrother>> knows <<pher>> place, very well. Will make you a proud pack father," <<bhe>> says with a big, lustful smile.<</if>>
+		<<npc_attempt_sex>>
+		<<set $position to "missionary">>
+		<<set $position_lock to 1>>
+		<<set $NPCList[0].location.head to "head">>
+		<<set $NPCList[0].location.genitals to "genitals">>
+	<<else>>
+		You lean beneath the <<beasttype>>.
+		<<npcoral>><<deviancy4>>
+	<</if>>
 <</if>>
 
 <<effects>>
@@ -375,16 +400,17 @@ You peer down the hole at the back of the cave, but can't make anything out. You
 <<actionsman>>
 
 <<if _combatend>>
-	<span id="next"><<link [[Next|Wolf Cave Hand Finish]]>><</link>></span><<nexttext>>
+	<span id="next"><<link [[Next|Wolf Cave Accept Finish]]>><</link>></span><<nexttext>>
 <<else>>
-	<span id="next"><<link [[Next|Wolf Cave Hand]]>><</link>></span><<nexttext>>
+	<span id="next"><<link [[Next|Wolf Cave Accept]]>><</link>></span><<nexttext>>
 <</if>>
 
-:: Wolf Cave Hand Refuse
+:: Wolf Cave Refuse
 
 <<set $outside to 0>><<set $location to "wolf_cave">><<effects>>
 You shuffle away from the Black Wolf, preparing for another assault. But none comes. <<bHe>> turns and walks away. <<if $monster is 1>>"No matter. You will learn."<</if>>
 <br><br>
+<<badEndTrackingEnd "Wolf Cave" { reason: "wolfCaveAccepted" }>>
 <<set $syndromewolves to 1>>
 <<set $wolfevent to 0>>
 <<set $wolfstate to "cave">>
@@ -411,11 +437,23 @@ You shuffle away from the Black Wolf, preparing for another assault. But none co
 <<link [[Next|Wolf Cave]]>><<endevent>><</link>>
 <br>
 
-:: Wolf Cave Hand Finish
+:: Wolf Cave Accept Finish
 
 <<set $outside to 1>><<set $location to "wolf_cave">><<effects>>
 <<if $enemyarousal gte $enemyarousalmax>>
-	<<beastejaculation>>
+	<<if $phase is 3 and $orgasmcurrent is 0 and $NPCList[0].vagina is "penis">>
+		<<set _forcedOrgasm to true>>
+		<<set $orgasmdown to 3>>
+	<</if>>
+	<<beastejaculation>><<wolfpacktrust>>
+	<br>
+
+	<<if _forcedOrgasm>>
+		Despite having an orgasm, the Black Wolf continues pleasuring your <<penis>>.
+		<<set $penisuse to "othervagina">>
+		<<orgasm>>
+	<</if>>
+	
 	<<tearful>> you watch the Black Wolf yawn and lie down.
 	<br><br>
 	<<clotheson>>
@@ -434,6 +472,7 @@ You shuffle away from the Black Wolf, preparing for another assault. But none co
 <<if $monster is 1>>
 	"Sleepy. Did well... <<ppackbrother>>."
 <</if>>
+<<badEndTrackingEnd "Wolf Cave" { reason: "wolfCaveAccepted" }>>
 <<set $syndromewolves to 1>>
 <<set $wolfevent to 0>>
 <<set $wolfstate to "cave">>

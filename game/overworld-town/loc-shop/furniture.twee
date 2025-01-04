@@ -5,11 +5,13 @@
 <<if currentSkillValue('skulduggery') gte $lock>>
 	<<if $leftarm is "bound" and $rightarm is "bound">>
 		You think you'd be able to pick the lock, <span class="blue">if your arms weren't bound.</span>
+		<br><br>
 	<<else>>
+		<<wearProp "lockpick">>
 		<span class="green">The lock looks easy to pick.</span>
 		<br><br>
 
-		<<lockpickicon>><<link [[Pick it (0:10)|Furniture Shop]]>><<pass 10>><<crimeUp 5 "trespassing">><</link>><<crime "trespassing">>
+		<<lockicon "pick">><<link [[Pick it (0:10)|Furniture Shop]]>><<handheldon>><<pass 10>><<crimeUp 5 "trespassing">><</link>><<crime "trespassing">>
 	<</if>>
 	<br>
 <<else>>
@@ -17,7 +19,7 @@
 	<<skulduggeryrequired>>
 	<br><br>
 <</if>>
-<<getouticon>><<link [[Leave|Shopping Centre Top]]>><</link>>
+<<getouticon>><<link [[Leave|Shopping Centre Top]]>><<handheldon>><</link>>
 
 :: Furniture Shop
 <<set $outside to 0>><<set $location to "shopping_centre">><<effects>>
@@ -57,13 +59,13 @@ You are in the furniture shop. Most of its stock is too large for your room.
 		<<elseif $exposed lte 0 and Time.dayState isnot "night" and Time.hour isnot 21>>
 			There's a few pieces in the catalogue that would fit.
 			<br>
-			<<furnitureicon "catalogue.png">><<link [[Catalogue|Furniture Shop Catalogue]]>><</link>>
+			<<furnitureicon "catalogue">><<link [[Catalogue|Furniture Shop Catalogue]]>><</link>>
 			<br><br>
 		<</if>>
 		<<if ($exposed lte 0 and Time.dayState isnot "night" and Time.hour isnot 21) or (Time.hour gte 21 and !$weekly.theft.furnitureShop)>>
 			Wallpaper and posters are stacked in a corner.
 			<br>
-			<<furnitureicon "wallpaper.png">><<link [[Paperhangings|Furniture Shop Papers]]>><</link>>
+			<<furnitureicon "wallpaper">><<link [[Paperhangings|Furniture Shop Papers]]>><</link>>
 			<br><br>
 		<</if>>
 		<<getouticon>><<link [[Leave|Shopping Centre]]>><</link>>
@@ -90,6 +92,7 @@ You are in the furniture shop. Most of its stock is too large for your room.
 <<getouticon>><<link [[Back|Furniture Shop]]>>
 	<<run delete $chosenFurnitureCategory>>
 	<<unset $furnitureDowngrade>>
+	<<handheldon>>
 <</link>>
 <br>
 <<furnitureCatalogue>>
@@ -106,6 +109,7 @@ You are in the furniture shop. Most of its stock is too large for your room.
 		You approach the paperhangings corner. Samples of pre-made posters and wallpaper are on display. For an additional fee, you can have a custom design imprinted instead.
 	<<else>>
 		You skim through the furniture catalogue. "No Refunds!" is printed along the top.
+		<<wearProp "catalogue">>
 	<</if>>
 	<br><br>
 
@@ -238,7 +242,7 @@ You are in the furniture shop. Most of its stock is too large for your room.
 	Currently installed in your bedroom:
 	<<if $currentFurnishing>>
 		<<set _premade to ["vines", "tentacles", "plainwhite", "cowgirls", "cow_girls", "hearts", "trees", "crosses", "cowgirl", "cow_girl", "cat", "puppy"].includes($currentFurnishing.name)>>
-		<<set _icon to _premade ? $currentFurnishing.id + "_" + $currentFurnishing.name + ".png" : ['dol', 'degrees of lewdity'].some(e => $currentFurnishing.name.toLowerCase().includes(e)) ? $chosenFurnitureCategory + "_dol.png" : $chosenFurnitureCategory is "poster" ? "poster.png" : "wallpaper_custom.png">>
+		<<set _icon to _premade ? $currentFurnishing.id + "_" + $currentFurnishing.name : ['dol', 'degrees of lewdity'].some(e => $currentFurnishing.name.toLowerCase().includes(e)) ? $chosenFurnitureCategory + "_dol" : $chosenFurnitureCategory is "poster" ? "poster" : "wallpaper_custom">>
 		<<furnitureicon _icon>>
 		<<set $_label to $currentFurnishing.nameCap is "Plainwhite" ? "Plain White" : $currentFurnishing.nameCap.replace("_","").toUpperFirst()>>
 		<<= $_label>>
@@ -306,7 +310,7 @@ You are in the furniture shop. Most of its stock is too large for your room.
 		<br>
 	<<else>>
 		<<for $_key range _availableHangings>>
-			<<set $_icon to $chosenFurnitureCategory + "_" + $_key + ".png">>
+			<<set $_icon to $chosenFurnitureCategory + "_" + $_key>>
 			<<set $_label to $_key is "plainwhite" ? "Plain White" : $_key.replace("_","").toUpperFirst()>>
 			<<set $_cost to Furniture.setPrice(Furniture.get($chosenFurnitureCategory, true).cost)>>
 			<<set $_isCurrent to !(!$currentFurnishing or $_key isnot $currentFurnishing.name)>>
@@ -328,7 +332,7 @@ You are in the furniture shop. Most of its stock is too large for your room.
 					<<elseif $money gte $_cost>>
 						<<capture $_key $_cost>>
 							<<link [["£" + $_cost/100|Furniture Shop Papers]]>>
-								<<set $money -= $_cost>>
+								<<money `-$_cost` "furniture">>
 								<<run Furniture.set($chosenFurnitureCategory, $chosenFurnitureCategory, {
 									name	: $_key,
 									nameCap	: $_key.toUpperFirst()
@@ -351,7 +355,7 @@ You are in the furniture shop. Most of its stock is too large for your room.
 					<<if $money gte $_customCost>>
 						 Custom: <<textbox "_customHanging" "">> |
 						<<link [['£' + $_cost / 50|Furniture Shop Papers]]>>
-							<<set $money -= $_customCost>>
+							<<money `-$_customCost` "furniture">>
 							<<if _customHanging is "" or _customHanging is undefined>><<set _customHanging to "a custom design">><</if>>
 							<<set _normalisedName to Util.escape(_customHanging).replace(/\[/g, "&#91;").replace(/\]/g, "&#93;")>>
 							<<run Furniture.set($chosenFurnitureCategory, $chosenFurnitureCategory, {
@@ -424,7 +428,7 @@ You are in the furniture shop. Most of its stock is too large for your room.
 									type: $_furnishing.type,
 								}>>
 							<<else>>
-								<<set $money -= $_cost>>
+								<<money `-$_cost` "furniture">>
 								<<run Furniture.set($_key, $chosenFurnitureCategory)>>
 								<<set $boughtfurniturename to $_furnishing.name>>
 								<<run Furniture.wardrobeUpdate()>>
@@ -461,7 +465,7 @@ You are in the furniture shop. Most of its stock is too large for your room.
 		<<unset $furnitureDowngrade>>
 	<</button>>
 	<<button [[Yes|Furniture Shop Catalogue]]>>
-		<<set $money -= $furnitureDowngrade.cost>>
+		<<money `-$furnitureDowngrade.cost` "furniture">>
 		<<run Furniture.set($furnitureDowngrade.key, $chosenFurnitureCategory)>>
 		<<set $boughtfurniturename to $furnitureDowngrade.name>>
 		<<run Furniture.wardrobeUpdate()>>

@@ -85,14 +85,14 @@ You are in the farmlands.
 		<br>
 	<</if>>
 	<<if $exposed lte 0>>
-		<<if Time.dayState is "night">>
-			<<farmicon "horse">><<link [[Riding school|Riding School Lock]]>><</link>>
+		<<if Time.hour is $closinghour>>
+			<span class="blue">Horses are being stabled at the riding school as it closes for the day.</span>
 			<br>
-		<<elseif Time.hour is $closinghour>>
-			Horses are being stabled at the riding school as it closes for the day.
-			<br><br>
+		<<elseif Time.dayState is "night">>
+			<<steedicon>><<link [[Riding school|Riding School Lock]]>><</link>>
+			<br>
 		<<else>>
-			<<farmicon "horse">><<link [[Riding school (0:01)|Riding School]]>><<pass 1>><</link>>
+			<<steedicon>><<link [[Riding school (0:01)|Riding School]]>><<pass 1>><</link>>
 			<br>
 		<</if>>
 	<</if>>
@@ -510,7 +510,7 @@ Alex beams. "Great! You can start whenever you like, and don't be afraid to ask 
 		<<if playerIsPregnant() and playerAwareTheyArePregnant()>>
 			<span class="blue">You can't bring yourself to drink while you know you're with child.</span>
 		<<else>>
-			<<link [[Drink|Farm Stage 4]]>><<set $phase to 0>><<stress -6>><<set $farm_stage to 4>><<set $farm.clearing to 100>><<wearProp "beerbottle">><</link>><<lstress>>
+			<<link [[Drink|Farm Stage 4]]>><<set $phase to 0>><<stress -6>><<set $farm_stage to 4>><<set $farm.clearing to 100>><<wearProp "beer bottle">><</link>><<lstress>>
 		<</if>>
 		<br>
 		<<link [[Refuse|Farm Stage 4]]>><<set $phase to 1>><<set $farm_stage to 4>><<set $farm.clearing to 100>><</link>>
@@ -568,7 +568,7 @@ Alex beams. "Great! You can start whenever you like, and don't be afraid to ask 
 	"It's done," <<he>> says. "The last field. We've restored the farm."
 	<br><br>
 
-	<<He>> slumps to the farmhouse porch, and looks at you. "I couldn't have done it alone. If <<if $pronoun is "m">>dad<<else>>mum<</if>> had known how dangerous it was-" <<he>> looks away. "I wanted to prove I could do it without them. Now I have."
+	<<He>> slumps to the farmhouse porch, and looks at you. "I couldn't have done it alone. If <<if $pronoun is "m">>Dad<<else>>Mum<</if>> had known how dangerous it was-" <<He>> looks away. "I wanted to prove I could do it without them. Now I have."
 	<br><br>
 
 	<<He>> climbs to <<his>> feet. "I need to tell them. Right now." <<He>> disappears into the farmhouse.
@@ -972,7 +972,7 @@ A car pulls into the yard some minutes later, just as Alex arrives at the bottom
 You leave the farmhouse with Alex. Up ahead, climbing from a car, is an older, thicker version of Alex.
 <br><br>
 
-"<<if $pronoun is "m">>Hi dad<<else>>Hi mum<</if>>," Alex says.
+"Hi <<if $pronoun is "m">>Dad<<else>>Mum<</if>>," Alex says.
 <br><br>
 They face each other for an awkward moment, then the <<if $pronoun is "m">>father<<else>>mother<</if>> steps forward, and grasps Alex by the shoulders.<<lcontrol>><<control -10>>
 <br><br>
@@ -1078,7 +1078,7 @@ Alex watches until the car vanishes from view. "I'm glad you were here to meet <
 You nod, but hang back until Alex disappears behind the sty. You open the envelope. There's a wad of cash inside, along with a note.
 <br><br>
 
-<i>"Thanks for looking out for my <<if $pronoun is "m">>son<<else>>daughter<</if>>. Here's a little something for you. Don't give it to Alex. And don't let <<him>> pressure you into anything. <<Hes>> a good <<nnpc_gendery "Alex">>, but dogged.<<if C.npc.Alex.pregnancy.selfKnowledge is true or C.npc.Alex.pregnancy.pcKnowledge is true>> I'm really happy my <<if C.npc.Alex.gender is "f">>girl<<else>>boy<</if>> is starting to settle down. Thanks for making that happen.<</if>>"
+<i>"Thanks for looking out for my <<if $pronoun is "m">>son<<else>>daughter<</if>>. Here's a little something for you. Don't give it to Alex. And don't let <<him>> pressure you into anything. <<Hes>> a good <<nnpc_gendery "Alex">>, but dogged.<<if C.npc.Alex.pregnancy.selfKnowledge is true or C.npc.Alex.pregnancy.pcKnowledge is true>> I'm really happy my <<nnpc_gendery "Alex">> is starting to settle down. Thanks for making that happen.<</if>>"
 </i>
 <br><br>
 You count the money. There's <<moneyGain 10000>>.
@@ -1156,7 +1156,7 @@ The <<person3>><<person>> grasps Alex from behind.
 <<farm_fight_options>>
 
 :: Farm Fight
-<<effects>>
+<<effects>><<handheldon>>
 
 <<switch $farm_fight.action>>
 <<case "breasts" "chest">>
@@ -1167,7 +1167,7 @@ The <<person3>><<person>> grasps Alex from behind.
 	<<else>>
 		<span class="lewd">and expose your <<breasts>>.</span>
 	<</if>>
-	You tap on the glass for good measure, but thugs are already turning away from Alex.
+	You tap on the glass for good measure, but thugs are already turning away from Alex. <<incgbreastinsecurity>>
 	<br><br>
 
 	<<if $farm_fight.stage gte 5>>
@@ -1202,15 +1202,23 @@ The <<person3>><<person>> grasps Alex from behind.
 		<span class="lewd">You expose your <<genitals>>.</span>
 	<</if>>
 	The thugs drop everything to ogle.
+	<<if $player.penisExist>>
+		<<if $player.penissize gte 3>>
+			<<insecurity "penis_big" 1>><<ginsecurity "penis_big">>
+		<<else>>
+			<<insecurity "penis_small" 1>><<ginsecurity "penis_small">>
+		<</if>>
+	<</if>>
 	<br><br>
 
 	<<if $farm_fight.stage gte 5>>
 		<span class="green">Alex struggles free from the <<person6>><<persons>> grasp,</span> and puts some distance between <<nnpc_himself "Alex">> and the ogling thugs.
 		<br><br>
 	<<else>>
-		<span class="green">They're too busy ogling to notice Alex gain distance, and ready <<person1>><<himself>> for more violence.</span>
+		<span class="green">They're too busy ogling to notice Alex gain distance, readying <<person1>><<himself>> for more violence.</span>
 	<</if>>
 <<case "hammer">>
+	<<wearProp "hammer" 0 "basic">>
 	<<physiquedifficulty 5000 15000 no_text>>
 	<<if $physiqueSuccess is 1>>
 		You bash the door with the hammer. <span class="green">Each blow bites into the wood.</span>
@@ -1223,11 +1231,13 @@ The <<person3>><<person>> grasps Alex from behind.
 	<</if>>
 	<<set $farm_fight.weapon to "hammer">>
 <<case "unscrew">>
+	<<wearProp "screwdriver">>
 	It's hard to keep your hands steady with the assault happening outside, but you manage to remove one of the screws.
 	<br><br>
 	<<set $farm_fight.weapon to "screwdriver">>
 	<<set $farm_fight.screws -= 1>>
 <<case "science">>
+	<<wearProp "chainsaw">>
 	<<if currentSkillValue('science') gte random(1, 700)>>
 		You search the chainsaw, and find a screwable cap. You open it. The interior is empty. <span class="green">The chainsaw needs fuel.</span>
 		<br><br>
@@ -1241,6 +1251,7 @@ The <<person3>><<person>> grasps Alex from behind.
 	<<set $farm_fight.chainsaw to 2>>
 	<br><br>
 <<case "chainsaw">>
+	<<wearProp "chainsaw">>
 	You pull the cord, and the chainsaw revs. You pull it a second time, and the teeth roar into life. The <<person2>><<person>> throws a worried glance at the shed.
 	<br><br>
 
@@ -1267,19 +1278,17 @@ The <<person3>><<person>> grasps Alex from behind.
 <<if $farm_fight.screws lte 0>>
 	The last screw rattles against the floor, and the door swings open, only the locked hatch keeping it held to frame. <span class="red">The smell of smoke greets you.</span>
 	<br><br>
-	<<link [[Next|Farm Fight End]]>><</link>>
+	<<link [[Next|Farm Fight End]]>><<handheldon>><</link>>
 	<br>
 <<elseif $farm_fight.door lte 0>>
 	<<if $farm_fight.weapon is "chainsaw">>
 		You kick the remaining wood apart, and step through.
-		<br><br>
 	<<elseif $farm_fight.weapon is "hammer">>
 		With a final smash, you knock out one of the panes. You reach through, unlock the hatch, and kick the door open. <span class="red">The smell of smoke greets you.</span>
-		<br><br>
 	<<else>>
 		With a final smash, your fist breaks right through the wood. You feel around for the hatch, unlock it, and kick the door open. <span class="red">The smell of smoke greets you.</span>
-		<br><br>
 	<</if>>
+	<br><br>
 	<<link [[Next|Farm Fight End]]>><</link>>
 	<br>
 <<else>>
@@ -1318,10 +1327,6 @@ You look around the shed for anything that could help.
 <</if>>
 
 
-
-
-
-
 :: Farm Fight Search Shelf
 <<effects>>
 
@@ -1333,9 +1338,9 @@ You scan the shelves. There are small bags of seeds, and a trowel <span class="p
 
 
 :: Farm Fight Search Toolbox
-<<effects>>
+<<effects>><<wearProp "toolbox">>
 
-You flip open the toolbox. It's well stocked, but two items draw your attention. <span class="green">A large hammer, and a screwdriver.</span> You could bash the door down with the hammer. You could also remove door's screws, and open it that way.
+You flip open the toolbox. It's well stocked, but two items draw your attention. <span class="green">A large hammer, and a screwdriver.</span> You could bash the door down with the hammer. You could also remove the door's screws and open it that way.
 <br><br>
 
 <<link [[Next|Farm Fight]]>><</link>>
@@ -1360,7 +1365,7 @@ You search the stack of rakes propped up in the corner. The rakes themselves are
 <br>
 
 :: Farm Fight Search Sheet
-<<effects>>
+<<effects>><<wearProp "chainsaw">>
 
 An object leans against the wall, hidden beneath a sheet. You remove the fabric, <span class="green">revealing a chainsaw.</span>
 <br><br>
@@ -1427,7 +1432,7 @@ You tug the cord, but nothing happens.
 
 	"The <<girl>> is a tenacious sort," the <<person2>><<person>> says. "Maybe Remy could put <<phim>> to work."
 	<br>
-	"Nah," the <<person3>><<person>> add, closing in. "This one won't be able to walk once we're done with <<phim>>."
+	"Nah," the <<person3>><<person>> adds, closing in. "This one won't be able to walk once we're done with <<phim>>."
 	<br><br>
 
 <</if>>
@@ -1546,7 +1551,7 @@ You check on Alex. <<Hes>> conscious. <<He>> winces as you help <<him>> to <<his
 
 :: Farm Fight End 3
 <<set $outside to 0>><<effects>>
-<<pass 5>>
+<<pass 5>><<handheldon>>
 The smell worsens.
 <<person1>>
 <<if $farm_fight.stage gte 9>>
@@ -1696,7 +1701,7 @@ Alex nods. "You're right," <<he>> says. "I'm much stronger with you around. <spa
 
 "You've earned it," Alex says. "It's not a big cottage, <span class="gold">but there should be room for you to stay here as well.</span>"
 <br><br>
-Alex hesitates. "Could you handle the fields from now on? I don't," <<he>> finishes <<his>> tea. "I don't want to look at them. I can't."
+Alex hesitates. "Could you handle the fields from now on? I don't-" <<he>> finishes <<his>> tea. "I don't want to look at them. I can't."
 <br><br>
 
 
@@ -1762,59 +1767,58 @@ You are inside the shed with the shower.
 <<dontHideForNow>><<shavestrip>>
 <<wearProp "razor">>
 You take off your clothes and look at your <<genitals>>.
-<br>
-<<if $worn.genitals.name is "chastity belt" or $worn.genitals.name is "gold chastity belt">>
-The belt fits snug against your body and it seems that reaching pubes with a razor is almost impossible.
-<br>
-<<link [[Dress up->Farm Shed]]>><<clotheson>><<dontHideRevert>><</link>>
-<br>
-<<else>>
-<<if $worn.genitals.name is "chastity cage">>
-Your penis is locked inside the cage. Shaving around it will be a bit more tricky, but that's not a big deal.
-<br>
+<br><br>
+<<if playerChastity("hidden")>>
+	The belt fits snug against your body and it seems that reaching pubes with a razor is almost impossible.
+	<br><br>
+	<<link [[Dress up|Farm Shed]]>><<clotheson>><<dontHideRevert>><</link>>
+	<br>
+<</if>>
+<<if playerChastity("cage")>>
+	Your penis is <<if $worn.genitals.name is "chastity parasite">>sealed inside the parasite<<else>>locked inside the cage<</if>>. Shaving around it will be a bit more tricky, but that's not a big deal.
+	<br><br>
 <</if>>
 <<if $pblevel gte 2 or $pbstrip gte 1 or $pblevelballs gte 2>>
-	<<link [[Shave clean (0:15)->Farm shave clean]]>><<pass 15>><<arousal 100>><<set $pblevel to 0>><<set $pbgrowth to 0>><<set $pblevelballs to 0>><<set $pbgrowthballs to 0>><<set $pbstrip to 0>><<set $makeup.pbcolour to 0>><</link>>
+	<<shavestyleicon 'clean'>><<link [[Shave clean (0:15)|Farm shave clean]]>><<pass 15>><<arousal 100>><<set $pblevel to 0>><<set $pbgrowth to 0>><<set $pblevelballs to 0>><<set $pbgrowthballs to 0>><<set $pbstrip to 0>><<set $makeup.pbcolour to 0>><</link>>
 	<br>
 <</if>>
 <<if $pblevel gte 5 or $pbstrip gte 2 or ($pbstrip is 1 and $pblevel gte 2)>>
-	<<link [[Form a landing strip (0:15)->Farm shave strip]]>><<pass 15>><<arousal 100>><<set $pbstripName to "neat landing strip">><<set $pblevel to 0>><<set $pbgrowth to 0>><<set $pbstrip to 1>><</link>>
+	<<shavestyleicon 'strip'>><<link [[Form a landing strip (0:15)|Farm shave strip]]>><<pass 15>><<arousal 100>><<set $pbstripName to "neat landing strip">><<set $pblevel to 0>><<set $pbgrowth to 0>><<set $pbstrip to 1>><</link>>
 	<br>
 <</if>>
 <<if $pblevel gte 5 or $pbstrip gte 3 or ($pbstrip gte 2 and $pblevel gte 2)>>
-	<<link [[Form a heart (0:15)->Farm shave strip]]>><<pass 15>><<arousal 100>><<set $pbstripName to "cute heart shape">><<set $pblevel to 0>><<set $pbgrowth to 0>><<set $pbstrip to 2>><</link>>
+	<<shavestyleicon 'heart'>><<link [[Form a heart (0:15)|Farm shave strip]]>><<pass 15>><<arousal 100>><<set $pbstripName to "cute heart shape">><<set $pblevel to 0>><<set $pbgrowth to 0>><<set $pbstrip to 2>><</link>>
 	<br>
 <</if>>
 <<if $pblevel gte 5 or $pbstrip gte 4 or ($pbstrip gte 3 and $pblevel gte 2)>>
-	<<link [[Form a triangle (0:15)->Farm shave strip]]>><<pass 15>><<arousal 100>><<set $pbstripName to "neat triangle">><<set $pblevel to 0>><<set $pbgrowth to 0>><<set $pbstrip to 3>><</link>>
+	<<shavestyleicon 'triangle'>><<link [[Form a triangle (0:15)|Farm shave strip]]>><<pass 15>><<arousal 100>><<set $pbstripName to "neat triangle">><<set $pblevel to 0>><<set $pbgrowth to 0>><<set $pbstrip to 3>><</link>>
 	<br>
 <</if>>
 <<if $player.ballsExist is true>>
 	<<if $pblevel gte 2 or $pbstrip gte 1>>
-		<<link [[Shave only pubis (0:10)->Farm shave pubis]]>><<pass 10>><<arousal 50>><<set $pblevel to 0>><<set $pbgrowth to 0>><<set $pbstrip to 0>><<if $pblevelballs is 0>><<set $makeup.pbcolour to 0>><</if>><</link>>
+		<<shavestyleicon 'clean'>><<link [[Shave only pubis (0:10)|Farm shave pubis]]>><<pass 10>><<arousal 50>><<set $pblevel to 0>><<set $pbgrowth to 0>><<set $pbstrip to 0>><<if $pblevelballs is 0>><<set $makeup.pbcolour to 0>><</if>><</link>>
 		<br>
 	<</if>>
 	<<if $pblevelballs gte 3>>
-		<<link [[Shave only balls (0:05)->Farm shave balls]]>><<pass 5>><<arousal 50>><<set $pblevelballs to 0>><<set $pbgrowthballs to 0>><<if $pblevel is 0 and $pbstrip is 0>><<set $makeup.pbcolour to 0>><</if>><</link>>
+		<<shavestyleicon 'balls'>><<link [[Shave only balls (0:05)|Farm shave balls]]>><<pass 5>><<arousal 50>><<set $pblevelballs to 0>><<set $pbgrowthballs to 0>><<if $pblevel is 0 and $pbstrip is 0>><<set $makeup.pbcolour to 0>><</if>><</link>>
 		<br>
 	<</if>>
 <</if>>
 <<if $pblevel gt 5 or $pblevelballs gt 5>>
-	<<link [[Trim short (0:10)->Farm shave trim]]>><<pass 10>><<arousal 100>>
-		<<if $pblevel gte 5>>
-			<<set $pblevel to 5>><<set $pbgrowth to 7>><<set $pbstrip to 0>>
-		<</if>>
-		<<if $pblevelballs gte 5>>
-			<<set $pblevelballs to 5>><<set $pbgrowthballs to 10>>
-		<</if>>
+	<<shavestyleicon 'trim'>><<link [[Trim short (0:10)|Farm shave trim]]>><<pass 10>><<arousal 100>>
+	<<if $pblevel gte 5>>
+		<<set $pblevel to 5>><<set $pbgrowth to 7>><<set $pbstrip to 0>>
+	<</if>>
+	<<if $pblevelballs gte 5>>
+		<<set $pblevelballs to 5>><<set $pbgrowthballs to 10>>
+	<</if>>
 	<</link>>
 	<br>
 <</if>>
-<<if $worn.genitals.name isnot "chastity belt">>
-	<<link [[Dye pubic hair|Farm Dye]]>><</link>><br>
+<<if !playerChastity("hidden")>>
+	<<cosmeticsicon "dyes">><<link [[Dye pubic hair|Farm Dye]]>><</link>><br>
 <</if>>
-<<link [[Don't shave anything|Farm Shed]]>><<clotheson>><<dontHideRevert>><</link>>
-<</if>>
+<<refuseicon>><<link [[Don't shave anything|Farm Shed]]>><<clotheson>><<dontHideRevert>><</link>>
 
 :: Farm shave clean
 <<effects>>
@@ -1862,13 +1866,14 @@ You spread your legs, and start carefully trimming your pubes. After a few minut
 <<link [[Next|Farm Shed]]>><<clotheson>><<dontHideRevert>><</link>>
 
 :: Farm Dye
-<<effects>><<wearProp "hairdye">>
+<<effects>>
 
 <<set _ownedColours = $makeup.owned.hairdye.filter(x => x.count > 0)>>
 <<if _ownedColours.length == 0>>
 	You don't own any hair dyes. Maybe you should visit a cosmetics shop to buy some.
 	<br>
 <<else>>
+	<<wearProp "hairdye">>
 	What colour will it be?<br>
 	<<set _choice = _ownedColours[0].colour>>
 	<<for _i, _item range _ownedColours>>
@@ -1895,13 +1900,14 @@ After several minutes, you rinse your private area with water and behold your <<
 
 :: Farm Shower
 <<set $outside to 0>><<effects>>
-<<strip>>
+<<strip>><<wearProp "soap">>
 You remove your clothes, and wash until you're squeaky clean.<<wash>>
 <br><br>
 
 <<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
 <<if $danger gte (9900 - ($allure / 2)) and Time.dayState isnot "night">>
 	<<npc Alex>><<person1>>
+	<<set $genderknown.pushUnique("Alex")>>
 	<<if random(1, 2) is 2>>
 		You hear the door creak open, and light streams in. <<covered>> It's Alex. <<He>> looks away, but <<his>> eyes flit back to you, stealing glances.<<gstress>><<stress 6>>
 		<br><br>
@@ -1922,7 +1928,7 @@ You remove your clothes, and wash until you're squeaky clean.<<wash>>
 		<br><br>
 
 		<<He>> shuts the door after a moment, restoring your privacy.
-		<<if $player.penisExist and ($player.penissize lte 1 or $player.penissize is 4) and random(0,9) gte 6>>
+		<<if $player.penisExist and ($player.penissize lte 1 or $player.penissize is 4) and random(0,9) gte 6 and !playerChastity()>>
 			<<if $player.penissize lte 1>>
 				"So <<EZsmall>>," <<he>> mutters after closing it. You look down at your <<penis>> and flush in embarrassment.
 			<<elseif $player.penissize is 4>>
@@ -1930,10 +1936,8 @@ You remove your clothes, and wash until you're squeaky clean.<<wash>>
 			<</if>>
 
 			<<incgpenisinsecurity>>
-			<br><br>
-		<<else>>
-			<br><br>
 		<</if>>
+		<br><br>
 
 		<<link [[Next|Farm Work]]>><<clotheson>><<endevent>><</link>>
 		<br>
@@ -1975,10 +1979,12 @@ You scream. Alex slams the door in a panic. "S-sorry," <<he>> shouts. Hurried fo
 	<br><br>
 
 	<<if hasSexStat("promiscuity", 2)>>
-		<<link [[Allow|Farm Shower Sex]]>><<set $sexstart to 1>><<npcincr Alex dom 1>><<npcincr Alex love 1>><</link>><<gdom>><<glove>>
-		<br>
+		<<link [[Allow|Farm Shower Sex]]>><<handheldon>><<set $sexstart to 1>><<npcincr Alex dom 1>><<npcincr Alex love 1>><</link>><<gdom>><<glove>>
+	<<else>>
+		<<insufficientStat "promiscuity" "to accept">>
 	<</if>>
-	<<link [[Shove|Farm Shower Shove]]>><<npcincr Alex dom -1>><<npcincr Alex love -1>><</link>><<llove>><<ldom>>
+	<br>
+	<<link [[Shove|Farm Shower Shove]]>><<handheldon>><<npcincr Alex dom -1>><<npcincr Alex love -1>><</link>><<llove>><<ldom>>
 	<br>
 <<else>>
 	Alex hesitates, then shuts the door. You cross the shed to dry yourself.
@@ -2125,14 +2131,14 @@ You continue to wash your body, taking your time. You turn to show Alex a differ
 <<He>> stares with an embarrassed longing.
 <br><br>
 
-<<link [[Invite to wash you|Farm Shower Invite]]>><<npcincr Alex lust 5>><</link>><<exhibitionist4>><<gglust>>
+<<link [[Invite to wash you|Farm Shower Invite]]>><<handheldon>><<npcincr Alex lust 5>><</link>><<exhibitionist4>><<gglust>>
 <br>
-<<link [[Finish|Farm Shower Finish]]>><</link>>
+<<link [[Finish|Farm Shower Finish]]>><<handheldon>><</link>>
 <br>
 
 
 :: Farm Shower Invite
-<<effects>>
+<<effects>><<wearProp "sponge">>
 
 <<if $speech_attitude is "meek">>
 	"W-would you like to wash me?" you ask Alex, holding out a sponge. "There are bits I can't reach."
@@ -2154,10 +2160,10 @@ Alex tries to respond, but can't form the words. <<He>> closes the shed door beh
 	<br><br>
 
 	<<if hasSexStat("promiscuity", 2)>>
-		<<link [[Allow|Farm Shower Sex]]>><<set $sexstart to 1>><<npcincr Alex dom 1>><<npcincr Alex love 1>><</link>><<promiscuous2>><<gdom>><<glove>>
+		<<link [[Allow|Farm Shower Sex]]>><<handheldon>><<set $sexstart to 1>><<npcincr Alex dom 1>><<npcincr Alex love 1>><</link>><<promiscuous2>><<gdom>><<glove>>
 		<br>
 	<</if>>
-	<<link [[Shove|Farm Shower Shove]]>><<npcincr Alex dom -1>><<npcincr Alex love -1>><</link>><<llove>><<ldom>>
+	<<link [[Shove|Farm Shower Shove]]>><<handheldon>><<npcincr Alex dom -1>><<npcincr Alex love -1>><</link>><<llove>><<ldom>>
 	<br>
 <<else>>
 	You turn, and let <<him>> wash the front of your body as well. You're clean already, but it feels too good to pass up. <<He>> stops breathing as the sponge passes over your <<genitals>><<ggarousal>><<arousal 1200>>
@@ -2169,18 +2175,18 @@ Alex tries to respond, but can't form the words. <<He>> closes the shed door beh
 		<br><br>
 
 		<<if hasSexStat("promiscuity", 2)>>
-			<<link [[Allow|Farm Shower Sex]]>><<set $sexstart to 1>><<npcincr Alex dom 1>><<npcincr Alex love 1>><</link>><<promiscuous2>><<gdom>><<glove>>
+			<<link [[Allow|Farm Shower Sex]]>><<handheldon>><<set $sexstart to 1>><<npcincr Alex dom 1>><<npcincr Alex love 1>><</link>><<promiscuous2>><<gdom>><<glove>>
 			<br>
 		<</if>>
-		<<link [[Shove|Farm Shower Shove]]>><<npcincr Alex dom -1>><<npcincr Alex love -1>><</link>><<llove>><<ldom>>
+		<<link [[Shove|Farm Shower Shove]]>><<handheldon>><<npcincr Alex dom -1>><<npcincr Alex love -1>><</link>><<llove>><<ldom>>
 		<br>
 	<<else>>
 
 		<<if hasSexStat("promiscuity", 2)>>
-			<<link [[Seduce|Farm Shower Seduce]]>><<npcincr Alex love 1>><</link>><<promiscuous2>><<glove>>
+			<<link [[Seduce|Farm Shower Seduce]]>><<handheldon>><<npcincr Alex love 1>><</link>><<promiscuous2>><<glove>>
 			<br>
 		<</if>>
-		<<link [[Finish|Farm Shower Finish]]>><</link>>
+		<<link [[Finish|Farm Shower Finish]]>><<handheldon>><</link>>
 		<br>
 	<</if>>
 
@@ -2491,11 +2497,53 @@ You are inside Alex's lab.
 <<if $phials_stored gte 2>>
 	There are <<number $phials_stored>> phials of aphrodisiac stored beneath the table.
 	<br><br>
-	<<symbol "lust">><<link [[Take them (0:01)|Farm Work]]>><<pass 1>><<set $phials_held += $phials_stored>><<set $phials_stored to 0>><</link>>
-	<br>
 <<elseif $phials_stored is 1>>
 	There's a full phial stored beneath the table.
 	<br><br>
+<</if>>
+
+<<if $temple_rank is "monk" and !$farm_aphrodisiac_corruption_reaction and $phials_stored gte 1>>
+	<<set $farm_aphrodisiac_corruption_reaction to true>>
+
+	You look at the <<= $phials_stored is 1 ? "phial" : "phials">><<if $lurkers_stored gte 1>> and the <<= $lurkers_stored is 1 ? "creature" : "creatures">> in the <<= $lurkers_stored is 1 ? "cage" : "cages">><</if>>, and a sense of dread seizes you.
+	<br><br>
+	<<if $world_corruption_soft gte 75>>
+		<span class="pink">A lost arm.</span>
+		<br><br>
+		Your mind flashes back to the pyre, the visions you saw within.
+		<br><br>
+		<span class="pink">A broken wing.</span>
+		<br><br>
+		You recall the malevolent scythe you saw sweeping across the town, tearing holes in your reality. Holes much too small to let its wielder pass through.
+		<br><br>
+		<span class="pink">A single missing feather.</span>
+		<br><br>
+		But not too small to prevent something else from wriggling through.
+		<br><br>
+		Your eyes fall upon <<if $lurkers_stored gte 1>>the <<= $lurkers_stored is 1 ? "creature" : "creatures">> in the <<= $lurkers_stored is 1 ? "cage" : "cages">>, and<</if>> the <<= $phials_stored is 1 ? "phial" : "phials">> of glowing purple liquid, and your heart squeezes in your chest.
+		<br><br>
+		<span class="purple">The taint spreads.</span>
+		<br><br>
+	<<elseif $world_corruption_soft gte 25>>
+		You look towards the cages<<if $lurkers_stored gte 1>> and the <<= $lurkers_stored is 1 ? "creature" : "creatures">> within<</if>>, and your hand instinctively goes to your <<= $temple_weapon>>. Jordan's words, from when you first received it, come back to you: "There are cracks all over this town, where these things squirm through. It is why the temple is here. And why we learn to fight."
+		<br><br>
+		<<if $lurkers_stored gte 1>>
+			The <<= $lurkers_stored is 1 ? "creature rattles its cage" : "creatures rattle their cages">>, but <<= $lurkers_stored is 1 ? "is" : "are">> unable to escape.
+		<<else>>
+			The cages are empty for now, but you can't help but feel a prickling sensation on the back of your neck.
+		<</if>>
+		The <<= $phials_stored is 1 ? "phial" : "phials">> of purple liquid <<= $phials_stored is 1 ? "glows" : "glow">> gently on the tabletop, but the sight makes your blood run cold. <span class="purple">You aren't sure selling stuff made from those creatures is a good idea.</span>
+		<br><br>
+	<<else>>
+		You frown at the <<if $lurkers_stored gte 1>><<= $lurkers_stored is 1 ? "creature" : "creatures">> in the <<= $lurkers_stored is 1 ? "cage" : "cages">>, and the<</if>> glowing purple liquid on the tabletop. Alex said Remy was making a lot of money from the stuff, and you know <<nnpc_he Alex>> hopes to do the same. Still, knowing the source of this stuff, you can't help but feel uneasy about the idea of producing it. <span class="purple">Something tells you selling it might make things harder for the temple.</span>
+		<br><br>
+	<</if>>
+<</if>>
+
+<<if $phials_stored gte 2>>
+	<<symbol "lust">><<link [[Take them (0:01)|Farm Work]]>><<pass 1>><<set $phials_held += $phials_stored>><<set $phials_stored to 0>><</link>>
+	<br>
+<<elseif $phials_stored is 1>>
 	<<symbol "lust">><<link [[Take it (0:01)|Farm Work]]>><<pass 1>><<set $phials_held += $phials_stored>><<set $phials_stored to 0>><</link>>
 	<br>
 <<else>>
@@ -2674,9 +2722,9 @@ Alex says, leaning closer and closing <<his>> eyes.
 Your lips meet. Alex's body is tense and <<his>> pulse races, but <<he>> relaxes as you kiss again and again. <<Hes>> flushed by the time you pull away.<<takeKissVirginity "Alex" "loveInterest">>
 <br><br>
 <<if C.npc.Alex.dom lte -30>>
-"I'm your <<if $pronoun is "f">>wo<</if>>man,"
+	"I'm your <<if $pronoun is "f">>wo<</if>>man,"
 <<else>>
-"You're my <<if $player.gender_appearance is "f">>wo<</if>>man,"
+	"You're my <<if $player.gender_appearance is "f">>wo<</if>>man,"
 <</if>>
 <<he>> says. <<He>> runs <<his>> eyes and a finger down your chest. "I'm so lucky."
 <br><br>
@@ -2778,7 +2826,7 @@ Truffles: $farm.stock.truffles
 <br>
 <<if $farm.stock.truffles gte 1>>
 	<<set _farm_stocked to true>>
-	<<tendingicon "truffles">><<link [[Take|Farm Stock]]>><<wearProp "truffle">><<tending_give truffle $farm.stock.truffles>><<set $farm.stock.truffles to 0>><</link>>
+	<<tendingicon "truffle">><<link [[Take|Farm Stock]]>><<wearProp "truffle">><<tending_give truffle $farm.stock.truffles>><<set $farm.stock.truffles to 0>><</link>>
 	<br>
 <</if>>
 <br>
@@ -2786,7 +2834,7 @@ Eggs: $farm.stock.eggs
 <br>
 <<if $farm.stock.eggs gte 1>>
 	<<set _farm_stocked to true>>
-	<<tendingicon "eggs">><<link [[Take|Farm Stock]]>><<wearProp "bird egg">><<tending_give chicken_egg $farm.stock.eggs>><<set $farm.stock.eggs to 0>><</link>>
+	<<tendingicon "egg">><<link [[Take|Farm Stock]]>><<wearProp "egg" 0 "chicken">><<tending_give chicken_egg $farm.stock.eggs>><<set $farm.stock.eggs to 0>><</link>>
 	<br>
 <</if>>
 <br>
@@ -2794,26 +2842,24 @@ Bottles of milk: $farm.stock.milk
 <br>
 <<if $farm.stock.milk gte 1>>
 	<<set _farm_stocked to true>>
-	<<tendingicon "milk">><<link [[Take|Farm Stock]]>><<wearProp "milk bottle">><<tending_give bottle_of_milk $farm.stock.milk>><<set $farm.stock.milk to 0>><</link>>
+	<<tendingicon "milk">><<link [[Take|Farm Stock]]>><<wearProp "milk bottle" 0 "milk">><<tending_give bottle_of_milk $farm.stock.milk>><<set $farm.stock.milk to 0>><</link>>
 	<br>
 <</if>>
 <br>
 
 <<if _farm_stocked is true>>
-	<<tendingicon>>
+	<<tendingicon "basket">>
 	<<link [[Take all|Farm Cottage]]>>
 		<<if $farm.stock.truffles gte 1>>
-			<<wearProp "truffle">>
 			<<tending_give truffle $farm.stock.truffles>><<set $farm.stock.truffles to 0>>
 		<</if>>
 		<<if $farm.stock.eggs gte 1>>
-			<<wearProp "bird egg">>
 			<<tending_give chicken_egg $farm.stock.eggs>><<set $farm.stock.eggs to 0>>
 		<</if>>
 		<<if $farm.stock.milk gte 1>>
-			<<wearProp "milk bottle">>
 			<<tending_give bottle_of_milk $farm.stock.milk>><<set $farm.stock.milk to 0>>
 		<</if>>
+		<<wearProp "basket">>
 	<</link>>
 	<br>
 <</if>>

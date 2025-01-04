@@ -21,20 +21,18 @@
 	<</addinlineevent>>
 <</if>>
 <<addinlineevent "chef_thief" 0.7>>
-		<<generatey1>><<person1>>
 		You hear the back door squeak.
 		<<if random(1, 1000) gte $skulduggery>>
 			You turn to look, <span class="red">but don't see anything out of the ordinary.</span>
 			<br><br>
-			<<endevent>>
-
 			<<chefwork>>
 		<<else>>
+			<<generatey1>><<person1>>
 			Trying to be inconspicuous, you glance over. At first nothing appears out of the ordinary. <span class="green">Then you spot a hand reach up from beneath a table,</span> and snatch one of the buns.
 			<br><br>
-			<<link [[Intervene|Chef Thief Intervene]]>><</link>>
+			<<link [[Intervene|Chef Thief Intervene]]>><<handheldon>><</link>>
 			<br>
-			<<link [[Ignore|Chef Thief Ignore]]>><</link>>
+			<<link [[Ignore|Chef Thief Ignore]]>><<handheldon>><</link>>
 			<br>
 		<</if>>
 		<</addinlineevent>>
@@ -42,8 +40,6 @@
 		<<npc Sam>><<person1>>Sam comes in to check on you. You end up chatting for several minutes, before a shatter in the main room steals <<his>> attention.
 		<<lstress>><<stress -6>><<ltrauma>><<trauma -6>>
 		<br><br>
-
-		<<endevent>>
 
 		<<chefwork>>
 <</addinlineevent>>
@@ -56,14 +52,11 @@
 			You reach out to sign, and <<he>> grabs your arm. <<He>> tugs you closer.
 			<br><br>
 
-			<<link [[Next|Chef Work Rape]]>><<set $molestationstart to 1>><</link>>
+			<<link [[Next|Chef Work Rape]]>><<handheldon>><<set $molestationstart to 1>><</link>>
 			<br>
 		<<else>>
 			You sign the paper. <<He>> thanks you and leaves the way <<he>> came.
 			<br><br>
-
-			<<endevent>>
-
 			<<chefwork>>
 		<</if>>
 <</addinlineevent>>
@@ -155,10 +148,10 @@
 	<br><br>
 
 	<<if $chef_job is "special">>
-		<<link [[Next|Chef Work Masturbation]]>><<set $masturbationstart to 1>><</link>>
+		<<link [[Next|Chef Work Masturbation]]>><<handheldon>><<set $masturbationstart to 1>><</link>>
 		<br>
 	<<else>>
-		<<link [[Next|Chef Work Regular]]>><</link>>
+		<<link [[Next|Chef Work Regular]]>><<handheldon>><</link>>
 		<br>
 	<</if>>
 <</widget>>
@@ -174,7 +167,8 @@
 	Labour value: £10
 	<br>
 	Total earned: <span class="gold">£<<print (_bun_money / 100)>></span>
-	<<set $money += _bun_money>>
+	<<money 1000 "cafeChef">>
+	<<money `_bun_money - 1000` "cafeBuns">>
 	<<set $bunstat += _buns_sold>>
 	<br>
 	Suspicion:
@@ -186,7 +180,7 @@
 	<<if $options.images is 1>>
 		<<set _buns_sold to Math.clamp(_buns_sold, 0, 200)>>
 		<<for _i to 0; _i lt _buns_sold; _i++>>
-			<<icon "food_creambun.png">>
+			<<foodicon "creambun">>
 		<</for>>
 		<br><br>
 	<</if>>
@@ -268,7 +262,7 @@
 		extremely embarrassed letting so many strangers see your <<undies>> in public like this, but despite the feeling of <<print ["embarrassment", "humiliation", "vulnerability", "exposure"].pluck()>> you crave more.
 	<<else>>
 		<<print ["excited", "exhillerated", "turned on", "thrilled", "horny", "lewd"].pluck()>> showing so many strangers your <<undies>> in public like this.
-		<<if $assertiveaction is "trauma">> You're so naughty. <<trauma -2>><<ltrauma>> <</if>>
+		<<if $assertiveaction is "trauma">> You're so naughty. <<trauma -2>><<ltrauma>><<if $phase isnot 4>><br><br><</if>><</if>>
 	<</if>>
 
 	<<switch $phase>>
@@ -312,43 +306,47 @@
 	<<switch $daily.earSlimeOceanBreezeCafeEat>>
 		<<case "coffee">>
 			<<link [[_linkName|Cafe Coffee]]>>
-				<<set $daily.cafeEaten to 1>><<set $money -= 200>><<tiredness -4>><<pass 2>>
+				<<set $daily.cafeEaten to 1>><<money -200 "cafe">><<tiredness -4>><<pass 2>>
 				<<if _linkName is "Obey">><<corruption 1>><<pain -4>><<stress -9>><<trauma -12>><<sub 2>><</if>>
 			<</link>><<if _linkName is "Obey">><<gcorruption>><<lpain>><<lltrauma>><<lstress>><</if>><<ltiredness>>
 		<<case "winter ale">>
 			<<link [[_linkName|Cafe Eat]]>>
-				<<set $daily.cafeEaten to 1>><<set $phase to "winter ale">><<set $money -= 700>><<alcohol 100>><<pass 10>>
+				<<set $daily.cafeEaten to 1>><<set $phase to "winter ale">><<money -700 "cafe">><<alcohol 100>><<pass 10>>
 				<<if _linkName is "Obey">><<corruption 1>><<pain -4>><<stress -12>><<trauma -12>><<sub 2>><</if>>
 			<</link>><<if _linkName is "Obey">><<gcorruption>><<lpain>><<lltrauma>><<lstress>><</if>><<galcohol>>
 		<<case "fruity ale">>
 			<<link [[_linkName|Cafe Eat]]>>
-				<<set $daily.cafeEaten to 1>><<set $phase to "fruity ale">><<set $money -= 700>><<alcohol 60>><<pass 10>>
+				<<set $daily.cafeEaten to 1>><<set $phase to "fruity ale">><<money -700 "cafe">><<alcohol 60>><<pass 10>>
 				<<if _linkName is "Obey">><<corruption 1>><<pain -4>><<stress -12>><<trauma -12>><<sub 2>><</if>>
 			<</link>><<if _linkName is "Obey">><<gcorruption>><<lpain>><<lltrauma>><<lstress>><</if>><<galcohol>>
 		<<case "shandy">>
 			<<link [[_linkName|Cafe Eat]]>>
-				<<set $daily.cafeEaten to 1>><<set $phase to "shandy">><<set $money -= 700>><<alcohol 40>><<pass 10>>
+				<<set $daily.cafeEaten to 1>><<set $phase to "shandy">><<money -700 "cafe">><<alcohol 40>><<pass 10>>
 				<<if _linkName is "Obey">><<corruption 1>><<pain -4>><<stress -12>><<trauma -12>><<sub 2>><</if>>
 			<</link>><<if _linkName is "Obey">><<gcorruption>><<lpain>><<lltrauma>><<lstress>><</if>><<galcohol>>
 		<<case "autumn ale">>
 			<<link [[_linkName|Cafe Eat]]>>
-				<<set $daily.cafeEaten to 1>><<set $phase to "autumn ale">><<set $money -= 700>><<alcohol 80>><<pass 10>>
+				<<set $daily.cafeEaten to 1>><<set $phase to "autumn ale">><<money -700 "cafe">><<alcohol 80>><<pass 10>>
 				<<if _linkName is "Obey">><<corruption 1>><<pain -4>><<stress -12>><<trauma -12>><<sub 2>><</if>>
 			<</link>><<if _linkName is "Obey">><<gcorruption>><<lpain>><<lltrauma>><<lstress>><</if>><<galcohol>>
 		<<case "fruit salad">>
 			<<link [[_linkName|Cafe Eat]]>>
-				<<set $daily.cafeEaten to 1>><<set $phase to "fruit salad">><<set $money -= 500>><<pass 20>>
+				<<set $daily.cafeEaten to 1>><<set $phase to "fruit salad">><<money -500 "cafe">><<pass 20>>
 				<<if _linkName is "Obey">><<corruption 1>><<pain -4>><<stress -12>><<trauma -12>><<sub 2>><</if>>
 			<</link>><<if _linkName is "Obey">><<gcorruption>><<lpain>><<lltrauma>><<lstress>><</if>>
 		<<case "pancake">>
 			<<link [[_linkName|Cafe Pancakes]]>>
-				<<set $daily.cafeEaten to 1>><<set $money -= 1000>><<tiredness -6>><<pass 20>>
+				<<set $daily.cafeEaten to 1>><<money -1000 "cafe">><<tiredness -6>><<pass 20>>
 				<<if _linkName is "Obey">><<corruption 1>><<pain -4>><<stress -6>><<trauma -12>><<sub 2>><</if>>
 			<</link>><<if _linkName is "Obey">><<gcorruption>><<lpain>><<lltrauma>><<lstress>><</if>><<ltiredness>>
 		<<case "deluxe cream bun">>
 			<<link [[_linkName|Cafe Cream Bun]]>>
-				<<set $daily.cafeEaten to 1>><<transform cat 1>><<set $money -= 5000>><<pass 20>>
+				<<set $daily.cafeEaten to 1>><<transform cat 1>><<money -5000 "cafe">><<pass 20>>
 				<<if _linkName is "Obey">><<corruption 1>><<pain -4>><<stress -24>><<trauma -12>><<sub 2>><</if>>
 			<</link>><<if _linkName is "Obey">><<gcorruption>><<lpain>><<lltrauma>><<llstress>><</if>>
 	<</switch>>
+<</widget>>
+
+<<widget "timeTrackingEndCafe">>
+	<<timeTrackingEnd "cafe">><<timeTrackingEnd "cafeWaiter">><<timeTrackingEnd "cafeChef">><<timeTrackingEnd "cafeBuns">>
 <</widget>>

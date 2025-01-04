@@ -51,17 +51,17 @@ A sign reads: "Tanning beds available. <<printmoney _price>> per session. Price 
 	<<if $openinghours is 1 and $exposed lt 1>>
 		<<generate1>><<person1>>
 		<<if $spa_job gte 1>>
-			<<ind>><<link [[Work as a masseur (0:50)|Spa Work Start]]>><<endevent>><<set $money += 1000>><</link>>
+			<<ind>><<link [[Work as a masseur (0:50)|Spa Work Start]]>><<endevent>><<money 1000 "spa">><</link>>
 			<br>
 		<<else>>
 			The receptionist, a <<person>>, looks up from <<his>> desk, and curls <<his>> nose. "Make it quick," <<he>> says. "Our clientele don't mix with riff-raff off the street."
 			<br><br>
-			<<askicon>><<link [[Ask for work|Spa Work Ask]]>><</link>>
+			<<socialiseicon "ask">><<link [[Ask for work|Spa Work Ask]]>><</link>>
 			<br>
 		<</if>>
 		<<if $money gte _price>>
 			<<set _tanning to Skin.getTanningFactor(true)>>
-			<<ind>><<link [[Tanning salon (<<printmoney _price>> 1:00)|Spa Tan]]>><<set $money -= _price>><</link>><<lstress>><<tanningGainOutput _tanning.result 60>>
+			<<ind>><<link [[Tanning salon (<<printmoney _price>> 1:00)|Spa Tan]]>><<money `-_price` "spa">><</link>><<lstress>><<tanningGainOutput _tanning.result 60>>
 		<<else>>
 			<<ind>><span class="purple">You cannot afford the <<printmoney _price>> for tanning.</span>
 		<</if>>
@@ -209,15 +209,21 @@ Surrounded by a blue glow, you feel your heart pump as the warmth seeps into you
 <<set $outside to 1>><<effects>><<set $lock to 200>>
 <<openinghours>>
 <<if currentSkillValue('skulduggery') gte $lock>>
-	<span class="green">The lock looks easy to pick.</span>
-	<br><br>
-	<<lockpickicon>><<link [[Pick it (0:10)|Spa]]>><<pass 10>><<crimeUp 20 "trespassing">><</link>><<crime "trespassing">>
-	<br>
+	<<if $leftarm is "bound" and $rightarm is "bound">>
+		You think you'd be able to pick the lock, <span class="blue">if your arms weren't bound.</span>
+		<br><br>
+	<<else>>
+		<<wearProp "lockpick">>
+		<span class="green">The lock looks easy to pick.</span>
+		<br><br>
+		<<lockicon "pick">><<link [[Pick it (0:10)|Spa]]>><<handheldon>><<pass 10>><<crimeUp 20 "trespassing">><</link>><<crime "trespassing">>
+		<br>
+	<</if>>
 <<else>>
 	<span class="red">The lock looks beyond your ability to pick.</span><<skulduggeryrequired>>
 	<br><br>
 <</if>>
-<<getouticon>><<link [[Leave|Danube Street]]>><</link>>
+<<getouticon>><<link [[Leave|Danube Street]]>><<handheldon>><</link>>
 
 :: Spa Work Ask
 <<effects>>
@@ -523,15 +529,15 @@ You get dressed, then rifle through the <<persons>> pockets.
 <<if $rng gte 99>>
 	They're empty, but <<his>> watch looks valuable, if you could find a buyer.<<crimeUp 1000 "thievery">><<set $blackmoney += 1000>>
 <<elseif $rng gte 81>>
-	You find <<moneyGain 100 true true>> in cash.
+	You find <<moneyGain 100 true true "spa">> in cash.
 <<elseif $rng gte 61>>
-	You find <<moneyGain 50 true true>> in cash.
+	You find <<moneyGain 50 true true "spa">> in cash.
 <<elseif $rng gte 41>>
-	You find <<moneyGain 20 true true>> in cash.
+	You find <<moneyGain 20 true true "spa">> in cash.
 <<elseif $rng gte 21>>
-	You find <<moneyGain 10 true true>> in cash.
+	You find <<moneyGain 10 true true "spa">> in cash.
 <<else>>
-	You find <<moneyGain 5 true true>> in cash.
+	You find <<moneyGain 5 true true "spa">> in cash.
 <</if>>
 <br><br>
 You return to the spa. The wall is too high to climb from this side. You walk around the perimeter. The trees thin, and you emerge on Danube Street.
@@ -714,11 +720,11 @@ You walk away with a new set of clothes, a refund, and a fearful request that yo
 <</if>>
 
 <<if Time.season is "summer">>
-	<<set $money += 1000>>
+	<<money 1000 "spa">>
 <<elseif Time.season is "winter">>
-	<<set $money += 6000>>
+	<<money 6000 "spa">>
 <<else>>
-	<<set $money += 2500>>
+	<<money 2500 "spa">>
 <</if>>
 
 <<endcombat>>

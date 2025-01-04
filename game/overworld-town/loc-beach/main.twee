@@ -39,7 +39,6 @@ You are on the beach.
 		It appears deserted.
 	<</if>>
 <</if>>
-You could go for a swim, but make sure to dress appropriately.
 <br><br>
 <<if $exposed gte 1>>
 	<<exhibitionism "beach">>
@@ -54,11 +53,12 @@ You could go for a swim, but make sure to dress appropriately.
 	<<set $danger to random(1, 10000)>><<set $dangerevent to 0>>
 	<<if $danger gte (9900 - $allure) and $eventskip is 0>>
 		<<eventsbeach>>
-	<<elseif $robinReunionScene isnot undefined and _robin_location is "beach" and $exposed lte 0>>
+	<<elseif $robinReunionScene isnot undefined and _robin_location is "beach">>
 		<<npc Robin>><<person1>>
 		<<if $robinReunionScene is "dungeon">>
+			<<wearProp "lemonade">>
 			<<unset $robinReunionScene>><<set $robinPostMortem to true>>
-			You see Robin stood behind <<his>> lemonade stand. <<His>> mouth goes agape as <<he>> sees you, and <<he>> sprints towards you.
+			You see Robin stood behind <<his>> lemonade stand. <<His>> mouth falls agape as <<he>> sees you, and <<he>> sprints closer.
 			<br><br>
 
 			"I don't believe it!" <<he>> squeals as <<he>> buries <<himself>> in your chest. "I-I thought you were gone forever! We need to talk about this at home. When you're ready."
@@ -74,8 +74,8 @@ You could go for a swim, but make sure to dress appropriately.
 			<<link [[Next|Beach]]>><<set $eventskip to 1>><<endevent>><</link>>
 			<br>
 		<<elseif $robinReunionScene is "dungeonRobin">>
-			<<unset $robinReunionScene>>
-			You see Robin stood behind <<his>> lemonade stand. <<His>> mouth goes agape as <<he>> sees you, and <<he>> sprints towards you.
+			<<unset $robinReunionScene>><<wearProp "lemonade">>
+			You see Robin stood behind <<his>> lemonade stand. <<His>> mouth goes falls as <<he>> sees you, and <<he>> sprints towards you.
 			<br><br>
 
 			"You made it out!" <<he>> squeals as <<he>> buries <<himself>> in your chest. "When you were recaptured, I didn't know what I was going to do."
@@ -134,7 +134,7 @@ You could go for a swim, but make sure to dress appropriately.
 			<<link [[Next|Beach]]>><<set $eventskip to 1>><<endevent>><</link>>
 			<br>
 		<</if>>
-	<<elseif C.npc.Robin.init is 0 and Time.season isnot "winter" and Time.isWeekEnd() and between(Time.hour, 9, 16) and $exposed lte 0>>
+	<<elseif C.npc.Robin.init is 0 and Time.season isnot "winter" and Time.isWeekEnd() and between(Time.hour, 9, 16)>>
 		<<set $robindebt to 0>><<set $robindebtlimit to 5>>
 		<<npc Robin>><<person1>>You see someone familiar working at a stand on the beach. <<He>> notices you at the same time. "Hey!" It's Robin. <<Hes>> another resident at the orphanage. <<Hes>> always looked up to you, despite being about the same age. <<He>> motions you over while cleaning a glass pitcher. <<He>> puts it down and hugs you when you approach.
 		<br><br>
@@ -148,7 +148,7 @@ You could go for a swim, but make sure to dress appropriately.
 		<<link [[Next|Beach]]>><<set $eventskip to 1>><</link>>
 		<br>
 	<<elseif Time.season is "summer" and Time.hour gt 9 and Time.hour lt 17 and Weather.precipitation isnot "rain" and $balloonStand.open is false and $exposed lte 0>>
-		<<generate1>><<saveNPC 0 stall_owner>><<npc Robin 2>>
+		<<generate1>><<saveNPC 0 stall_owner>>
 		Someone is setting up a new stall on the beach<<if _robin_location is "beach">>, directly across from Robin's lemonade stand. Robin looks somewhat worried<</if>>. The <<person1>><<person>> ties a bunch of colourful balloons to the stall, where they bob invitingly in the air.
 		<br><br>
 		The <<personsimple>> notices you staring and beckons you over. "Hey there!" <<he>> says. "Just getting my wares set up."
@@ -158,20 +158,19 @@ You could go for a swim, but make sure to dress appropriately.
 		"Just some little treats to brighten things up around here. Here, have a balloon. It's Free Balloon Day." <<He>> gives you a wink and hands you a balloon. "I have more if you'd like them, though you'll have to pay. I also have popcorn, and I'm hoping to expand. Care to be my first customer?"
 		<br><br>
 		<<set $balloonStand.open to true>>
-		<<link [[Buy something|Balloon Stand]]>><<set $phase to "firstcustomer">><<handheldwear 14>><</link>><br>
+		<<link [[Buy something|Balloon Stand]]>><<endevent>><<set $phase to "firstcustomer">><<handheldwear 14>><</link>><br>
 		<<link [[Decline|Balloon Decline]]>><<handheldwear 14>><</link>>
-	<<elseif _robin_location is "beach" and $exposed lte 0 and $balloonStand.open is true and $balloonStand.robin.status is "unaffected">>
+		<br>
+	<<elseif _robin_location is "beach" and $balloonStand.open is true and $balloonStand.robin.status is "unaffected">>
 		<<balloonRobinIntro>>
 	<<else>>
-		<<if $exposed lte 0>>
-			<<if $scienceproject is "ongoing" and $sciencephallusknown is 1 and $sciencephallus lt 10 and Time.dayState isnot "night" and Weather.precipitation is "none" and $exposed lte 0>>
-				<<investigateicon>><<link [[Find participant for phallus project (0:15)|Beach Phallus]]>><<pass 15>><</link>>
-				<br>
-			<</if>>
-			<<swimicon>><<link [[Go for a swim (0:02)|Sea Beach]]>><<pass 2>><</link>>
+		<<if $scienceproject is "ongoing" and $sciencephallusknown is 1 and $sciencephallus lt 10 and Time.dayState isnot "night" and Weather.precipitation is "none">>
+			<<investigateicon>><<link [[Find participant for phallus project (0:15)|Beach Phallus]]>><<pass 15>><</link>>
 			<br>
-		<<elseif Time.dayState is "night">>
+		<</if>>
+		<<if $exposed lte 0 or Time.dayState is "night">>
 			<<swimicon>><<link [[Go for a swim (0:02)|Sea Beach]]>><<pass 2>><</link>>
+			<<swim_check>> <<if _swim_check isnot 1 and $statdisable is "f">> | <span class="purple">You are not wearing any swimwear!</span> <</if>>
 			<br>
 		<</if>>
 		<<if Time.dayState is "day" and !Weather.isOvercast>>
@@ -182,47 +181,45 @@ You could go for a swim, but make sure to dress appropriately.
 			<</if>>
 		<</if>>
 		<<if Weather.precipitation is "none" or $worn.handheld.type.includes("rainproof")>>
-			<<if $milkshake gte 1 and $exposed lte 0>>
+			<<if $milkshake gte 1>>
 				<<foodicon "milkshake">><<link [[Drink your milkshake (0:10)|Beach Milkshake]]>><<pass 10>><<set $milkshake -= 1>><<stress -5>><</link>><<lstress>>
 				<br>
 			<</if>>
-			<<if $popcorn gte 1 and $exposed lte 0>>
+			<<if $popcorn gte 1>>
 				<<foodicon "popcorn">><<link [[Eat your popcorn (0:10)|Balloon Consume]]>><<pass 10>><<set $popcorn -= 1>><<wearProp "popcorn">><<trauma -3>><<set $phase to "popcorn">><</link>><<ltrauma>>
 				<br>
 			<</if>>
 		<</if>>
 		<<changingroomicon>><<link [[Changing room|Changing Room]]>><</link>>
-		<<if $exposed lte 0>>
-			<<if $openinghours is 1 and $balloonStand.open is true>>
-				<br>
-				<<stallicon "balloon">><<link [[Balloon stand|Balloon Stand]]>><</link>>
-			<</if>>
-			<<if _robin_location is "beach">>
-				<br>
-				<<robinicon "lemonade">>
-				<<if $balloonStand.robin.status is "closed">>
-					<span class="red">Robin asked you to leave <<nnpc_him "Robin">> alone.</span>
-				<<else>>
-					<<link [[Robin's lemonade stand|Robin's Lemonade]]>><</link>>
-				<</if>>
-			<</if>>
-			<<if $leftleg is "bound" or $rightleg is "bound">>
-				<br>
-				<<set $_boundType to ($leftleg is "bound" ? ($rightleg is "bound" ? "both legs" : "your left leg") : "your right leg")>>
-				You cannot go for a run with $_boundType bound.
-			<<elseif $worn.feet.type.includes("heels")>>
-				<br>
-				<<walkicon>><<link [[Take a walk in heels (0:30)|Beach Heel Walk]]>><</link>><<gtiredness>><<lstress>>
+		<<if $openinghours is 1 and $balloonStand.open is true>>
+			<br>
+			<<stallicon "balloon">><<link [[Balloon stand|Balloon Stand]]>><</link>>
+		<</if>>
+		<<if _robin_location is "beach">>
+			<br>
+			<<robinicon "lemonade">>
+			<<if $balloonStand.robin.status is "closed">>
+				<span class="red">Robin asked you to leave <<nnpc_him "Robin">> alone.</span>
 			<<else>>
-				<br>
-				<<runicon>><<link [[Go for a run (0:30)|Beach Run]]>><</link>><<gtiredness>><<gathletics>><<lstress>>
+				<<link [[Robin's lemonade stand|Robin's Lemonade]]>><</link>>
 			<</if>>
 		<</if>>
-		<<if !Weather.isOvercast and Time.dayState is "night" and $exposed lte 0>>
+		<<if $leftleg is "bound" or $rightleg is "bound">>
+			<br>
+			<<set $_boundType to ($leftleg is "bound" ? ($rightleg is "bound" ? "both legs" : "your left leg") : "your right leg")>>
+			You cannot go for a run with $_boundType bound.
+		<<elseif $worn.feet.type.includes("heels")>>
+			<br>
+			<<walkicon>><<link [[Take a walk in heels (0:30)|Beach Heel Walk]]>><</link>><<gtiredness>><<lstress>>
+		<<else>>
+			<br>
+			<<runicon>><<link [[Go for a run (0:30)|Beach Run]]>><</link>><<gtiredness>><<gathletics>><<lstress>>
+		<</if>>
+		<<if !Weather.isOvercast and Time.dayState is "night">>
 			<br>
 			<<socialiseicon "party">><<link [[Party|Beach Party]]>><</link>>
 		<</if>>
-		<<if !Weather.isOvercast and Time.dayState isnot "night" and $exposed lte 0>>
+		<<if !Weather.isOvercast and Time.dayState isnot "night">>
 			<br>
 			<<socialiseicon "volleyball">><<link [[Volleyball|Beach Volleyball]]>><</link>>
 			<<if hasSexStat("exhibitionism", 5) and $daily.beachStrip isnot 1>>
@@ -234,6 +231,7 @@ You could go for a swim, but make sure to dress appropriately.
 			<br>
 			<span class="red">The slime in your ear refuses to allow you to leave with <<underwearTypeText>> on.</span>
 		<<elseif $exposed gte 1 and Time.dayState isnot "night">>
+			/* Unreachable, as all $exposed gte 1 are caught by the <<exhibitionism "beach">> if statement above */
 		<<else>>
 			<<add_link "Travel<br>">><<hideDisplay>>
 			<<cliff>>
@@ -271,6 +269,7 @@ You approach a group playing volleyball. A <<person1>><<person>> sits on the san
 :: Beach Volleyball Play
 
 <<location "beach">><<effects>>
+<<wearProp "volleyball">>
 The students are happy to have a sixth player, particularly the <<person1>><<person>>.
 <br><br>
 <<set $eventcheck to random(1, 10000)>>
@@ -402,7 +401,7 @@ The students are happy to have a sixth player, particularly the <<person1>><<per
 			<<if playerIsPregnant() and playerAwareTheyArePregnant()>>
 				<span class="blue">You can't bring yourself to drink while you know you're with child.</span>
 			<<else>>
-				<<link [[Drink (0:10)|Beach Party Chat]]>><<pass 10>><<stress -2>><<alcohol 60>><<set $phase to 1>><<status 1>><<wearProp "beerbottle">><</link>><<gcool>><<lstress>>
+				<<link [[Drink (0:10)|Beach Party Chat]]>><<pass 10>><<stress -2>><<alcohol 60>><<set $phase to 1>><<status 1>><<wearProp "beer bottle">><</link>><<gcool>><<lstress>>
 			<</if>>
 			<br>
 			<<link [[Just talk (0:10)|Beach Party Chat]]>><<pass 10>><<stress -2>><<set $phase to 1>><<status 1>><</link>><<gcool>><<lstress>>
@@ -423,7 +422,7 @@ The students are happy to have a sixth player, particularly the <<person1>><<per
 		<<if playerIsPregnant() and playerAwareTheyArePregnant()>>
 			<span class="blue">You can't bring yourself to drink while you know you're with child.</span>
 		<<else>>
-			<<link [[Drink (0:10)|Beach Party Chat]]>><<pass 10>><<stress -2>><<alcohol 60>><<set $phase to 1>><<status 1>><<if $propEquipped isnot 1>><<wearProp "beerbottle">><</if>><</link>><<gcool>><<lstress>>
+			<<link [[Drink (0:10)|Beach Party Chat]]>><<pass 10>><<stress -2>><<alcohol 60>><<set $phase to 1>><<status 1>><<if $propEquipped isnot 1>><<wearProp "beer bottle">><</if>><</link>><<gcool>><<lstress>>
 		<</if>>
 		<br>
 		<<link [[Just talk (0:10)|Beach Party Chat]]>><<pass 10>><<stress -2>><<set $phase to 1>><<status 1>><</link>><<gcool>><<lstress>>
@@ -476,9 +475,9 @@ The students are happy to have a sixth player, particularly the <<person1>><<per
 <<elseif $danceevent is "finish">>
 	<<link [[Next|Beach Party]]>><<clotheson>><<endevent>><</link>>
 <<elseif $danceevent is 0>>
-	<<if $exposed gte 2 and $exhibitionism lte 74>>
+	<<if $exposed gte 2 and !hasSexStat("exhibitionism", 5)>>
 		<<link [[Flee|Changing Room]]>><<clotheson>><<endevent>><</link>>
-	<<elseif $exposed gte 1 and $exhibitionism lte 34>>
+	<<elseif $exposed gte 1 and !hasSexStat("exhibitionism", 3)>>
 		<<link [[Flee|Changing Room]]>><<clotheson>><<endevent>><</link>>
 	<<else>>
 		<<link [[Stop|Beach Party]]>><<clotheson>><<endevent>><</link>>
@@ -506,26 +505,26 @@ The students are happy to have a sixth player, particularly the <<person1>><<per
 <br><br>
 <<actionsman>>
 <<if $finish is 1>>
-	<span id="next"><<link [[Next->Beach Party Sex Finish]]>><</link>></span><<nexttext>>
+	<span id="next"><<link [[Next|Beach Party Sex Finish]]>><</link>></span><<nexttext>>
 <<else>>
 	<<if $alarm is 1>>
 		<<if $rescue is 0>>
 			<<set $alarm to 0>>
 			<br><br>
 			<<if $enemyarousal gte $enemyarousalmax>>
-				<span id="next"><<link [[Next->Beach Party Sex Ejaculation]]>><</link>></span><<nexttext>>
+				<span id="next"><<link [[Next|Beach Party Sex Ejaculation]]>><</link>></span><<nexttext>>
 			<<elseif $enemyhealth lte 0>>
-				<span id="next"><<link [[Next->Beach Party Sex Escape]]>><</link>></span><<nexttext>>
+				<span id="next"><<link [[Next|Beach Party Sex Escape]]>><</link>></span><<nexttext>>
 			<<else>>
-				<span id="next"><<link [[Next->Beach Party Sex]]>><</link>></span><<nexttext>>
+				<span id="next"><<link [[Next|Beach Party Sex]]>><</link>></span><<nexttext>>
 			<</if>>
 		<</if>>
 	<<elseif $enemyarousal gte $enemyarousalmax>>
-		<span id="next"><<link [[Next->Beach Party Sex Ejaculation]]>><</link>></span><<nexttext>>
+		<span id="next"><<link [[Next|Beach Party Sex Ejaculation]]>><</link>></span><<nexttext>>
 	<<elseif $enemyhealth lte 0>>
-		<span id="next"><<link [[Next->Beach Party Sex Escape]]>><</link>></span><<nexttext>>
+		<span id="next"><<link [[Next|Beach Party Sex Escape]]>><</link>></span><<nexttext>>
 	<<else>>
-		<span id="next"><<link [[Next->Beach Party Sex]]>><</link>></span><<nexttext>>
+		<span id="next"><<link [[Next|Beach Party Sex]]>><</link>></span><<nexttext>>
 	<</if>>
 <</if>>
 
@@ -561,24 +560,24 @@ The students are happy to have a sixth player, particularly the <<person1>><<per
 <<actionsman>>
 <<if $alarm is 1>>
 	<<if $rescue is 1>>
-		<span id="next"><<link [[Next->Beach Party Rape Alarm]]>><</link>></span><<nexttext>>
+		<span id="next"><<link [[Next|Beach Party Rape Alarm]]>><</link>></span><<nexttext>>
 	<<else>>
 		<<set $alarm to 0>>
 		<br><br>
 		<<if $enemyarousal gte $enemyarousalmax>>
-			<span id="next"><<link [[Next->Beach Party Rape Ejaculation]]>><</link>></span><<nexttext>>
+			<span id="next"><<link [[Next|Beach Party Rape Ejaculation]]>><</link>></span><<nexttext>>
 		<<elseif $enemyhealth lte 0>>
-			<span id="next"><<link [[Next->Beach Party Rape Escape]]>><</link>></span><<nexttext>>
+			<span id="next"><<link [[Next|Beach Party Rape Escape]]>><</link>></span><<nexttext>>
 		<<else>>
-			<span id="next"><<link [[Next->Beach Party Rape]]>><</link>></span><<nexttext>>
+			<span id="next"><<link [[Next|Beach Party Rape]]>><</link>></span><<nexttext>>
 		<</if>>
 	<</if>>
 <<elseif $enemyarousal gte $enemyarousalmax>>
-	<span id="next"><<link [[Next->Beach Party Rape Ejaculation]]>><</link>></span><<nexttext>>
+	<span id="next"><<link [[Next|Beach Party Rape Ejaculation]]>><</link>></span><<nexttext>>
 <<elseif $enemyhealth lte 0>>
-	<span id="next"><<link [[Next->Beach Party Rape Escape]]>><</link>></span><<nexttext>>
+	<span id="next"><<link [[Next|Beach Party Rape Escape]]>><</link>></span><<nexttext>>
 <<else>>
-	<span id="next"><<link [[Next->Beach Party Rape]]>><</link>></span><<nexttext>>
+	<span id="next"><<link [[Next|Beach Party Rape]]>><</link>></span><<nexttext>>
 <</if>>
 
 :: Beach Party Rape Alarm
@@ -618,7 +617,7 @@ Smiling, <<he>> leans closer, "Good <<girl>>." <<He>> leaves you lying on the sa
 <<effects>>
 
 <<He>> recoils in pain, giving you the chance you need. <<tearful>> you escape into the darkness.
-<br><br><br><br>
+<br><br>
 
 <<clotheson>>
 <<endcombat>>
@@ -694,19 +693,19 @@ The <<person>> leaves you. <<He>> looks dejected.
 		<<set $alarm to 0>>
 		<br><br>
 		<<if $enemyarousal gte $enemyarousalmax>>
-			<span id="next"><<link [[Next->Beach Party Dance Rape Ejaculation]]>><</link>></span><<nexttext>>
+			<span id="next"><<link [[Next|Beach Party Dance Rape Ejaculation]]>><</link>></span><<nexttext>>
 		<<elseif $enemyhealth lte 0>>
-			<span id="next"><<link [[Next->Beach Party Dance Rape Escape]]>><</link>></span><<nexttext>>
+			<span id="next"><<link [[Next|Beach Party Dance Rape Escape]]>><</link>></span><<nexttext>>
 		<<else>>
-			<span id="next"><<link [[Next->Beach Party Dance Rape]]>><</link>></span><<nexttext>>
+			<span id="next"><<link [[Next|Beach Party Dance Rape]]>><</link>></span><<nexttext>>
 		<</if>>
 	<</if>>
 <<elseif $enemyarousal gte $enemyarousalmax>>
-	<span id="next"><<link [[Next->Beach Party Dance Rape Ejaculation]]>><</link>></span><<nexttext>>
+	<span id="next"><<link [[Next|Beach Party Dance Rape Ejaculation]]>><</link>></span><<nexttext>>
 <<elseif $enemyhealth lte 0>>
-	<span id="next"><<link [[Next->Beach Party Dance Rape Escape]]>><</link>></span><<nexttext>>
+	<span id="next"><<link [[Next|Beach Party Dance Rape Escape]]>><</link>></span><<nexttext>>
 <<else>>
-	<span id="next"><<link [[Next->Beach Party Dance Rape]]>><</link>></span><<nexttext>>
+	<span id="next"><<link [[Next|Beach Party Dance Rape]]>><</link>></span><<nexttext>>
 <</if>>
 
 :: Beach Party Dance Rape Ejaculation
@@ -1051,37 +1050,37 @@ The <<person>> tries to keep <<his>> camera steady, barely managing to control <
 <<location "beach">><<effects>>
 
 <<if $enemyarousal gte $enemyarousalmax>>
-<<ejaculation>>
+	<<ejaculation>>
 
-"I only did that so you'd get dressed!" <<he>> says unconvincingly.
-<br><br>
+	"I only did that so you'd get dressed!" <<he>> says unconvincingly.
+	<br><br>
 
-It is getting cold though, so you decide to get dressed for now.
-<br><br>
+	It is getting cold though, so you decide to get dressed for now.
+	<br><br>
 
-<<clotheson>>
-<<endcombat>>
+	<<clotheson>>
+	<<endcombat>>
 
 <<elseif $enemyhealth lte 0>>
 
-You shove the <<person>> onto the sand and dash away.
-<br><br>
+	You shove the <<person>> onto the sand and dash away.
+	<br><br>
 
-It's getting a bit cold, so you decide to get dressed for now.
-<br><br>
+	It's getting a bit cold, so you decide to get dressed for now.
+	<br><br>
 
-<<clotheson>>
-<<endcombat>>
+	<<clotheson>>
+	<<endcombat>>
 <<elseif $finish is 1>>
 
-"I only did that so you'd get dressed!" <<he>> says unconvincingly.
-<br><br>
+	"I only did that so you'd get dressed!" <<he>> says unconvincingly.
+	<br><br>
 
-It is getting cold though, so you decide to get dressed for now.
-<br><br>
+	It is getting cold though, so you decide to get dressed for now.
+	<br><br>
 
-<<clotheson>>
-<<endcombat>>
+	<<clotheson>>
+	<<endcombat>>
 <</if>>
 <br><br>
 <<link [[Next|Beach]]>><</link>>
@@ -1137,7 +1136,7 @@ You feel everyone's eyes on your body as you walk onto the dry sand and into the
 <<if playerBellyVisible()>>
 		A <<generatey2>><<person2>><<person>> almost passes you a cold beer, but stops when <<he>> sees your baby bump.
 <<else>>
-	<<wearProp "beerbottle">>
+	<<wearProp "beer bottle">>
 	You're handed a cold beer by a <<generatey2>><<person2>><<person>>.
 	 <<if playerIsPregnant() and playerAwareTheyArePregnant()>>
 		You're not comfortable drinking while you know you're pregnant.
@@ -1233,7 +1232,7 @@ You drink the milkshake you bought from the cafe. It's deliciously creamy, and e
 After spending some time naked on the beach, you return to your clothes, only to catch a <<generate1>><<person1>><<person>> stealing them!
 <br><br>
 
-<<link [[Chase after them|Beach Clothes Stolen 2]]>><</link>>
+<<link [[Chase after <<him>>|Beach Clothes Stolen 2]]>><</link>>
 <br>
 <<link [[Run to the Changing Room|Beach Clothes Stolen Changing Room 1]]>><</link>>
 <br>
@@ -1278,9 +1277,9 @@ The <<person>> runs down the beach, passing many other people. It's obvious <<he
 	<br>
 <<else>>
 	<<Hes>> heading towards the street. You're almost able to grab <<him>>, but <<he>> makes it onto the sidewalk. The firmer ground helps <<him>> speed up, and <<he>> heads down the street, into a far more public and crowded area than the beach.
-	<br>
+	<br><br>
 
-	<<link [[Chase after them|Beach Clothes Stolen 4]]>><</link>>
+	<<link [[Chase after <<him>>|Beach Clothes Stolen 4]]>><</link>>
 	<br>
 	<<link [[Run to the Changing Room|Beach Clothes Stolen Changing Room 2]]>><</link>>
 	<br>
@@ -1319,7 +1318,7 @@ You are already attracting attention and stares. You decide to turn around and r
 
 	Finally, you spot a gap in the crowd and run through. You run down the street, hearing laughter and shouts behind you. You sprint into the nearest alleyway and escape.
 	<<garousal>><<gstress>><<gtrauma>><<stress 6>><<trauma 6>><<arousal 600>><<fameexhibitionism 30 "pic">>
-	<br>
+	<br><br>
 
 	<<link [[Next|Industrial alleyways]]>><<endevent>><<ruined>><</link>>
 	<br>

@@ -11,7 +11,7 @@ You are at the shore of the <<= Weather.isFrozen("lake") ? "frozen lake" : "lake
 	<<if Weather.isFrozen("lake")>>
 		Students hang out nearby, while others practise ice skating.
 	<<else>>
-		<<if Time.season isnot "winter">>There are several people playing in the water. <</if>>You can see the swimmers dock with a few students sitting on it.
+		<<if Time.season isnot "winter">>There are several people playing in the water. <</if>>You can see the swimmer's dock with a few students sitting on it.
 	<</if>>
 <<elseif Time.dayState is "night">>
 	<<if Time.isWeekEnd()>>
@@ -177,6 +177,7 @@ You are at the shore of the <<= Weather.isFrozen("lake") ? "frozen lake" : "lake
 				<span class="nextLink"><<swimicon>><<link [[Swim.|Lake Shallows]]>><<pass 2>><</link>></span>
 			<<else>>
 				<<swimicon>><<link [[Swim (0:02)|Lake Shallows]]>><<pass 2>><</link>>
+				<<swim_check>> <<if _swim_check isnot 1 and $statdisable is "f">> | <span class="purple">You are not wearing any swimwear!</span> <</if>>
 			<</if>>
 			<br>
 		<</if>>
@@ -257,7 +258,7 @@ Winter leads you into the tent. It's spacious. A long table runs down the length
 <br>
 
 :: Lake Office
-<<set $outside to 0>><<effects>>
+<<set $outside to 0>><<location "lake_office">><<effects>>
 
 You are in the archaeological office at the lake. Green tent walls surround a spacious interior.
 <<if Time.schoolDay and Time.hour gte 16 and Time.hour lte 20 or !Time.schoolDay and Time.hour gte 6 and Time.hour lte 20>>
@@ -268,7 +269,7 @@ You are in the archaeological office at the lake. Green tent walls surround a sp
 
 <<if (Time.schoolDay and Time.hour gte 16 and Time.hour lte 20 or !Time.schoolDay and Time.hour gte 6 and Time.hour lte 20)>>
 	<<if !$weekly.winterLakeTalk>>
-		<<askicon>><<link [[Ask about Winter's research|Lake Office Ask]]>><</link>>
+		<<socialiseicon "ask">><<link [[Ask about Winter's research|Lake Office Ask]]>><</link>>
 		<br>
 	<</if>>
 	<<if $winterLakeTalk is 1 and $bogProgress is 1>>
@@ -280,7 +281,7 @@ You are in the archaeological office at the lake. Green tent walls surround a sp
 <br>
 
 :: Lake Office Ask
-<<set $outside to 0>><<effects>>
+<<set $outside to 0>><<location "lake_office">><<effects>>
 <<set $winterLakeTalk = ($winterLakeTalk || 0)>>
 <<if $winterLakeTalk is 0>>
 	<<if $speech_attitude is "meek">>
@@ -438,7 +439,7 @@ You ask.
 <</switch>>
 
 :: Lake Office Ask Bog
-<<set $outside to 0>><<effects>>
+<<set $outside to 0>><<location "lake_office">><<effects>>
 <<set $bogProgress to 2>><<set $weekly.winterLakeTalk to false>>
 <<if $speech_attitude is "meek">>
 	"You were right about that brook, it leads into a scary bog," you say. "It looks dangerous."
@@ -456,11 +457,11 @@ You see a smile cross <<his>> face, but only for a moment. "You didn't have to d
 <<He>> pauses. "I'm sure I'll be able to find volunteers now that they won't have to go in completely blind, or go all the way around through the moor."
 <br><br>
 
-<<link [[Next|Lake Office]]>><</link>>
+<<link [[Next|Lake Office]]>><<endevent>><</link>>
 <br>
 
 :: Lake Office Volunteers
-<<set $outside to 0>><<effects>>
+<<set $outside to 0>><<location "lake_office">><<effects>>
 
 <<person1>>Winter clears <<his>> throat. "Thank you, you <<if $bogTeam.robinKnown>>four<<else>>three<</if>>. You look like you've worked hard today. I appreciate excellence, but remember not to overdo it."
 <<if !$bogTeam.robinKnown>>
@@ -564,7 +565,7 @@ You are at the waterfall.
 	<<eventlakesafe>>
 	<<lakereturnjourney>>
 	<<if $pregnancyStats.parasiteDoctorEvents gte 2>>
-		<<investigateicon>><<containersLink>>
+		<<containersLink>>
 	<</if>>
 	<<if $mason_count gte 2 and !Weather.isFrozen("lake")>>
 		<<lakeicon "pond">><<link [[Mason's pond (0:05)|Mason Pond]]>><<pass 5>><</link>>
@@ -600,7 +601,7 @@ You are at the waterfall.
 
 <<set $outside to 1>><<set $location to "lake">><<effects>><<lakeeffects>>
 <<set $forest to 50>><<set $bus to "lakefishingrock">>
-You are on the Fishing Rock.
+You are on the fishing rock.
 <<if $laketeenspresent is 1>>
 	You see people on the other side of the <<= Weather.isFrozen("lake") ? "frozen lake" : "lake. Fish splash up to eat insects. It's peaceful, though the nearby trees are foreboding">>.
 <<elseif Time.dayState is "night">>
@@ -719,7 +720,7 @@ You are at the Firepit.
 <<set $outside to 1>><<set $location to "lake">><<effects>><<lakeeffects>>
 <<set $forest to 50>><<set $bus to "lakecampsite">>
 
-You are at the Campsite.
+You are at the campsite.
 <<if Time.dayState is "night">>
 	<<if Weather.precipitation is "none" and Time.hour gte 18 and $daily.lakeCouple isnot 1>>
 		A couple cuddles beside a small fire. There is a tent set up nearby.
@@ -1007,21 +1008,21 @@ You are at the Campsite.
 <</if>>
 
 :: Lake Lotus
-<<effects>>
+<<effects>><<wearProp "lotus">>
 
 You swim among the lotus flowers, gathering seeds. <span class="gold">You can now grow <<icon "tending/lotus.png">> lotus.</span> <i>Lotus are valuable, but need a special environment to grow.</i>
 <br><br>
 
-<<link [[Next|Lake Shallows]]>><</link>>
+<<link [[Next|Lake Shallows]]>><<handheldon>><</link>>
 <br>
 
 :: Lake Lotus Ice
-<<effects>>
+<<effects>><<wearProp "lotus">>
 
 You free the lotus flowers from the ice, gathering the seeds. <span class="gold">You can now grow <<icon "tending/lotus.png">> lotus.</span> <i>Lotus are valuable, but need a special environment to grow.</i>
 <br><br>
 
-<<link [[Next|Lake Shallows Ice]]>><</link>>
+<<link [[Next|Lake Shallows Ice]]>><<handheldon>><</link>>
 <br>
 
 :: Lake Depths
@@ -1217,6 +1218,7 @@ You are in the middle of the frozen lake, near the swimming dock.
 		<br>
 	<<else>>
 		<<swimicon "dive">><<link [[Dive (0:01)|Lake Underwater]]>><<pass 1>><</link>>
+		<<swim_check>> <<if _swim_check isnot 1 and $statdisable is "f">> | <span class="purple">You are not wearing any swimwear!</span> <</if>>
 		<br>
 	<</if>>
 
@@ -1229,12 +1231,12 @@ You are in the middle of the frozen lake, near the swimming dock.
 
 
 :: Lake Ice Break
-<<effects>>
+<<effects>><<wearProp "shovel">>
 
 You lift the shovel, and thrust it into the ice. It's hard work, but you manage to make a sizable hole.
 <br><br>
 
-<<link [[Next|Lake Depths Ice]]>><</link>>
+<<link [[Next|Lake Depths Ice]]>><<handheldon>><</link>>
 <br>
 
 
@@ -1244,14 +1246,14 @@ You lift the shovel, and thrust it into the ice. It's hard work, but you manage 
 <<if $laketeenspresent is 1>>
 	You are on the swimming dock. Several students accompany you on the dock. There is a bikini sitting on the edge with no signs of its owner.
 <<elseif Weather.precipitation is "rain">>
-	You are on the swimming dock. The sound of the rain hitting the water surrounding you is almost deafening. <<if $hallucinations gte 1>>You can't see far, yet you feel like something watches you.<</if>>
+	You are on the swimming dock. The sound of the rain hitting the water surrounding you is almost deafening. <<if $hallucinations gte 1>>You can't see far, yet you feel like something's watching you.<</if>>
 <<elseif Time.dayState is "day">>
 	You are on the swimming dock. The lake looks placid. You feel like the only person in the entire world.
 <<elseif Time.dayState is "night">>
 	<<if $laketeensfire is 1>>
 		You are on the swimming dock. You can see the fire from the party a little ways in the distance. Stars dot the water. You feel like you are floating among them.
 	<<else>>
-		You are on the swimming dock. Stars dot the water. You feel like you are floating among them. <<if $hallucinations gte 1>>You feel like you are being watched.<</if>>
+		You are on the swimming dock. Stars dot the water. You feel like you are floating among them. <<if $hallucinations gte 1>>You can't see far in the dark, yet you feel like something's watching you.<</if>>
 	<</if>>
 <<else>>
 	You are on the swimming dock. The only sounds you hear are waves crashing upon the sides of the dock.
@@ -1312,25 +1314,16 @@ You lift the shovel, and thrust it into the ice. It's hard work, but you manage 
 		The <<if Weather.isFrozen("lake")>>ice<<else>>water<</if>> parts, revealing a gaping abyss. Terror shivers up your spine, and breaks your concentration.
 		<<gtrauma>><<gstress>><<trauma 6>><<stress 6>>
 	<</if>>
-<<elseif $phase is 4>>
-	<<set $phase to 0>>
-	Your thoughts turn to your <<penis>>, and the mocking way people regard it. The torment returns. You try to remain detached.
-	<br><br>
-
-	An hour passes, and for a few moments the weight of scrutiny lifts.
-	<<if $acceptance_penis_tiny gte 1000>>
-		<br><br>
-		Realisation dawns as you lean back. Your <<penis>> is beautiful. Why should you care what other people say about it? You've gained the <span class="green">Acceptance: Tiny Penis</span> trait.
-	<</if>>
-<<elseif $phase is 5>>
+<<elseif $phase is 4 or $phase is 5>>
 	<<set $phase to 0>>
 	Your thoughts turn to your <<penis>>, and the mocking way people regard it. The torment returns. You try to remain detached.
 	<br><br>
 
 	An hour passes, and for a few moments the weight of scrutiny lifts.
 	<<if $acceptance_penis_small gte 1000>>
+		<<set _penisSize to setup.penisSizes[$player.penissize + 2].toUpperFirst()>>
 		<br><br>
-		Realisation dawns as you lean back. Your <<penis>> is beautiful. Why should you care what other people say about it? You've gained the <span class="green">Acceptance: Small Penis</span> trait.
+		Realisation dawns as you lean back. Your <<penis>> is beautiful. Why should you care what other people say about it? You've gained the <span class="green">Acceptance: _penisSize Penis</span> trait.
 	<</if>>
 <<elseif $phase is 6>>
 	<<set $phase to 0>>
@@ -1339,8 +1332,9 @@ You lift the shovel, and thrust it into the ice. It's hard work, but you manage 
 
 	An hour passes, and for a few moments the weight of scrutiny lifts.
 	<<if $acceptance_penis_big gte 1000>>
+		<<set _penisSize to setup.penisSizes[$player.penissize + 2].toUpperFirst()>>
 		<br><br>
-		Realisation dawns as you lean back. Your <<penis>> is beautiful. Why should you care what other people say about it? You've gained the <span class="green">Acceptance: Big Penis</span> trait.
+		Realisation dawns as you lean back. Your <<penis>> is beautiful. Why should you care what other people say about it? You've gained the <span class="green">Acceptance: _penisSize Penis</span> trait.
 	<</if>>
 <<elseif $phase is 7>>
 	<<set $phase to 0>>
@@ -1348,9 +1342,9 @@ You lift the shovel, and thrust it into the ice. It's hard work, but you manage 
 	<br><br>
 
 	An hour passes, and for a few moments the weight of scrutiny lifts.
-	<<if $acceptance_breasts_tiny gte 1000>>
+	<<if $acceptance_breasts_small gte 1000>>
 		<br><br>
-		Realisation dawns as you lean back. Your chest is beautiful. Why should you care what other people say about it? You've gained the <span class="green">Acceptance: Tiny Breasts</span> trait.
+		Realisation dawns as you lean back. Your chest is beautiful. Why should you care what other people say about it? You've gained the <span class="green">Acceptance: Flat Chest</span> trait.
 	<</if>>
 <<elseif $phase is 8>>
 	<<set $phase to 0>>
@@ -1360,7 +1354,8 @@ You lift the shovel, and thrust it into the ice. It's hard work, but you manage 
 	An hour passes, and for a few moments the weight of scrutiny lifts.
 	<<if $acceptance_breasts_small gte 1000>>
 		<br><br>
-		Realisation dawns as you lean back. Your <<breasts>> are beautiful. Why should you care what other people say about them? You've gained the <span class="green">Acceptance: Small Breasts</span> trait.
+		<<set _breastSizeName to setup.breastsizes[$player.breastsize].toUpperFirst()>>
+		Realisation dawns as you lean back. Your <<breasts>> beautiful. Why should you care what other people say about them? You've gained the <span class="green">Acceptance: _breastSizeName Breasts</span> trait.
 	<</if>>
 <<elseif $phase is 9>>
 	<<set $phase to 0>>
@@ -1369,8 +1364,9 @@ You lift the shovel, and thrust it into the ice. It's hard work, but you manage 
 
 	An hour passes, and for a few moments the weight of scrutiny lifts.
 	<<if $acceptance_breasts_big gte 1000>>
+		<<set _breastSizeName to setup.breastsizes[$player.breastsize].toUpperFirst()>>
 		<br><br>
-		Realisation dawns as you lean back. Your <<breasts>> are beautiful. Why should you care what other people say about them? You've gained the <span class="green">Acceptance: Big Breasts</span> trait.
+		Realisation dawns as you lean back. Your <<breasts>> are beautiful. Why should you care what other people say about them? You've gained the <span class="green">Acceptance: _breastSizeName Breasts</span> trait.
 	<</if>>
 <<elseif $phase is 10>>
 	<<set $phase to 0>>

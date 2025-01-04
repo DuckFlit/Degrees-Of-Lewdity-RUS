@@ -1,3 +1,4 @@
+// @ts-check
 /* For any item that has a colour_combat tag, set it to 0 if that item ever gets its own combat sprites.
 
 Warmth checklist:
@@ -15,12 +16,15 @@ Warmth checklist:
 */
 /* head_type should only be added to headwear that doesn't play well with certain hairstyles. Hairstyles whose alt_head_type matches the head_type of the worn head item will use an alternate hairstyle instead. */
 function initHead() {
-	setup.clothes.head = [
+	/** @type {ClothesItem[]} */
+	const clothing = [
 		{
 			index: 0,
 			name: "naked",
 			name_cap: "Ничего",
 			variable: "naked",
+			state: 0,
+			state_base: 0,
 			integrity: 0,
 			integrity_max: 0,
 			fabric_strength: 0,
@@ -45,12 +49,13 @@ function initHead() {
 			accIcon: 0,
 			mainImage: 0,
 		},
-
 		{
 			index: 1,
 			name: "hairpin",
 			name_cap: "Заколка",
 			variable: "hairpin",
+			state: 0,
+			state_base: 0,
 			integrity: 50,
 			integrity_max: 50,
 			fabric_strength: 20,
@@ -76,12 +81,13 @@ function initHead() {
 			iconFile: "hairpin.png",
 			accIcon: 0,
 		},
-
 		{
 			index: 2,
 			name: "beanie",
 			name_cap: "Шапочка",
 			variable: "beanie",
+			state: 0,
+			state_base: 0,
 			integrity: 100,
 			integrity_max: 100,
 			fabric_strength: 20,
@@ -108,12 +114,13 @@ function initHead() {
 			iconFile: "beanie.png",
 			accIcon: 0,
 		},
-
 		{
 			index: 3,
 			name: "bunny ears",
 			name_cap: "Заячьи ушки",
 			variable: "bunnyears",
+			state: 0,
+			state_base: 0,
 			integrity: 100,
 			integrity_max: 100,
 			fabric_strength: 20,
@@ -138,12 +145,13 @@ function initHead() {
 			iconFile: "bunny_ears.png",
 			accIcon: 0,
 		},
-
 		{
 			index: 4,
 			name: "nun's veil",
 			name_cap: "Вуаль монахини",
 			variable: "nun",
+			state: 0,
+			state_base: 0,
 			integrity: 100,
 			integrity_max: 100,
 			fabric_strength: 20,
@@ -171,12 +179,13 @@ function initHead() {
 			iconFile: "nuns_veil.png",
 			accIcon: 0,
 		},
-
 		{
 			index: 5,
 			name: "bow",
 			name_cap: "Бант",
 			variable: "bow",
+			state: 0,
+			state_base: 0,
 			integrity: 100,
 			integrity_max: 100,
 			fabric_strength: 20,
@@ -202,12 +211,13 @@ function initHead() {
 			iconFile: "bow.png",
 			accIcon: 0,
 		},
-
 		{
 			index: 6,
 			name: "cap",
 			name_cap: "шапка",
 			variable: "cap",
+			state: 0,
+			state_base: 0,
 			integrity: 100,
 			integrity_max: 100,
 			fabric_strength: 20,
@@ -235,12 +245,13 @@ function initHead() {
 			iconFile: "cap.png",
 			accIcon: 0,
 		},
-
 		{
 			index: 7,
 			name: "witch hat",
 			name_cap: "Шляпа ведьмы",
 			variable: "witch",
+			state: 0,
+			state_base: 0,
 			integrity: 100,
 			integrity_max: 100,
 			fabric_strength: 20,
@@ -268,12 +279,13 @@ function initHead() {
 			iconFile: "witch_hat.png",
 			accIcon: "witch_hat_acc.png",
 		},
-
 		{
 			index: 8,
 			name: "christmas hat",
 			name_cap: "Рождественская шляпа",
 			variable: "christmas",
+			state: 0,
+			state_base: 0,
 			integrity: 100,
 			integrity_max: 100,
 			fabric_strength: 20,
@@ -299,12 +311,13 @@ function initHead() {
 			location: 0,
 			iconFile: "christmas_hat.png",
 		},
-
 		{
 			index: 9,
 			name: "chef hat",
 			name_cap: "Шляпа шеф-повара",
 			variable: "chef",
+			state: 0,
+			state_base: 0,
 			integrity: 200,
 			integrity_max: 200,
 			fabric_strength: 20,
@@ -330,12 +343,13 @@ function initHead() {
 			location: 0,
 			iconFile: "chef_hat.png",
 		},
-
 		{
 			index: 10,
 			name: "cowboy hat",
 			name_cap: "Ковбойская шляпа",
 			variable: "cowboy",
+			state: 0,
+			state_base: 0,
 			integrity: 200,
 			integrity_max: 200,
 			fabric_strength: 20,
@@ -364,12 +378,13 @@ function initHead() {
 			iconFile: "cowboy_hat.png",
 			accIcon: "cowboy_hat_acc.png",
 		},
-
 		{
 			index: 11,
 			name: "fedora",
 			name_cap: "Фетровая шляпа",
 			variable: "fedora",
+			state: 0,
+			state_base: 0,
 			integrity: 200,
 			integrity_max: 200,
 			fabric_strength: 20,
@@ -396,12 +411,13 @@ function initHead() {
 			location: 0,
 			iconFile: "fedora.png",
 		},
-
 		{
 			index: 12,
 			name: "beatnik hat",
 			name_cap: "Французский берет",
 			variable: "beatnik",
+			state: 0,
+			state_base: 0,
 			integrity: 200,
 			integrity_max: 200,
 			fabric_strength: 20,
@@ -427,12 +443,13 @@ function initHead() {
 			location: 0,
 			iconFile: "beatnik_hat.png",
 		},
-
 		{
 			index: 13,
 			name: "sou'wester",
 			name_cap: "Рыбацкая шляпа",
 			variable: "sou",
+			state: 0,
+			state_base: 0,
 			integrity: 200,
 			integrity_max: 200,
 			fabric_strength: 20,
@@ -458,12 +475,13 @@ function initHead() {
 			location: 0,
 			iconFile: "souwester.png",
 		},
-
 		{
 			index: 14,
 			name: "flower crown",
 			name_cap: "цветочная корона",
 			variable: "flower",
+			state: 0,
+			state_base: 0,
 			integrity: 50,
 			integrity_max: 50,
 			fabric_strength: 20,
@@ -487,12 +505,13 @@ function initHead() {
 			location: 0,
 			iconFile: "flower_crown.png",
 		},
-
 		{
 			index: 15,
 			name: "backwards cap",
 			name_cap: "Кепка задом наперед",
 			variable: "backwardscap",
+			state: 0,
+			state_base: 0,
 			integrity: 100,
 			integrity_max: 100,
 			fabric_strength: 20,
@@ -519,12 +538,13 @@ function initHead() {
 			iconFile: "backwards_cap.png",
 			accIcon: 0,
 		},
-
 		{
 			index: 16,
 			name: "alice band",
 			name_cap: "Ободок Алисы",
 			variable: "alice",
+			state: 0,
+			state_base: 0,
 			integrity: 50,
 			integrity_max: 50,
 			fabric_strength: 20,
@@ -550,12 +570,13 @@ function initHead() {
 			iconFile: "alice_band.png",
 			accIcon: 0,
 		},
-
 		{
 			index: 17,
 			name: "straw hat",
 			name_cap: "Соломенная шляпа",
 			variable: "straw",
+			state: 0,
+			state_base: 0,
 			integrity: 50,
 			integrity_max: 50,
 			fabric_strength: 20,
@@ -586,12 +607,13 @@ function initHead() {
 			iconFile: "straw_hat.png",
 			accIcon: "straw_hat_acc.png",
 		},
-
 		{
 			index: 18,
 			name: "straw flower hat",
 			name_cap: "Соломенная шляпа с цветком",
 			variable: "strawflower",
+			state: 0,
+			state_base: 0,
 			integrity: 50,
 			integrity_max: 50,
 			fabric_strength: 20,
@@ -622,12 +644,13 @@ function initHead() {
 			iconFile: "straw_hat.png",
 			accIcon: "straw_hat_acc.png",
 		},
-
 		{
 			index: 19,
 			name: "maid band",
 			name_cap: "Ободок горничной",
 			variable: "maid",
+			state: 0,
+			state_base: 0,
 			integrity: 50,
 			integrity_max: 50,
 			fabric_strength: 20,
@@ -653,12 +676,16 @@ function initHead() {
 			iconFile: "maid_band.png",
 			accIcon: 0,
 		},
-
 		{
 			index: 20,
 			name: "bun covers",
 			name_cap: "Крышки для булочек",
 			variable: "bun",
+			combat: {
+				accColour: "#ffbe16",
+			},
+			state: 0,
+			state_base: 0,
 			integrity: 50,
 			integrity_max: 50,
 			fabric_strength: 20,
@@ -684,12 +711,13 @@ function initHead() {
 			iconFile: "bun_covers.png",
 			accIcon: 0,
 		},
-
 		{
 			index: 21,
 			name: "headband",
 			name_cap: "Повязка на голову",
 			variable: "band",
+			state: 0,
+			state_base: 0,
 			integrity: 50,
 			integrity_max: 50,
 			fabric_strength: 20,
@@ -715,12 +743,13 @@ function initHead() {
 			iconFile: "headband.png",
 			accIcon: 0,
 		},
-
 		{
 			index: 22,
 			name: "feathered cap",
 			name_cap: "Шапочка с пером",
 			variable: "feathered",
+			state: 0,
+			state_base: 0,
 			integrity: 50,
 			integrity_max: 50,
 			fabric_strength: 20,
@@ -748,12 +777,13 @@ function initHead() {
 			iconFile: "feathered_cap.png",
 			accIcon: 0,
 		},
-
 		{
 			index: 23,
 			name: "large sailor's hat",
 			name_cap: "Большая матросская шляпа",
 			variable: "sailorbig",
+			state: 0,
+			state_base: 0,
 			integrity: 50,
 			integrity_max: 50,
 			fabric_strength: 20,
@@ -781,12 +811,13 @@ function initHead() {
 			iconFile: "large_sailors_hat.png",
 			accIcon: 0,
 		},
-
 		{
 			index: 24,
 			name: "small sailor's hat",
 			name_cap: "Маленькая матросская шапочка",
 			variable: "sailorsmall",
+			state: 0,
+			state_base: 0,
 			integrity: 50,
 			integrity_max: 50,
 			fabric_strength: 20,
@@ -813,12 +844,13 @@ function initHead() {
 			iconFile: "small_sailors_hat.png",
 			accIcon: 0,
 		},
-
 		{
 			index: 25,
 			name: "foreign football helmet",
 			name_cap: "Иностранный футбольный шлем",
 			variable: "football",
+			state: 0,
+			state_base: 0,
 			integrity: 200,
 			integrity_max: 200,
 			fabric_strength: 60,
@@ -847,12 +879,13 @@ function initHead() {
 			iconFile: "football_helmet.png",
 			accIcon: 0,
 		},
-
 		{
 			index: 26,
 			name: "big bow",
 			name_cap: "Большой бант",
 			variable: "bigbow",
+			state: 0,
+			state_base: 0,
 			integrity: 100,
 			integrity_max: 100,
 			fabric_strength: 20,
@@ -878,12 +911,13 @@ function initHead() {
 			iconFile: "big_bow.png",
 			accIcon: 0,
 		},
-
 		{
 			index: 27,
 			name: "riding helmet",
 			name_cap: "Шлем для верховой езды",
 			variable: "riding",
+			state: 0,
+			state_base: 0,
 			integrity: 200,
 			integrity_max: 200,
 			fabric_strength: 30,
@@ -912,12 +946,13 @@ function initHead() {
 			iconFile: "riding_helmet.png",
 			accIcon: 0,
 		},
-
 		{
 			index: 28,
 			name: "top hat",
 			name_cap: "Цилиндр",
 			variable: "top",
+			state: 0,
+			state_base: 0,
 			integrity: 150,
 			integrity_max: 150,
 			fabric_strength: 20,
@@ -946,12 +981,13 @@ function initHead() {
 			iconFile: "top_hat.png",
 			accIcon: 0,
 		},
-
 		{
 			index: 29,
 			name: "umbrella hat",
 			name_cap: "Шляпа-зонтик",
 			variable: "umbrella",
+			state: 0,
+			state_base: 0,
 			integrity: 120,
 			integrity_max: 120,
 			fabric_strength: 10,
@@ -979,12 +1015,13 @@ function initHead() {
 			iconFile: "umbrella_hat.png",
 			accIcon: 0,
 		},
-
 		{
 			index: 30,
 			name: "racing helmet",
 			name_cap: "Гоночный шлем",
 			variable: "racing",
+			state: 0,
+			state_base: 0,
 			integrity: 200,
 			integrity_max: 200,
 			fabric_strength: 30,
@@ -1014,12 +1051,13 @@ function initHead() {
 			iconFile: "racing_helmet.png",
 			accIcon: 0,
 		},
-
 		{
 			index: 31,
 			name: "feathered hair clip",
 			name_cap: "Заколка для волос с перьями",
 			variable: "featheredhairclip",
+			state: 0,
+			state_base: 0,
 			integrity: 200,
 			integrity_max: 200,
 			fabric_strength: 30,
@@ -1046,12 +1084,13 @@ function initHead() {
 			iconFile: "feathered_hair_clip.png",
 			accIcon: 0,
 		},
-
 		{
 			index: 32,
 			name: "hoodie hood",
 			name_cap: "Капющон от худи",
 			variable: "hoodie",
+			state: 0,
+			state_base: 0,
 			integrity: 180,
 			integrity_max: 180,
 			fabric_strength: 30,
@@ -1113,12 +1152,13 @@ function initHead() {
 			iconFile: 0,
 			accIcon: 0,
 		},
-
 		{
 			index: 33,
 			name: "tam o' shanter",
 			name_cap: "Тэм о'шантер",
 			variable: "tam",
+			state: 0,
+			state_base: 0,
 			integrity: 100,
 			integrity_max: 100,
 			fabric_strength: 30,
@@ -1147,12 +1187,13 @@ function initHead() {
 			iconFile: "tam_o_shanter.png",
 			accIcon: 0,
 		},
-
 		{
 			index: 34,
 			name: "cat hat",
 			name_cap: "Кошачья шляпа",
 			variable: "cat",
+			state: 0,
+			state_base: 0,
 			integrity: 100,
 			integrity_max: 100,
 			fabric_strength: 30,
@@ -1182,12 +1223,16 @@ function initHead() {
 			iconFile: "cat_hat.png",
 			accIcon: "cat_hat_acc.png",
 		},
-
 		{
 			index: 35,
 			name: "monster hood",
 			name_cap: "Капюшон монстрика",
 			variable: "monster",
+			combat: {
+				reference: "hoodie",
+			},
+			state: 0,
+			state_base: 0,
 			integrity: 100,
 			integrity_max: 100,
 			fabric_strength: 30,
@@ -1218,12 +1263,16 @@ function initHead() {
 			outfitSecondary: ["upper", "monster hoodie"],
 			accIcon: 0,
 		},
-
 		{
 			index: 36,
 			name: "kitty ears",
 			name_cap: "Кошачьи ушки",
 			variable: "kitty",
+			combat: {
+				accColour: "#ff8da6",
+			},
+			state: 0,
+			state_base: 0,
 			integrity: 100,
 			integrity_max: 100,
 			fabric_strength: 30,
@@ -1245,17 +1294,19 @@ function initHead() {
 			accessory_colour: 0,
 			accessory_colour_options: [],
 			back_img: "combat",
+			back_img_acc: "combat",
 			cursed: 0,
 			location: 0,
 			iconFile: "kitty_ears.png",
 			accIcon: "kitty_ears_acc.png",
 		},
-
 		{
 			index: 37,
 			name: "mini snowman",
 			name_cap: "Мини-снеговик",
 			variable: "minisnowman",
+			state: 0,
+			state_base: 0,
 			integrity: 100,
 			integrity_max: 100,
 			fabric_strength: 5,
@@ -1282,12 +1333,16 @@ function initHead() {
 			iconFile: "mini_snowman.png",
 			accIcon: 0,
 		},
-
 		{
 			index: 38,
 			name: "cow onesie hood",
 			name_cap: "Капюшон коровьего комбинезона",
 			variable: "cowonesie",
+			combat: {
+				reference: "hoodie",
+			},
+			state: 0,
+			state_base: 0,
 			integrity: 200,
 			integrity_max: 200,
 			fabric_strength: 30,
@@ -1315,12 +1370,13 @@ function initHead() {
 			outfitSecondary: ["upper", "cow onesie"],
 			accIcon: 0,
 		},
-
 		{
 			index: 39,
 			name: "baseball cap",
 			name_cap: "Бейсболка",
 			variable: "baseball",
+			state: 0,
+			state_base: 0,
 			integrity: 100,
 			integrity_max: 100,
 			fabric_strength: 20,
@@ -1348,12 +1404,16 @@ function initHead() {
 			iconFile: "baseball_cap.png",
 			accIcon: "baseball_cap_acc.png",
 		},
-
 		{
 			index: 40,
 			name: "rose",
 			name_cap: "Роза",
 			variable: "rose",
+			combat: {
+				accColour: "#6aa727",
+			},
+			state: 0,
+			state_base: 0,
 			integrity: 50,
 			integrity_max: 50,
 			fabric_strength: 20,
@@ -1380,12 +1440,13 @@ function initHead() {
 			iconFile: "rose.png",
 			accIcon: "rose_acc.png",
 		},
-
 		{
 			index: 41,
 			name: "scarecrow hat",
 			name_cap: "Шляпа-пугало",
 			variable: "scarecrow",
+			state: 0,
+			state_base: 0,
 			integrity: 100,
 			integrity_max: 100,
 			fabric_strength: 20,
@@ -1410,12 +1471,13 @@ function initHead() {
 			location: 0,
 			iconFile: "scarecrow_hat.png",
 		},
-
 		{
 			index: 42,
 			name: "fish hairpin",
 			name_cap: "Заколка-рыбка",
 			variable: "fishhairpin",
+			state: 0,
+			state_base: 0,
 			integrity: 50,
 			integrity_max: 50,
 			fabric_strength: 20,
@@ -1441,12 +1503,16 @@ function initHead() {
 			iconFile: "fish_hairpin.png",
 			accIcon: 0,
 		},
-
 		{
 			index: 43,
 			name: "pink nurse hat",
 			name_cap: "Розовая шапочка медсестры",
 			variable: "pinknurse",
+			combat: {
+				mainColour: "#ff5c61",
+			},
+			state: 0,
+			state_base: 0,
 			integrity: 50,
 			integrity_max: 50,
 			fabric_strength: 20,
@@ -1473,12 +1539,16 @@ function initHead() {
 			iconFile: "pink_nurse.png",
 			accIcon: 0,
 		},
-
 		{
 			index: 44,
 			name: "plastic nurse hat",
 			name_cap: "Пластиковая шапочка медсестры",
 			variable: "plasticnurse",
+			combat: {
+				mainColour: "#ff8c91",
+			},
+			state: 0,
+			state_base: 0,
 			integrity: 50,
 			integrity_max: 50,
 			fabric_strength: 20,
@@ -1505,12 +1575,13 @@ function initHead() {
 			iconFile: "plastic_nurse.png",
 			accIcon: 0,
 		},
-
 		{
 			index: 45,
 			name: "transparent nurse hat",
 			name_cap: "Прозрачная шапочка медсестры",
 			variable: "transparentnurse",
+			state: 0,
+			state_base: 0,
 			integrity: 50,
 			integrity_max: 50,
 			fabric_strength: 20,
@@ -1536,12 +1607,13 @@ function initHead() {
 			iconFile: "transparent_nurse.png",
 			accIcon: 0,
 		},
-
 		{
 			index: 46,
 			name: "bunny headband",
 			name_cap: "Зайчий ободок",
 			variable: "bunband",
+			state: 0,
+			state_base: 0,
 			integrity: 100,
 			integrity_max: 100,
 			fabric_strength: 20,
@@ -1567,12 +1639,13 @@ function initHead() {
 			iconFile: "bunny_headband.png",
 			accIcon: 0,
 		},
-
 		{
 			index: 47,
 			name: "daisy",
 			name_cap: "Маргаритка",
 			variable: "daisy",
+			state: 0,
+			state_base: 0,
 			integrity: 50,
 			integrity_max: 50,
 			fabric_strength: 20,
@@ -1596,12 +1669,13 @@ function initHead() {
 			location: 0,
 			iconFile: "daisy.png",
 		},
-
 		{
 			index: 48,
 			name: "spirit mask",
 			name_cap: "Маска духа",
 			variable: "spiritmask",
+			state: 0,
+			state_base: 0,
 			integrity: 200,
 			integrity_max: 200,
 			fabric_strength: 30,
@@ -1634,6 +1708,8 @@ function initHead() {
 			name: "raccoon cap",
 			name_cap: "Шапка из енота",
 			variable: "furcap m",
+			state: 0,
+			state_base: 0,
 			integrity: 200,
 			integrity_max: 200,
 			fabric_strength: 30,
@@ -1670,6 +1746,8 @@ function initHead() {
 			name: "fur cap",
 			name_cap: "Меховая шапка",
 			variable: "furcap f",
+			state: 0,
+			state_base: 0,
 			integrity: 200,
 			integrity_max: 200,
 			fabric_strength: 30,
@@ -1708,6 +1786,8 @@ function initHead() {
 			name: "conical hat",
 			name_cap: "Коническая шляпа",
 			variable: "conicalhat",
+			state: 0,
+			state_base: 0,
 			integrity: 200,
 			integrity_max: 200,
 			fabric_strength: 30,
@@ -1739,6 +1819,11 @@ function initHead() {
 			name: "cat hoodie hood",
 			name_cap: "Капюшон кошачьего худи",
 			variable: "cat hoodie",
+			combat: {
+				reference: "hoodie",
+			},
+			state: 0,
+			state_base: 0,
 			integrity: 180,
 			integrity_max: 180,
 			fabric_strength: 30,
@@ -1776,6 +1861,8 @@ function initHead() {
 			name: "bat beanie",
 			name_cap: "Шапочка-летучая мышь",
 			variable: "bat beanie",
+			state: 0,
+			state_base: 0,
 			integrity: 100,
 			integrity_max: 100,
 			fabric_strength: 20,
@@ -1811,6 +1898,8 @@ function initHead() {
 			name: "mini pumpkin",
 			name_cap: "Мини-тыква",
 			variable: "jackolantern",
+			state: 0,
+			state_base: 0,
 			integrity: 100,
 			integrity_max: 100,
 			fabric_strength: 5,
@@ -1843,6 +1932,8 @@ function initHead() {
 			name: "butterfly hairpin",
 			name_cap: "Заколка бабочка",
 			variable: "butterflyhairpin",
+			state: 0,
+			state_base: 0,
 			integrity: 50,
 			integrity_max: 50,
 			fabric_strength: 20,
@@ -1877,6 +1968,8 @@ function initHead() {
 			name: "star hairpin",
 			name_cap: "Заколка звёздочка",
 			variable: "starhairpin",
+			state: 0,
+			state_base: 0,
 			integrity: 50,
 			integrity_max: 50,
 			fabric_strength: 20,
@@ -1910,6 +2003,8 @@ function initHead() {
 			name: "durag",
 			name_cap: "Бандана",
 			variable: "durag",
+			state: 0,
+			state_base: 0,
 			integrity: 50,
 			integrity_max: 50,
 			fabric_strength: 20,
@@ -1947,6 +2042,11 @@ function initHead() {
 			name: "kittycat hat",
 			name_cap: "Кошачья шапочка",
 			variable: "cattail",
+			combat: {
+				reference: "cat",
+			},
+			state: 0,
+			state_base: 0,
 			integrity: 100,
 			integrity_max: 100,
 			fabric_strength: 30,
@@ -1982,6 +2082,12 @@ function initHead() {
 			name: "sexy nun's veil",
 			name_cap: "Сексуальная вуаль монахини",
 			variable: "nunlewd",
+			combat: {
+				reference: "nun",
+				mainColour: "#312737",
+			},
+			state: 0,
+			state_base: 0,
 			integrity: 100,
 			integrity_max: 100,
 			fabric_strength: 20,
@@ -2016,6 +2122,12 @@ function initHead() {
 			name: "sexy nun's ornate veil",
 			name_cap: "Богато украшенная вуаль сексуальной монахини",
 			variable: "nunlewdornate",
+			combat: {
+				reference: "nun",
+				mainColour: "#312737",
+			},
+			state: 0,
+			state_base: 0,
 			integrity: 100,
 			integrity_max: 100,
 			fabric_strength: 20,
@@ -2050,6 +2162,12 @@ function initHead() {
 			name: "newsboy cap",
 			name_cap: "Кепка газетчика",
 			variable: "newsboy",
+			combat: {
+				reference: "cap",
+				accColour: "primary",
+			},
+			state: 0,
+			state_base: 0,
 			integrity: 200,
 			integrity_max: 200,
 			fabric_strength: 20,
@@ -2101,6 +2219,11 @@ function initHead() {
 			name: "visor",
 			name_cap: "Козырек",
 			variable: "visor",
+			combat: {
+				reference: "naked",
+			},
+			state: 0,
+			state_base: 0,
 			integrity: 200,
 			integrity_max: 200,
 			fabric_strength: 20,
@@ -2135,6 +2258,11 @@ function initHead() {
 			name: "lolita headband",
 			name_cap: "Ободок лолиты",
 			variable: "lolita",
+			combat: {
+				reference: "maid",
+			},
+			state: 0,
+			state_base: 0,
 			integrity: 50,
 			integrity_max: 50,
 			fabric_strength: 20,
@@ -2198,6 +2326,12 @@ function initHead() {
 			name: "gold hairpin",
 			name_cap: "Gold hairpin",
 			variable: "goldhairpin",
+			combat: {
+				reference: "hairpin",
+				mainColour: "#e8b826",
+			},
+			state: 0,
+			state_base: 0,
 			integrity: 50,
 			integrity_max: 50,
 			fabric_strength: 20,
@@ -2229,6 +2363,11 @@ function initHead() {
 			name: "classic lolita headband",
 			name_cap: "Classic lolita headband",
 			variable: "lolitaold",
+			combat: {
+				reference: "maid",
+			},
+			state: 0,
+			state_base: 0,
 			integrity: 50,
 			integrity_max: 50,
 			fabric_strength: 20,
@@ -2287,6 +2426,7 @@ function initHead() {
 			accIcon: "lolita_headband_acc.png",
 		},
 	];
+	setup.clothes.head = clothing;
 
 	/*
 		Clothes that modders add go into this array, this should be empty in the base game at all times.

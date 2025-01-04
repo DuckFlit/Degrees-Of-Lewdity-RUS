@@ -117,16 +117,35 @@
 	Тебе невыносима мысль о том, что кто-то может застать тебя в таком виде. Ты спешишь в свою спальню.
 	<br><br>
 	<<link [[Далее|Bedroom]]>><</link>>
+<<elseif !$weekly.gardenBirdRobin and Weather.precipitation is "none" and getRobinLocation() is "orphanage" and C.npc.Robin.trauma lte 25 and C.npc.Robin.dom lte 60 and $rng gte 81>>
+	<<set $weekly.gardenBirdRobin to true>>
+
+	<<npc Robin>><<person1>>
+	Stepping into the fenced garden, your eyes land on someone. <span class="gold">It's Robin.</span>
+	<br><br>
+	<<He>> sits cross-legged, <<his>> hand held out in front of <<him>>. A small brown and orange bird stands on <<his>> finger, looking around. <<His>> eyes are locked onto the bird. You think <<he>> hasn't yet noticed you.
+	<br><br>
+
+	<<link [[Stay put|Robin Bird Visit]]>><<set $phase to 0>><</link>>
+	<br>
+	<<link [[Sneak closer|Robin Bird Visit]]>><<set $phase to 1>><</link>><<set $skulduggerydifficulty to 400>><<skulduggerydifficulty>>
+	<br>
+	<<link [[Scare the bird|Robin Bird Visit]]>><<set $phase to 2>><</link>>
+	<br>
+	<<if $cat gte 6>>
+		<<link [[Pounce on Robin|Robin Bird Visit]]>><<set $phase to 3>><</link>><<cat>>
+		<br>
+	<</if>>
 <<elseif !$weekly.gardenVoyeur and Time.dayState is "night" and $rng gte 81>>
 
-<<set $weekly.gardenVoyeur to true>>
+	<<set $weekly.gardenVoyeur to true>>
 
-Пробираясь через сад, вы слышите странные, приглушенные звуки, доносящиеся из темного угла.
-<br><br>
+	Пробираясь через сад, вы слышите странные, приглушенные звуки, доносящиеся из темного угла.
+	<br><br>
 
-<<link [[Расследовать|Garden Voyeurism Investigate]]>><</link>>
-<br>
-<<link [[Игнорировать|Garden Voyeurism Ignore]]>><</link>>
+	<<link [[Узнать, что там происходит|Garden Voyeurism Investigate]]>><</link>>
+	<br>
+	<<link [[Проигнорировать это|Garden Voyeurism Ignore]]>><</link>>
 <<else>>
 
 	<<if Time.hour gte 7 and Time.hour lt 20 and Weather.precipitation is "rain">>
@@ -148,41 +167,30 @@
 		<br>
 	<</if>>
 
-	<<if $exposed gte 2>>
-		<<if Time.dayState is "night">>
-			<<if hasSexStat("exhibitionism", 4)>>
-				<<fenceicon>><<link [[Перелезть через забор (0:05)|Garden Fence Naked Night]]>><<pass 5>><</link>><<if $daily.ex.fence isnot 1>><<exhibitionist4>><</if>>
-				<br>
-			<</if>>
-		<<else>>
-			<<if hasSexStat("exhibitionism", 5)>>
-				<<fenceicon>><<link [[Перелезть через забор (0:05)|Garden Fence Naked Day]]>><<pass 5>><</link>><<if $daily.ex.fence isnot 1>><<exhibitionist5>><</if>>
-				<br>
-			<</if>>
-		<</if>>
-	<<elseif $exposed gte 1>>
-		<<if Time.dayState is "night">>
-			<<if hasSexStat("exhibitionism", 2)>>
-				<<fenceicon>><<link [[Перелезть через забор (0:05)|Garden Fence Undies Night]]>><<pass 5>><</link>><<if $daily.ex.fence isnot 1>><<exhibitionist2>><</if>>
-				<br>
-			<</if>>
-		<<else>>
-			<<if hasSexStat("exhibitionism", 3)>>
-				<<fenceicon>><<link [[Перелезть через забор (0:05)|Garden Fence Undies Day]]>><<pass 5>><</link>><<if $daily.ex.fence isnot 1>><<exhibitionist3>><</if>>
-				<br>
+	<<if $exposed gte 1>>
+		<<set _ex to ($exposed >= 2 ? (Time.dayState == "night" ? 4 : 5) : (Time.dayState == "night" ? 2 : 3))>>
+		<<if hasSexStat("exhibitionism", _ex)>>
+			<<fenceicon>><<link [[Перелезть через забор (0:05)|Garden Fence]]>><<pass 5>><</link>>
+			<<if $daily.ex.fence isnot 1>>
+				<<switch _ex>>
+					<<case 2>>
+						<<exhibitionist2>>
+					<<case 3>>
+						<<exhibitionist3>>
+					<<case 4>>
+						<<exhibitionist4>>
+					<<case 5>>
+						<<exhibitionist5>>
+				<</switch>>
 			<</if>>
 		<</if>>
+		<br>
 	<<else>>
-		<<if $tutorial is 0 and $debug is 0>>
-			<<fenceicon>><<link [[Перелезть через забор (0:01)|Domus Street]]>><<pass 1>><</link>>
-			<br>
-		<<else>>
-			<<fenceicon>><<link [[Перелезть через забор (0:01)|Residential alleyways]]>><<pass 1>><</link>>
-			<br>
-		<</if>>
+		<<fenceicon>><<link [[Перелезть через забор (0:01)|Garden Fence]]>><<pass 1>><</link>>
+		<br>
 	<</if>>
 
-	<<main_hall_icon>><<link [[Главный Холл (0:01)->Orphanage]]>><<pass 1>><</link>>
+	<<main_hall_icon>><<link [[Главный Холл (0:01)|Orphanage]]>><<pass 1>><</link>>
 	<br>
 
 <</if>>
@@ -344,81 +352,57 @@
 
 <<link [[Далее|Garden]]>><<endevent>><</link>>
 
-:: Garden Fence Naked Night
+:: Garden Fence
 <<effects>>
 
-Ты сомневаешься, что кто-нибудь сможет увидеть тебя в темноте, но все равно не высовываешься из кустов. Ты подкрадываешься к забору и выглядываешь из-за него. За приютом проходит аллея. Там темно и пустынно, но мысль о том, чтобы перелезть через нее, заставляет тебя дрожать, несмотря ни на что.
-<br><br>
+<<if $exposed gte 1>>
+	<<if Time.dayState is "night">>
+		You doubt anyone could see you in the dark, but you keep low between the bushes regardless. You creep up to the fence, and peek over.
+	<<else>>
+		You dash between bushes, making sure there's no one ahead before moving on.
+	<</if>>
+	An alley runs behind the orphanage. It's <<if Time.dayState is "night">>dark and<</if>> deserted, but the thought of climbing over makes you quiver regardless.
+	<br><br>
+	Sneaking around the orphanage with your <<lewdness>> displayed is one thing, but there's a semblance of safety here. There's nothing of the sort outside.
+	<br><br>
+	You look over your shoulder to make sure you aren't being watched, then hoist your self over. You land on the other side. Your heart pounds in your chest.
 
-Красться по приюту, демонстрируя свою  <<lewdness>>  это одно, но здесь есть видимость безопасности. Снаружи ничего подобного нет.
-<br><br>
-
-Ты оглядываешься через плечо, чтобы убедиться, что за тобой не наблюдают, затем подтягиваешься. Ты приземляешься с другой стороны. Твое сердце бешено колотится в груди.
-
-<<if $daily.ex.fence isnot 1>><<set $daily.ex.fence to 1>><<exhibitionism4>><<else>><br><br><</if>>
-
-<<link [[Далее|Residential alleyways]]>><</link>>
-<br>
-
-:: Garden Fence Undies Night
-<<effects>>
-
-Ты сомневаешься, что кто-нибудь сможет увидеть тебя в темноте, но все равно не высовываешься из кустов. Ты подкрадываешься к забору и выглядываешь из-за него. За приютом проходит аллея. Там темно и пустынно, но мысль о том, чтобы перелезть через нее, заставляет тебя дрожать, несмотря ни на что.
-<br><br>
-
-Красться по приюту, демонстрируя свою  <<lewdness>>  это одно, но здесь есть видимость безопасности. Снаружи ничего подобного нет..
-<br><br>
-
-Ты оглядываешься через плечо, чтобы убедиться, что за тобой не наблюдают, затем подтягиваешься. Ты приземляешься с другой стороны. Твое сердце бешено колотится в груди.
-
-<<if $daily.ex.fence isnot 1>><<set $daily.ex.fence to 1>><<exhibitionism2>><<else>><br><br><</if>>
+	<<if $daily.ex.fence isnot 1>>
+		<<set $daily.ex.fence to 1>>
+		<<if $exposed gte 2>>
+			<<if Time.dayState is "night">>
+				<<exhibitionism4>>
+			<<else>>
+				<<exhibitionism5>>
+			<</if>>
+		<<else>>
+			<<if Time.dayState is "night">>
+				<<exhibitionism2>>
+			<<else>>
+				<<exhibitionism3>>
+			<</if>>
+		<</if>>
+	<<else>>
+		<br><br>
+	<</if>>
+<<elseif $cat gte 6>>
+	You hop over the fence with unmatched elegance, landing on all fours in the alley behind the orphanage.
+	<br><br>
+<<else>>
+	You climb over the fence into the alley behind the orphanage.
+	<br><br>
+<</if>>
 
 <<if $tutorial is 0 and $debug is 0>>
-	<<generate1>><<person1>>Несмотря на всю осторожность, вы натыкаетесь на проходящего мимо <<person>>. <<He>> отшатывается и смотрит на вас с гневом, но  <<his>> ярость превращается в похоть, когда  <<he>> замечает вас. - Ты самое милое создание, которое я видел за всю неделю! Иди сюда."
+	<<generate1>><<person1>><<= $exposed gte 1 ? "Despite being so careful, you" : "You">> bump into a <<person>> passing by. <<He>> staggers back and looks at you with anger, but <<his>> rage turns to lechery as <<he>> beholds you. "You're the cutest thing I've seen all week! Come 'ere."
 	<br><br>
+
 	<<link [[Далее|Tutorial]]>><<set $molestationstart to 1>><<set $tutorialExit to "Residential alleyways">><</link>>
+	<br>
 <<else>>
 	<<link [[Далее|Residential alleyways]]>><</link>>
+	<br>
 <</if>>
-<br>
-
-:: Garden Fence Naked Day
-<<effects>>
-
-Ты пробираешься между кустами, убеждаясь, что впереди никого нет, прежде чем двинуться дальше. За приютом начинается аллея. Она пустынна, но мысль о том, чтобы перелезть через нее, все равно заставляет тебя дрожать.
-<br><br>
-
-Красться по приюту, демонстрируя свою  <<lewdness>> - это одно, но здесь есть видимость безопасности. Снаружи ничего подобного нет.
-<br><br>
-
-Ты оглядываешься через плечо, чтобы убедиться, что за тобой не наблюдают, затем подтягиваешься. Ты приземляешься с другой стороны. Твое сердце бешено колотится в груди.
-
-<<if $daily.ex.fence isnot 1>><<set $daily.ex.fence to 1>><<exhibitionism5>><<else>><br><br><</if>>
-
-<<link [[Далее|Residential alleyways]]>><</link>>
-<br>
-
-:: Garden Fence Undies Day
-<<effects>>
-
-Ты пробираешься между кустами, убеждаясь, что впереди никого нет, прежде чем двинуться дальше. За приютом начинается аллея. Она пустынна, но мысль о том, чтобы перелезть через нее, все равно заставляет тебя дрожать.
-<br><br>
-
-Красться по приюту, демонстрируя свою  <<lewdness>> - это одно, но здесь есть видимость безопасности. Снаружи ничего подобного нет.
-<br><br>
-
-Ты оглядываешься через плечо, чтобы убедиться, что за тобой не наблюдают, затем подтягиваешься. Ты приземляешься с другой стороны. Твое сердце бешено колотится в груди.
-
-<<if $daily.ex.fence isnot 1>><<set $daily.ex.fence to 1>><<exhibitionism3>><<else>><br><br><</if>>
-
-<<if $tutorial is 0 and $debug is 0>>
-	<<generate1>><<person1>>Несмотря на всю осторожность, вы натыкаетесь на проходящего мимо <<person>>. <<He>> отшатывается и смотрит на вас с гневом, но  <<his>> ярость превращается в похоть, когда  <<he>> замечает вас. "Ты самое милое создание, которое я видел за всю неделю! Иди сюда"
-	<br><br>
-	<<link [[Далее|Tutorial]]>><<set $molestationstart to 1>><<set $tutorialExit to "Residential alleyways">><</link>>
-<<else>>
-	<<link [[Далее|Residential alleyways]]>><</link>>
-<</if>>
-<br>
 
 :: Garden Flowers
 
@@ -503,7 +487,7 @@
 
 :: Garden Flowers Seeds
 
-<<effects>>
+<<effects>><<wearProp "daisy">>
 
 Вы ищете в траве, под кустами и у стволов деревьев все, что вы могли бы выращивать.
 <br><br>
@@ -519,7 +503,7 @@
 	<<headwear 47>>
 <</if>>
 
-<<link [[Далее|Garden Flowers]]>><</link>>
+<<link [[Далее|Garden Flowers]]>><<handheldon>><</link>>
 <br>
 
 :: Bask Call

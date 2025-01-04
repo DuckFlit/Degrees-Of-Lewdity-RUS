@@ -11,8 +11,8 @@ const StartConfig = {
 	debug: false,
 	enableImages: true,
 	enableLinkNumberify: true,
-	version: "0.5.2.8",
-	versionName: `Издание "Витая в облаках" (в русском переводе)`,
+	version: "0.5.3.4",
+	versionName: `Издание "Дом убран, невинность продана" (в русском переводе)`,
 	sneaky: false,
 	socialMediaEnabled: true,
 	sourceLinkEnabled: false,
@@ -31,11 +31,10 @@ Config.saves.isAllowed = () => {
 	return true;
 };
 
+if (idb.updateSettings) idb.updateSettings("useDelta", true);
 idb.footerHTML = `Special thanks to all those who <a target="_blank" class="link-external" href="https://subscribestar.adult/vrelnir" tabindex="0">Support Degrees of Lewdity</a>`;
 
 function onLoad(save) {
-	$.event.trigger(":onloadsave", { save });
-
 	// some flags for version update. ideally, all updating should be done here in onLoad, but we don't live in an ideal world
 	pageLoading = true;
 	window.onLoadUpdateCheck = true;
@@ -66,6 +65,7 @@ function onLoad(save) {
 			details.loadCount++;
 		}
 	});
+	$.event.trigger(":onloadsave", { save });
 }
 window.onLoad = onLoad;
 Save.onLoad.add(onLoad);
@@ -102,6 +102,9 @@ function onSave(save, details) {
 	// * update feats * //
 	Wikifier.wikifyEval("<<updateFeats>>");
 
+	// Save the recently loaded version
+	save.state.loadedVersion = StartConfig.version;
+
 	// * update $saveDetails wherever possible * //
 	const type = details.type;
 	const date = save.date;
@@ -136,7 +139,8 @@ Save.onSave.add(onSave);
 
 /* convert version string to numeric value */
 const tmpver = StartConfig.version.replace(/[^0-9.]+/g, "").split(".");
-window.StartConfig.version_numeric = tmpver[0] * 1000000 + tmpver[1] * 10000 + tmpver[2] * 100 + tmpver[3] * 1;
+StartConfig.version_numeric = tmpver[0] * 1000000 + tmpver[1] * 10000 + tmpver[2] * 100 + tmpver[3] * 1;
+State.qcadd(StartConfig => StartConfig?.every(version => !version.variables.facevariant));
 
 Config.saves.autosave = "autosave";
 
@@ -627,6 +631,46 @@ Config.navigation.override = function (dest) {
 				return "Museum Bailey Sign";
 			case "Museum Island Arrow":
 				return "Museum Islander Arrow";
+
+			case "Home Leave Undies":
+			case "Home Leave Naked":
+			case "Home Leave Undies Day":
+			case "Home Leave Naked Day":
+				return "Home Leave";
+
+			case "Garden Fence Naked Night":
+			case "Garden Fence Undies Night":
+			case "Garden Fence Naked Day":
+			case "Garden Fence Undies Day":
+				return "Garden Fence";
+
+			case "Street Eden Worried Refuse Cabin":
+			case "Street Eden Worried Leave 2":
+			case "Town Eden Park Flirt Sex":
+			case "Town Eden Park Flirt Sex Finish":
+			case "Town Eden Park Finish":
+			case "Town Eden Park Finish 2":
+			case "Town Eden Shopping Clothes Eden Dress Up":
+			case "Town Eden Shopping Clothes Eden Dress Up 2":
+			case "Town Eden Shopping Clothes Eden Dress Up 3":
+			case "Town Eden Shopping Clothes Eden Dress Up 4":
+			case "Town Eden Shopping Clothes Eden Dress Up Sex":
+			case "Town Eden Shopping Clothes Eden Dress Up Sex Finish":
+			case "Town Eden Shopping Clothes PC Dress Up":
+			case "Town Eden Shopping Clothes PC Dress Up Flaunt":
+			case "Town Eden Shopping Clothes PC Dress Up Flaunt Refuse":
+			case "Town Eden Shopping Clothes PC Dress Up Sex":
+			case "Town Eden Shopping Clothes PC Dress Up Sex Finish":
+				return "Street Eden Worried Suggest";
+
+			case "Prison Wren Panties":
+			case "Prison Wren Briefs":
+			case "Prison Wren Bra":
+			case "Prison Wren Vest":
+			case "Prison Wren Shirt":
+			case "Prison Wren Trousers":
+			case "Prison Wren Jumpsuit":
+				return "Prison Wren Clothes";
 
 			default:
 				return false;

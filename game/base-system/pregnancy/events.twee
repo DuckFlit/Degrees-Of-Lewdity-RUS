@@ -60,7 +60,8 @@ You shake your head. <<He>> holds open the door for you, and you leave the offic
 <<set $outside to 0>><<set $location to "town">><<effects>>
 Doctor Harper walks over to <<his>> office door, and locks it. <<He>> sits back down. "What have you brought me today?" <<he>> asks.
 <br><br>
-You pull out the small container <<he>> gave you. <<He>> looks inside. Seeming satisfied, <<he>> produces another, larger container from beneath <<his>> desk. <<He>> transfers the contents and hands the empty container to you. <<He>> opens a drawer, and counts out <<moneyGain $container.portable.value>>. <<He>> hands it to you.
+/* the 100 multiplier is intentional, used to use the moneyGain widget */
+You pull out the small container <<he>> gave you. <<He>> looks inside. Seeming satisfied, <<he>> produces another, larger container from beneath <<his>> desk. <<He>> transfers the contents and hands the empty container to you. <<He>> opens a drawer, and counts out <<money `$container.portable.value * 100` "hospitalParasitesSold">><<printmoney `$container.portable.value * 100`>>. <<He>> hands it to you.
 <br><br>
 "The community thanks you," <<he>> says.
 <br><br>
@@ -391,6 +392,7 @@ Following the directions from Doctor Harper, you get into position and attempt t
 
 <<switch $pregChoice>>
 <<case "ReplaceSelected">>
+	<<set _parasiteReplaceCount to $parasiteReplaceArray.length>>
 	<<for _i to 0; _i lt $pregResult.length;_i++>>
 		<<if $checkboxResult[$pregResult[_i]] is true>>
 			<<if $parasiteReplaceArray.length gt 0>>
@@ -403,7 +405,7 @@ Following the directions from Doctor Harper, you get into position and attempt t
 			<<moveCreature $pregResult[_i] "portable" undefined $giveBirthLocation>>
 		<</if>>
 	<</for>>
-	You decide to keep <<number $parasiteSelectionCount>> of <<if $pregnancyStats.namesParasitesChild is true>>your children<<else>>the parasites<</if>>, and place <<if $parasiteSelectionCount isnot 1>>them<<else>>it<</if>> in your <<print $container[$phase].name.toLowerCase()>> in place of <<number $parasiteReplaceArray.length>> <<if $parasiteReplaceArray.length gt 1>>others<<else>>other<</if>>, while preparing the rest for Doctor Harper.
+	You decide to keep <<number $parasiteSelectionCount>> of <<if $pregnancyStats.namesParasitesChild is true>>your children<<else>>the parasites<</if>>, and place <<if $parasiteSelectionCount isnot 1>>them<<else>>it<</if>> in your <<print $container[$phase].name.toLowerCase()>> in place of <<number _parasiteReplaceCount>> <<if _parasiteReplaceCount gt 1>>others<<else>>other<</if>>, while preparing the rest for Doctor Harper.
 	<br><br>
 <<case "KeepSelected">>
 	<<for _i to 0; _i lt $pregResult.length;_i++>>
@@ -579,7 +581,7 @@ The midwife places a mask over your face. You feel your consciousness fade. Seve
 		<br><br>
 
 		<<if $dissociation gte 1>>
-			Everything slowly fades away once again. You stand in a black abyss. Your whole body feels fuzzy, and the pain is gone. You stand there, alone in the dark. In the distance, a bright white light hovers. It must be several kilometers away. You begin walking towards it, when you suddenly realize that you're stepping in shallow water. You step forward again to the sound of sloshing. Another step. Another. You need to get to the light. You aren't sure why, but you know you must. Something's waiting for you there, you can feel it.
+			Everything slowly fades away once again. You stand in a black abyss. Your whole body feels fuzzy, and the pain is gone. You stand there, alone in the dark. In the distance, a bright white light hovers. It must be several kilometers away. You begin walking towards it, when you suddenly realise that you're stepping in shallow water. You step forward again to the sound of sloshing. Another step. Another. You need to get to the light. You aren't sure why, but you know you must. Something's waiting for you there, you can feel it.
 			<br><br>
 
 			You start to run. As you get closer, the darkness around you dissipates until only the light surrounds you.	You continue running until you come to a wooden door with a golden handle. You grasp it and open it slowly. The light drowns you.
@@ -727,7 +729,7 @@ The midwife places a mask over your face. You feel your consciousness fade. Seve
 
 	The midwife still insists on helping you dress. "You should be good to go," <<he>> says.
 <<elseif playerNormalPregnancyTotal() gte 50>>
-	You stand up without assistace, feeling empty inside. You already miss the feeling of being pregnant.
+	You stand up without assistance, feeling empty inside. You already miss the feeling of being pregnant.
 	<br><br>
 
 	<<He>> stares at you, mouth agape, as you walk without any assistance. You throw your clothes back on quickly.
@@ -785,7 +787,6 @@ The engine comes to life.
 	"They don't leave the nursery," <<he>> adds as <<he>> drives from the hospital car park. "Ever."
 <<elseif _knownPregnancyCount lte 4>>
 	"Remember that you're responsible for your offspring's care," <<he>> says. "If I have to intervene, it'll cost you an extra <span class="red">£100</span> a week.<<if $litter_size gte 2>> Each.<</if>>"
-	<br><br>
 <<else>>
 	"You're an irresponsible slut," <<he>> says. "Remember that if I have to intervene in the care of your offspring, it'll cost you an extra <span class="red">£100</span> a week.<<if $litter_size gte 2>> Each.<</if>>"
 <</if>>
@@ -978,7 +979,7 @@ Player re-equips clothes.
 
 /*ToDo: Pregnancy Story Content: add in additional location*/
 :: pregnancyTest
-<<effects>>
+<<effects>><<wearProp "pregnancy test">>
 <<set $pregnancyTest-->>
 <<switch $lastPassage>>
 	<<case "Bedroom">>
@@ -1038,7 +1039,7 @@ The packaging said to wait 3 minutes, but it feels like an eternity passes. <<gs
 <</if>>
 
 <br><br>
-<<link [[Next|$lastPassage]]>><<unset $lastPassage>><<set $eventskip to 1>><</link>>
+<<link [[Next|$lastPassage]]>><<handheldon>><<unset $lastPassage>><<set $eventskip to 1>><</link>>
 
 :: pregnancyTestWidget [widget]
 <<widget "pregnancyTest">>
@@ -1468,7 +1469,7 @@ You strip and lie down.
 				<br><br>
 			<<else>>
 			/* Shouldn't get here. */
-			<</if>>		
+			<</if>>
 		<<default>>
 	<</switch>>
 	<<makeAwareOfDetails>>
@@ -1478,7 +1479,7 @@ You strip and lie down.
 <<link [[Next|Pregnancy ultrasound 3]]>><</link>>
 
 :: Pregnancy ultrasound 3
-<<set $outside to 0>><<set $location to "hospital">><<effects>>
+<<set $outside to 0>><<set $location to "hospital">><<effects>><<wearProp "rag">>
 
 You thank Doctor Harper for the scan as <<he>> hands you a warm towel. You wipe off the gel.
 <br><br> <<bodyliquid "vaginaoutside" "goo" -1>>
@@ -1610,7 +1611,7 @@ A long and deafening silence fills the environment. Bailey keeps staring at you 
 <<effects>>
 <<set _alex to statusCheck("Alex")>>
 <<generate1>><<person1>>
-
+<<npc "Alex" 2>><<person2>>
 <<if $NPCList[0].gender is "f">>
 	<<set $alex_parent to "mother">>
 <<else>>
@@ -1624,7 +1625,7 @@ A long and deafening silence fills the environment. Bailey keeps staring at you 
 Alex's $alex_parent waves at you two.
 <br><br>
 
-Alex opens the door for you. <<He>> helps you in before settling into the seat next to you.
+Alex opens the door for you. <<person2>><<He>> helps you in before settling into the seat next to you.
 <br><br>
 
 <<if pregnancyCountBetweenParents("pc", "Alex") gte 2>>
@@ -1635,13 +1636,13 @@ Alex opens the door for you. <<He>> helps you in before settling into the seat n
 	<br><br>
 
 <<else>>
-    "My little <<if _alex.gender is "f">>girl<<else>>boy<</if>> is finally settling down," <<he>> says with a laugh.
+    "My little <<nnpc_gendery "Alex">> is finally settling down," <<nnpc_his "Alex">> $alex_parent says with a laugh.
 	<br>
 
     Alex blushes and looks away.
 	<br><br>
 
-    "And with such a <<if $player.gender_appearance is "f">>beautiful woman<<else>>handsome man<</if>>!" <<he>> adds.
+    "And with such a <<if $player.gender_appearance is "f">>beautiful woman<<else>>handsome man<</if>>!" <<person1>><<he>> adds.
 	<br>
 
     "<<if $alex_parent is "mother">>Mum<<else>>Pa<</if>>!" Alex protests.
